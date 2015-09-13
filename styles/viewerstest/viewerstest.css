@@ -1,0 +1,156 @@
+@-webkit-keyframes messageAnim
+{
+	from{ margin-left: 100%; }
+	to{ margin-left:initial; }
+}
+
+html
+{
+	overflow: hidden;
+}
+
+body
+{
+	background-color: transparent;
+	padding: 0px;
+	margin: 0px;
+	
+	font-family: 'Arial';
+	font-size: 24px;
+	font-weight: bold;
+	color: rgb( 255, 255, 255 );
+	text-shadow: 1px 1px rgba( 128,128,128, .5 );
+}
+
+#messagesList
+{
+	padding-bottom: 36px;
+}
+
+#viewersHader
+{
+	position: fixed;
+	bottom: 0;
+	height: 36px;
+	width: 100%;
+	font-size: 24px;
+}
+
+.alias .messagebox
+{
+	color: rgb( 255, 128, 0 );
+}
+
+.ignore .messagebox
+{
+}
+
+.support .messagebox
+{
+}
+
+.messagebox
+{	
+	width: 100%;
+	-webkit-animation: messageAnim .25s;
+	
+	border-bottom: 1px solid rgba( 255,255,255, .5);
+}
+
+.header
+{
+	display: inline-block;
+}
+
+.message
+{
+	display: inline;
+}
+
+.service
+{
+	display: inline-block;
+}
+
+.nick
+{
+	display: inline-block;
+	color: #1895da;
+}
+
+.smile
+{
+	height: 32px;
+}
+
+.picture
+{
+	max-height: 100px;
+}
+
+.aces
+{
+	content: url(../resources/aceslogo.png);
+	height: 16px;
+}
+
+.cybergame
+{
+	content: url(../resources/cybergamelogo.png);
+	height: 16px;
+}
+
+.funstream
+{
+	content: url(../resources/funstreamlogo.png);
+	height: 16px;
+}
+
+.gamerstv
+{
+	content: url(../resources/gamerstvlogo.png);
+	height: 16px;
+}
+
+.gipsyteam
+{
+	content: url(../resources/gipsyteamlogo.png);
+	height: 16px;
+}
+
+
+.goodgame
+{
+	content: url(../resources/goodgamelogo.png);
+	height: 16px;
+}
+
+.hitbox
+{
+	content: url(../resources/hitboxlogo.png);
+	height: 16px;
+}
+
+.realltv
+{
+	content: url(../resources/realltvlogo.png);
+	height: 16px;
+}
+
+.sc2tv
+{
+	content: url(../resources/sc2tvlogo.png);
+	height: 16px;
+}
+
+.streambox
+{
+	content: url(../resources/streamboxlogo.png);
+	height: 16px;
+}
+
+.twitch
+{
+	content: url(../resources/twitchlogo.png);
+	height: 16px;
+}

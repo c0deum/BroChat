@@ -1,0 +1,203 @@
+﻿@font-face {
+    font-family: theemeFont;
+    src: url(BebasBold.ttf);
+}
+
+@-webkit-keyframes scaleShowAnim
+{
+	from{ -webkit-transform: scale(0); }
+	75%{ -webkit-transform: scale(1.25); }
+	to{ -webkit-transform:  scale(1); }
+}
+
+@-webkit-keyframes scaleHideAnim
+{
+	from{ -webkit-transform: scale(1); }
+	75%{ -webkit-transform: scale(0.5); }
+	to{ -webkit-transform:  scale(0); }
+}
+
+html
+{
+	overflow: hidden;
+}
+
+body
+{
+	background-color: transparent;
+	
+	padding-top: 16px;
+}
+
+#messagesList
+{
+	 -webkit-perspective: 1000px;
+	 
+	 padding-left: 16px;
+	 padding-bottom: 16px;
+}
+
+.alias .messagebox
+{
+	margin-top: 8px;
+	
+	border-style: solid;
+	
+	border-width: 16px 16px 16px 32px;
+	-webkit-border-image: url(aliasBack.svg) 64 64 64 128 stretch;	
+	
+	font-family: theemeFont, 'Arial';
+	
+	-webkit-transform: rotateY(15deg);
+	-webkit-animation: scaleShowAnim .5s;	
+}
+
+.supporter .messagebox
+{
+	margin-top: 8px;
+	
+	border-style: solid;
+	border-width: 16px 16px 16px 32px;
+	-webkit-border-image: url(supporterBack.svg) 64 64 64 128 stretch;
+	
+	font-family: theemeFont, 'Arial';
+	
+	-webkit-transform: rotateY(15deg);
+	-webkit-animation: scaleShowAnim .5s;	
+}
+
+.messagebox
+{	
+	margin-top: 8px;
+	
+	border-style: solid;
+	border-width: 16px 16px 16px 32px;
+	-webkit-border-image: url(back.svg) 64 64 64 128 stretch;
+	
+	font-family: theemeFont, 'Arial';
+	
+	-webkit-transform: rotateY(15deg);
+	-webkit-animation: scaleShowAnim .5s;
+	
+	padding: -16px;
+}
+
+.header
+{
+	display: inline-block;
+}
+
+.message
+{
+	
+	display: inline;
+	
+	margin-left: 4px;
+	
+	font-size: 24px;
+	
+	color: rgba( 168, 230, 240, 1 );
+	
+}
+
+.service
+{
+	display: inline-block;
+	
+	margin-right: 8px;
+}
+
+.nick
+{
+	display: inline-block;
+	
+	font-size: 24px;
+	font-weight: bold;
+	
+	color: rgba( 255, 255, 255, 1 );	
+}
+
+.smile
+{
+	margin-left: 1px;
+	margin-right: 1px;
+	
+	height: 32px;
+}
+
+.picture
+{
+	width: 100%;
+}
+
+.aces
+{
+	content: url(../resources/aceslogo.png);
+	height: 24px;
+}
+
+.cybergame
+{
+	content: url(../resources/cybergamelogo.png);
+	height: 24px;
+}
+
+.funstream
+{
+	content: url(../resources/funstreamlogo.png);
+	height: 24px;
+}
+
+.gamerstv
+{
+	content: url(../resources/gamerstvlogo.png);
+	height: 24px;
+}
+
+.gipsyteam
+{
+	content: url(../resources/gipsyteamlogo.png);
+	height: 24px;
+}
+
+
+.goodgame
+{
+	content: url(../resources/goodgamelogo.png);
+	height: 24px;
+}
+
+.hitbox
+{
+	content: url(../resources/hitboxlogo.png);
+	height: 16px;
+}
+
+.realltv
+{
+	content: url(../resources/realltvlogo.png);
+	height: 24px;
+}
+
+.sc2tv
+{
+	content: url(../resources/sc2tvlogo.png);
+	height: 24px;
+}
+
+.streambox
+{
+	content: url(../resources/streamboxlogo.png);
+	height: 24px;
+}
+
+.twitch
+{
+	content: url(../resources/twitchlogo.png);
+	height: 24px;
+}
+
+
+
+
+

@@ -1,0 +1,184 @@
+@font-face {
+    font-family: themeFont;
+    src: url(RobotoRegular.ttf);
+}
+
+@-webkit-keyframes scaleAnim
+{
+	from{ -webkit-transform: scale(0); }
+	75%{ -webkit-transform: scale(1.2); }
+	to{ -webkit-transform:  scale(1); }
+}
+
+html
+{
+	overflow: hidden;
+}
+
+body
+{
+	background-color: transparent;
+	padding: 0px;
+	margin: 0px;
+}
+
+#messagesList
+{
+}
+
+.alias .messagebox .message
+{
+	color: #FF9C00;
+}
+
+.ignore .messagebox
+{
+}
+
+.support .messagebox
+{
+}
+
+.messagebox
+{
+
+	/*font-family: 'Roboto', themeFont,'Geogria';*/
+	font-family: 'Arial','Geogria';
+	font-size: 16px;
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+	
+	margin-left: calc( 10% - 2px );
+	margin-right: calc( 10% - 2px );
+	margin-bottom: 8px;
+
+	width: 80%;
+
+	background-color: #fff;
+	-webkit-animation: scaleAnim 0.5s;
+}
+
+.header
+{
+	width: 100%;
+	background-color:#3F51B5;
+	font-size: 12px;
+	padding-top: 14px;
+	position:relative;
+	padding-bottom: 14px;
+
+}
+
+.message
+{
+	color:#000;
+	padding-top:15px;
+	padding-left:10px;
+	box-shadow: inset 0 20px 17px -20px #000;
+	padding-bottom: 10px;
+
+}
+
+.service
+{
+	position:absolute;
+	right:10px;
+	top:24px;
+	margin-right: 8px;
+	border-radius: 50%;
+	height: 40px;
+	width: 40px;
+	overflow: hidden;
+	background: #B90CD6;
+	box-shadow: 0 4px 4.5px 0 rgba(0,0,0,.12),0 4px 5px 0 rgba(0,0,0,.24);
+	text-align: center;
+}
+
+.service img{
+	display: inline-block;
+	margin-top:8px;
+	opacity: 0.9;
+}
+.nick
+{
+	color: rgba( 192, 255, 255, 1 );
+	font-size: 15px;
+	margin-left: 50px;
+}
+
+.smile
+{
+	height: 32px;
+}
+
+.picture
+{
+	max-height: 100px;
+	max-width: 100%;
+}
+
+.aces
+{
+	content: url(../resources/aceslogo.png);
+	height: 24px;
+}
+
+.cybergame
+{
+	content: url(../resources/cybergamelogo.png);
+	height: 24px;
+}
+
+.funstream
+{
+	content: url(../resources/funstreamlogo.png);
+	height: 24px;
+}
+
+.gamerstv
+{
+	content: url(../resources/gamerstvlogo.png);
+	height: 24px;
+}
+
+.gipsyteam
+{
+	content: url(../resources/gipsyteamlogo.png);
+	height: 24px;
+}
+
+
+.goodgame
+{
+	content: url(../resources/goodgamelogo.png);
+	height: 24px;
+}
+
+.hitbox
+{
+	content: url(../resources/hitboxlogo.png);
+	height: 24px;
+}
+
+.realltv
+{
+	content: url(../resources/realltvlogo.png);
+	height: 24px;
+}
+
+.sc2tv
+{
+	content: url(../resources/sc2tvlogo.png);
+	height: 24px;
+}
+
+.streambox
+{
+	content: url(../resources/streamboxlogo.png);
+	height: 24px;
+}
+
+.twitch
+{
+	content: url(../resources/twitchlogo.png);
+	height: 24px;
+}

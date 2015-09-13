@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+		<link rel="stylesheet" href="viewerstest/viewerstest.css">
+    </head>
+    <script>
+		function scrollToBottom()
+		{
+			document.body.scrollTop = document.body.scrollHeight;
+		}		
+		function onStatisticReceived( service, value )
+		{
+			var serviceDiv = document.getElementById( service );
+			if( serviceDiv )
+			{
+				serviceDiv.innerHTML = "[" + value + "]";
+				//alert( 'ok' );
+			}
+		}
+        function onNewMessage( service, nickName, message, type )
+        {	
+			var serviceElem = document.createElement( "img" );
+			serviceElem.className = service;
+			
+			var serviceBlock = document.createElement( "div" );
+			serviceBlock.className = "service";
+			serviceBlock.appendChild( serviceElem );
+			
+			var nickBlock = document.createElement( "div" );
+			nickBlock.className = "nick";
+			nickBlock.innerHTML = nickName + "<span class='separator'>:&nbsp;</span>";
+			
+			var headerkBlock  = document.createElement( "div" );
+			headerkBlock.className = "header";
+			headerkBlock.appendChild( serviceBlock );
+			headerkBlock.appendChild( nickBlock );
+			
+			var messageBlock = document.createElement( "div" );
+			messageBlock.className = "message";
+			messageBlock.innerHTML = message;
+			
+			var messageBox = document.createElement( "div" );
+			messageBox.className = "messagebox";
+			
+			messageBox.appendChild( headerkBlock );
+			messageBox.appendChild( messageBlock );
+			
+			var messageType = document.createElement( "div" );
+			messageType.className = type;
+			messageType.appendChild( messageBox );
+			
+			var messagesList = document.getElementById( "messagesList" );
+			
+			if( type != "" )
+			{
+				messagesList.appendChild( messageType );
+			}
+			else
+			{
+				messagesList.appendChild( messageBox );
+			}		
+			scrollToBottom();			
+        }
+    </script>
+    <body>	
+        <div id="messagesList"></div>
+		<div id="viewersHader">
+			<span><span class = "cybergame"></span><span class = "statistic" id="cybergame"></span></span>
+			<span><span class = "goodgame"></span><span class = "statistic" id="goodgame"></span></span>
+			<span><span class = "hitbox"></span><span class = "statistic" id="hitbox"></span></span>
+			<span><span class = "twitch"></span><span class = "statistic" id="twitch"></span></span>
+			<span><span class = "streambox"></span><span class = "statistic" id="streambox"></span></span>
+		</div>		
+<script>
+	setInterval( scrollToBottom, 500 );	
+</script>		
+<!--START_BROWSER_CODE-->
+<script>	
+	var wsUri = "ws://localhost:15619";
+	var websocket = null;
+	
+	function initWebSocket() 
+	{
+		try 
+		{
+			if (typeof MozWebSocket == 'function')
+				webSocket = MozWebSocket;
+			if ( websocket && websocket.readyState == 1 )
+				websocket.close();
+			websocket = new WebSocket( wsUri );
+			websocket.onopen = function (event) 
+			{
+				console.log( 'initWebSocket:open' );
+			};
+			websocket.onclose = function (event) 
+			{
+				setTimeout( initWebSocket, 3000 );
+			};
+			websocket.onerror = function (event) 
+			{
+				websocket.close();
+			};
+			websocket.onmessage = function (event) 
+			{		
+				var newMessage = JSON.parse( event.data );
+				onNewMessage( newMessage.service, newMessage.nick, newMessage.message, newMessage.type );
+				document.body.scrollTop = document.body.scrollHeight;
+			};					
+		}
+		catch (exception) 
+		{
+        }
+	}
+	initWebSocket();
+	setInterval(function() { document.body.scrollTop = document.body.scrollHeight; }, 500);
+</script>
+<!--END_BROWSER_CODE-->
+    </body>
+</html>

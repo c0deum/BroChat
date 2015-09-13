@@ -1,0 +1,172 @@
+﻿@-webkit-keyframes opacityAnim
+{
+	from{ opacity: 0; }
+	to{ opacity: 1; }
+}
+
+html
+{
+	overflow: hidden;
+}
+
+body
+{
+	
+	background-color: transparent;
+
+	margin-left: 2px;
+	margin-right: 2px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+#messagesList
+{
+}
+
+.alias .messagebox
+{
+	background-color: rgba( 16, 32, 192, .9 );
+}
+
+.alias .messagebox .message
+{
+	color: rgba( 255, 96, 0, 1 );
+}
+
+.messagebox
+{
+	background-color: rgba( 16, 32, 192, .64 );
+	
+	border-style: solid;
+	border-width: 24px;
+	-webkit-border-image: url(frameWhite.svg) 56 stretch stretch;
+	
+	font-family: 'Arial';
+	font-weight: bold;
+	font-size: 18px;
+	
+	margin-top: 1%;
+	margin-bottom: 1%;
+	
+	padding: 0px;
+	
+	-webkit-animation: opacityAnim 1s;
+}
+
+.header
+{
+	border-bottom: 1px solid rgba( 255, 255, 255, .5 );
+	color: rgba( 255, 255, 255, .7 );
+	float: left;
+	margin-bottom: 2px;
+	
+	margin-left: -12px;
+	margin-top: -12px;
+}
+
+.message
+{
+	color: rgba( 255, 255, 255, 1 );
+	clear: both;
+	padding-top: 0px;
+	margin-left: -12px;
+	margin-right: -12px;
+	margin-bottom: -12px;
+}
+
+.service
+{
+	float: left;
+	margin-right: 8px;
+}
+
+.nick
+{
+	float: left;
+}
+
+.smile
+{
+	margin-left: 1px;
+	margin-right: 1px;
+	
+	height: 32px;
+}
+
+.picture
+{
+	width: 100%;
+}
+
+.aces
+{
+	content: url(../resources/aceslogo.png);
+	height: 16px;
+}
+
+.cybergame
+{
+	content: url(../resources/cybergamelogo.png);
+	height: 16px;
+}
+
+.funstream
+{
+	content: url(../resources/funstreamlogo.png);
+	height: 16px;
+}
+
+.gamerstv
+{
+	content: url(../resources/gamerstvlogo.png);
+	height: 16px;
+}
+
+.gipsyteam
+{
+	content: url(../resources/gipsyteamlogo.png);
+	height: 16px;
+}
+
+
+.goodgame
+{
+	content: url(../resources/goodgamelogo.png);
+	height: 16px;
+}
+
+.hitbox
+{
+	content: url(../resources/hitboxlogo.png);
+	height: 16px;
+}
+
+.realltv
+{
+	content: url(../resources/realltvlogo.png);
+	height: 16px;
+}
+
+.sc2tv
+{
+	content: url(../resources/sc2tvlogo.png);
+	height: 16px;
+}
+
+.streambox
+{
+	content: url(../resources/streamboxlogo.png);
+	height: 16px;
+}
+
+.twitch
+{
+	content: url(../resources/twitchlogo.png);
+	height: 16px;
+}
+
+
+
+
+

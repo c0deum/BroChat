@@ -1,0 +1,164 @@
+﻿@font-face {
+    font-family: ostrovFont;
+    src: url(themeFont.otf);
+}
+
+@-webkit-keyframes slideAnim
+{
+	from{ margin-left: 100%; }
+	50%{ margin-left: -20%; }
+	70%{ margin-left: 15%; }
+	85%{ margin-left: -10%; }
+	95%{ margin-left: 5%; }
+	to{ margin-left: 0%; }
+}
+
+html
+{
+	overflow: hidden;
+}
+
+body
+{
+	background-color: transparent;
+	
+	padding: 0px;
+	margin: 0px;
+}
+
+#messagesList
+{
+}
+
+.messagebox
+{	
+	background-color: rgba( 255, 255, 255, .75 );
+	background-image: url(line.png);
+	background-repeat: no-repeat;
+	background-size: 2px 90%;
+	background-position: 32px center;
+
+	width: 100%;
+	
+	color: rgba( 255, 255, 255, 1 );
+	text-shadow: 1px 1px rgb( 96, 96, 96 );
+	font-family: ostrovFont;
+	
+	-webkit-animation: slideAnim .5s;
+	
+	margin-top: 8px;
+}
+
+.header
+{	
+	float: left;
+	padding-top: 8px;
+}
+
+.message
+{
+	clear: both;
+	padding-left: 40px;
+	padding-bottom: 8px;
+}
+
+.service
+{
+	float: left;
+	padding-left: 8px;
+	margin-right: 8px;
+}
+
+.nick
+{
+	color: rgb( 4, 144, 216 );
+	font-weight: bold;
+	
+	padding-left: 8px;
+	float: left;
+}
+
+.smile
+{
+	margin-left: 1px;
+	margin-right: 1px;
+	
+	height: 32px;
+}
+
+.picture
+{
+	width: 100%;
+}
+
+.aces
+{
+	content: url(../resources/aceslogo.png);
+	height: 16px;
+}
+
+.cybergame
+{
+	content: url(../resources/cybergamelogo.png);
+	height: 16px;
+}
+
+.funstream
+{
+	content: url(../resources/funstreamlogo.png);
+	height: 16px;
+}
+
+.gamerstv
+{
+	content: url(../resources/gamerstvlogo.png);
+	height: 16px;
+}
+
+.gipsyteam
+{
+	content: url(../resources/gipsyteamlogo.png);
+	height: 16px;
+}
+
+
+.goodgame
+{
+	content: url(../resources/goodgamelogo.png);
+	height: 16px;
+}
+
+.hitbox
+{
+	content: url(../resources/hitboxlogo.png);
+	height: 16px;
+}
+
+.realltv
+{
+	content: url(../resources/realltvlogo.png);
+	height: 16px;
+}
+
+.sc2tv
+{
+	content: url(../resources/sc2tvlogo.png);
+	height: 16px;
+}
+
+.streambox
+{
+	content: url(../resources/streamboxlogo.png);
+	height: 16px;
+}
+
+.twitch
+{
+	content: url(../resources/twitchlogo.png);
+	height: 16px;
+}
+
+
+
+
+

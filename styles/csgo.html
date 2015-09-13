@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+		<link rel="stylesheet" href="csgo/csgo.css">
+    </head>
+    <script>
+		var LEVEL_FACTOR = 11;
+		var userMessages = [];
+		function scrollToBottom()
+		{
+			document.body.scrollTop = document.body.scrollHeight;
+		}	
+		function onStatisticReceived( service, value )
+		{
+		}
+        function onNewMessage( service, nickName, message, type )        
+		{	
+			var portalUser = service + nickName;
+			if( !userMessages[ portalUser ] )
+				userMessages[ portalUser ] = 0;
+			userMessages[ portalUser ] += 1;
+		
+			var serviceElem = document.createElement( "img" );
+			serviceElem.className = service;
+			
+			var serviceBlock = document.createElement( "div" );
+			serviceBlock.className = "service";
+			serviceBlock.appendChild( serviceElem );
+
+			var levelElem = document.createElement( "img" );
+			levelElem.className = "level";
+			var userLevel =  Math.round( userMessages[ portalUser ] / LEVEL_FACTOR );
+			if( userLevel > 17 )
+				userLevel = 17;
+			console.log( userMessages[ portalUser ] + " / " + LEVEL_FACTOR + " = " + userLevel );
+			levelElem.src = "../styles/csgo/level" + userLevel + ".png"
+			
+			var levelBlock = document.createElement( "div" );
+			levelBlock.className = "levelBlock";
+			levelBlock.appendChild( levelElem );
+			
+			var nickBlock = document.createElement( "div" );
+			nickBlock.className = "nick";
+			nickBlock.innerHTML = nickName;
+			
+			
+			var headerBlock  = document.createElement( "div" );
+			headerBlock.className = "header";
+			headerBlock.appendChild( serviceBlock );
+			headerBlock.appendChild( nickBlock );
+			headerBlock.appendChild( levelBlock );
+			
+			var messageBlock = document.createElement( "div" );
+			messageBlock.className = "message";
+			messageBlock.innerHTML = message;
+			
+			var messageBox = document.createElement( "div" );
+			messageBox.className = "messagebox";
+			
+			messageBox.appendChild( headerBlock );
+			messageBox.appendChild( messageBlock );
+			
+			var messageType = document.createElement( "div" );
+			messageType.className = type;
+			messageType.appendChild( messageBox );
+			
+			var messagesList = document.getElementById( "messagesList" );
+			
+			if( type != "" )
+			{
+				messagesList.appendChild( messageType );
+			}
+			else
+			{
+				messagesList.appendChild( messageBox );
+			}		
+			scrollToBottom();			
+        }
+    </script>
+    <body>
+        <div id="messagesList"></div>
+<script>
+	setInterval( scrollToBottom, 500 );	
+</script>		
+<!--START_BROWSER_CODE-->
+<script>	
+	var wsUri = "ws://localhost:15619";
+	var websocket = null;
+	
+	function initWebSocket() 
+	{
+		try 
+		{
+			if (typeof MozWebSocket == 'function')
+				webSocket = MozWebSocket;
+			if ( websocket && websocket.readyState == 1 )
+				websocket.close();
+			websocket = new WebSocket( wsUri );
+			websocket.onopen = function (event) 
+			{
+				console.log( 'initWebSocket:open' );
+			};
+			websocket.onclose = function (event) 
+			{
+				setTimeout( initWebSocket, 3000 );
+			};
+			websocket.onerror = function (event) 
+			{
+				websocket.close();
+			};
+			websocket.onmessage = function (event) 
+			{		
+				var newMessage = JSON.parse( event.data );
+				onNewMessage( newMessage.service, newMessage.nick, newMessage.message, newMessage.type );
+				document.body.scrollTop = document.body.scrollHeight;
+			};					
+		}
+		catch (exception) 
+		{
+        }
+	}
+	initWebSocket();
+	setInterval(function() { document.body.scrollTop = document.body.scrollHeight; }, 500 );
+</script>
+<!--END_BROWSER_CODE-->
+    </body>
+</html>
