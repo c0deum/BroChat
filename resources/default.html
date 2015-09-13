@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+		<style>
+
+@-webkit-keyframes NoneAnim
+{
+}		
+		
+@-webkit-keyframes OpacityAnim
+{
+	from{ opacity: 0; }
+	to{ opacity: 1; }
+}
+
+@-webkit-keyframes ScaleAnim
+{
+	from{ -webkit-transform: scale(0); }
+	75%{ -webkit-transform: scale(1.25); }
+	to{ -webkit-transform:  scale(1); }
+}
+
+@-webkit-keyframes SlideAnim
+{
+	from{ margin-left: 100%; }
+	to{ margin-left:initial; }
+}
+		
+html
+{
+	overflow: hidden;
+	font-family:%FONT_NAME%;
+}
+
+body
+{
+	background-color: transparent;
+	padding: 0px;
+	margin: 0px;
+}
+
+#messagesList
+{
+	padding-bottom:%VIEWERS_HEIGHT%;
+}
+
+#viewersHeader
+{
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	
+	height:%VIEWERS_HEIGHT%;
+	font-size:%VIEWERS_FONT_SIZE%;
+	color:%VIEWERS_TEXT_COLOR%;
+}
+
+.alias .messagebox .message
+{
+	font-size:%ALIASES_FONT_SIZE%;
+	color:%ALIASES_TEXT_COLOR%;
+}
+
+.messagebox
+{
+	width: 100%;
+	border-bottom: 1px solid rgba( 255,255,255, .25);
+	
+	-webkit-animation: %ANIMATION_TYPE% 0.5s;
+}
+
+.header
+{
+	display: inline-block;
+}
+
+.message
+{
+	display: inline;
+	
+	font-size:%MESSAGES_FONT_SIZE%;
+	color:%MESSAGES_TEXT_COLOR%;
+}
+
+.service
+{
+	display: inline-block;
+
+}
+
+.nick
+{
+	display: inline-block;
+	
+	font-size:%NICKNAMES_FONT_SIZE%;
+	color:%NICKNAMES_TEXT_COLOR%;
+}
+
+.smile
+{
+	height:%SMILES_SIZE%;
+}
+
+.picture
+{
+	width: 100%;
+}
+
+.aces
+{
+	content: url(aceslogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.cybergame
+{
+	content: url(cybergamelogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.funstream
+{
+	content: url(funstreamlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.gamerstv
+{
+	content: url(gamerstvlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.gipsyteam
+{
+	content: url(gipsyteamlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.goodgame
+{
+	content: url(goodgamelogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.hitbox
+{
+	content: url(hitboxlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.realltv
+{
+	content: url(realltvlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.sc2tv
+{
+	content: url(sc2tvlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.streambox
+{
+	content: url(streamboxlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.twitch
+{
+	content: url(twitchlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}		
+
+.viewersInfo
+{
+}
+
+.cybergameViewers
+{
+	content: url(cybergamelogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.goodgameViewers
+{
+	content: url(goodgamelogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.hitboxViewers
+{
+	content: url(hitboxlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.realltvViewers
+{
+	content: url(realltvlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}	
+
+.twitchViewers
+{
+	content: url(twitchlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}	
+
+.gamerstvViewers
+{
+	content: url(gamerstvlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.streamboxViewers
+{
+	content: url(streamboxlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+
+		</style>
+    </head>
+    <script>
+		function scrollToBottom()
+		{
+			document.body.scrollTop = document.body.scrollHeight;
+		}
+		function onStatisticReceived( service, value )
+		{
+			var serviceDiv = document.getElementById( service );
+			if( serviceDiv )
+			{
+				serviceDiv.innerHTML = "[" + value + "]";
+			}
+		}
+        function onNewMessage( service, nickName, message, type )
+        {	
+			var serviceElem = document.createElement( "img" );
+			serviceElem.className = service;
+			
+			var serviceBlock = document.createElement( "div" );
+			serviceBlock.className = "service";
+			serviceBlock.appendChild( serviceElem );
+			
+			var nickBlock = document.createElement( "div" );
+			nickBlock.className = "nick";
+			nickBlock.innerHTML = nickName + "<span class='separator'>:&nbsp;</span>";
+			
+			var headerkBlock  = document.createElement( "div" );
+			headerkBlock.className = "header";
+			headerkBlock.appendChild( serviceBlock );
+			headerkBlock.appendChild( nickBlock );
+			
+			var messageBlock = document.createElement( "div" );
+			messageBlock.className = "message";
+			messageBlock.innerHTML = message;
+			
+			var messageBox = document.createElement( "div" );
+			messageBox.className = "messagebox";
+			
+			messageBox.appendChild( headerkBlock );
+			messageBox.appendChild( messageBlock );
+			
+			var messageType = document.createElement( "div" );
+			messageType.className = type;
+			messageType.appendChild( messageBox );
+			
+			var messagesList = document.getElementById( "messagesList" );
+			
+			if( type != "" )
+			{
+				messagesList.appendChild( messageType );
+			}
+			else
+			{
+				messagesList.appendChild( messageBox );
+			}			
+			scrollToBottom();
+        }
+    </script>
+    <body>
+        <div id="messagesList"></div>		
+		<div id="viewersHeader">
+			<span class = "viewersInfo"><span class = "cybergameViewers"></span><span class = "statistic" id="cybergame"></span></span>
+			<span class = "viewersInfo"><span class = "goodgameViewers"></span><span class = "statistic" id="goodgame"></span></span>
+			<span class = "viewersInfo"><span class = "hitboxViewers"></span><span class = "statistic" id="hitbox"></span></span>
+			<span class = "viewersInfo"><span class = "realltvViewers"></span><span class = "statistic" id="realltv"></span></span>
+			<span class = "viewersInfo"><span class = "twitchViewers"></span><span class = "statistic" id="twitch"></span></span>
+			<span class = "viewersInfo"><span class = "gamerstvViewers"></span><span class = "statistic" id="gamerstv"></span></span>
+			<span class = "viewersInfo"><span class = "streamboxViewers"></span><span class = "statistic" id="streambox"></span></span>
+		</div>			
+		
+<script>
+	setInterval( scrollToBottom, 500 );	
+</script>
+<!--START_BROWSER_CODE-->
+<script>	
+	var wsUri = "ws://localhost:15619";
+	var websocket = null;
+	
+	function initWebSocket() 
+	{
+		try 
+		{
+			if (typeof MozWebSocket == 'function')
+				webSocket = MozWebSocket;
+			if ( websocket && websocket.readyState == 1 )
+				websocket.close();
+			websocket = new WebSocket( wsUri );
+			websocket.onopen = function (event) 
+			{
+				console.log( 'initWebSocket:open' );
+			};
+			websocket.onclose = function (event) 
+			{
+				setTimeout( initWebSocket, 3000 );
+			};
+			websocket.onerror = function (event) 
+			{
+				websocket.close();
+			};
+			websocket.onmessage = function (event) 
+			{		
+				var newMessage = JSON.parse( event.data );
+				onNewMessage( newMessage.service, newMessage.nick, newMessage.message, newMessage.type );
+			};					
+		}
+		catch (exception) 
+		{
+        }
+	}
+	initWebSocket();
+</script>
+<!--END_BROWSER_CODE-->
+    </body>
+</html>
