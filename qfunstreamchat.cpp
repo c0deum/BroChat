@@ -151,8 +151,8 @@ void QFunStreamChat::onChannelInfoLoaded()
             QJsonArray jsonSmilesInfoArr = jsonArr[ 3 ].toArray();
             QJsonArray jsonSmilesTabs = jsonSmilesInfoArr[ 2 ].toArray();
 
-            //0-6
-            const int SMILES_TABS = 7;
+            //0-6 + 1(streamers smiles)
+            const int SMILES_TABS = 8;
 
             for( int i = 0; i < SMILES_TABS; i++ )
             {

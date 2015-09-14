@@ -346,13 +346,15 @@ void QSc2tvChat::onChannelInfoLoaded()
 
     //qDebug() << channelInfo;
 
-    int channelIdStart = channelInfo.indexOf( "channelId" );
+    int channelIdStart = channelInfo.indexOf( "current_channel_id" );
     if( channelIdStart > 0 )
     {
         channelIdStart = channelInfo.indexOf( "=", channelIdStart );
-        int channelIdEnd = channelInfo.indexOf( "&", channelIdStart );
+        int channelIdEnd = channelInfo.indexOf( ";", channelIdStart );
 
         channelInfo = channelInfo.mid( channelIdStart + 1, channelIdEnd - channelIdStart - 1 );
+
+        channelInfo.replace( ' ', "" );
 
         if( channelInfo != "0" )
         {            
