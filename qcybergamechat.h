@@ -1,9 +1,9 @@
 #ifndef QCYBERGAMECHAT_H
 #define QCYBERGAMECHAT_H
 
-#include <QAbstractSocket>
-
+///#include <QAbstractSocket>
 #include <QMap>
+
 #include "qchatsmile.h"
 
 #include "qchatservice.h"

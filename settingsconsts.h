@@ -90,17 +90,12 @@ const QString SC2TV_BLACK_LIST_SETTING_PATH = "/Settings/Sc2tv/BlackList";
 const QString SC2TV_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Sc2tv/RemoveBlackListUsers";
 const QString SC2TV_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Sc2tv/OriginalColors";
 
-
-
 const QString REALLTV_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Realltv/Enable";
 const QString REALLTV_CHANNEL_SETTING_PATH = "/Settings/Realltv/Channel";
 const QString REALLTV_ALIASES_SETTING_PATH = "/Settings/Realltv/Aliases";
 const QString REALLTV_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Realltv/Supporters";
 const QString REALLTV_BLACK_LIST_SETTING_PATH = "/Settings/Realltv/BlackList";
 const QString REALLTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Realltv/RemoveBlackListUsers";
-
-
-
 
 const QString STREAMBOX_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Streambox/Enable";
 const QString STREAMBOX_CHANNEL_SETTING_PATH = "/Settings/Streambox/Channel";
@@ -116,6 +111,13 @@ const QString TWITCH_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Twitch/Supporters
 const QString TWITCH_BLACK_LIST_SETTING_PATH = "/Settings/Twitch/BlackList";
 const QString TWITCH_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Twitch/RemoveBlackListUsers";
 
+const QString YOUTUBE_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Youtube/Enable";
+const QString YOUTUBE_CHANNEL_SETTING_PATH = "/Settings/Youtube/Channel";
+const QString YOUTUBE_ALIASES_SETTING_PATH = "/Settings/Youtube/Aliases";
+const QString YOUTUBE_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Youtube/Supporters";
+const QString YOUTUBE_BLACK_LIST_SETTING_PATH = "/Settings/Youtube/BlackList";
+const QString YOUTUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Youtube/RemoveBlackListUsers";
+
 const QString BLANK_STRING = "";
 
 const QString DEFAULT_ACES_CHANNEL_NAME = BLANK_STRING;
@@ -129,6 +131,7 @@ const QString DEFAULT_REALLTV_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_SC2TV_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_STREAMBOX_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_TWITCH_CHANNEL_NAME = BLANK_STRING;
+const QString DEFAULT_YOUTUBE_CHANNEL_NAME = BLANK_STRING;
 
 //const QString DEFAULT_STYLE = "default.html";
 const int DEFAULT_OPACITY_VALUE = 100;

@@ -269,12 +269,15 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
 
                 if( "stream/" + channelId_ == jsonObj[ "channel" ].toString() && jsonObj[ "id" ].toInt() > lastMessageId_ )
                 {
-                    lastMessageId_ = jsonObj[ "id" ].toInt();
+                    lastMessageId_ = jsonObj[ "id" ].toInt();                                       
 
                     QString nickName = jsonObj[ "from" ].toObject()[ "name" ].toString();
                     QString message = jsonObj[ "text" ].toString();
 
                     message = QChatMessage::replaceEscapeCharecters( message );
+
+                    if( jsonObj[ "type" ].toString() == "fastdonate" )
+                        message += "<img class = \"smile\" src=\"http://funstream.tv/build/images/icon_donate.png\"></img>";
 
                     if( jsonObj[ "to" ].toObject()[ "name" ].toString() != "" )
                         message = jsonObj[ "to" ].toObject()[ "name" ].toString() + ", " + message;

@@ -122,6 +122,13 @@ signals:
     void twitchSupportersListChanged( const QString & );
     void twitchBlackListChanged( const QString & );
     void twitchRemoveBlackListUsersChanged( bool );
+
+    void youtubeChannelChanged();
+    void youtubeChannelDisabled();
+    void youtubeAliasesChanged( const QString & );
+    void youtubeSupportersListChanged( const QString & );
+    void youtubeBlackListChanged( const QString & );
+    void youtubeRemoveBlackListUsersChanged( bool );
 private:
     QRgb nicknamesTextColor;
     QRgb messagesTextColor;
@@ -250,6 +257,13 @@ private:
     QTextEdit *twitchSupportersListEdit;
     QTextEdit *twitchBlackListEdit;
     QCheckBox *twitchRemoveBlackListUsersCheckBox;
+
+    QCheckBox *youtubeChannelCheckBox;
+    QLineEdit *youtubeChannelEdit;
+    QLineEdit *youtubeAliasesEdit;
+    QTextEdit *youtubeSupportersListEdit;
+    QTextEdit *youtubeBlackListEdit;
+    QCheckBox *youtubeRemoveBlackListUsersCheckBox;
 };
 
 #endif // QSETTINGSDIALOG_H

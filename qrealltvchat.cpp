@@ -192,7 +192,7 @@ void QReallTvChat::onConnected()
 
 void QReallTvChat::onError( QXmppClient::Error error )
 {
-    //qDebug() << error;
+    qDebug() << error;
 
     if( isShowSystemMessages() )
         emit newMessage( new QChatMessage( REALLTV_SERVICE, REALLTV_USER, "Unknown Error ...", "", this ) );

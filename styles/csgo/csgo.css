@@ -206,3 +206,9 @@ body
 	content: url(../resources/twitchlogo.png);
 	height: 24px;
 }
+
+.youtube
+{
+	content: url(../resources/youtubelogo.png);
+	height: 24px;
+}

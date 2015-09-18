@@ -18,9 +18,7 @@ public slots:
     void close();
 private slots:
     void onNewConnection();
-    //void onTextMessageRecieved( const QString& message );
     void onSocketDisconnected();
-
 private:
     QWebSocketServer *server_;
     QList< QWebSocket * > clientsList_;

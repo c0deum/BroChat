@@ -157,6 +157,14 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , twitchSupportersListEdit( new QTextEdit( this ) )
 , twitchBlackListEdit( new QTextEdit( this ) )
 , twitchRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
+
+, youtubeChannelCheckBox( new QCheckBox( this ) )
+, youtubeChannelEdit( new QLineEdit( this ) )
+, youtubeAliasesEdit( new QLineEdit( this ) )
+, youtubeSupportersListEdit( new QTextEdit( this ) )
+, youtubeBlackListEdit( new QTextEdit( this ) )
+, youtubeRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
+
 {
     //setMinimumWidth( 960 );
     //setMinimumHeight( 640 );
@@ -976,6 +984,55 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     tabSettings->addTab( twitchGroup, QIcon( ":/resources/twitchlogo.png" ), tr( "Twitch" ) );
 
+
+
+    //настройки youtube
+    QVBoxLayout *youtubeLayout = new QVBoxLayout;
+
+    youtubeChannelCheckBox->setText( CHANNEL_TEXT );
+    youtubeChannelCheckBox->setChecked( settings.value( YOUTUBE_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
+
+    youtubeChannelEdit->setText( settings.value( YOUTUBE_CHANNEL_SETTING_PATH, DEFAULT_YOUTUBE_CHANNEL_NAME ).toString() );
+    youtubeChannelEdit->setEnabled( youtubeChannelCheckBox->isChecked() );
+
+    QObject::connect( youtubeChannelCheckBox, SIGNAL( clicked( bool ) ), youtubeChannelEdit, SLOT( setEnabled( bool ) ) );
+
+    youtubeLayout->addWidget( youtubeChannelCheckBox );
+    youtubeLayout->addWidget( youtubeChannelEdit );
+
+    QLabel *youtubeAliasesLabel = new QLabel( ALIASES_TEXT );
+
+    youtubeAliasesEdit->setText( settings.value( YOUTUBE_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
+
+    youtubeLayout->addWidget( youtubeAliasesLabel );
+    youtubeLayout->addWidget( youtubeAliasesEdit );
+
+    QLabel *youtubeSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+
+    youtubeSupportersListEdit->setText( settings.value( YOUTUBE_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
+
+    youtubeLayout->addWidget( youtubeSupportersListLabel );
+    youtubeLayout->addWidget( youtubeSupportersListEdit );
+
+    QLabel *youtubeBlackListLabel = new QLabel( BLACKLIST_TEXT );
+    youtubeBlackListEdit->setText( settings.value( YOUTUBE_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
+
+    youtubeLayout->addWidget( youtubeBlackListLabel );
+    youtubeLayout->addWidget( youtubeBlackListEdit );
+
+    youtubeRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
+    youtubeRemoveBlackListUsersCheckBox->setChecked( settings.value( YOUTUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
+
+    youtubeLayout->addWidget( youtubeRemoveBlackListUsersCheckBox );
+
+    youtubeLayout->addStretch( 1 );
+
+    QGroupBox *youtubeGroup = new QGroupBox( tabSettings );
+    youtubeGroup->setLayout( youtubeLayout );
+
+    tabSettings->addTab( youtubeGroup, QIcon( ":/resources/youtubelogo.png" ), tr( "Youtube" ) );
+
+
     /*
     QVBoxLayout *aboutLayout = new QVBoxLayout;
 
@@ -1609,6 +1666,42 @@ void QSettingsDialog::saveSettings()
         emit twitchRemoveBlackListUsersChanged( twitchRemoveBlackListUsersCheckBox->isChecked() );
     }
 
+
+    //настройки youtube
+    oldStringValue = settings.value( YOUTUBE_CHANNEL_SETTING_PATH, DEFAULT_YOUTUBE_CHANNEL_NAME ).toString();
+    if( oldStringValue != youtubeChannelEdit->text() )
+    {
+        settings.setValue( YOUTUBE_CHANNEL_SETTING_PATH, youtubeChannelEdit->text() );
+        emit youtubeChannelChanged();
+    }
+
+    oldStringValue = settings.value( YOUTUBE_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != youtubeAliasesEdit->text() )
+    {
+        settings.setValue( YOUTUBE_ALIASES_SETTING_PATH, youtubeAliasesEdit->text() );
+        emit youtubeAliasesChanged( youtubeAliasesEdit->text() );
+    }
+
+    oldStringValue = settings.value( YOUTUBE_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != youtubeSupportersListEdit->toPlainText() )
+    {
+        settings.setValue( YOUTUBE_SUPPORTERS_LIST_SETTING_PATH, youtubeSupportersListEdit->toPlainText() );
+        emit youtubeSupportersListChanged( youtubeSupportersListEdit->toPlainText() );
+    }
+
+    oldStringValue = settings.value( YOUTUBE_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != youtubeBlackListEdit->toPlainText() )
+    {
+        settings.setValue( YOUTUBE_BLACK_LIST_SETTING_PATH, youtubeBlackListEdit->toPlainText() );
+        emit youtubeBlackListChanged( youtubeBlackListEdit->toPlainText() );
+    }
+
+    oldBoolValue = settings.value( YOUTUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != youtubeRemoveBlackListUsersCheckBox->isChecked() )
+    {
+        settings.setValue( YOUTUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH, youtubeRemoveBlackListUsersCheckBox->isChecked() );
+        emit youtubeRemoveBlackListUsersChanged( youtubeRemoveBlackListUsersCheckBox->isChecked() );
+    }
 
 
 }

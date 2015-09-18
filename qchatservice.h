@@ -1,13 +1,11 @@
 #ifndef QCHATSERVICE_H
 #define QCHATSERVICE_H
 
-#include <QStringList>
-
 #include <QObject>
+#include <QStringList>
 
 #include "qchatmessage.h"
 #include "qchatstatistic.h"
-
 
 class QChatService: public QObject
 {

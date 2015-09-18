@@ -156,3 +156,9 @@ background-color: #5F7497;
 	content: url(../resources/twitchlogo.png);
 	height: 16px;
 }
+
+.youtube
+{
+	content: url(../resources/youtubelogo.png);
+	height: 16px;
+}

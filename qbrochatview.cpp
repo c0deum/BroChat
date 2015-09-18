@@ -24,26 +24,26 @@
 #include <QBitmap>
 #include <QPainter>
 
-#include "qsettingsdialog.h"
-#include "qtwitchchat.h"
-#include "qsc2tvchat.h"
-#include "qgamerstvchat.h"
-#include "qgoodgamechat.h"
-#include "qcybergamechat.h"
 #include "qaceschat.h"
+#include "qcybergamechat.h"
+#include "qfunstreamchat.h"
+#include "qgamerstvchat.h"
+#include "qgipsyteamchat.h"
+#include "qgoodgamechat.h"
+#include "qhitboxchat.h"
+#include "qrealltvchat.h"
+#include "qsc2tvchat.h"
+#include "qstreamboxchat.h"
+#include "qtwitchchat.h"
+
+#include "qyoutubechat.h"
+
 #include "qchatmessage.h"
 #include "qchatstatistic.h"
 
-#include "qfunstreamchat.h"
-#include "qstreamboxchat.h"
-#include "qhitboxchat.h"
-
-#include "qgipsyteamchat.h"
-
-//tests
-#include "qrealltvchat.h"
-
 #include "qchatupdateserver.h"
+
+#include "qsettingsdialog.h"
 
 #include "settingsconsts.h"
 
@@ -63,54 +63,43 @@ const int DEFAULT_SCROLL_SPEED = 32;
 
 QBroChatView::QBroChatView( QWidget *parent )
 : QWebView( parent )
-//, scrollSpeed_( DEFAULT_SCROLL_SPEED )
-, moveState_( false )
-, mouseStartPos_( 0 ,0 )
 , acesChat_( new QAcesChat( this ) )
 , cybergameChat_( new QCyberGameChat( this ) )
-, gamerstvChat_( new QGamersTvChat( this ) )
-, goodgameChat_( new QGoodGameChat( this ) )
-, sc2tvChat_( new QSc2tvChat( this ) )
-, twitchChat_( new QTwitchChat( this ) )
-, updatePictureInterval_( DEFAULT_SAVE_TO_FILE_INTERVAL )
-, updatePictureId_( -1 )
-
 , funstreamChat_( new QFunStreamChat( this ) )
-, streamboxChat_( new QStreamBoxChat( this ) )
-, hitboxChat_( new QHitBoxChat( this ) )
-
+, gamerstvChat_( new QGamersTvChat( this ) )
 , gipsyteamChat_( new QGipsyTeamChat( this ) )
+, goodgameChat_( new QGoodGameChat( this ) )
+, hitboxChat_( new QHitBoxChat( this ) )
 , realltvChat_( new QReallTvChat( this ) )
+, sc2tvChat_( new QSc2tvChat( this ) )
+, streamboxChat_( new QStreamBoxChat( this ) )
+, twitchChat_( new QTwitchChat( this ) )
+
+, youtubeChat_( new QYoutubeChat( this ) )
 
 , chatUpdateServer_( 0 )
+, settings_()
+, moveState_( false )
+, mouseStartPos_( 0 ,0 )
+, updatePictureId_( -1 )
+, updatePictureInterval_( DEFAULT_SAVE_TO_FILE_INTERVAL )
 , showSystemMessages_( DEFAULT_SHOW_SYSTEM_MESSAGES )
 , showImages_( DEFAULT_SHOW_IMAGES )
 , saveToFile_( DEFAULT_SAVE_TO_FILE )
 {
-    //TODO: tests qwebsettings flags
-
     page()->settings()->setAttribute( QWebSettings::AcceleratedCompositingEnabled, true );
     page()->settings()->setAttribute( QWebSettings::Accelerated2dCanvasEnabled, true );
     page()->settings()->setAttribute( QWebSettings::WebGLEnabled, true );
 
-    //===============================
-
     setMinimumSize( MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT );
 
     setContextMenuPolicy( Qt::ActionsContextMenu );
-    //setContextMenuPolicy( Qt::NoContextMenu );
 
     setStyleSheet("QWebView { background: transparent }");
-    //setAttribute( Qt::WA_TranslucentBackground, true );
 
     QObject::connect( this, SIGNAL( linkClicked( const QUrl & ) ), this, SLOT( onLinkClicked( const QUrl & ) ) );
 
-    //page()->mainFrame()->setScrollBarPolicy( Qt::Horizontal, Qt::ScrollBarAlwaysOff );
-    //page()->mainFrame()->setScrollBarPolicy( Qt::Vertical, Qt::ScrollBarAlwaysOff );
-
     page()->setLinkDelegationPolicy( QWebPage::DelegateAllLinks );
-
-    //QObject::connect( page()->mainFrame(), SIGNAL( contentsSizeChanged( const QSize & ) ) , this, SLOT( scrollBottom( const QSize & ) ) );
 
     changeShowSystemMessagesState();
     changeShowImagesState();
@@ -118,20 +107,6 @@ QBroChatView::QBroChatView( QWidget *parent )
     changeSaveToFileState();
 
     loadSettings();
-/*
-    QPalette pagePalette = palette();
-    pagePalette.setBrush( QPalette::Base, Qt::transparent );
-    page()->setPalette( pagePalette );
-    setAttribute( Qt::WA_OpaquePaintEvent, false );
-*/
-
-
-////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////
-    //setAttribute( Qt::WA_TranslucentBackground, true );
-
-    //setStyleSheet( "QBroChatView {background-color: rgba( 255, 255, 255, .01 );}" );
 
     QObject::connect( this, SIGNAL( closeWindow() ), this, SLOT( saveSettings() ) );
 
@@ -150,6 +125,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     QAction *reconnectSc2tvAction = new QAction( QIcon( ":/resources/sc2tvlogo.png" ), tr( "Reconnect Sc2tv Chat" ), this );
     QAction *reconnectStreamboxAction = new QAction( QIcon( ":/resources/streamboxlogo.png" ), tr( "Reconnect Streambox Chat" ), this );
     QAction *reconnectTwitchAction = new QAction( QIcon( ":/resources/twitchlogo.png" ), tr( "Reconnect Twitch Chat" ), this );
+    QAction *reconnectYoutubeAction = new QAction( QIcon( ":/resources/youtubelogo.png" ), tr( "Reconnect Youtube Chat" ), this );
 
     QObject::connect( settingsAction, SIGNAL( triggered() ), this, SLOT( showSettings() ) );
     QObject::connect( exitAction, SIGNAL( triggered() ), this, SIGNAL( closeWindow() ) );
@@ -165,6 +141,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), sc2tvChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), streamboxChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), twitchChat_, SLOT( reconnect() ) );
+    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), youtubeChat_, SLOT( reconnect() ) );
 
     QObject::connect( reconnectAcesAction, SIGNAL( triggered() ), acesChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectCybergameAction, SIGNAL( triggered() ), cybergameChat_, SLOT( reconnect() ) );
@@ -177,6 +154,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( reconnectSc2tvAction, SIGNAL( triggered() ), sc2tvChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectStreamboxAction, SIGNAL( triggered() ), streamboxChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectTwitchAction, SIGNAL( triggered() ), twitchChat_, SLOT( reconnect() ) );
+    QObject::connect( reconnectYoutubeAction, SIGNAL( triggered() ), youtubeChat_, SLOT( reconnect() ) );
 
     addAction( settingsAction );
 
@@ -192,68 +170,57 @@ QBroChatView::QBroChatView( QWidget *parent )
     addAction( reconnectSc2tvAction );
     addAction( reconnectStreamboxAction );
     addAction( reconnectTwitchAction );
+    addAction( reconnectYoutubeAction );
 
     addAction( exitAction );
 
     QObject::connect( acesChat_, SIGNAL( newMessage ( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
-    //acesChat_->connect();
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), acesChat_, SLOT( reconnect() ) );
 
     QObject::connect( cybergameChat_, SIGNAL( newMessage ( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
     QObject::connect( cybergameChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    //cybergameChat_->connect();
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), cybergameChat_, SLOT( reconnect() ) );
 
     QObject::connect( gamerstvChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
     QObject::connect( gamerstvChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    //gamerstvChat_->connect();
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), gamerstvChat_, SLOT( reconnect() ) );
 
     QObject::connect( goodgameChat_, SIGNAL( newMessage ( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
     QObject::connect( goodgameChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    //goodgameChat_->connect();
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), goodgameChat_, SLOT( reconnect() ) );
 
     QObject::connect( sc2tvChat_, SIGNAL( newMessage ( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
-    //sc2tvChat_->connect();
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), sc2tvChat_, SLOT( reconnect() ) );
 
     QObject::connect( twitchChat_, SIGNAL( newMessage( QChatMessage * ) ), this, SLOT( slotNewMessage( QChatMessage * ) ) );
     QObject::connect( twitchChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    //twitchChat_->connect();
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), twitchChat_, SLOT( reconnect() ) );
 
     QObject::connect( funstreamChat_, SIGNAL( newMessage( QChatMessage * ) ), this, SLOT( slotNewMessage( QChatMessage * ) ) );
-    //funstrteamChat_->connect();
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), funstreamChat_, SLOT( reconnect() ) );
 
     QObject::connect( streamboxChat_, SIGNAL( newMessage( QChatMessage * ) ), this, SLOT( slotNewMessage( QChatMessage * ) ) );
     QObject::connect( streamboxChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    //streamboxChat_->connect();
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), streamboxChat_, SLOT( reconnect() ) );
 
-
-    //
     QObject::connect( hitboxChat_, SIGNAL( newMessage( QChatMessage * ) ), this, SLOT( slotNewMessage( QChatMessage * ) ) );
     QObject::connect( hitboxChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    //streamboxChat_->connect();
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), hitboxChat_, SLOT( reconnect() ) );
 
-
     QObject::connect( gipsyteamChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
-    //gamerstvChat_->connect();
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), gipsyteamChat_, SLOT( reconnect() ) );
-
 
     QObject::connect( realltvChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
     QObject::connect( realltvChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    //realltvChat_->connect();
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), realltvChat_, SLOT( reconnect() ) );
 
 
-    //update();
+    //youtube
+    QObject::connect( youtubeChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( this, SIGNAL( loadFinished( bool ) ), youtubeChat_, SLOT( reconnect() ) );
+
+
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), this, SLOT( loadFlagsAndAttributes() ) );
-    //loadFlagsAndAttributes();
 }
 
 QBroChatView::~QBroChatView()
@@ -261,32 +228,6 @@ QBroChatView::~QBroChatView()
     page()->settings()->clearMemoryCaches();
 }
 
-/*
-int QBroChatView::scrollSpeed() const
-{
-    return scrollSpeed_;
-}
-
-void QBroChatView::setScrollSpeed( int scrollSpeed )
-{
-    scrollSpeed_ = scrollSpeed;
-}
-
-
-void QBroChatView::wheelEvent( QWheelEvent *event )
-{
-    //int numDegrees = event->delta() / 8;
-    //int numSteps = numDegrees / 15;
-
-    //page()->mainFrame()->setScrollPosition( page()->mainFrame()->scrollPosition() - QPoint( 0, event->delta() / 120 * scrollSpeed_ ) );
-
-
-
-    QWebView::wheelEvent( event );
-
-    event->accept();
-}
-*/
 void QBroChatView::mousePressEvent( QMouseEvent *event )
 {
     if( ( event->modifiers() & Qt::ControlModifier ) && ( event->buttons() & Qt::LeftButton ) )
@@ -359,33 +300,7 @@ void QBroChatView::onLinkClicked( const QUrl &url )
 
 void QBroChatView::addMessage( const QString &service, const QString &nickName, const QString &message, const QString &type )
 {
-    //TODO:Supporters Lists and Black Lists
-
-    /*
     QString messageWithLinks = QChatMessage::insertLinks( message, showImages_ );
-
-    //QString js = "addMessage( \'" + service + "\', \'" + nickName + "\', \'" + messageWithLinks + "\', \'" + type +"\');";
-    QString js = "addMessage( \"" + service + "\", \"" + nickName + "\", \"" + messageWithLinks + "\", \"" + type +"\");";
-    page()->mainFrame()->evaluateJavaScript( js );
-
-    if( chatUpdateServer_ )
-    {
-        QString formattedNickName = nickName;
-        formattedNickName.replace( "\"", "\\\"" );
-        formattedNickName.replace( "\'", "\\\'" );
-
-        QString formattedMessage = message;
-        formattedMessage.replace( "\"", "\\\"" );
-        formattedMessage.replace( "\'", "\\\'" );
-
-        QString jsonMessage ="{\"service\":\"" + service + "\",\"nick\":\"" + formattedNickName + "\",\"message\":\"" + formattedMessage + "\",\"type\":\"" + type + "\"}";
-        chatUpdateServer_->sendMessage( jsonMessage );
-    }
-    */
-
-    QString messageWithLinks = QChatMessage::insertLinks( message, showImages_ );
-
-    //qDebug() << messageWithLinks;
 
     QString formattedNickName = nickName;
     formattedNickName.replace( "\"", "\\\"" );
@@ -394,10 +309,7 @@ void QBroChatView::addMessage( const QString &service, const QString &nickName, 
     QString formattedMessage = messageWithLinks;
     formattedMessage.replace( 1, "" );
     formattedMessage.replace( "\\", "\\\\" );
-    //formattedMessage.replace( "\'", "\\\'" );
     formattedMessage.replace( "\"", "\\\"" );
-
-    //qDebug() << formattedMessage;
 
     QString js = "onNewMessage( \"" + service + "\", \"" + formattedNickName + "\", \"" + formattedMessage + "\", \"" + type +"\");";
     page()->mainFrame()->evaluateJavaScript( js );
@@ -421,12 +333,8 @@ void QBroChatView::changeStyle( const QString &styleName )
        pathToStyle = QApplication::applicationDirPath() + "/styles/" + styleName;
     }
 
-
-
     if( QFileInfo::exists( pathToStyle ) )
     {
-        //settings()->setUserStyleSheetUrl( QUrl::fromLocalFile( pathToStyle ) );
-
         QFile file;
         file.setFileName( pathToStyle );
         file.open( QIODevice::ReadOnly );
@@ -436,8 +344,6 @@ void QBroChatView::changeStyle( const QString &styleName )
         int endScriptCode = style.indexOf( "<!--END_BROWSER_CODE-->" );
 
         style.remove( startScriptCode, endScriptCode - startScriptCode );
-
-        //qDebug() << style;
 
         file.close();
 
@@ -482,18 +388,12 @@ void QBroChatView::changeStyle( const QString &styleName )
 
             style.replace( "%VIEWERS_HEIGHT%",  QString::number( viewersHeight ) + "px" );
 
-            //qDebug() << style;
-
             setHtml( style, QUrl( "qrc:/resources/" ) );
         }
         else
         {
             setHtml( style, QUrl::fromLocalFile( QApplication::applicationDirPath() + "/styles/" ) );
         }
-
-
-        //load( QUrl::fromLocalFile( pathToStyle ) );
-
     }
     else
     {
@@ -517,6 +417,7 @@ void QBroChatView::changeShowSystemMessagesState()
     sc2tvChat_->setShowSystemMessages( showSystemMessages_ );
     streamboxChat_->setShowSystemMessages( showSystemMessages_ );
     twitchChat_->setShowSystemMessages( showSystemMessages_ );
+    youtubeChat_->setShowSystemMessages( showSystemMessages_ );
 }
 
 void QBroChatView::changeShowImagesState()
@@ -554,17 +455,6 @@ void QBroChatView::changeSaveToFileState()
     }
 }
 
-
-
-/*
-void QBroChatView::scrollBottom( const QSize& size  )
-{
-    //if( page() && page()->mainFrame() )
-    //page()->mainFrame()->setScrollPosition( QPoint( 0, size.height() ) );
-    //page()->mainFrame()->setScrollPosition( QPoint( 0, page()->mainFrame()->scrollBarMaximum( Qt::Vertical ) ) );
-}
-*/
-
 void QBroChatView::slotNewMessage( QChatMessage *message )
 {
     addMessage( message->service(), message->nickName(), message->message(), message->type() );
@@ -597,8 +487,6 @@ void QBroChatView::loadSettings()
 
     changeOpacity();
     changeStyle();
-
-    //loadFlagsAndAttributes();
 }
 
 void QBroChatView::saveSettings()
@@ -631,6 +519,8 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( sc2tvChannelChanged() ), sc2tvChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxChannelChanged() ), streamboxChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( twitchChannelChanged() ), twitchChat_, SLOT( reconnect() ) );
+    QObject::connect( settingsDialog, SIGNAL( youtubeChannelChanged() ), youtubeChat_, SLOT( reconnect() ) );
+
 
     QObject::connect( settingsDialog, SIGNAL( acesAliasesChanged( QString ) ), acesChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( cyberGameAliasesChanged( QString ) ), cybergameChat_, SLOT( setAliasesList( QString ) ) );
@@ -643,6 +533,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( sc2tvAliasesChanged( QString ) ), sc2tvChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxAliasesChanged( QString ) ), streamboxChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( twitchAliasesChanged( QString ) ), twitchChat_, SLOT( setAliasesList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( youtubeAliasesChanged( QString ) ), youtubeChat_, SLOT( setAliasesList( QString ) ) );
 
     QObject::connect( settingsDialog, SIGNAL( acesSupportersListChanged( QString ) ), acesChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( cyberGameSupportersListChanged( QString ) ), cybergameChat_, SLOT( setSupportersList( QString ) ) );
@@ -655,6 +546,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( sc2tvSupportersListChanged( QString ) ), sc2tvChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxSupportersListChanged( QString ) ), streamboxChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( twitchSupportersListChanged( QString ) ), twitchChat_, SLOT( setSupportersList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( youtubeSupportersListChanged( QString ) ), youtubeChat_, SLOT( setSupportersList( QString ) ) );
 
     QObject::connect( settingsDialog, SIGNAL( acesBlackListChanged( QString ) ), acesChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( cyberGameBlackListChanged( QString ) ), cybergameChat_, SLOT( setBlackList( QString ) ) );
@@ -667,6 +559,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( sc2tvBlackListChanged( QString ) ), sc2tvChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxBlackListChanged( QString ) ), streamboxChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( twitchBlackListChanged( QString ) ), twitchChat_, SLOT( setBlackList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( youtubeBlackListChanged( QString ) ), youtubeChat_, SLOT( setBlackList( QString ) ) );
 
     QObject::connect( settingsDialog, SIGNAL( acesRemoveBlackListUsersChanged( bool ) ), acesChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( cyberGameRemoveBlackListUsersChanged( bool ) ), cybergameChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
@@ -679,6 +572,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( sc2tvRemoveBlackListUsersChanged( bool ) ), sc2tvChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxRemoveBlackListUsersChanged( bool ) ), streamboxChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( twitchRemoveBlackListUsersChanged( bool ) ), twitchChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
+    QObject::connect( settingsDialog, SIGNAL( youtubeRemoveBlackListUsersChanged( bool ) ), youtubeChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
 
 
     QObject::connect( settingsDialog, SIGNAL( acesOriginalColorsChanged( bool ) ), acesChat_, SLOT( changeOriginalColors( bool ) ) );
@@ -714,47 +608,29 @@ void QBroChatView::changeOpacity()
 
 void QBroChatView::loadFlagsAndAttributes()
 {
-    //qDebug() << "loadFlagsAndAttributes start";
     Qt::WindowFlags flags = windowFlags();
 
     if( settings_.value( STAY_ON_TOP_SETTING_PATH, DEFAULT_STAY_ON_TOP ).toBool() )
     {
         flags |= Qt::WindowStaysOnTopHint;
         flags &= ~( Qt::WindowStaysOnBottomHint );
-        //qDebug() << "loadFlagsAndAttributes +Top -Bottom";
     }
     else
     {
         flags |= Qt::WindowStaysOnBottomHint;
         flags &= ~( Qt::WindowStaysOnTopHint );
-        //qDebug() << "loadFlagsAndAttributes -Top +Bottom";
     }
 
     if( settings_.value( FRAMELESS_WINDOW_SETTING_PATH, DEFAULT_FRAMELESS_WINDOW ).toBool() )
     {
         flags |= Qt::FramelessWindowHint;
-        //qDebug() << "loadFlagsAndAttributes +Frameless";
-/*
-#ifdef Q_Os_WIN
-        unsigned int exStyle = GetWindowLong( winId(), GWL_EXSTYLE) | WS_EX_LAYERED | WS_EX_TRANSPARENT;
-        SetWindowLong( winId(), GWL_EXSTYLE, exStyle );
-        SetLayeredWindowAttributes( winId(), 0, 0, LWA_ALPHA);
-#endif
-*/
-
     }
     else
     {
         flags &= ~( Qt::FramelessWindowHint );
-        //qDebug() << "loadFlagsAndAttributes -Frameless";
     }
 
-    //qDebug() << flags;
     setWindowFlags( flags );
-
-    //setAttribute( Qt::WA_TranslucentBackground, settings_.value( TRANSPARENT_WINDOW_SETTING_PATH, DEFAULT_TRANSPARENT_WINDOW ).toBool() );
-
-    //raise();
     show();
 
 #ifdef Q_OS_WIN
@@ -768,7 +644,4 @@ void QBroChatView::loadFlagsAndAttributes()
     }
 
 #endif
-
-    //update();
-    //activateWindow();
 }

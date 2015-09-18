@@ -175,6 +175,10 @@ a .picture
 }
 
 
-
+.youtube
+{
+	content: url(../resources/youtubelogo.png);
+	height: 24px;
+}
 
 
