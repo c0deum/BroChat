@@ -22,16 +22,14 @@
 
 #include "qgoodgamechat.h"
 
-
-const QString DEFAULT_GOODGAME_CHANNEL_PREFIX = "http://goodgame.ru/channel/";
-const QString DEFAULT_GOODGAME_CHAT_PREFIX = "http://goodgame.ru/chat/";
 const QString DEFAULT_GOODGAME_WEBSOCKET_LINK = "ws://chat.goodgame.ru:8081/chat/websocket";
 
-//const QString DEFAULT_GOODGAME_CHAT_CSS_LINK = "http://goodgame.ru/css/compiled/chat2.css";
 const QString DEFAULT_GOODGAME_COMMON_SMILES_INFO_LINK = "http://goodgame.ru/css/compiled/common_smiles.css";
 const QString DEFAULT_GOODGAME_CHANNELS_SMILES_INFO_LINK = "http://goodgame.ru/css/compiled/channels_smiles.css";
-const QString DEFAULT_GOODGAME_SMILES_LINK = "http://goodgame.ru/images/generated/smiles.png";
 const QString DEFAULT_GOODGAME_ANIMATED_SMILES_PATH = "http://goodgame.ru/images/anismiles/";
+
+const QString DEFAULT_GOODGAME_CHANNEL_STATUS_PREFIX = "http://goodgame.ru/api/getchannelstatus?id=";
+const QString DEFAULT_GOODGAME_CHANNEL_STATUS_POSTFIX = "&fmt=json";
 
 const QString DEFAULT_GOOD_GAME_STATISTIC_PREFIX = "http://goodgame.ru/api/getggchannelstatus?id=";
 const QString DEFAULT_GOOD_GAME_STATISTIC_POSTFIX = "&fmt=json";
@@ -59,8 +57,6 @@ QGoodGameChat::QGoodGameChat( QObject *parent )
 , statisticTimerInterval_( DEFAULT_GOODGAME_STATISTIC_INTERVAL )
 , useAnimatedSmiles_( false )
 {
-    //loadSettings();
-    //getSmiles();
 }
 
 QGoodGameChat::~QGoodGameChat()
@@ -126,7 +122,6 @@ void QGoodGameChat::reconnect()
 
 void QGoodGameChat::getSmiles()
 {
-    //QNetworkRequest request( QUrl( DEFAULT_GOODGAME_CHAT_CSS_LINK + "" ) );
     QNetworkRequest commonSmilesRequest( QUrl( DEFAULT_GOODGAME_COMMON_SMILES_INFO_LINK + "" ) );
     QNetworkReply *reply = nam_->get( commonSmilesRequest );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSmilesLoaded() ) );
@@ -219,9 +214,6 @@ void QGoodGameChat::onSmilesLoaded()
     if( isShowSystemMessages() )
         emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Smiles ready...", "", this ) );
     reply->deleteLater();
-
-    //qDebug() << smiles_;
-    //qDebug() << animatedSmiles_;
 }
 
 
@@ -230,17 +222,13 @@ void QGoodGameChat::onSmilesLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
     if( isShowSystemMessages() )
         emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Can not load smiles..." + reply->errorString(), "", this ) );
-    //disconnect();
-    //TODO: smiles loading timer
-    //getSmiles();
     reply->deleteLater();
 }
 
 void QGoodGameChat::getChannelInfo()
-{
-    //TODO: использовать API
+{   
+    QNetworkRequest request( QUrl( DEFAULT_GOODGAME_CHANNEL_STATUS_PREFIX + channelName_ + DEFAULT_GOODGAME_CHANNEL_STATUS_POSTFIX ) );
 
-    QNetworkRequest request( QUrl( DEFAULT_GOODGAME_CHAT_PREFIX + channelName_ + "/" ) );
     QNetworkReply *reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChannelInfoLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onChannelInfoLoadError() ) );
@@ -250,66 +238,21 @@ void QGoodGameChat::onChannelInfoLoaded()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
-    if( reply->error() == QNetworkReply::NoError )
+    QJsonParseError parseError;
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
+
+    if( parseError.error == QJsonParseError::NoError )
     {
-        //говнокод
-        QString info = reply->readAll();
-
-        //qDebug() << info;
-        //qWarning() << info;
-
-        int startJsonObject = info.indexOf( "userToken" ) - 1;
-        int endJsonObject = info.indexOf( "channelId", startJsonObject );
-        endJsonObject = info.indexOf( ',', endJsonObject ) - 1;
-
-        /*
-        if( endJsonObject - startJsonObject <= 0 )
+        if( jsonDoc.isObject() )
         {
-            reconnect();
-            return;
-        }
-        */
+            QJsonObject jsonObj = jsonDoc.object();
+            channelId_ = jsonObj.keys().at( 0 );
 
-        info = info.mid( startJsonObject, endJsonObject - startJsonObject + 1 );
-
-        info.replace( " ", "" );
-        info.replace( "\r", "" );
-        info.replace( "\n", "" );
-
-        info = '{' + info + '}';
-
-
-        //info = info.left( info.indexOf( "channelTitle" ) - 1 ) + "}";
-
-        info.replace( "{", "{\"" );
-        info.replace( ":", "\":" );
-        info.replace( ",", ",\"" );
-        info.replace( "\'", "\"" );
-
-        //qDebug() << info;
-
-        QJsonParseError parseError;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( info.toStdString().c_str() ), &parseError );
-
-        if( parseError.error == QJsonParseError::NoError )
-        {
-            if( jsonDoc.isObject() )
-            {
-                QJsonObject jsonChannelInfo = jsonDoc.object();
-
-                token_ = jsonChannelInfo[ "userToken" ].toString();
-                channelId_ = jsonChannelInfo[ "channelId" ].toString();
-
-                connectToWebClient();
-                if( isShowSystemMessages() )
-                    emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Connected to " + channelName_ + "...", "", this ) );
-
-                getStatistic();
-                if( statisticTimerId_ == -1 )
-                    statisticTimerId_ = startTimer( statisticTimerInterval_ );
-            }
+            connectToWebClient();
         }
     }
+
     reply->deleteLater();
 }
 
@@ -318,13 +261,10 @@ void QGoodGameChat::onChannelInfoLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
     if( isShowSystemMessages() )
         emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Can not connect to " + channelName_ + "..." + reply->errorString(), "", this ) );
-    //qDebug() << reply->error() << reply->errorString();
 
     if( reconnectTimerId_ == -1 )
         reconnectTimerId_ = startTimer( reconnectInterval_ );
 
-    //reconnect();
-    //disconnect();
     reply->deleteLater();
 }
 
@@ -335,24 +275,23 @@ void QGoodGameChat::connectToWebClient()
     QObject::connect( socket_, SIGNAL( textMessageReceived( const QString & ) ), this, SLOT( onTextMessageRecieved( const QString & ) ) );
     QObject::connect( socket_, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( onWebSocketError() ) );
 
-    //testping-pong support
+    //test ping-pong support
     QObject::connect( socket_, SIGNAL( pong( quint64,QByteArray ) ), this, SLOT( onPong( quint64,QByteArray ) ) );
 }
 
 void QGoodGameChat::onWebSocketError()
 {
-    //qDebug() << socket_->error() << socket_->errorString() << error << socket_->closeCode() << socket_->closeReason();
     if( isShowSystemMessages() )
         emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Web Socket Error ..." + socket_->errorString(), "", this ) );
     if( reconnectTimerId_ == -1 )
         reconnectTimerId_ = startTimer( reconnectInterval_ );
-    //reconnect();
-    //disconnect();
 }
 
 void QGoodGameChat::onTextMessageRecieved( const QString& message )
 {
     QJsonParseError parseError;
+
+    //qDebug() << message;
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( message.toStdString().c_str() ), &parseError );
 
@@ -381,8 +320,6 @@ void QGoodGameChat::onTextMessageRecieved( const QString& message )
                 lastTimeStamp_ = jsonData[ "timestamp" ].toInt();
 
                 QString nickName = jsonData[ "user_name" ].toString();
-
-                //function(amount){var level=0;if(amount>=100&&amount<300){level=1}if(amount>=300&&amount<500){level=2}if(amount>=500){level=3}if(amount>=3e3){level=4}if(amount>=1e4){level=5}return level};
 
                 bool blackListUser = blackList().contains( nickName );
                 bool supportersListUser = supportersList().contains( nickName );
@@ -469,22 +406,23 @@ void QGoodGameChat::onTextMessageRecieved( const QString& message )
             }
             else if( messageType == "welcome" )
             {
-                answer = "{\"type\":\"auth\",\"data\":{\"user_id\":0,\"token\":\"" + token_ + "\"}}";
-                socket_->sendTextMessage( answer );
-            }
-            else if( messageType == "success_auth" )
-            {
                 answer = "{\"type\":\"join\",\"data\":{\"channel_id\":" + channelId_ + "}}";
                 socket_->sendTextMessage( answer );
             }
             else if( messageType == "success_join" )
             {
-                //TODO: start stupid timer
                 answer = "{\"type\":\"get_channel_history\",\"data\":{\"channel_id\":" + channelId_ + "}}";
                 socket_->sendTextMessage( answer );
 
+                if( isShowSystemMessages() )
+                    emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Connected to " + channelName_ + "...", "", this ) );
+
+                getStatistic();
+                if( statisticTimerId_ == -1 )
+                    statisticTimerId_ = startTimer( statisticTimerInterval_ );
+
                 if( saveConnectionTimerId_ )
-                    saveConnectionTimerId_ = startTimer( saveConnectionInterval_ );
+                    saveConnectionTimerId_ = startTimer( saveConnectionInterval_ );                               
             }
             else if( messageType == "channel_history" && lastTimeStamp_ )
             {
@@ -566,10 +504,7 @@ void QGoodGameChat::onStatisticLoaded()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
 
-    //qDebug() << reply->readAll();
-
     QJsonParseError parseError;
-
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
@@ -588,12 +523,9 @@ void QGoodGameChat::onStatisticLoaded()
                 if( jsonStatistic[ "status" ].toString() != "Live" )
                     statistic = "0";
 
-                emit newStatistic( new QChatStatistic( GOODGAME_SERVICE, statistic, this ) );
-                //emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, QString( "Viewers: " + statistic ), "", this ) );
-
+                emit newStatistic( new QChatStatistic( GOODGAME_SERVICE, statistic, this ) );               
             }
         }
-
     }
 
     reply->deleteLater();
@@ -661,9 +593,6 @@ void QGoodGameChat::timerEvent( QTimerEvent * event )
     {
         if( socket_ && socket_->isValid() && socket_->state() == QAbstractSocket::ConnectedState )
         {
-            //QString message = "{\"type\":\"get_channel_counters\",\"data\":{\"channel_id\":" + channelId_ + "}}";
-            //socket_->sendTextMessage( message );
-
             socket_->ping();
         }
     }

@@ -52,7 +52,7 @@ private:
     QNetworkAccessManager * nam_;
     QWebSocket *socket_;
     QString channelName_;
-    QString token_;
+    //QString token_;
     QString channelId_;
     int lastTimeStamp_;
     QMap< QString, QString >smiles_;
