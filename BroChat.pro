@@ -22,7 +22,8 @@ HEADERS += \
     qhitboxchat.h \
     qgipsyteamchat.h \
     qrealltvchat.h \
-    qyoutubechat.h
+    qyoutubechat.h \
+    qlivecodingchat.h
 
 SOURCES += \
     main.cpp \
@@ -44,7 +45,8 @@ SOURCES += \
     qhitboxchat.cpp \
     qgipsyteamchat.cpp \
     qrealltvchat.cpp \
-    qyoutubechat.cpp
+    qyoutubechat.cpp \
+    qlivecodingchat.cpp
 
 RESOURCES += \
     resources.rc

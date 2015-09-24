@@ -124,6 +124,13 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , hitboxRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
 
+, livecodingChannelCheckBox( new QCheckBox( this ) )
+, livecodingChannelEdit( new QLineEdit( this ) )
+, livecodingAliasesEdit( new QLineEdit( this ) )
+, livecodingSupportersListEdit( new QTextEdit( this ) )
+, livecodingBlackListEdit( new QTextEdit( this ) )
+, livecodingRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
+
 
 , realltvChannelCheckBox( new QCheckBox( this ) )
 , realltvChannelEdit( new QLineEdit( this ) )
@@ -776,6 +783,53 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     tabSettings->addTab( hitboxGroup, QIcon( ":/resources/hitboxlogo.png" ), tr( "Hitbox" ) );
 
+
+
+    //настройки livecoding
+    QVBoxLayout *livecodingLayout = new QVBoxLayout;
+
+    livecodingChannelCheckBox->setText( CHANNEL_TEXT );
+    livecodingChannelCheckBox->setChecked( settings.value( LIVECODING_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
+
+    livecodingChannelEdit->setText( settings.value( LIVECODING_CHANNEL_SETTING_PATH, DEFAULT_LIVECODING_CHANNEL_NAME ).toString() );
+    livecodingChannelEdit->setEnabled( livecodingChannelCheckBox->isChecked() );
+
+    QObject::connect( livecodingChannelCheckBox, SIGNAL( clicked( bool ) ), livecodingChannelEdit, SLOT( setEnabled( bool ) ) );
+
+    livecodingLayout->addWidget( livecodingChannelCheckBox );
+    livecodingLayout->addWidget( livecodingChannelEdit );
+
+    QLabel *livecodingAliasesLabel = new QLabel( ALIASES_TEXT );
+
+    livecodingAliasesEdit->setText( settings.value( LIVECODING_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
+
+    livecodingLayout->addWidget( livecodingAliasesLabel );
+    livecodingLayout->addWidget( livecodingAliasesEdit );
+
+    QLabel *livecodingSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+
+    livecodingSupportersListEdit->setText( settings.value( LIVECODING_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
+
+    livecodingLayout->addWidget( livecodingSupportersListLabel );
+    livecodingLayout->addWidget( livecodingSupportersListEdit );
+
+    QLabel *livecodingBlackListLabel = new QLabel( BLACKLIST_TEXT );
+    livecodingBlackListEdit->setText( settings.value( LIVECODING_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
+
+    livecodingLayout->addWidget( livecodingBlackListLabel );
+    livecodingLayout->addWidget( livecodingBlackListEdit );
+
+    livecodingRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
+    livecodingRemoveBlackListUsersCheckBox->setChecked( settings.value( LIVECODING_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
+
+    livecodingLayout->addWidget( livecodingRemoveBlackListUsersCheckBox );
+
+    livecodingLayout->addStretch( 1 );
+
+    QGroupBox *livecodingGroup = new QGroupBox( tabSettings );
+    livecodingGroup->setLayout( livecodingLayout );
+
+    tabSettings->addTab( livecodingGroup, QIcon( ":/resources/livecodinglogo.png" ), tr( "Livecoding" ) );
 
 
 
@@ -1507,6 +1561,41 @@ void QSettingsDialog::saveSettings()
 
 
 
+    //настройки livecoding
+    oldStringValue = settings.value( LIVECODING_CHANNEL_SETTING_PATH, DEFAULT_LIVECODING_CHANNEL_NAME ).toString();
+    if( oldStringValue != livecodingChannelEdit->text() )
+    {
+        settings.setValue( LIVECODING_CHANNEL_SETTING_PATH, livecodingChannelEdit->text() );
+        emit livecodingChannelChanged();
+    }
+
+    oldStringValue = settings.value( LIVECODING_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != livecodingAliasesEdit->text() )
+    {
+        settings.setValue( LIVECODING_ALIASES_SETTING_PATH, livecodingAliasesEdit->text() );
+        emit livecodingAliasesChanged( livecodingAliasesEdit->text() );
+    }
+
+    oldStringValue = settings.value( LIVECODING_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != livecodingSupportersListEdit->toPlainText() )
+    {
+        settings.setValue( LIVECODING_SUPPORTERS_LIST_SETTING_PATH, livecodingSupportersListEdit->toPlainText() );
+        emit livecodingSupportersListChanged( livecodingSupportersListEdit->toPlainText() );
+    }
+
+    oldStringValue = settings.value( LIVECODING_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != livecodingBlackListEdit->toPlainText() )
+    {
+        settings.setValue( LIVECODING_BLACK_LIST_SETTING_PATH, livecodingBlackListEdit->toPlainText() );
+        emit livecodingBlackListChanged( livecodingBlackListEdit->toPlainText() );
+    }
+
+    oldBoolValue = settings.value( LIVECODING_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != livecodingRemoveBlackListUsersCheckBox->isChecked() )
+    {
+        settings.setValue( LIVECODING_REMOVE_BLACK_LIST_USERS_SETTING_PATH, livecodingRemoveBlackListUsersCheckBox->isChecked() );
+        emit livecodingRemoveBlackListUsersChanged( livecodingRemoveBlackListUsersCheckBox->isChecked() );
+    }
 
     //настройки realltv
     oldStringValue = settings.value( REALLTV_CHANNEL_SETTING_PATH, DEFAULT_REALLTV_CHANNEL_NAME ).toString();

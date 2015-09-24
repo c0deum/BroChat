@@ -1,11 +1,6 @@
 #ifndef QREALLTVCHAT
 #define QREALLTVCHAT
 
-//#include <QXmppClient.h>
-//#include <QXmppMessage.h>
-//#include <QXmppPresence.h>
-//#include <QXmppIq.h>
-
 #include <QDateTime>
 #include <QMap>
 
@@ -18,7 +13,6 @@
 
 class QNetworkAccessManager;
 
-//class QXmppClient;
 class QXmppMessage;
 class QXmppPresence;
 class QXmppIq;
@@ -63,11 +57,6 @@ private slots:
     void onStatisticLoaded();
     void onStatisticLoadError();
 
-    //void onPresenseReceived( const QXmppPresence &presence );
-    //void onIqReceived( const QXmppIq &iq );
-
-    //void onLogMessage( QXmppLogger::MessageType messageType, const QString &logMessage );
-
 private:
     QNetworkAccessManager *nam_;
     QXmppClient *xmppClient_;
@@ -80,8 +69,6 @@ private:
     int reconnectInterval_;
     int statisticTimerId_;
     int statisticInterval_;
-
-
 };
 
 #endif // QREALLTVCHAT

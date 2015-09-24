@@ -24,6 +24,8 @@ class QTwitchChat;
 
 class QYoutubeChat;
 
+class QLivecodingChat;
+
 class QBroChatView: public QWebView
 {
     Q_OBJECT
@@ -80,6 +82,8 @@ private:
     QTwitchChat *twitchChat_;
 
     QYoutubeChat * youtubeChat_;
+
+    QLivecodingChat * livecodingChat_;
 
     QChatUpdateServer *chatUpdateServer_;
 

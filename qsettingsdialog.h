@@ -93,6 +93,14 @@ signals:
     void hitboxOriginalColorsChanged( bool );
 
 
+    void livecodingChannelChanged();
+    void livecodingChannelDisabled();
+    void livecodingAliasesChanged( const QString & );
+    void livecodingSupportersListChanged( const QString & );
+    void livecodingBlackListChanged( const QString & );
+    void livecodingRemoveBlackListUsersChanged( bool );
+
+
     void realltvChannelChanged();
     void realltvChannelDisabled();
     void realltvAliasesChanged( const QString & );
@@ -226,6 +234,14 @@ private:
     QTextEdit *hitboxSupportersListEdit;
     QTextEdit *hitboxBlackListEdit;
     QCheckBox *hitboxRemoveBlackListUsersCheckBox;
+
+
+    QCheckBox *livecodingChannelCheckBox;
+    QLineEdit *livecodingChannelEdit;
+    QLineEdit *livecodingAliasesEdit;
+    QTextEdit *livecodingSupportersListEdit;
+    QTextEdit *livecodingBlackListEdit;
+    QCheckBox *livecodingRemoveBlackListUsersCheckBox;
 
 
     QCheckBox *realltvChannelCheckBox;

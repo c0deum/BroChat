@@ -38,6 +38,8 @@
 
 #include "qyoutubechat.h"
 
+#include "qlivecodingchat.h"
+
 #include "qchatmessage.h"
 #include "qchatstatistic.h"
 
@@ -76,6 +78,8 @@ QBroChatView::QBroChatView( QWidget *parent )
 , twitchChat_( new QTwitchChat( this ) )
 
 , youtubeChat_( new QYoutubeChat( this ) )
+
+, livecodingChat_( new QLivecodingChat( this ) )
 
 , chatUpdateServer_( 0 )
 , settings_()
@@ -121,6 +125,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     QAction *reconnectGipsyTeamAction = new QAction( QIcon( ":/resources/gipsyteamlogo.png" ), tr( "Reconnect Gipsyteam Chat" ), this );
     QAction *reconnectGoodgameAction = new QAction( QIcon( ":/resources/goodgamelogo.png" ), tr( "Reconnect Goodgame Chat" ), this );
     QAction *reconnectHitboxAction = new QAction( QIcon( ":/resources/hitboxlogo.png" ), tr( "Reconnect Hitbox Chat" ), this );
+    QAction *reconnectLivecodingAction = new QAction( QIcon( ":/resources/livecodinglogo.png" ), tr( "Reconnect Livecoding Chat" ), this );
     QAction *reconnectRealltvAction = new QAction( QIcon( ":/resources/realltvlogo.png" ), tr( "Reconnect Realltv Chat" ), this );
     QAction *reconnectSc2tvAction = new QAction( QIcon( ":/resources/sc2tvlogo.png" ), tr( "Reconnect Sc2tv Chat" ), this );
     QAction *reconnectStreamboxAction = new QAction( QIcon( ":/resources/streamboxlogo.png" ), tr( "Reconnect Streambox Chat" ), this );
@@ -137,6 +142,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), gipsyteamChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), goodgameChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), hitboxChat_, SLOT( reconnect() ) );
+    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), livecodingChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), realltvChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), sc2tvChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), streamboxChat_, SLOT( reconnect() ) );
@@ -150,6 +156,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( reconnectGipsyTeamAction, SIGNAL( triggered() ), gipsyteamChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectGoodgameAction, SIGNAL( triggered() ), goodgameChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectHitboxAction, SIGNAL( triggered() ), hitboxChat_, SLOT( reconnect() ) );
+    QObject::connect( reconnectLivecodingAction, SIGNAL( triggered() ), livecodingChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectRealltvAction, SIGNAL( triggered() ), realltvChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectSc2tvAction, SIGNAL( triggered() ), sc2tvChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectStreamboxAction, SIGNAL( triggered() ), streamboxChat_, SLOT( reconnect() ) );
@@ -166,6 +173,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     addAction( reconnectGipsyTeamAction );
     addAction( reconnectGoodgameAction );
     addAction( reconnectHitboxAction );
+    addAction( reconnectLivecodingAction );
     addAction( reconnectRealltvAction );
     addAction( reconnectSc2tvAction );
     addAction( reconnectStreamboxAction );
@@ -218,6 +226,10 @@ QBroChatView::QBroChatView( QWidget *parent )
     //youtube
     QObject::connect( youtubeChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), youtubeChat_, SLOT( reconnect() ) );
+
+    //livecoding
+    QObject::connect( livecodingChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( this, SIGNAL( loadFinished( bool ) ), livecodingChat_, SLOT( reconnect() ) );
 
 
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), this, SLOT( loadFlagsAndAttributes() ) );
@@ -413,6 +425,7 @@ void QBroChatView::changeShowSystemMessagesState()
     gipsyteamChat_->setShowSystemMessages( showSystemMessages_ );
     goodgameChat_->setShowSystemMessages( showSystemMessages_ );
     hitboxChat_->setShowSystemMessages( showSystemMessages_ );
+    livecodingChat_->setShowSystemMessages( showSystemMessages_ );
     realltvChat_->setShowSystemMessages( showSystemMessages_ );
     sc2tvChat_->setShowSystemMessages( showSystemMessages_ );
     streamboxChat_->setShowSystemMessages( showSystemMessages_ );
@@ -515,6 +528,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( gipsyteamChannelChanged() ), gipsyteamChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( goodGameChannelChanged() ), goodgameChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( hitboxChannelChanged() ), hitboxChat_, SLOT( reconnect() ) );
+    QObject::connect( settingsDialog, SIGNAL( livecodingChannelChanged() ), livecodingChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( realltvChannelChanged() ), realltvChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( sc2tvChannelChanged() ), sc2tvChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxChannelChanged() ), streamboxChat_, SLOT( reconnect() ) );
@@ -529,6 +543,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( gipsyteamAliasesChanged(QString) ), gipsyteamChat_, SLOT( setAliasesList(QString) ) );
     QObject::connect( settingsDialog, SIGNAL( goodGameAliasesChanged( QString ) ), goodgameChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( hitboxAliasesChanged( QString ) ), hitboxChat_, SLOT( setAliasesList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( livecodingAliasesChanged( QString ) ), livecodingChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( realltvAliasesChanged( QString ) ), realltvChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( sc2tvAliasesChanged( QString ) ), sc2tvChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxAliasesChanged( QString ) ), streamboxChat_, SLOT( setAliasesList( QString ) ) );
@@ -542,6 +557,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( gipsyteamSupportersListChanged(QString) ), gipsyteamChat_, SLOT( setSupportersList(QString) ) );
     QObject::connect( settingsDialog, SIGNAL( goodGameSupportersListChanged( QString ) ), goodgameChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( hitboxSupportersListChanged( QString ) ), hitboxChat_, SLOT( setSupportersList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( livecodingSupportersListChanged( QString ) ), livecodingChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( realltvSupportersListChanged( QString ) ), realltvChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( sc2tvSupportersListChanged( QString ) ), sc2tvChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxSupportersListChanged( QString ) ), streamboxChat_, SLOT( setSupportersList( QString ) ) );
@@ -555,6 +571,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( gipsyteamBlackListChanged(QString) ), gipsyteamChat_, SLOT( setBlackList(QString) ) );
     QObject::connect( settingsDialog, SIGNAL( goodGameBlackListChanged( QString ) ), goodgameChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( hitboxBlackListChanged( QString ) ), hitboxChat_, SLOT( setBlackList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( livecodingBlackListChanged( QString ) ), livecodingChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( realltvBlackListChanged( QString ) ), realltvChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( sc2tvBlackListChanged( QString ) ), sc2tvChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxBlackListChanged( QString ) ), streamboxChat_, SLOT( setBlackList( QString ) ) );
@@ -568,6 +585,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( gipsyteamRemoveBlackListUsersChanged(bool) ), gipsyteamChat_, SLOT( setRemoveBlackListUsers(bool) ) );
     QObject::connect( settingsDialog, SIGNAL( goodGameRemoveBlackListUsersChanged( bool ) ), goodgameChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( hitboxRemoveBlackListUsersChanged( bool ) ), hitboxChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
+    QObject::connect( settingsDialog, SIGNAL( livecodingRemoveBlackListUsersChanged( bool ) ), livecodingChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( realltvRemoveBlackListUsersChanged( bool ) ), realltvChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( sc2tvRemoveBlackListUsersChanged( bool ) ), sc2tvChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxRemoveBlackListUsersChanged( bool ) ), streamboxChat_, SLOT( setRemoveBlackListUsers(bool ) ) );

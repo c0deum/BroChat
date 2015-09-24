@@ -110,6 +110,12 @@ body
 	height: 16px;
 }
 
+.livecoding
+{
+	content: url(../resources/livecodinglogo.png);
+	height: 16px;
+}
+
 .realltv
 {
 	content: url(../resources/realltvlogo.png);

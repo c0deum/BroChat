@@ -206,9 +206,6 @@ void QReallTvChat::onMessageReceived( const QXmppMessage &message )
 {
     if( message.stamp().toTime_t() > connectionTime_.toTime_t() )
     {
-        //qDebug() << "onMessageReceived:" << message.from() << " " << message.stamp().toTime_t() << " " << message.body();
-        //qDebug() << "MyStamp: " << connectionTime_.toTime_t();
-
         QString nickName = message.from();
         nickName = nickName.right( nickName.length() - nickName.indexOf( '/' ) - 1 );
 
@@ -219,8 +216,6 @@ void QReallTvChat::onMessageReceived( const QXmppMessage &message )
         {
             messageBody = messageBody.right( messageBody.length() - dotPos - 1 );
         }
-
-        //qDebug() << messageBody;
 
         messageBody = QChatMessage::replaceEscapeCharecters( messageBody );
 
@@ -278,8 +273,6 @@ void QReallTvChat::getChannelInfo()
 
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChannelInfoLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onChannelInfoLoadError() ) );
-
-
 }
 
 void QReallTvChat::onChannelInfoLoaded()
@@ -299,7 +292,7 @@ void QReallTvChat::onChannelInfoLoaded()
 
             cid_ = QString::number( jsonInfo[ "cid" ].toInt() );
 
-            qDebug() << "Reall Cid: " << cid_;
+            //qDebug() << "Reall Cid: " << cid_;
 
             //{"status":"ok","info":{"cid":855,"uid":892,"poster":"jpg"}}
         }
