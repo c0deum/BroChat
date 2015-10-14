@@ -31,7 +31,7 @@ private slots:
 private:
     QNetworkAccessManager *nam_;
     QString channelName_;
-    QString lastMessageId_;
+    int lastMessageId_;
     int updateChatInfoTimerId_;
     int reconnectTimerId_;
     int updateChatInfoInterval_;

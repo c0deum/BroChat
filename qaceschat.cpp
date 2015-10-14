@@ -21,11 +21,18 @@ const QString ACES_SERVICE = "aces";
 int DEFAULT_ACES_UPDATE_CHAT_INFO_INTERVAL = 3000;
 int DEFAULT_ACES_RECONNECT_INTERVAL = 10000;
 
+struct MessageData
+{
+    QString nickName;
+    QString message;
+    int messageId;
+};
+
 QAcesChat::QAcesChat( QObject *parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
 , channelName_()
-, lastMessageId_()
+, lastMessageId_( -1 )
 , updateChatInfoTimerId_( -1 )
 , reconnectTimerId_( -1 )
 , updateChatInfoInterval_( DEFAULT_ACES_UPDATE_CHAT_INFO_INTERVAL )
@@ -52,7 +59,7 @@ void QAcesChat::connect()
 void QAcesChat::disconnect()
 {
     channelName_ = "";
-    lastMessageId_ = "";
+    lastMessageId_ = -1;
 
     if( updateChatInfoTimerId_ >= 0 )
     {
@@ -108,7 +115,7 @@ void QAcesChat::onLastMessageLoaded()
     startIdPos += ID_PREFIX.length();
     int endIdPos = response.indexOf( "\"", startIdPos  );
 
-    lastMessageId_ = response.mid( startIdPos, endIdPos - startIdPos );
+    lastMessageId_ = ( response.mid( startIdPos, endIdPos - startIdPos ) ).toInt();
 
     if( updateChatInfoTimerId_ == -1 )
         updateChatInfoTimerId_ = startTimer( updateChatInfoInterval_ );
@@ -126,6 +133,11 @@ void QAcesChat::onLastMessageLoadError()
     if( reconnectTimerId_ == -1 )
         reconnectTimerId_ = startTimer( reconnectInterval_ );
     reply->deleteLater();
+}
+
+bool cmpMessageDataStruct( const MessageData & lhs, const MessageData & rhs )
+{
+    return lhs.messageId < rhs.messageId;
 }
 
 void QAcesChat::onChatInfoLoaded()
@@ -155,13 +167,13 @@ void QAcesChat::onChatInfoLoaded()
     const QString MESSAGE_POSTFIX = "                        </span>       \n";
 
 
+    QList< MessageData > messagesList;
+
     while( ( startIdPos >= 0 ) && ( endIdPos - startIdPos > 0 ) )
     {
         startIdPos += ID_PREFIX.length();
 
-        QString newLastMessageId = response.mid( startIdPos, endIdPos - startIdPos );
-
-        //lastMessageId_ = newLastMessageId;
+        int newLastMessageId = ( response.mid( startIdPos, endIdPos - startIdPos ) ).toInt();
 
         int startNickNamePos = response.indexOf( NICKNAME_PREPREFIX, endIdPos );
 
@@ -222,8 +234,9 @@ void QAcesChat::onChatInfoLoaded()
             return;
         }
 
-        if( lastMessageId_ != newLastMessageId )
+        if( newLastMessageId > lastMessageId_ )
         {
+
             QString message = response.mid( startMessagePos, endMessagePos - startMessagePos );
 
             const QString SPAN = "<span style=";
@@ -238,46 +251,63 @@ void QAcesChat::onChatInfoLoaded()
             message = message.replace( "img src=", "img class = \"smile\" src=" );
             message = message.replace( '\'', "\"" );
 
-            bool blackListUser = blackList().contains( nickName );
-            bool supportersListUser = supportersList().contains( nickName );
+            MessageData messageData;
+            messageData.nickName = nickName;
+            messageData.message = message;
+            messageData.messageId = newLastMessageId;
 
-            bool containsAliases = isContainsAliases( message );
-
-            if( !isRemoveBlackListUsers() || !blackListUser )
-            {
-                if( blackListUser )
-                {
-                    //TODO: список игнорируемых
-                    emit newMessage( new QChatMessage( ACES_SERVICE, nickName, message, "ignore", this ) );
-                }
-                else
-                {
-                    if( supportersListUser )
-                    {
-                        //TODO: список саппортеров
-                        emit newMessage( new QChatMessage( ACES_SERVICE, nickName, message, "supporter", this ) );
-                    }
-                    else
-                    {
-                        if( containsAliases )
-                        {
-                            //TODO: обращение к стримеру
-                            emit newMessage( new QChatMessage( ACES_SERVICE, nickName, message, "alias", this ) );
-                        }
-                        else
-                        {
-                            emit newMessage( new QChatMessage( ACES_SERVICE, nickName, message, "", this ) );
-                        }
-                    }
-                }
-            }
+            messagesList.append( messageData );
         }
-
-        lastMessageId_ = newLastMessageId;
 
         startIdPos = response.indexOf( ID_PREFIX, endMessagePos );
         endIdPos = response.indexOf( "\"", startIdPos + ID_PREFIX.length() );
     }
+
+    qSort( messagesList.begin(), messagesList.end(), cmpMessageDataStruct );
+
+    for( int i = 0; i < messagesList.size(); i++ )
+    {
+        QString nickName = messagesList[ i ].nickName;
+        QString message = messagesList[ i ].message;
+
+        bool blackListUser = blackList().contains( nickName );
+        bool supportersListUser = supportersList().contains( nickName );
+
+        bool containsAliases = isContainsAliases( message );
+
+        if( !isRemoveBlackListUsers() || !blackListUser )
+        {
+            if( blackListUser )
+            {
+                //TODO: список игнорируемых
+                emit newMessage( new QChatMessage( ACES_SERVICE, nickName, message, "ignore", this ) );
+            }
+            else
+            {
+                if( supportersListUser )
+                {
+                    //TODO: список саппортеров
+                    emit newMessage( new QChatMessage( ACES_SERVICE, nickName, message, "supporter", this ) );
+                }
+                else
+                {
+                    if( containsAliases )
+                    {
+                        //TODO: обращение к стримеру
+                        emit newMessage( new QChatMessage( ACES_SERVICE, nickName, message, "alias", this ) );
+                    }
+                    else
+                    {
+                        emit newMessage( new QChatMessage( ACES_SERVICE, nickName, message, "", this ) );
+                    }
+                }
+            }
+        }
+    }
+
+    if( messagesList.size() > 0 )
+        lastMessageId_ = messagesList.last().messageId;
+
 
     reply->deleteLater();
 }
@@ -296,7 +326,7 @@ void QAcesChat::timerEvent( QTimerEvent *event )
 {
     if( event->timerId() == updateChatInfoTimerId_ )
     {
-        QString reqStr = DEFAULT_ACES_CHAT_REQUEST_LINK_PREFIX + "50&chat_message_f_chat=" + channelName_ + "&chat_message_f_msg_max_id=" + lastMessageId_;
+        QString reqStr = DEFAULT_ACES_CHAT_REQUEST_LINK_PREFIX + "50&chat_message_f_chat=" + channelName_ + "&chat_message_f_msg_max_id=" + QString::number( lastMessageId_ );
 
         QNetworkRequest request( QUrl(  reqStr + "" ) );
         QNetworkReply *reply = nam_->get( request );
