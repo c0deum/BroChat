@@ -593,7 +593,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( youtubeRemoveBlackListUsersChanged( bool ) ), youtubeChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
 
 
-    QObject::connect( settingsDialog, SIGNAL( acesOriginalColorsChanged( bool ) ), acesChat_, SLOT( changeOriginalColors( bool ) ) );
+    //QObject::connect( settingsDialog, SIGNAL( acesOriginalColorsChanged( bool ) ), acesChat_, SLOT( changeOriginalColors( bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( hitboxOriginalColorsChanged( bool ) ), hitboxChat_, SLOT( changeOriginalColors( bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( sc2tvOriginalColorsChanged( bool ) ), sc2tvChat_, SLOT( changeOriginalColors( bool ) ) );
 

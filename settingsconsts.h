@@ -35,7 +35,7 @@ const QString ACES_CHANNEL_SETTING_PATH = "/Settings/Aces/Channel";
 const QString ACES_ALIASES_SETTING_PATH = "/Settings/Aces/Aliases";
 const QString ACES_SUPPORTERS_LIST_SETTING_PATH = "/Setting/Aces/Supporters";
 const QString ACES_BLACK_LIST_SETTING_PATH = "/Settings/Aces/BlackList";
-const QString ACES_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Aces/OriginalColors";
+//const QString ACES_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Aces/OriginalColors";
 const QString ACES_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Aces/RemoveBlackListUsers";
 
 const QString CYBERGAME_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Cybergame/Enable";

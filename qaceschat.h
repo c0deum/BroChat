@@ -15,29 +15,27 @@ protected:
     virtual void timerEvent( QTimerEvent * );
 private:
     void loadSettings();
-    void getStreamesList();
+
+    void getLastMessage();
+
 public slots:
     virtual void connect();
     virtual void disconnect();
     virtual void reconnect();
 private slots:
-    void onStreamesListLoaded();
-    void onStreamesListLoadError();
+    void onLastMessageLoaded();
+    void onLastMessageLoadError();
 
     void onChatInfoLoaded();
     void onChatInfoLoadError();
-
-    void changeOriginalColors( bool originalColors );
 private:
     QNetworkAccessManager *nam_;
     QString channelName_;
-    QString channelId_;
-    QString lastMessageDateTime_;
+    QString lastMessageId_;
     int updateChatInfoTimerId_;
     int reconnectTimerId_;
     int updateChatInfoInterval_;
-    int reconnectInterval_;
-    bool originalColors_;
+    int reconnectInterval_;    
 };
 
 #endif // QACESCHAT_H

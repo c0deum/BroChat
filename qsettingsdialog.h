@@ -45,7 +45,7 @@ signals:
     void acesAliasesChanged( const QString & );
     void acesSupportersListChanged( const QString & );
     void acesBlackListChanged( const QString & );
-    void acesOriginalColorsChanged( bool originalColors );
+    //void acesOriginalColorsChanged( bool originalColors );
     void acesRemoveBlackListUsersChanged( bool );
 
     void cyberGameChannelChanged();
@@ -185,7 +185,7 @@ private:
 
     QCheckBox *acesChannelCheckBox;
     QLineEdit *acesChannelEdit;
-    QCheckBox *acesOriginalColorsCheckBox;
+    //QCheckBox *acesOriginalColorsCheckBox;
     QLineEdit *acesAliasesEdit;
     QTextEdit *acesSupportersListEdit;
     QTextEdit *acesBlackListEdit;

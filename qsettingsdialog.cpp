@@ -69,7 +69,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 , acesChannelCheckBox( new QCheckBox( this ) )
 , acesChannelEdit( new QLineEdit( this ) )
-, acesOriginalColorsCheckBox( new QCheckBox( this ) )
+//, acesOriginalColorsCheckBox( new QCheckBox( this ) )
 , acesAliasesEdit( new QLineEdit( this ) )
 , acesSupportersListEdit( new QTextEdit( this ) )
 , acesBlackListEdit( new QTextEdit( this ) )
@@ -432,10 +432,10 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     acesLayout->addWidget( acesChannelCheckBox );
     acesLayout->addWidget( acesChannelEdit );
 
-    acesOriginalColorsCheckBox->setText( tr( "Original Colors" ) );
-    acesOriginalColorsCheckBox->setChecked( settings.value( ACES_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
+    //acesOriginalColorsCheckBox->setText( tr( "Original Colors" ) );
+    //acesOriginalColorsCheckBox->setChecked( settings.value( ACES_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
 
-    acesLayout->addWidget( acesOriginalColorsCheckBox );
+    //acesLayout->addWidget( acesOriginalColorsCheckBox );
 
     QLabel *acesAliasesLabel  = new QLabel( ALIASES_TEXT );
     acesAliasesEdit->setText( settings.value( ACES_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
@@ -1283,12 +1283,14 @@ void QSettingsDialog::saveSettings()
     }
     //emit acesChannelChanged();
 
-    oldBoolValue = settings.value( ACES_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
+    /*
+     * oldBoolValue = settings.value( ACES_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
     if( oldBoolValue != acesOriginalColorsCheckBox->isChecked() )
     {
         settings.setValue( ACES_ORIGINAL_COLORS_SETTING_PATH, acesOriginalColorsCheckBox->isChecked() );
         emit acesOriginalColorsChanged( acesOriginalColorsCheckBox->isChecked() );
     }
+    */
 
     oldStringValue = settings.value( ACES_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != acesAliasesEdit->text() )
