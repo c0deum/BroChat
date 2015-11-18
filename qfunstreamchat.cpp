@@ -20,11 +20,14 @@
 
 const QString DEFAULT_FUNSTREAM_WEBSOCKET_LINK = "ws://funstream.tv:3811/socket.io/?EIO=3&transport=websocket";
 const QString DEFAULT_FUNSTREAM_SMILES_LINK = "http://funstream.tv/build/images/smiles/";
+const QString DEFAULT_FUNSTREAM_STATISTIC_LINK = "https://funstream.tv/api/user/list";
 
 const QString DEFAULT_FUNSTREAM_CHANNEL_PREFIX = "http://funstream.tv/stream/";
 
-const int DEFAULT_FUNSTREAM_SAVE_CONNECTION_INTTERVAL = 25000;
 const int DEFAULT_FUNSTREAM_RECONNECT_INTERVAL = 10000;
+const int DEFAULT_FUNSTREAM_SAVE_CONNECTION_INTTERVAL = 25000;
+const int DEFAULT_FUNSTREAM_STATISTIC_INTERVAL = 10000;
+
 
 const QString FUNSTREAM_USER = "FUNSTREAM";
 const QString FUNSTREAM_SERVICE = "funstream";
@@ -36,11 +39,16 @@ QFunStreamChat::QFunStreamChat( QObject *parent )
 , channelName_()
 , channelId_()
 , smiles_()
-, saveConnectionTimerId_( -1 )
 , reconnectTimerId_( -1 )
-, saveConnectionInterval_( DEFAULT_FUNSTREAM_SAVE_CONNECTION_INTTERVAL )
 , reconnectInterval_( DEFAULT_FUNSTREAM_RECONNECT_INTERVAL )
+, saveConnectionTimerId_( -1 )
+, saveConnectionInterval_( DEFAULT_FUNSTREAM_SAVE_CONNECTION_INTTERVAL )
+, statisticTimerId_( -1 )
+, statisticInterval_( DEFAULT_FUNSTREAM_STATISTIC_INTERVAL )
 , lastMessageId_( 0 )
+, requestId_( -1 )
+, joinRequestId_( -1 )
+, statisticRequestId_( -1 )
 {
 
 }
@@ -52,10 +60,15 @@ QFunStreamChat::~QFunStreamChat()
 
 void QFunStreamChat::connect()
 {
-    if( channelName_ == "" )
+    if( !isEnabled() || channelName_ == "" )
         return;
 
     lastMessageId_ = 0;
+    channelId_ = "";
+
+    requestId_ = -1;
+    joinRequestId_ = -1;
+    statisticRequestId_ = -1;
 
     smiles_.clear();
 
@@ -67,16 +80,22 @@ void QFunStreamChat::connect()
 
 void QFunStreamChat::disconnect()
 {
-    if( saveConnectionTimerId_ >= 0 )
-    {
-        killTimer( saveConnectionTimerId_ );
-        saveConnectionTimerId_ = -1;
-    }
     if( reconnectTimerId_ >= 0 )
     {
         killTimer( reconnectTimerId_ );
         reconnectTimerId_ = -1;
     }
+    if( saveConnectionTimerId_ >= 0 )
+    {
+        killTimer( saveConnectionTimerId_ );
+        saveConnectionTimerId_ = -1;
+    }
+    if( statisticTimerId_ >= 0 )
+    {
+        killTimer( statisticTimerId_ );
+        statisticTimerId_ = -1;
+    }
+
 
     if( socket_ )
     {
@@ -84,6 +103,8 @@ void QFunStreamChat::disconnect()
         socket_->deleteLater();
     }
     socket_ = 0;
+
+    emit newStatistic( new QChatStatistic( FUNSTREAM_SERVICE, "", this ) );
 }
 
 void QFunStreamChat::reconnect()
@@ -91,7 +112,7 @@ void QFunStreamChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
         if( isShowSystemMessages() )
             emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Reconnecting...", "", this ) );
     connect();
@@ -189,6 +210,20 @@ void QFunStreamChat::onChannelInfoLoadError()
     reply->deleteLater();
 }
 
+void QFunStreamChat::getStatistic()
+{
+    if( channelId_.isEmpty() )
+        return;
+    if( socket_ && socket_->isValid() && socket_->state() == QAbstractSocket::ConnectedState )
+    {
+        requestId_++;
+        statisticRequestId_ = requestId_;
+        QString message = "42" + QString::number( statisticRequestId_ ) + "[\"/chat/channel/list\",{\"channel\":\"stream/" + channelId_ + "\"}]";
+
+        socket_->sendTextMessage( message );
+    }
+}
+
 void QFunStreamChat::connectToWebClient()
 {
     socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
@@ -250,9 +285,9 @@ void QFunStreamChat::onWebSocketError()
 
 void QFunStreamChat::onTextMessageRecieved( const QString &message )
 {
-    //qDebug() << QString( message );
+
     //qDebug() << message;
-    //42["/chat/message",{"id":37969,"channel":"stream/109344","from":{"id":152083,"name":"c0deum"},"to":{"id":0,"name":""},"text":"буду фанстримс тут тестить:grumpy:","time":"2015-05-28 21:35:47"}]
+
     if( message.left( 18 ) == "42[\"/chat/message\"" )
     {
         QString messageContent = message.mid( 19 );
@@ -334,18 +369,39 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
 
     }
     else if( message.left( 2 ) == "40" )
-    {
-        //420["/chat/login",{"token":null}]
-        QString message = "420[\"/chat/login\",{\"token\":null}]";
-        socket_->sendTextMessage( message );
-        //421["/chat/join",{"channel":"stream/109344"}]
-        message = "420[\"/chat/join\",{\"channel\":\"stream/" + channelId_ + "\"}]";
+    {        
+        requestId_ = 0;
+        //QString message = "420[\"/chat/login\",{\"token\":null}]";
+        QString message = "420[\"/chat/join\",{\"channel\":\"stream/" + channelId_ + "\"}]";
         socket_->sendTextMessage( message );
     }
-    else if( message.left(3) == "430" || message.left( 3 ) == "431" )
+    else if( message.left(3) == "430" )
     {
         if( isShowSystemMessages() )
             emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Connected to " + channelName_ + "...", "", this ) );
+
+        getStatistic();
+
+        if( statisticTimerId_ == -1 )
+            statisticTimerId_ = startTimer( statisticInterval_ );
+    }
+    else
+    {
+        QString requestId = message.left( message.indexOf( "[" ) );
+
+        if( requestId == QString( "43" + QString::number( statisticRequestId_ ) ) )
+        {
+            const QString STATISTIC_PREFIX = "\"amount\":";
+            const QString STATISTIC_POSTFIX = ",";
+            int startStatisticPos = message.indexOf( STATISTIC_PREFIX ) + STATISTIC_PREFIX.length();
+            int endStatisticPos = message.indexOf( STATISTIC_POSTFIX, startStatisticPos ) - 1;
+
+            if( endStatisticPos - startStatisticPos + 1 > 0 )
+            {
+                QString statistic = message.mid( startStatisticPos, endStatisticPos - startStatisticPos + 1 ).replace( " ", "" );
+                emit newStatistic( new QChatStatistic( FUNSTREAM_SERVICE, statistic, this ) );
+            }
+        }
     }
 }
 
@@ -357,7 +413,11 @@ void QFunStreamChat::onPong( quint64 elapsedTime, const QByteArray &payload )
 
 void QFunStreamChat::timerEvent( QTimerEvent *event )
 {
-    if( event->timerId() == saveConnectionTimerId_ )
+    if( event->timerId() == statisticTimerId_ )
+    {
+        getStatistic();
+    }
+    else if( event->timerId() == saveConnectionTimerId_ )
     {
         if( socket_ && socket_->isValid() && socket_->state() == QAbstractSocket::ConnectedState )
         {
@@ -375,6 +435,8 @@ void QFunStreamChat::loadSettings()
 {
     QSettings settings;
     channelName_ = settings.value( FUNSTREAM_CHANNEL_SETTING_PATH, DEFAULT_FUNSTREAM_CHANNEL_NAME ).toString();
+
+    enable( settings.value( FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     setAliasesList( settings.value( FUNSTREAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
     setSupportersList( settings.value( FUNSTREAM_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );

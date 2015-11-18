@@ -124,8 +124,21 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , hitboxRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
 
+
+
+, igdcChannelCheckBox( new QCheckBox( this ) )
+, igdcChannelEdit( new QLineEdit( this ) )
+, igdcAliasesEdit( new QLineEdit( this ) )
+, igdcSupportersListEdit( new QTextEdit( this ) )
+, igdcBlackListEdit( new QTextEdit( this ) )
+, igdcRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
+
+
+
 , livecodingChannelCheckBox( new QCheckBox( this ) )
 , livecodingChannelEdit( new QLineEdit( this ) )
+, livecodingLoginEdit( new QLineEdit( this ) )
+, livecodingPasswordEdit( new QLineEdit( this ) )
 , livecodingAliasesEdit( new QLineEdit( this ) )
 , livecodingSupportersListEdit( new QTextEdit( this ) )
 , livecodingBlackListEdit( new QTextEdit( this ) )
@@ -785,6 +798,58 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 
 
+    //настройки igdc
+    QVBoxLayout *igdcLayout = new QVBoxLayout;
+
+    //QLabel *igdcChannelLabel = new QLabel( CHANNEL_TEXT );
+
+    igdcChannelCheckBox->setText( CHANNEL_TEXT );
+    igdcChannelCheckBox->setChecked( settings.value( IGDC_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
+
+    igdcChannelEdit->setText( settings.value( IGDC_CHANNEL_SETTING_PATH, DEFAULT_IGDC_CHANNEL_NAME ).toString() );
+    igdcChannelEdit->setEnabled( igdcChannelCheckBox->isChecked() );
+
+    QObject::connect( igdcChannelCheckBox, SIGNAL( clicked( bool ) ), igdcChannelEdit, SLOT( setEnabled( bool ) ) );
+
+    //igdcLayout->addWidget( igdcChannelLabel );
+    igdcLayout->addWidget( igdcChannelCheckBox );
+    igdcLayout->addWidget( igdcChannelEdit );
+
+    QLabel *igdcAliasesLabel = new QLabel( ALIASES_TEXT );
+
+    igdcAliasesEdit->setText( settings.value( IGDC_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
+
+    igdcLayout->addWidget( igdcAliasesLabel );
+    igdcLayout->addWidget( igdcAliasesEdit );
+
+    QLabel *igdcSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+
+    igdcSupportersListEdit->setText( settings.value( IGDC_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
+
+    igdcLayout->addWidget( igdcSupportersListLabel );
+    igdcLayout->addWidget( igdcSupportersListEdit );
+
+    QLabel *igdcBlackListLabel = new QLabel( BLACKLIST_TEXT );
+    igdcBlackListEdit->setText( settings.value( IGDC_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
+
+    igdcLayout->addWidget( igdcBlackListLabel );
+    igdcLayout->addWidget( igdcBlackListEdit );
+
+    igdcRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
+    igdcRemoveBlackListUsersCheckBox->setChecked( settings.value( IGDC_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
+
+    igdcLayout->addWidget( igdcRemoveBlackListUsersCheckBox );
+
+    igdcLayout->addStretch( 1 );
+
+    QGroupBox *igdcGroup = new QGroupBox( tabSettings );
+    igdcGroup->setLayout( igdcLayout );
+
+    tabSettings->addTab( igdcGroup, QIcon( ":/resources/igdclogo.png" ), tr( "Igdc" ) );
+
+
+
+
     //настройки livecoding
     QVBoxLayout *livecodingLayout = new QVBoxLayout;
 
@@ -798,6 +863,21 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     livecodingLayout->addWidget( livecodingChannelCheckBox );
     livecodingLayout->addWidget( livecodingChannelEdit );
+
+    QLabel *livecodingLoginLabel = new QLabel( tr( "Login:" ) );
+
+    livecodingLoginEdit->setText( settings.value( LIVECODING_LOGIN_SETTING_PATH, BLANK_STRING ).toString() );
+
+    livecodingLayout->addWidget( livecodingLoginLabel );
+    livecodingLayout->addWidget( livecodingLoginEdit );
+
+    QLabel *livecodingPasswordLabel = new QLabel( tr( "Password:" ) );
+
+    livecodingPasswordEdit->setEchoMode( QLineEdit::Password );
+    livecodingPasswordEdit->setText( settings.value( LIVECODING_PASSWORD_SETTING_PATH, BLANK_STRING ).toString() );
+
+    livecodingLayout->addWidget( livecodingPasswordLabel );
+    livecodingLayout->addWidget( livecodingPasswordEdit );
 
     QLabel *livecodingAliasesLabel = new QLabel( ALIASES_TEXT );
 
@@ -1275,10 +1355,14 @@ void QSettingsDialog::saveSettings()
         emit saveToFileStateChanged();
     }
 
+
+    oldBoolValue = settings.value( ACES_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
     oldStringValue = settings.value( ACES_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != acesChannelEdit->text() )
+    if( oldBoolValue != acesChannelCheckBox->isChecked() || oldStringValue != acesChannelEdit->text() )
     {
+        settings.setValue( ACES_CHANNEL_ENABLE_SETTING_PATH, acesChannelCheckBox->isChecked() );
         settings.setValue( ACES_CHANNEL_SETTING_PATH, acesChannelEdit->text() );
+
         emit acesChannelChanged();
     }
     //emit acesChannelChanged();
@@ -1320,6 +1404,9 @@ void QSettingsDialog::saveSettings()
         emit acesRemoveBlackListUsersChanged( acesRemoveBlackListUsersCheckBox->isChecked() );
     }
 
+    //настройки cybergame
+
+    /*
     oldStringValue = settings.value( CYBERGAME_CHANNEL_SETTING_PATH, DEFAULT_CYBERGAME_CHANNEL_NAME ).toString();
     if( oldStringValue != cyberGameChannelEdit->text() )
     {
@@ -1327,6 +1414,17 @@ void QSettingsDialog::saveSettings()
         emit cyberGameChannelChanged();
     }
     //emit cyberGameChannelChanged();
+    */
+
+    oldBoolValue = settings.value( CYBERGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( CYBERGAME_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != cyberGameChannelCheckBox->isChecked() || oldStringValue != cyberGameChannelEdit->text() )
+    {
+        settings.setValue( CYBERGAME_CHANNEL_ENABLE_SETTING_PATH, cyberGameChannelCheckBox->isChecked() );
+        settings.setValue( CYBERGAME_CHANNEL_SETTING_PATH, cyberGameChannelEdit->text() );
+
+        emit cyberGameChannelChanged();
+    }
 
     oldStringValue = settings.value( CYBERGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != cyberGameAliasesEdit->text() )
@@ -1358,6 +1456,7 @@ void QSettingsDialog::saveSettings()
 
 
     //настройки funstream
+    /*
     oldStringValue = settings.value( FUNSTREAM_CHANNEL_SETTING_PATH, DEFAULT_FUNSTREAM_CHANNEL_NAME ).toString();
     if( oldStringValue != funstreamChannelEdit->text() )
     {
@@ -1365,6 +1464,17 @@ void QSettingsDialog::saveSettings()
         emit funstreamChannelChanged();
     }
     //emit funstreamChannelChanged();
+    */
+
+    oldBoolValue = settings.value( FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( FUNSTREAM_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != funstreamChannelCheckBox->isChecked() || oldStringValue != funstreamChannelEdit->text() )
+    {
+        settings.setValue( FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH, funstreamChannelCheckBox->isChecked() );
+        settings.setValue( FUNSTREAM_CHANNEL_SETTING_PATH, funstreamChannelEdit->text() );
+
+        emit funstreamChannelChanged();
+    }
 
     oldStringValue = settings.value( FUNSTREAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != funstreamAliasesEdit->text() )
@@ -1395,6 +1505,8 @@ void QSettingsDialog::saveSettings()
     }
 
     //настройки gamerstv
+
+    /*
     oldStringValue = settings.value( GAMERSTV_CHANNEL_SETTING_PATH, DEFAULT_GAMERSTV_CHANNEL_NAME ).toString();
     if( oldStringValue != gamerstvChannelEdit->text() )
     {
@@ -1402,6 +1514,17 @@ void QSettingsDialog::saveSettings()
         emit gamerstvChannelChanged();
     }
     //emit gamerstvChannelChanged();
+    */
+
+    oldBoolValue = settings.value( GAMERSTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( GAMERSTV_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != gamerstvChannelCheckBox->isChecked() || oldStringValue != gamerstvChannelEdit->text() )
+    {
+        settings.setValue( GAMERSTV_CHANNEL_ENABLE_SETTING_PATH, gamerstvChannelCheckBox->isChecked() );
+        settings.setValue( GAMERSTV_CHANNEL_SETTING_PATH, gamerstvChannelEdit->text() );
+
+        emit gamerstvChannelChanged();
+    }
 
     oldStringValue = settings.value( GAMERSTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != gamerstvAliasesEdit->text() )
@@ -1434,6 +1557,8 @@ void QSettingsDialog::saveSettings()
 
 
     //настройки gipsyteam
+
+    /*
     oldStringValue = settings.value( GIPSYTEAM_CHANNEL_SETTING_PATH, DEFAULT_GIPSYTEAM_CHANNEL_NAME ).toString();
     if( oldStringValue != gipsyteamChannelEdit->text() )
     {
@@ -1441,6 +1566,17 @@ void QSettingsDialog::saveSettings()
         emit gipsyteamChannelChanged();
     }
     //emit gamerstvChannelChanged();
+    */
+
+    oldBoolValue = settings.value( GIPSYTEAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( GIPSYTEAM_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != gipsyteamChannelCheckBox->isChecked() || oldStringValue != gipsyteamChannelEdit->text() )
+    {
+        settings.setValue( GIPSYTEAM_CHANNEL_ENABLE_SETTING_PATH, gipsyteamChannelCheckBox->isChecked() );
+        settings.setValue( GIPSYTEAM_CHANNEL_SETTING_PATH, gipsyteamChannelEdit->text() );
+
+        emit gipsyteamChannelChanged();
+    }
 
     oldStringValue = settings.value( GIPSYTEAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != gipsyteamAliasesEdit->text() )
@@ -1471,6 +1607,8 @@ void QSettingsDialog::saveSettings()
     }
 
     //настройки gg
+
+    /*
     oldStringValue = settings.value( GOODGAME_CHANNEL_SETTING_PATH, DEFAULT_GOODGAME_CHANNEL_NAME ).toString();
     if( oldStringValue != goodGameChannelEdit->text() )
     {
@@ -1478,6 +1616,17 @@ void QSettingsDialog::saveSettings()
         emit goodGameChannelChanged();
     }
     //emit goodGameChannelChanged();
+    */
+
+    oldBoolValue = settings.value( GOODGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( GOODGAME_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != goodGameChannelCheckBox->isChecked() || oldStringValue != goodGameChannelEdit->text() )
+    {
+        settings.setValue( GOODGAME_CHANNEL_ENABLE_SETTING_PATH, goodGameChannelCheckBox->isChecked() );
+        settings.setValue( GOODGAME_CHANNEL_SETTING_PATH, goodGameChannelEdit->text() );
+
+        emit goodGameChannelChanged();
+    }
 
     oldBoolValue = settings.value( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, false ).toBool();
     if( oldBoolValue != goodGameUseAnimatedSmilesCheckBox->isChecked() )
@@ -1518,6 +1667,7 @@ void QSettingsDialog::saveSettings()
 
     //настройки hitbox
 
+    /*
     oldStringValue = settings.value( HITBOX_CHANNEL_SETTING_PATH, DEFAULT_HITBOX_CHANNEL_NAME ).toString();
     if( oldStringValue != hitboxChannelEdit->text() )
     {
@@ -1525,6 +1675,17 @@ void QSettingsDialog::saveSettings()
         emit hitboxChannelChanged();
     }
     //emit hitboxChannelChanged();
+    */
+
+    oldBoolValue = settings.value( HITBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( HITBOX_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != hitboxChannelCheckBox->isChecked() || oldStringValue != hitboxChannelEdit->text() )
+    {
+        settings.setValue( HITBOX_CHANNEL_ENABLE_SETTING_PATH, hitboxChannelCheckBox->isChecked() );
+        settings.setValue( HITBOX_CHANNEL_SETTING_PATH, hitboxChannelEdit->text() );
+
+        emit hitboxChannelChanged();
+    }
 
     oldBoolValue = settings.value( HITBOX_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
     if( oldBoolValue != hitboxOriginalColorsCheckBox->isChecked() )
@@ -1562,14 +1723,88 @@ void QSettingsDialog::saveSettings()
     }
 
 
+    //настройки igdc
+
+    oldBoolValue = settings.value( IGDC_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( IGDC_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != igdcChannelCheckBox->isChecked() || oldStringValue != igdcChannelEdit->text() )
+    {
+        settings.setValue( IGDC_CHANNEL_ENABLE_SETTING_PATH, igdcChannelCheckBox->isChecked() );
+        settings.setValue( IGDC_CHANNEL_SETTING_PATH, igdcChannelEdit->text() );
+
+        emit igdcChannelChanged();
+    }
+
+    oldStringValue = settings.value( IGDC_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != igdcAliasesEdit->text() )
+    {
+        settings.setValue( IGDC_ALIASES_SETTING_PATH, igdcAliasesEdit->text() );
+        emit igdcAliasesChanged( igdcAliasesEdit->text() );
+    }
+
+    oldStringValue = settings.value( IGDC_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != igdcSupportersListEdit->toPlainText() )
+    {
+        settings.setValue( IGDC_SUPPORTERS_LIST_SETTING_PATH, igdcSupportersListEdit->toPlainText() );
+        emit igdcSupportersListChanged( igdcSupportersListEdit->toPlainText() );
+    }
+
+    oldStringValue = settings.value( IGDC_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != igdcBlackListEdit->toPlainText() )
+    {
+        settings.setValue( IGDC_BLACK_LIST_SETTING_PATH, igdcBlackListEdit->toPlainText() );
+        emit igdcBlackListChanged( igdcBlackListEdit->toPlainText() );
+    }
+
+    oldBoolValue = settings.value( IGDC_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != igdcRemoveBlackListUsersCheckBox->isChecked() )
+    {
+        settings.setValue( IGDC_REMOVE_BLACK_LIST_USERS_SETTING_PATH, igdcRemoveBlackListUsersCheckBox->isChecked() );
+        emit igdcRemoveBlackListUsersChanged( igdcRemoveBlackListUsersCheckBox->isChecked() );
+    }
+
 
     //настройки livecoding
+
+    /*
     oldStringValue = settings.value( LIVECODING_CHANNEL_SETTING_PATH, DEFAULT_LIVECODING_CHANNEL_NAME ).toString();
     if( oldStringValue != livecodingChannelEdit->text() )
     {
         settings.setValue( LIVECODING_CHANNEL_SETTING_PATH, livecodingChannelEdit->text() );
         emit livecodingChannelChanged();
     }
+    */
+
+    bool isLivecodingChannelChanged = false;
+
+    oldBoolValue = settings.value( LIVECODING_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( LIVECODING_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != livecodingChannelCheckBox->isChecked() || oldStringValue != livecodingChannelEdit->text() )
+    {
+        settings.setValue( LIVECODING_CHANNEL_ENABLE_SETTING_PATH, livecodingChannelCheckBox->isChecked() );
+        settings.setValue( LIVECODING_CHANNEL_SETTING_PATH, livecodingChannelEdit->text() );
+
+        isLivecodingChannelChanged = true;
+    }
+
+    oldStringValue = settings.value( LIVECODING_LOGIN_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != livecodingLoginEdit->text() )
+    {
+        settings.setValue( LIVECODING_LOGIN_SETTING_PATH, livecodingLoginEdit->text() );
+        isLivecodingChannelChanged = true;
+    }
+
+    oldStringValue = settings.value( LIVECODING_PASSWORD_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != livecodingPasswordEdit->text() )
+    {
+        settings.setValue( LIVECODING_PASSWORD_SETTING_PATH, livecodingPasswordEdit->text() );
+        isLivecodingChannelChanged = true;
+    }
+
+    if( isLivecodingChannelChanged )
+        emit livecodingChannelChanged();
+
+
 
     oldStringValue = settings.value( LIVECODING_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != livecodingAliasesEdit->text() )
@@ -1600,6 +1835,8 @@ void QSettingsDialog::saveSettings()
     }
 
     //настройки realltv
+
+    /*
     oldStringValue = settings.value( REALLTV_CHANNEL_SETTING_PATH, DEFAULT_REALLTV_CHANNEL_NAME ).toString();
     if( oldStringValue != realltvChannelEdit->text() )
     {
@@ -1607,6 +1844,17 @@ void QSettingsDialog::saveSettings()
         emit realltvChannelChanged();
     }
     //emit realltvChannelChanged();
+    */
+
+    oldBoolValue = settings.value( REALLTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( REALLTV_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != realltvChannelCheckBox->isChecked() || oldStringValue != realltvChannelEdit->text() )
+    {
+        settings.setValue( REALLTV_CHANNEL_ENABLE_SETTING_PATH, realltvChannelCheckBox->isChecked() );
+        settings.setValue( REALLTV_CHANNEL_SETTING_PATH, realltvChannelEdit->text() );
+
+        emit realltvChannelChanged();
+    }
 
     oldStringValue = settings.value( REALLTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != realltvAliasesEdit->text() )
@@ -1639,6 +1887,8 @@ void QSettingsDialog::saveSettings()
 
 
     //настройки sc2tv
+
+    /*
     oldStringValue = settings.value( SC2TV_CHANNEL_SETTING_PATH, DEFAULT_SC2TV_CHANNEL_NAME ).toString();
     if( oldStringValue != sc2tvChannelEdit->text() )
     {
@@ -1646,6 +1896,18 @@ void QSettingsDialog::saveSettings()
         emit sc2tvChannelChanged();
     }
     //emit sc2tvChannelChanged();
+    */
+
+
+    oldBoolValue = settings.value( SC2TV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( SC2TV_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != sc2tvChannelCheckBox->isChecked() || oldStringValue != sc2tvChannelEdit->text() )
+    {
+        settings.setValue( SC2TV_CHANNEL_ENABLE_SETTING_PATH, sc2tvChannelCheckBox->isChecked() );
+        settings.setValue( SC2TV_CHANNEL_SETTING_PATH, sc2tvChannelEdit->text() );
+
+        emit sc2tvChannelChanged();
+    }
 
     oldBoolValue = settings.value( SC2TV_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
     if( oldBoolValue != sc2tvOriginalColorsCheckBox->isChecked() )
@@ -1684,6 +1946,7 @@ void QSettingsDialog::saveSettings()
 
     //настройки streambox
 
+    /*
     oldStringValue = settings.value( STREAMBOX_CHANNEL_SETTING_PATH, DEFAULT_STREAMBOX_CHANNEL_NAME ).toString();
     if( oldStringValue != streamboxChannelEdit->text() )
     {
@@ -1691,6 +1954,17 @@ void QSettingsDialog::saveSettings()
         emit streamboxChannelChanged();
     }
     //emit twitchChannelChanged();
+    */
+
+    oldBoolValue = settings.value( STREAMBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( STREAMBOX_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != streamboxChannelCheckBox->isChecked() || oldStringValue != streamboxChannelEdit->text() )
+    {
+        settings.setValue( STREAMBOX_CHANNEL_ENABLE_SETTING_PATH, streamboxChannelCheckBox->isChecked() );
+        settings.setValue( STREAMBOX_CHANNEL_SETTING_PATH, streamboxChannelEdit->text() );
+
+        emit streamboxChannelChanged();
+    }
 
     oldStringValue = settings.value( STREAMBOX_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != streamboxAliasesEdit->text() )
@@ -1721,6 +1995,8 @@ void QSettingsDialog::saveSettings()
     }
 
     //настройки twitch
+
+    /*
     oldStringValue = settings.value( TWITCH_CHANNEL_SETTING_PATH, DEFAULT_TWITCH_CHANNEL_NAME ).toString();
     if( oldStringValue != twitchChannelEdit->text() )
     {
@@ -1728,6 +2004,18 @@ void QSettingsDialog::saveSettings()
         emit twitchChannelChanged();
     }
     //emit twitchChannelChanged();
+    */
+
+    oldBoolValue = settings.value( TWITCH_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( TWITCH_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != twitchChannelCheckBox->isChecked() || oldStringValue != twitchChannelEdit->text() )
+    {
+        settings.setValue( TWITCH_CHANNEL_ENABLE_SETTING_PATH, twitchChannelCheckBox->isChecked() );
+        settings.setValue( TWITCH_CHANNEL_SETTING_PATH, twitchChannelEdit->text() );
+
+        emit twitchChannelChanged();
+    }
+
 
     oldStringValue = settings.value( TWITCH_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != twitchAliasesEdit->text() )
@@ -1759,10 +2047,23 @@ void QSettingsDialog::saveSettings()
 
 
     //настройки youtube
+
+    /*
     oldStringValue = settings.value( YOUTUBE_CHANNEL_SETTING_PATH, DEFAULT_YOUTUBE_CHANNEL_NAME ).toString();
     if( oldStringValue != youtubeChannelEdit->text() )
     {
         settings.setValue( YOUTUBE_CHANNEL_SETTING_PATH, youtubeChannelEdit->text() );
+        emit youtubeChannelChanged();
+    }
+    */
+
+    oldBoolValue = settings.value( YOUTUBE_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( YOUTUBE_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != youtubeChannelCheckBox->isChecked() || oldStringValue != youtubeChannelEdit->text() )
+    {
+        settings.setValue( YOUTUBE_CHANNEL_ENABLE_SETTING_PATH, youtubeChannelCheckBox->isChecked() );
+        settings.setValue( YOUTUBE_CHANNEL_SETTING_PATH, youtubeChannelEdit->text() );
+
         emit youtubeChannelChanged();
     }
 

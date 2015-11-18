@@ -53,7 +53,7 @@ QGamersTvChat::~QGamersTvChat()
 
 void QGamersTvChat::connect()
 {
-    if( channelName_ == "" )
+    if( !isEnabled() || channelName_ == "" )
         return;
 
     smiles_.clear();
@@ -103,7 +103,7 @@ void QGamersTvChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
         if( isShowSystemMessages() )
             emit newMessage( new QChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Reconnecting to " + channelName_ + "...", "", this ) );
     connect();
@@ -355,6 +355,9 @@ void QGamersTvChat::loadSettings()
     QSettings settings;
 
     channelName_ = settings.value( GAMERSTV_CHANNEL_SETTING_PATH, DEFAULT_GAMERSTV_CHANNEL_NAME ).toString();
+
+    enable( settings.value( GAMERSTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
+
     setAliasesList( settings.value( GAMERSTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
     setSupportersList( settings.value( GAMERSTV_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
     setBlackList( settings.value( GAMERSTV_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );

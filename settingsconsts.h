@@ -82,8 +82,20 @@ const QString HITBOX_BLACK_LIST_SETTING_PATH = "/Settings/Hitbox/BlackList";
 const QString HITBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Hitbox/RemoveBlackListUsers";
 const QString HITBOX_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Hitbox/OriginalColors";
 
+
+const QString IGDC_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Igdc/Enable";
+const QString IGDC_CHANNEL_SETTING_PATH = "/Settings/Igdc/Channel";
+const QString IGDC_ALIASES_SETTING_PATH = "/Settings/Igdc/Aliases";
+const QString IGDC_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Igdc/Supporters";
+const QString IGDC_BLACK_LIST_SETTING_PATH = "/Settings/Igdc/BlackList";
+const QString IGDC_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Igdc/RemoveBlackListUsers";
+
+
+
 const QString LIVECODING_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Livecoding/Enable";
 const QString LIVECODING_CHANNEL_SETTING_PATH = "/Settings/Livecoding/Channel";
+const QString LIVECODING_LOGIN_SETTING_PATH = "/Settings/Livecoding/Login";
+const QString LIVECODING_PASSWORD_SETTING_PATH = "/Settings/Livecoding/Password";
 const QString LIVECODING_ALIASES_SETTING_PATH = "/Settings/Livecoding/Aliases";
 const QString LIVECODING_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Livecoding/Supporters";
 const QString LIVECODING_BLACK_LIST_SETTING_PATH = "/Settings/Livecoding/BlackList";
@@ -134,6 +146,7 @@ const QString DEFAULT_GAMERSTV_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_GIPSYTEAM_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_GOODGAME_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_HITBOX_CHANNEL_NAME = BLANK_STRING;
+const QString DEFAULT_IGDC_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_LIVECODING_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_REALLTV_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_SC2TV_CHANNEL_NAME = BLANK_STRING;

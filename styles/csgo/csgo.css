@@ -183,6 +183,12 @@ body
 	height: 24px;
 }
 
+.igdc
+{
+	content: url(../resources/igdclogo.png);
+	height: 24px;
+}
+
 .livecoding
 {
 	content: url(../resources/livecodinglogo.png);

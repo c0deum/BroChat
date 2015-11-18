@@ -149,6 +149,12 @@ body
 	height:%SERVICE_ICONS_SIZE%;
 }
 
+.igdc
+{
+	content: url(igdclogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
 .livecoding
 {
 	content: url(livecodinglogo.png);
@@ -192,6 +198,12 @@ body
 .cybergameViewers
 {
 	content: url(cybergamelogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
+.funstreamViewers
+{
+	content: url(funstreamlogo.png);
 	height:%SERVICE_ICONS_SIZE%;
 }
 
@@ -240,10 +252,10 @@ body
 			document.body.scrollTop = document.body.scrollHeight;
 		}
 		function onStatisticReceived( service, value )
-		{
+                {
 			var serviceDiv = document.getElementById( service );
 			if( serviceDiv )
-			{
+                        {
 				serviceDiv.innerHTML = "[" + value + "]";
 			}
 		}
@@ -300,6 +312,7 @@ body
 			<span class = "viewersInfo"><span class = "hitboxViewers"></span><span class = "statistic" id="hitbox"></span></span>
 			<span class = "viewersInfo"><span class = "realltvViewers"></span><span class = "statistic" id="realltv"></span></span>
 			<span class = "viewersInfo"><span class = "twitchViewers"></span><span class = "statistic" id="twitch"></span></span>
+			<span class = "viewersInfo"><span class = "funstreamViewers"></span><span class = "statistic" id="funstream"></span></span>
 			<span class = "viewersInfo"><span class = "gamerstvViewers"></span><span class = "statistic" id="gamerstv"></span></span>
 			<span class = "viewersInfo"><span class = "streamboxViewers"></span><span class = "statistic" id="streambox"></span></span>
 		</div>			

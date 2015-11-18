@@ -77,6 +77,9 @@ private:
 
     int statisticTimerId_;
     int statisticInterval_;
+
+    int saveConnectionTimerId_;
+    int saveConnectionInterval_;
 };
 
 #endif // QTWITCHCHAT_H

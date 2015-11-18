@@ -20,7 +20,8 @@
 
 
 const QString DEFAULT_LIVECODING_LOGIN = "broadcasterchat";
-const QString DEFAULT_LIVECODING_JID = DEFAULT_LIVECODING_LOGIN + "@livecoding.tv";
+const QString DEFAULT_LIVECODING_JID_POSTFIX = "@livecoding.tv";
+const QString DEFAULT_LIVECODING_JID = DEFAULT_LIVECODING_LOGIN + DEFAULT_LIVECODING_JID_POSTFIX;
 const QString DEFAULT_LIVECODING_PASSWORD = "8e4820297b36ec893f1242bc36ffc1e38";
 const QString DEFAULT_LIVECODING_CONFERENCE_JID_POSTFIX = "@chat.livecoding.tv";
 
@@ -40,6 +41,8 @@ QLivecodingChat::QLivecodingChat( QObject * parent )
 , xmppClient_( 0 )
 , mucManager_( 0 )
 , channelName_()
+, login_()
+, password_()
 , connectionTime_()
 , smiles_()
 , reconnectTimerId_( -1 )
@@ -55,8 +58,11 @@ QLivecodingChat::~QLivecodingChat()
 
 void QLivecodingChat::connect()
 {
-    if( channelName_ == "" )
+    if( !isEnabled() || channelName_ == "" )
         return;
+
+    login_ = "";
+    password_ ="";
 
     qsrand( QDateTime::currentDateTime().toTime_t() );
 
@@ -73,7 +79,10 @@ void QLivecodingChat::connect()
     if( isShowSystemMessages() )
         emit newMessage( new QChatMessage( LIVECODING_SERVICE, LIVECODING_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
-    xmppClient_->connectToServer( DEFAULT_LIVECODING_JID , DEFAULT_LIVECODING_PASSWORD );
+    if( !login_.isEmpty() )
+        xmppClient_->connectToServer( login_ + DEFAULT_LIVECODING_JID_POSTFIX , password_ );
+    else
+        xmppClient_->connectToServer( DEFAULT_LIVECODING_JID , DEFAULT_LIVECODING_PASSWORD );
 }
 
 void QLivecodingChat::disconnect()
@@ -118,7 +127,7 @@ void QLivecodingChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
         if( isShowSystemMessages() )
             emit newMessage( new QChatMessage( LIVECODING_SERVICE, LIVECODING_USER, "Reconnecting...", "", this ) );
     connect();
@@ -129,7 +138,10 @@ void QLivecodingChat::onConnected()
     connectionTime_ = QDateTime::currentDateTimeUtc();
 
     QXmppMucRoom *room = mucManager_->addRoom( channelName_ + DEFAULT_LIVECODING_CONFERENCE_JID_POSTFIX );
-    room->setNickName( DEFAULT_LIVECODING_LOGIN );
+    if( !login_.isEmpty() )
+        room->setNickName( login_ );
+    else
+        room->setNickName( DEFAULT_LIVECODING_LOGIN );
     room->join();
 
     if( isShowSystemMessages() )
@@ -311,8 +323,13 @@ void QLivecodingChat::loadSettings()
 
     channelName_ = settings.value( LIVECODING_CHANNEL_SETTING_PATH, DEFAULT_LIVECODING_CHANNEL_NAME ).toString();
 
+    enable( settings.value( LIVECODING_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
+
     setAliasesList( settings.value( LIVECODING_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
     setSupportersList( settings.value( LIVECODING_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
     setBlackList( settings.value( LIVECODING_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
     setRemoveBlackListUsers( settings.value( LIVECODING_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
+
+    login_ = settings.value( LIVECODING_LOGIN_SETTING_PATH, BLANK_STRING ).toString();
+    password_ = settings.value( LIVECODING_PASSWORD_SETTING_PATH, BLANK_STRING ).toString();
 }

@@ -45,7 +45,7 @@ QGipsyTeamChat::~QGipsyTeamChat()
 
 void QGipsyTeamChat::connect()
 {
-    if( channelName_ == "" )
+    if( !isEnabled() || channelName_ == "" )
         return;
 
     if( isShowSystemMessages() )
@@ -86,7 +86,7 @@ void QGipsyTeamChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
         if( isShowSystemMessages() )
             emit newMessage( new QChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, "Reconnecting to " + channelName_ + "...", "", this ) );
     connect();
@@ -239,6 +239,9 @@ void QGipsyTeamChat::loadSettings()
     QSettings settings;
 
     channelName_ = settings.value( GIPSYTEAM_CHANNEL_SETTING_PATH, DEFAULT_GIPSYTEAM_CHANNEL_NAME ).toString();
+
+    enable( settings.value( GIPSYTEAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
+
     setAliasesList( settings.value( GIPSYTEAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
     setSupportersList( settings.value( GIPSYTEAM_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
     setBlackList( settings.value( GIPSYTEAM_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );

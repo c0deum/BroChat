@@ -118,10 +118,21 @@ body
 	height: 16px;
 }
 
+.hitbox
+{
+	content: url(../resources/hitboxlogo.png);
+	height: 16px;
+}
 
 .goodgame
 {
 	content: url(../resources/goodgamelogo.png);
+	height: 16px;
+}
+
+.igdc
+{
+	content: url(../resources/igdclogo.png);
 	height: 16px;
 }
 

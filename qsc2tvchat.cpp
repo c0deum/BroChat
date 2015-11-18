@@ -66,7 +66,7 @@ QSc2tvChat::~QSc2tvChat()
 
 void QSc2tvChat::connect()
 {   
-    if( channelName_ == "" )
+    if( !isEnabled() || channelName_ == "" )
         return;
 
     smiles_.clear();
@@ -104,7 +104,7 @@ void QSc2tvChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
         if( isShowSystemMessages() )
             emit newMessage( new QChatMessage( SC2TV_SERVICE, SC2TV_USER, "Reconnecting...", "", this ) );
     connect();
@@ -569,6 +569,9 @@ void QSc2tvChat::loadSettings()
 {
     QSettings settings;
     channelName_ = settings.value( SC2TV_CHANNEL_SETTING_PATH, DEFAULT_SC2TV_CHANNEL_NAME ).toString();
+
+    enable( settings.value( SC2TV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
+
     originalColors_ = settings.value( SC2TV_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
 
     setAliasesList( settings.value( SC2TV_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );

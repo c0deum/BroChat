@@ -93,6 +93,14 @@ signals:
     void hitboxOriginalColorsChanged( bool );
 
 
+    void igdcChannelChanged();
+    void igdcChannelDisabled();
+    void igdcAliasesChanged( const QString & );
+    void igdcSupportersListChanged( const QString & );
+    void igdcBlackListChanged( const QString & );
+    void igdcRemoveBlackListUsersChanged( bool );    
+
+
     void livecodingChannelChanged();
     void livecodingChannelDisabled();
     void livecodingAliasesChanged( const QString & );
@@ -236,8 +244,18 @@ private:
     QCheckBox *hitboxRemoveBlackListUsersCheckBox;
 
 
+    QCheckBox *igdcChannelCheckBox;
+    QLineEdit *igdcChannelEdit;
+    QLineEdit *igdcAliasesEdit;
+    QTextEdit *igdcSupportersListEdit;
+    QTextEdit *igdcBlackListEdit;
+    QCheckBox *igdcRemoveBlackListUsersCheckBox;
+
+
     QCheckBox *livecodingChannelCheckBox;
     QLineEdit *livecodingChannelEdit;
+    QLineEdit *livecodingLoginEdit;
+    QLineEdit *livecodingPasswordEdit;
     QLineEdit *livecodingAliasesEdit;
     QTextEdit *livecodingSupportersListEdit;
     QTextEdit *livecodingBlackListEdit;

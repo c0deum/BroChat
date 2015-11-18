@@ -17,14 +17,16 @@ class QGamersTvChat;
 class QGipsyTeamChat;
 class QGoodGameChat;
 class QHitBoxChat;
+class QLivecodingChat;
 class QReallTvChat;
 class QSc2tvChat;
 class QStreamBoxChat;
 class QTwitchChat;
-
 class QYoutubeChat;
 
-class QLivecodingChat;
+class QIgdcChat;
+
+
 
 class QBroChatView: public QWebView
 {
@@ -39,7 +41,10 @@ protected:
     virtual void mouseMoveEvent( QMouseEvent *event );
     virtual void mouseReleaseEvent( QMouseEvent *event );
 
-    //virtual void keyPressEvent( QKeyEvent *event );
+    /*
+    virtual void keyPressEvent( QKeyEvent *event );
+    virtual void keyReleaseEvent( QKeyEvent * event );
+    */
 
     virtual void closeEvent( QCloseEvent *event );
 
@@ -76,14 +81,15 @@ private:
     QGipsyTeamChat *gipsyteamChat_;
     QGoodGameChat *goodgameChat_;
     QHitBoxChat *hitboxChat_;
+    QLivecodingChat * livecodingChat_;
     QReallTvChat *realltvChat_;
     QSc2tvChat *sc2tvChat_;
     QStreamBoxChat *streamboxChat_;
-    QTwitchChat *twitchChat_;
-
+    QTwitchChat *twitchChat_;    
     QYoutubeChat * youtubeChat_;
 
-    QLivecodingChat * livecodingChat_;
+
+    QIgdcChat * igdcChat_;
 
     QChatUpdateServer *chatUpdateServer_;
 

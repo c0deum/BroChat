@@ -14,6 +14,8 @@ public:
     explicit QChatService( QObject *parent = 0 );
     virtual ~QChatService();
 
+    bool isEnabled() const;
+
     bool isShowSystemMessages() const;
     bool isAliasesSelection() const;
     bool isRemoveBlackListUsers() const;
@@ -29,6 +31,8 @@ public slots:
     virtual void disconnect() = 0;
     virtual void reconnect() = 0;
 
+    void enable( bool enabled );
+
     void setShowSystemMessages( bool showSystemMessages );
     void setAliasesSelection( bool aliasesSelection );
     void setRemoveBlackListUsers( bool removeBlackListUsers );
@@ -42,6 +46,7 @@ signals:
     void newMessage( QChatMessage *message );
     void newStatistic( QChatStatistic *statistic );
 private:
+    bool enabled_;
     bool showSystemMessages_;
     bool aliasesSelection_;
     bool removeBlackListUsers_;    

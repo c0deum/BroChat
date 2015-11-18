@@ -47,7 +47,7 @@ QAcesChat::~QAcesChat()
 
 void QAcesChat::connect()
 {
-    if( channelName_ == "" )
+    if( !isEnabled() || channelName_ == "" )
         return;
 
     if( isShowSystemMessages() )
@@ -78,7 +78,7 @@ void QAcesChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && channelName_ != "" && oldChannelName != ""  )
         if( isShowSystemMessages() )
             emit newMessage( new QChatMessage( ACES_SERVICE, ACES_USER, "Reconnecting...", "", this ) );
     connect();
@@ -344,6 +344,8 @@ void QAcesChat::loadSettings()
 {
     QSettings settings;
     channelName_ = settings.value( ACES_CHANNEL_SETTING_PATH, DEFAULT_ACES_CHANNEL_NAME ).toString();
+
+    enable( settings.value( ACES_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     setAliasesList( settings.value( ACES_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
     setSupportersList( settings.value( ACES_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );

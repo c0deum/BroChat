@@ -54,7 +54,7 @@ QHitBoxChat::~QHitBoxChat()
 
 void QHitBoxChat::connect()
 {
-    if( channelName_ == "" )
+    if( !isEnabled() || channelName_ == "" )
         return;
 
     smiles_.clear();
@@ -102,7 +102,7 @@ void QHitBoxChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
         if( isShowSystemMessages() )
             emit newMessage( new QChatMessage( HITBOX_SERVICE, HITBOX_USER, "Reconnecting...", "", this ) );
     connect();
@@ -546,6 +546,9 @@ void QHitBoxChat::loadSettings()
 {
     QSettings settings;
     channelName_ = settings.value( HITBOX_CHANNEL_SETTING_PATH, DEFAULT_HITBOX_CHANNEL_NAME ).toString();
+
+    enable( settings.value( HITBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
+
     originalColors_ = settings.value( HITBOX_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
 
     setAliasesList( settings.value( HITBOX_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );

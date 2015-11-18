@@ -66,7 +66,7 @@ QGoodGameChat::~QGoodGameChat()
 
 void QGoodGameChat::connect()
 {
-    if( channelName_ == "" )
+    if( !isEnabled() || channelName_ == "" )
         return;
 
     smiles_.clear();
@@ -114,7 +114,7 @@ void QGoodGameChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
         if( isShowSystemMessages() )
             emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Reconnecting...", "", this ) );
     connect();
@@ -611,6 +611,8 @@ void QGoodGameChat::loadSettings()
 {
     QSettings settings;
     channelName_ = settings.value( GOODGAME_CHANNEL_SETTING_PATH, DEFAULT_GOODGAME_CHANNEL_NAME ).toString();
+
+    enable( settings.value( GOODGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     useAnimatedSmiles_ = settings.value( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, false ).toBool();
 

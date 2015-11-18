@@ -170,13 +170,19 @@ body
 .hitbox
 {
 	content: url(../resources/hitboxlogo.png);
-	height: 16px;
+	height: 24px;
+}
+
+.igdc
+{
+	content: url(../resources/igdclogo.png);
+	height: 24px;
 }
 
 .livecoding
 {
 	content: url(../resources/livecodinglogo.png);
-	height: 16px;
+	height: 24px;
 }
 
 .realltv

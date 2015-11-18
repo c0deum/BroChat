@@ -56,7 +56,7 @@ QStreamBoxChat::~QStreamBoxChat()
 
 void QStreamBoxChat::connect()
 {
-    if( channelName_ == "" )
+    if( !isEnabled() || channelName_ == "" )
         return;
 
     if( isShowSystemMessages() )
@@ -113,7 +113,7 @@ void QStreamBoxChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
         if( isShowSystemMessages() )
             emit newMessage( new QChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, "Reconnecting...", "", this  ) );
     connect();
@@ -528,6 +528,8 @@ void QStreamBoxChat::loadSettings()
 {
     QSettings settings;
     channelName_ = settings.value( STREAMBOX_CHANNEL_SETTING_PATH, DEFAULT_STREAMBOX_CHANNEL_NAME ).toString();
+
+    enable( settings.value( STREAMBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     setAliasesList( settings.value( STREAMBOX_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
     setSupportersList( settings.value( STREAMBOX_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );

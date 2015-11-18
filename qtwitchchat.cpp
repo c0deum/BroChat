@@ -31,6 +31,7 @@ const QString DEFAULT_TWITCH_STATISTIC_PREFIX = "https://api.twitch.tv/kraken/st
 
 const int DEFAULT_TWITCH_RECONNECT_INTERVAL = 10000;
 const int DEFAULT_TWITCH_STATISTIC_INTERVAL = 10000;
+const int DEFAULT_TWITCH_SAVE_CONNECTION_INTERVAL = 25000;
 
 const QString TWITCH_USER = "TWITCH";
 const QString TWITCH_SERVICE = "twitch";
@@ -50,6 +51,8 @@ QTwitchChat::QTwitchChat( QObject *parent )
 , reconnectInterval_( DEFAULT_TWITCH_RECONNECT_INTERVAL )
 , statisticTimerId_( -1 )
 , statisticInterval_( DEFAULT_TWITCH_STATISTIC_INTERVAL  )
+, saveConnectionTimerId_( -1 )
+, saveConnectionInterval_( DEFAULT_TWITCH_SAVE_CONNECTION_INTERVAL )
 {
     //loadSettings();
 }
@@ -61,7 +64,7 @@ QTwitchChat::~QTwitchChat()
 
 void QTwitchChat::connect()
 {
-    if( channelName_ == "" )
+    if( !isEnabled() || channelName_ == "" )
         return;
 
     if( isShowSystemMessages() )
@@ -99,6 +102,12 @@ void QTwitchChat::onConnected()
 
 void QTwitchChat::disconnect()
 {
+    if( saveConnectionTimerId_ >= 0 )
+    {
+        killTimer( saveConnectionTimerId_ );
+        saveConnectionTimerId_ = -1;
+    }
+
     if( reconnectTimerId_ >= 0 )
     {
         killTimer( reconnectTimerId_ );
@@ -125,7 +134,6 @@ void QTwitchChat::disconnect()
 
     safeDeleteSocket();
 
-
     emit newStatistic( new QChatStatistic( TWITCH_SERVICE, "", this ) );
 }
 
@@ -134,7 +142,7 @@ void QTwitchChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
         if( isShowSystemMessages() )
             emit newMessage( new QChatMessage( TWITCH_SERVICE, TWITCH_USER, "Reconnecting...", "", this ) );
     connect();
@@ -149,7 +157,7 @@ void QTwitchChat::parseMessage()
     {
         QString line = socket_->readLine();
 
-        //qDebug() << line;
+        qDebug() << line;
 
         //поадекватнее надо быть
 
@@ -163,8 +171,10 @@ void QTwitchChat::parseMessage()
                 emit newMessage( new QChatMessage( TWITCH_SERVICE, TWITCH_USER, "Connected to " + channelName_ + "...", "", this ) );
 
             getStatistic();
-            if( statisticTimerId_ )
+            if( statisticTimerId_ == -1 )
                 statisticTimerId_ = startTimer( statisticInterval_ );
+            if( saveConnectionTimerId_ == -1 )
+                saveConnectionTimerId_ = startTimer( saveConnectionInterval_ );
         }
         else if( line.contains( "PING" ) )
         {
@@ -464,6 +474,14 @@ void QTwitchChat::timerEvent( QTimerEvent *event )
         //qDebug() << "Twitch::timerEvent(): reconnectTimerId_" << reconnectTimerId_;
         reconnect();
     }
+    else if( event->timerId() == saveConnectionTimerId_ )
+    {
+        qDebug() << "Twitch::timerEvent() - save connection ping";
+        if( socket_ && socket_->isValid() && socket_->state() == QAbstractSocket::ConnectedState )
+        {
+            socket_->write( "PING :tmi.twitch.tv\r\n" );
+        }
+    }
 }
 
 void QTwitchChat::loadSettings()
@@ -472,6 +490,8 @@ void QTwitchChat::loadSettings()
     oauthString_ = settings.value( "/Settings/Twitch/oauth", DEFAULT_OAUTH_STRING ).toString();
     nickName_ = settings.value( "/Settings/Twitch/nickName", DEFAULT_USER_NICK_NAME ).toString();
     channelName_= settings.value( "/Settings/Twitch/Channel", DEFAULT_TWITCH_CHANNEL_NAME ).toString();
+
+    enable( settings.value( TWITCH_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     setAliasesList( settings.value( TWITCH_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
     setSupportersList( settings.value( TWITCH_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );

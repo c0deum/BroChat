@@ -46,6 +46,8 @@ private:
     QXmppClient * xmppClient_;
     QXmppMucManager *mucManager_;
     QString channelName_;
+    QString login_;
+    QString password_;
     QDateTime connectionTime_;
     QMap<QString, QChatSmile> smiles_;
     int reconnectTimerId_;

@@ -22,6 +22,7 @@ private:
     void loadSettings();
     void getChannelInfo();
     void connectToWebClient();
+    void getStatistic();
     //void getSmiles();
     QString insertSmiles( const QString &message ) const;
 
@@ -41,7 +42,6 @@ private slots:
     void onChannelInfoLoaded();
     void onChannelInfoLoadError();
 
-
     void onPong( quint64 elapsedTime, const QByteArray & payload );
 private:
     QNetworkAccessManager *nam_;
@@ -50,11 +50,16 @@ private:
     QString channelId_;
     //QMap< QString, QChatSmile > smiles_;
     QList< QChatSmile > smiles_;
-    int saveConnectionTimerId_;
     int reconnectTimerId_;
-    int saveConnectionInterval_;
     int reconnectInterval_;
+    int saveConnectionTimerId_;
+    int saveConnectionInterval_;
+    int statisticTimerId_;
+    int statisticInterval_;
     int lastMessageId_;
+    int requestId_;
+    int joinRequestId_;
+    int statisticRequestId_;
 };
 
 #endif // QFUNSTREAMCHAT_H

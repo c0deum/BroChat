@@ -5,6 +5,7 @@
 
 QChatService::QChatService( QObject *parent )
 : QObject( parent )
+, enabled_( true )
 , showSystemMessages_( true )
 , aliasesSelection_( false )
 , removeBlackListUsers_( false )
@@ -16,6 +17,16 @@ QChatService::QChatService( QObject *parent )
 
 QChatService::~QChatService()
 {
+}
+
+bool QChatService::isEnabled() const
+{
+    return enabled_;
+}
+
+void QChatService::enable( bool enabled )
+{
+    enabled_ = enabled;
 }
 
 void QChatService::setShowSystemMessages( bool showSystemMessages )
