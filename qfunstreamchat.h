@@ -23,8 +23,11 @@ private:
     void getChannelInfo();
     void connectToWebClient();
     void getStatistic();
-    //void getSmiles();
+    void getHistory();
+    void getSmiles();
     QString insertSmiles( const QString &message ) const;
+
+    void parseMessage( const QJsonObject & jsonObj );
 
 public slots:
     virtual void connect();
@@ -36,8 +39,8 @@ private slots:
     void onWebSocketError();
     void onTextMessageRecieved( const QString &message );
 
-    //void onSmilesLoaded();
-    //void onSmileLoadError();
+    void onSmilesLoaded();
+    void onSmileLoadError();
 
     void onChannelInfoLoaded();
     void onChannelInfoLoadError();
@@ -48,7 +51,6 @@ private:
     QWebSocket *socket_;
     QString channelName_;
     QString channelId_;
-    //QMap< QString, QChatSmile > smiles_;
     QList< QChatSmile > smiles_;
     int reconnectTimerId_;
     int reconnectInterval_;
@@ -60,6 +62,8 @@ private:
     int requestId_;
     int joinRequestId_;
     int statisticRequestId_;
+    int historyRequestId_;
+    int historyLastMessageId_;
 };
 
 #endif // QFUNSTREAMCHAT_H

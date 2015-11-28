@@ -445,10 +445,14 @@ void QSc2tvChat::onMessagesLoaded()
 
                     //TODO: править
 
+
                     message = message.replace( "[b]", "" );
                     message = message.replace( "[/b]", "" );
                     message = message.replace( "[url]", "" );
                     message = message.replace( "[/url]", "" );
+
+                    message = message.replace( QRegExp( "\\[url=(.*)\\]" ), "" );
+
 
 
                     message = insertSmiles( message );
