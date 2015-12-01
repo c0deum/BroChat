@@ -16,6 +16,8 @@ protected:
 private:
     void loadSettings();
 
+    void getChannelInfo();
+
     void getLastMessage();
 
 public slots:
@@ -23,6 +25,10 @@ public slots:
     virtual void disconnect();
     virtual void reconnect();
 private slots:
+
+    void onChannelInfoLoaded();
+    void onChannelInfoLoadError();
+
     void onLastMessageLoaded();
     void onLastMessageLoadError();
 
@@ -31,6 +37,7 @@ private slots:
 private:
     QNetworkAccessManager *nam_;
     QString channelName_;
+    QString channelId_;
     int lastMessageId_;
     int updateChatInfoTimerId_;
     int reconnectTimerId_;

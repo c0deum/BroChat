@@ -275,10 +275,8 @@ void QCyberGameChat::onSmilesLoaded()
 
             for( int i = 0; i < smilesInfo.size() / 2; ++i )
             {
-                QChatSmile smile(
-                                    smilesInfo[ 2 * i ].toString(),
-                                    DEFAULT_CYBERGAME_SMILE_PREFIX + smilesInfo[ 2 * i + 1 ].toString(),
-                                    0, 0 );
+                QChatSmile smile( smilesInfo[ 2 * i ].toString(),
+                                  DEFAULT_CYBERGAME_SMILE_PREFIX + smilesInfo[ 2 * i + 1 ].toString() );
 
                 //qDebug() << smile.name() << smile.link();
 
@@ -301,8 +299,8 @@ void QCyberGameChat::onSmilesLoaded()
 
     foreach( const QString& smileName, smileFiles )
     {
-        QChatSmile smile(   ":" + smileName.left( smileName.length() - 4 ) + ":",
-                                "file:///" + smilesPath + "/" + smileName, 0, 0 );
+        QChatSmile smile( ":" + smileName.left( smileName.length() - 4 ) + ":",
+                          "file:///" + smilesPath + "/" + smileName );
         smiles_.insert( smile.name(), smile );
     }
 

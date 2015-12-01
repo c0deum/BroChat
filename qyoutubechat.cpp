@@ -26,6 +26,8 @@ const QString DEFAULT_YOUTUBE_MESSAGES_PREFIX = "https://www.youtube.com/live_co
 const QString DEFAULT_YOUTUBE_MESSAGES_INFIX = "&lt=";
 const QString DEFAULT_YOUTUBE_MESSAGES_POSTFIX ="&format=json&comment_version=1";
 
+const QString DEFAULT_YOUTUBE_STATISTIC_PREFIX = "https://www.youtube.com/live_stats?v=";
+
 const int DEFAULT_YOUTUBE_UPDATE_MESSAGES_INTERVAL = 3000;
 const int DEFAULT_YOUTUBE_UPDATE_STATISTIC_INTERVAL = 10000;
 const int DEFAULT_YOUTUBE_RECONNECT_INTERVAL = 30000;
@@ -61,7 +63,7 @@ void QYoutubeChat::connect()
     if( isShowSystemMessages() )
         emit newMessage( new QChatMessage( YOUTUBE_SERVICE, YOUTUBE_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
-    getChannelInfo();
+    getChannelInfo();        
 }
 
 void QYoutubeChat::disconnect()
@@ -86,6 +88,8 @@ void QYoutubeChat::disconnect()
         killTimer( reconnectTimerId_ );
         reconnectTimerId_ = -1;
     }
+
+    emit newStatistic( new QChatStatistic( YOUTUBE_SERVICE, "", this ) );
 }
 
 void QYoutubeChat::reconnect()
@@ -128,6 +132,11 @@ void QYoutubeChat::onChannelInfoLoaded()
 
         if( updateMessagesTimerId_ == -1 )
             updateMessagesTimerId_ = startTimer( updateMessagesInterval_ );
+
+        getStatistic();
+
+        if( updateStatisticTimerId_ == -1 )
+            updateStatisticTimerId_ = startTimer( updateStatisticInterval_ );
     }
 
     reply->deleteLater();
@@ -244,14 +253,43 @@ void QYoutubeChat::onMessagesLoadError()
 
 void QYoutubeChat::getStatistic()
 {
+    //if( channelName_.isEmpty() )
+    //  return;
+
+    QNetworkRequest request( QUrl( DEFAULT_YOUTUBE_STATISTIC_PREFIX + channelName_ ) );
+    QNetworkReply * reply = nam_->get( request );
+
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onStatisticLoaded() ) );
+    QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onStatisticLoadError() ) );
+
 }
 
 void QYoutubeChat::onStatisticLoaded()
 {
+
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    QString statistic = reply->readAll();
+
+    bool isOk = false;
+
+
+    statistic.toInt( &isOk );
+
+    if( !isOk )
+        statistic = "0";
+
+    emit newStatistic( new QChatStatistic( YOUTUBE_SERVICE, statistic, this ) );
+
+    reply->deleteLater();
+
 }
 
 void QYoutubeChat::onStatisticLoadError()
 {
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    reply->deleteLater();
 }
 
 void QYoutubeChat::timerEvent( QTimerEvent * event )

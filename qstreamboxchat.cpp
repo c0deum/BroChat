@@ -193,7 +193,11 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
                         message.replace( "<span class=\"chat_text_plain\">", "" );
                         message.replace( "</span>", "" );
 
-                        //qDebug() << message;
+                        message.replace( "<a href=\"", "" );
+
+                        message.replace( QRegExp( "\\\" target(.*)\\>" ), "" );
+
+                        qDebug() << message;
 
                         //message.replace( "/img/smiles/", DEFAULT_STREAMBOX_SMILE_DIR_PREFIX )  ;
 
@@ -235,18 +239,6 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
                     }
                 }
             }
-/*
-            <div class="message women" ng-if="message.event == 'women'">
-                <span ng-if="message.action == 'slap'">{{message.women}} шлепнула по попке {{message.user}}</span>
-                <span ng-if="message.action == 'hit'">{{message.women}} надавала по заднице {{message.user}}</span>
-                <span ng-if="message.action == 'deo'">{{message.women}} попшикала антиперспирантом под мышками {{message.user}}</span>
-                <span ng-if="message.action == 'pimple'">{{message.women}} выдавила прыщик {{message.user}}</span>
-                <span ng-if="message.action == 'head'">{{message.women}} погладила по головке {{message.user}}</span>
-                <span ng-if="message.action == 'eyeon'">{{message.women}} подмигнула {{message.user}}</span>
-                <span ng-if="message.action == 'limf'">{{message.women}} укусила в лимфоузел {{message.user}}</span>
-            </div>
-это сообщения с коммандами
-*/
             else if( event == "women" )
             {
 

@@ -12,6 +12,10 @@
 
 #include <QTimerEvent>
 
+#include <QApplication>
+#include <QDir>
+#include <QStringList>
+
 #include "settingsconsts.h"
 
 #include "qgamerstvchat.h"
@@ -136,16 +140,30 @@ void QGamersTvChat::onSmilesLoaded()
 
                 foreach( const QJsonValue& smile, smiles )
                 {
-                    smiles_.append( QChatSmile(
-                                                smile.toObject()[ "code" ].toString(),
-                                                DEFAULT_GAMERSTV_SMILES_DIR + smile.toObject()[ "src" ].toString(),
-                                                smile.toObject()[ "width" ].toInt(),
-                                                smile.toObject()[ "height" ].toInt() ) );
+                    smiles_.append( QChatSmile( smile.toObject()[ "code" ].toString(),
+                                                DEFAULT_GAMERSTV_SMILES_DIR + smile.toObject()[ "src" ].toString() ) );
                 }
                 if( isShowSystemMessages() )
                     emit newMessage( new QChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Smiles ready...", "", this ) );
             }
         }
+    }
+
+    //own smiles code
+    QString smilesPath = QApplication::applicationDirPath() + "/smiles";
+
+    QStringList extList;
+    extList << "*.svg" << "*.png" << "*.gif" << "*.jpg";
+
+    QDir smilesDir( smilesPath );
+
+    QStringList smileFiles = smilesDir.entryList( extList, QDir::Files | QDir::NoSymLinks );
+
+    foreach( const QString& smileName, smileFiles )
+    {
+        QChatSmile smile( ":" + smileName.left( smileName.length() - 4 ) + ":",
+                          "file:///" + smilesPath + "/" + smileName );
+        smiles_.append(  smile );
     }
 
     reply->deleteLater();

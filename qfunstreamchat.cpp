@@ -15,6 +15,10 @@
 
 #include <QSettings>
 
+#include <QApplication>
+#include <QDir>
+#include <QStringList>
+
 #include "settingsconsts.h"
 
 #include "qfunstreamchat.h"
@@ -264,18 +268,34 @@ void QFunStreamChat::onSmilesLoaded()
             foreach( const QJsonValue &smileInfo, jsonSmilesInfoArr )
             {
                 QJsonObject smileInfoObj = smileInfo.toObject();
-                smiles_.append( QChatSmile( ":" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString(), 0 , 0 ) );
+                smiles_.append( QChatSmile( ":" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString() ) );
 
                 //Free smiles for funstream
-                smiles_.append( QChatSmile( ":free-" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString(), 0 , 0 ) );
+                smiles_.append( QChatSmile( ":free-" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString() ) );
 
-            }
+            }                        
 
             if( isShowSystemMessages() )
                 emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Smiles ready...", "", this ) );
         }
     }
 
+    //own smiles code
+    QString smilesPath = QApplication::applicationDirPath() + "/smiles";
+
+    QStringList extList;
+    extList << "*.svg" << "*.png" << "*.gif" << "*.jpg";
+
+    QDir smilesDir( smilesPath );
+
+    QStringList smileFiles = smilesDir.entryList( extList, QDir::Files | QDir::NoSymLinks );
+
+    foreach( const QString& smileName, smileFiles )
+    {
+        QChatSmile smile( ":" + smileName.left( smileName.length() - 4 ) + ":",
+                          "file:///" + smilesPath + "/" + smileName );
+        smiles_.append( smile );
+    }
 
     reply->deleteLater();
 }

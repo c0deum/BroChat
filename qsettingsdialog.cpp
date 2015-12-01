@@ -310,7 +310,10 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QFontDatabase fontDataBase;
 
-    QVBoxLayout *defaultStyleLayout = new QVBoxLayout;
+    QVBoxLayout *defaultStyleLayout = new QVBoxLayout();
+
+
+    QHBoxLayout * fontNameLayout = new QHBoxLayout();
 
     QLabel *fontNameLabel = new QLabel( tr( "Font Name:" ) );
 
@@ -319,35 +322,52 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     int index = fontNameCombo->findText( settings.value( GENERATED_STYLE_FONT_NAME_SETTING_PATH, DEFAULT_GENERATED_STYLE_FONT_NAME ).toString() );
     fontNameCombo->setCurrentIndex( index );
 
-    defaultStyleLayout->addWidget( fontNameLabel );
-    defaultStyleLayout->addWidget( fontNameCombo );
+    fontNameLayout->addWidget( fontNameLabel );
+    fontNameLayout->addWidget( fontNameCombo );
 
+    defaultStyleLayout->addLayout( fontNameLayout );
+
+
+    QHBoxLayout * nickNamesFontSizeLayout = new QHBoxLayout();
 
     QLabel *nicknamesFontSizeLabel = new QLabel( tr( "Nicknames Font Size:" ) );
     nicknamesFontSizeSpinBox->setRange( 1, 100 );
     nicknamesFontSizeSpinBox->setValue( settings.value( GENERATED_STYLE_NICKNAMES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE ). toInt() );
 
-    defaultStyleLayout->addWidget( nicknamesFontSizeLabel );
-    defaultStyleLayout->addWidget( nicknamesFontSizeSpinBox );
+    nickNamesFontSizeLayout->addWidget( nicknamesFontSizeLabel );
+    nickNamesFontSizeLayout->addWidget( nicknamesFontSizeSpinBox );
 
+    defaultStyleLayout->addLayout( nickNamesFontSizeLayout );
+
+
+    QHBoxLayout * nickNamesTextColorLayout = new QHBoxLayout();
 
     QLabel *nicknamesTextColorTextLabel = new QLabel( tr( "Nicknames Text Color:" ) );
+    //nicknamesTextColorTextLabel->setStyleSheet("QLabel { border: 1px solid rgb(128,128,128) }");
     nicknamesTextColorButton->setFlat( true );
     nicknamesTextColor = settings.value( GENERATED_STYLE_NICKNAMES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_TEXT_COLOR ).toUInt();
     setColorButtonStyle( nicknamesTextColorButton, nicknamesTextColor );
     QObject::connect( nicknamesTextColorButton, SIGNAL( clicked() ), this, SLOT( nicknamesColorSelection() ) );
 
-    defaultStyleLayout->addWidget( nicknamesTextColorTextLabel );
-    defaultStyleLayout->addWidget( nicknamesTextColorButton );
+    nickNamesTextColorLayout->addWidget( nicknamesTextColorTextLabel );
+    nickNamesTextColorLayout->addWidget( nicknamesTextColorButton );
 
+    defaultStyleLayout->addLayout( nickNamesTextColorLayout );
+
+
+    QHBoxLayout * messagesFontSizeLayout = new QHBoxLayout();
 
     QLabel *messagesFontSizeLabel = new QLabel( tr( "Messages Font Size:" ) );
     messagesFontSizeSpinBox->setRange( 1, 100 );
     messagesFontSizeSpinBox->setValue( settings.value( GENERATED_STYLE_MESSAGES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE ).toInt() );
 
-    defaultStyleLayout->addWidget( messagesFontSizeLabel );
-    defaultStyleLayout->addWidget( messagesFontSizeSpinBox );
+    messagesFontSizeLayout->addWidget( messagesFontSizeLabel );
+    messagesFontSizeLayout->addWidget( messagesFontSizeSpinBox );
 
+    defaultStyleLayout->addLayout( messagesFontSizeLayout );
+
+
+    QHBoxLayout * messagesTextColorTextLayout = new QHBoxLayout();
 
     QLabel *messagesTextColorTextLabel = new QLabel( tr( "Messages Text Color:" ) );
     messagesTextColorButton->setFlat( true );
@@ -355,17 +375,26 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     setColorButtonStyle( messagesTextColorButton, messagesTextColor );
     QObject::connect( messagesTextColorButton, SIGNAL( clicked() ), this, SLOT( messagesColorSelection() ) );
 
-    defaultStyleLayout->addWidget( messagesTextColorTextLabel );
-    defaultStyleLayout->addWidget( messagesTextColorButton );
+    messagesTextColorTextLayout->addWidget( messagesTextColorTextLabel );
+    messagesTextColorTextLayout->addWidget( messagesTextColorButton );
 
+    defaultStyleLayout->addLayout( messagesTextColorTextLayout );
+
+
+
+    QHBoxLayout * viewersFontSizeLayout = new QHBoxLayout();
 
     QLabel *viewersFontSizeLabel = new QLabel( tr( "Viewers Font Size:" ) );
     viewersFontSizeSpinBox->setRange( 1, 100 );
     viewersFontSizeSpinBox->setValue( settings.value( GENERATED_STYLE_VIEWERS_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_FONT_SIZE ).toInt() );
 
-    defaultStyleLayout->addWidget( viewersFontSizeLabel );
-    defaultStyleLayout->addWidget( viewersFontSizeSpinBox );
+    viewersFontSizeLayout->addWidget( viewersFontSizeLabel );
+    viewersFontSizeLayout->addWidget( viewersFontSizeSpinBox );
 
+    defaultStyleLayout->addLayout( viewersFontSizeLayout );
+
+
+    QHBoxLayout * viewersTextColorTextLayout = new QHBoxLayout();
 
     QLabel *viewersTextColorTextLabel = new QLabel( tr( "Viewers Text Color:" ) );
     viewersTextColorButton->setFlat( true );
@@ -373,15 +402,25 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     setColorButtonStyle( viewersTextColorButton, viewersTextColor );
     QObject::connect( viewersTextColorButton, SIGNAL( clicked() ), this, SLOT( viewersColorSelection() ) );
 
-    defaultStyleLayout->addWidget( viewersTextColorTextLabel );
-    defaultStyleLayout->addWidget( viewersTextColorButton );
+    viewersTextColorTextLayout->addWidget( viewersTextColorTextLabel );
+    viewersTextColorTextLayout->addWidget( viewersTextColorButton );
+
+    defaultStyleLayout->addLayout( viewersTextColorTextLayout );
+
+
+    QHBoxLayout * aliasesFontSizeLayout = new QHBoxLayout();
 
     QLabel *aliasesFontSizeLabel = new QLabel( tr( "Aliases Font Size:" ) );
     aliasesFontSizeSpinBox->setRange( 1, 100 );
     aliasesFontSizeSpinBox->setValue( settings.value( GENERATED_STYLE_ALIASES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_FONT_SIZE ).toInt() );
 
-    defaultStyleLayout->addWidget( aliasesFontSizeLabel );
-    defaultStyleLayout->addWidget( aliasesFontSizeSpinBox );
+    aliasesFontSizeLayout->addWidget( aliasesFontSizeLabel );
+    aliasesFontSizeLayout->addWidget( aliasesFontSizeSpinBox );
+
+    defaultStyleLayout->addLayout( aliasesFontSizeLayout );
+
+
+    QHBoxLayout * aliasesTextColorTextLayout = new QHBoxLayout();
 
     QLabel *aliasesTextColorTextLabel = new QLabel( tr( "Aliases Text Color:" ) );
     aliasesTextColorButton->setFlat( true );
@@ -389,24 +428,38 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     setColorButtonStyle( aliasesTextColorButton, aliasesTextColor );
     QObject::connect( aliasesTextColorButton, SIGNAL( clicked() ), this, SLOT( aliasesColorSelection() ) );
 
-    defaultStyleLayout->addWidget( aliasesTextColorTextLabel );
-    defaultStyleLayout->addWidget( aliasesTextColorButton );
+    aliasesTextColorTextLayout->addWidget( aliasesTextColorTextLabel );
+    aliasesTextColorTextLayout->addWidget( aliasesTextColorButton );
+
+    defaultStyleLayout->addLayout( aliasesTextColorTextLayout );
+
+
+    QHBoxLayout * smilesSizeLayout = new QHBoxLayout();
 
     QLabel *smilesSizeLabel = new QLabel( tr( "Smiles Size:" ) );
     smilesSizeSpinBox->setRange( 1, 100 );
     smilesSizeSpinBox->setValue( settings.value( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SMILES_SIZE ).toInt() );
 
-    defaultStyleLayout->addWidget( smilesSizeLabel );
-    defaultStyleLayout->addWidget( smilesSizeSpinBox );
+    smilesSizeLayout->addWidget( smilesSizeLabel );
+    smilesSizeLayout->addWidget( smilesSizeSpinBox );
 
+    defaultStyleLayout->addLayout( smilesSizeLayout );
+
+
+
+    QHBoxLayout * serviceIconsSizeLayout = new QHBoxLayout();
 
     QLabel *serviceIconsSizeLabel = new QLabel( tr( "Service Icons Size:" ) );
     serviceIconsSizeSpinBox->setRange( 1, 100 );
     serviceIconsSizeSpinBox->setValue( settings.value( GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SERVICE_ICONS_SIZE ).toInt() );
 
-    defaultStyleLayout->addWidget( serviceIconsSizeLabel );
-    defaultStyleLayout->addWidget( serviceIconsSizeSpinBox );
+    serviceIconsSizeLayout->addWidget( serviceIconsSizeLabel );
+    serviceIconsSizeLayout->addWidget( serviceIconsSizeSpinBox );
 
+    defaultStyleLayout->addLayout( serviceIconsSizeLayout );
+
+
+    QHBoxLayout * animationTypeLayout = new QHBoxLayout();
 
     QLabel *animationTypeLabel = new QLabel( tr( "Animation type:" ) );
 
@@ -418,8 +471,11 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     animationTypeCombo->setEditable( false );
     animationTypeCombo->setCurrentIndex( animationTypeCombo->findText( settings.value( GENERATED_STYLE_ANIMATION_TYPE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ANIMATION_TYPE ).toString() ) );
 
-    defaultStyleLayout->addWidget( animationTypeLabel );
-    defaultStyleLayout->addWidget( animationTypeCombo );
+    animationTypeLayout->addWidget( animationTypeLabel );
+    animationTypeLayout->addWidget( animationTypeCombo );
+
+    defaultStyleLayout->addLayout( animationTypeLayout );
+
 
     defaultStyleLayout->addStretch( 1 );
 
@@ -1190,7 +1246,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( buttonOk, SIGNAL( clicked() ), this, SLOT( accept() ) );
     QObject::connect( buttonOk, SIGNAL( clicked() ), this, SLOT( saveSettings() ) );
-    QObject::connect( buttonCancel, SIGNAL( clicked() ), this, SLOT( reject() ) );
+    QObject::connect( buttonCancel, SIGNAL( clicked() ), this, SLOT( reject() ) );    
 
     buttonsLayout->addStretch( 1 );
     buttonsLayout->addWidget( buttonOk );
@@ -1200,7 +1256,11 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     setLayout( mainLayout );
 
-    update();
+    QObject::connect( this, SIGNAL( finished( int ) ), this, SLOT( saveDialogSettings() ) );;
+
+    loadDialogSettings();
+
+    update();    
 }
 
 QSettingsDialog::~QSettingsDialog()
@@ -2095,7 +2155,6 @@ void QSettingsDialog::saveSettings()
         emit youtubeRemoveBlackListUsersChanged( youtubeRemoveBlackListUsersCheckBox->isChecked() );
     }
 
-
 }
 
 void QSettingsDialog::setColorButtonStyle( QPushButton *button, QRgb color, int fontSize )
@@ -2107,7 +2166,7 @@ void QSettingsDialog::setColorButtonStyle( QPushButton *button, QRgb color, int 
                            QString::number( rgbaColor.green() ) + "," +
                             QString::number( rgbaColor.blue() ) + "," +
                            QString::number( rgbaColor.alpha() ) + ");" +
-                           "border-style: solid; font-size: " + QString::number( fontSize ) + "px;}" );
+                           "border: 1px solid rgba(128,128,128,0.5); font-size: " + QString::number( fontSize ) + "px;}" );
 
 
 
@@ -2159,6 +2218,34 @@ void QSettingsDialog::aliasesColorSelection()
         aliasesTextColor = color;
         setColorButtonStyle( aliasesTextColorButton, aliasesTextColor );
     }
+}
+
+void QSettingsDialog::loadDialogSettings()
+{
+    QSettings settings;
+
+    const int TEST_VALUE = -1;
+
+    int width = settings.value( "/Settings/SettingsWindow/Width", TEST_VALUE ).toInt();
+    int height = settings.value( "/Settings/SettingsWindow/Height", TEST_VALUE ).toInt();
+
+    int xPos = settings.value( "/Settings/SettingsWindow/X", TEST_VALUE ).toInt();
+    int yPos = settings.value( "/Settings/SettingsWindow/Y", TEST_VALUE ).toInt();
+
+    if( xPos != TEST_VALUE && yPos != TEST_VALUE )
+        move( xPos, yPos );
+    if( width != TEST_VALUE && height != TEST_VALUE )
+        resize( width, height );
+}
+
+void QSettingsDialog::saveDialogSettings()
+{
+    QSettings settings;
+
+    settings.setValue( "/Settings/SettingsWindow/X", pos().x() );
+    settings.setValue( "/Settings/SettingsWindow/Y", pos().y() );
+    settings.setValue( "/Settings/SettingsWindow/Width", width() );
+    settings.setValue( "/Settings/SettingsWindow/Height", height() );
 }
 
 //TODO: retranslate

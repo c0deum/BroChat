@@ -15,6 +15,8 @@ const QString DEFAULT_ACES_CHAT_REQUEST_LINK_PREFIX = "http://aces.gg/engine/aja
 const QString DEFAULT_ACES_SMILES_SHORT = "/uploads/hdgstournament/smiley/";
 const QString DEFAULT_ACES_SMILES_LINK_PREFIX = "http://aces.gg/uploads/hdgstournament/smiley/";
 
+const QString DEFAULT_ACES_CHANNEL_INFO_PREFIX = "http://aces.gg/streams/stream/";
+
 const QString ACES_USER = "ACES";
 const QString ACES_SERVICE = "aces";
 
@@ -32,6 +34,7 @@ QAcesChat::QAcesChat( QObject *parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
 , channelName_()
+, channelId_()
 , lastMessageId_( -1 )
 , updateChatInfoTimerId_( -1 )
 , reconnectTimerId_( -1 )
@@ -53,12 +56,15 @@ void QAcesChat::connect()
     if( isShowSystemMessages() )
         emit newMessage( new QChatMessage( ACES_SERVICE, ACES_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
-    getLastMessage();
+    getChannelInfo();
+
+    //getLastMessage();
 }
 
 void QAcesChat::disconnect()
 {
     channelName_ = "";
+    channelId_ = "";
     lastMessageId_ = -1;
 
     if( updateChatInfoTimerId_ >= 0 )
@@ -84,9 +90,50 @@ void QAcesChat::reconnect()
     connect();
 }
 
+void QAcesChat::getChannelInfo()
+{
+    QNetworkRequest request( QUrl( DEFAULT_ACES_CHANNEL_INFO_PREFIX + channelName_ + "/" ) );
+    QNetworkReply * reply = nam_->get( request );
+
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChannelInfoLoaded() ) );
+    QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onChannelInfoLoadError() ) );
+}
+
+void QAcesChat::onChannelInfoLoaded()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    QString channelInfo = reply->readAll();
+
+    const QString DATA_CHAT_ID = "data-chat_id=\"";
+
+    int idPosStart = channelInfo.indexOf( DATA_CHAT_ID ) + DATA_CHAT_ID.length();
+
+    int idPosEnd = channelInfo.indexOf( "\"", idPosStart ) - 1;
+
+    if( idPosEnd - idPosStart + 1 > 0 )
+    {
+        channelId_ = channelInfo.mid( idPosStart, idPosEnd - idPosStart + 1 );
+        getLastMessage();
+    }
+    else
+    {
+        if( isShowSystemMessages() )
+            emit newMessage( new QChatMessage( ACES_SERVICE, ACES_USER, "Can not find channel_id for channel " + channelName_ + "...", "", this ) );
+    }
+
+    reply->deleteLater();
+}
+
+void QAcesChat::onChannelInfoLoadError()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+    reply->deleteLater();
+}
+
 void QAcesChat::getLastMessage()
 {
-    QNetworkRequest request( QUrl( DEFAULT_ACES_CHAT_REQUEST_LINK_PREFIX + "1&chat_message_f_chat=" + channelName_ ) );
+    QNetworkRequest request( QUrl( DEFAULT_ACES_CHAT_REQUEST_LINK_PREFIX + "1&chat_message_f_chat=" + channelId_ ) );
     QNetworkReply *reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onLastMessageLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onLastMessageLoadError() ) );
@@ -244,12 +291,21 @@ void QAcesChat::onChatInfoLoaded()
             if( message.left( SPAN.length() ) == SPAN )
             {
                 message = message.right( message.length() - message.indexOf( "\">" ) - 2 );
-                message = message.replace( "</span>", "" );
+                message.replace( "</span>", "" );
             }
 
-            message = message.replace( DEFAULT_ACES_SMILES_SHORT, DEFAULT_ACES_SMILES_LINK_PREFIX );
-            message = message.replace( "img src=", "img class = \"smile\" src=" );
-            message = message.replace( '\'', "\"" );
+            message.replace( DEFAULT_ACES_SMILES_SHORT, DEFAULT_ACES_SMILES_LINK_PREFIX );
+            message.replace( "img src=", "img class = \"smile\" src=" );
+            message.replace( '\'', "\"" );
+
+            //"<a href=\"http://aces.gg/index.php?do=streams&stream=52\" target=\"_blank\">http://aces.gg/index.php?do=streams&stream=52</a>"
+
+            qDebug() << message;
+
+            message.replace( "</a>", "" );
+            message.replace( QRegExp( "\\<a href=(.*)>" ), "" );
+
+            qDebug() << message;
 
             MessageData messageData;
             messageData.nickName = nickName;
@@ -326,7 +382,7 @@ void QAcesChat::timerEvent( QTimerEvent *event )
 {
     if( event->timerId() == updateChatInfoTimerId_ )
     {
-        QString reqStr = DEFAULT_ACES_CHAT_REQUEST_LINK_PREFIX + "50&chat_message_f_chat=" + channelName_ + "&chat_message_f_msg_max_id=" + QString::number( lastMessageId_ );
+        QString reqStr = DEFAULT_ACES_CHAT_REQUEST_LINK_PREFIX + "50&chat_message_f_chat=" + channelId_ + "&chat_message_f_msg_max_id=" + QString::number( lastMessageId_ );
 
         QNetworkRequest request( QUrl(  reqStr + "" ) );
         QNetworkReply *reply = nam_->get( request );

@@ -20,7 +20,8 @@ public:
     explicit QSettingsDialog( QWidget *parent = 0 );
     virtual ~QSettingsDialog();
 private:
-    void setColorButtonStyle( QPushButton *button, QRgb color, int fontSize = 16 );
+    void loadDialogSettings();
+    void setColorButtonStyle( QPushButton *button, QRgb color, int fontSize = 16 );    
 private slots:
     void nicknamesColorSelection();
     void messagesColorSelection();
@@ -28,6 +29,7 @@ private slots:
     void aliasesColorSelection();
 public slots:
     void saveSettings();
+    void saveDialogSettings();
 signals:
     void opacityChanged();
     void styleChanged();

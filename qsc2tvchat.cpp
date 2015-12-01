@@ -149,18 +149,10 @@ void QSc2tvChat::onSmilesLoaded()
 
                     //qDebug() << img;
 
-                    QChatSmile smile(   ":s" + jsonSmile[ "code" ].toString(),
-                                        img,
-                                        jsonSmile[ "width" ].toInt(),
-                                        jsonSmile[ "height" ].toInt()
-                                    );
+                    QChatSmile smile(   ":s" + jsonSmile[ "code" ].toString(), img );
                     smiles_.append( smile );
 
-                    QChatSmile freeSmile(   jsonSmile[ "code" ].toString().insert( 1, "free-" ),
-                                            img,
-                                            jsonSmile[ "width" ].toInt(),
-                                            jsonSmile[ "height" ].toInt()
-                                    );
+                    QChatSmile freeSmile( jsonSmile[ "code" ].toString().insert( 1, "free-" ), img );
                     smiles_.append( freeSmile );
 
                 }
@@ -181,7 +173,7 @@ void QSc2tvChat::onSmilesLoaded()
     foreach( const QString& smileName, smileFiles )
     {
         QChatSmile smile(   ":" + smileName.left( smileName.length() - 4 ) + ":",
-                                "file:///" + smilesPath + "/" + smileName, 0, 0 );
+                                "file:///" + smilesPath + "/" + smileName );
         smiles_.append( smile );
     }
 
@@ -446,12 +438,12 @@ void QSc2tvChat::onMessagesLoaded()
                     //TODO: править
 
 
-                    message = message.replace( "[b]", "" );
-                    message = message.replace( "[/b]", "" );
-                    message = message.replace( "[url]", "" );
-                    message = message.replace( "[/url]", "" );
+                    message.replace( "[b]", "" );
+                    message.replace( "[/b]", "" );
+                    message.replace( "[url]", "" );
+                    message.replace( "[/url]", "" );
 
-                    message = message.replace( QRegExp( "\\[url=(.*)\\]" ), "" );
+                    message.replace( QRegExp( "\\[url=(.*)\\]" ), "" );
 
 
 

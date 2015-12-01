@@ -19,6 +19,10 @@
 
 #include <QXmppMucManager.h>
 
+#include <QApplication>
+#include <QDir>
+#include <QStringList>
+
 #include "settingsconsts.h"
 
 
@@ -184,7 +188,7 @@ void QReallTvChat::onConnected()
 
     getChannelInfo();
 
-    emit newStatistic( new QChatStatistic( REALLTV_SERVICE, "", this ) );
+    //emit newStatistic( new QChatStatistic( REALLTV_SERVICE, "", this ) );
 
     smiles_.clear();
     getSmiles();
@@ -415,7 +419,7 @@ void QReallTvChat::onSmilesLoaded()
                 {
                     QJsonObject smileInfo = value.toObject();
 
-                    QChatSmile smile(  smileInfo[ "plain" ].toString(), DEFAULT_REALLTV_SMILES_PREFIX + smileInfo[ "image" ].toString(), 0 ,0 );
+                    QChatSmile smile(  smileInfo[ "plain" ].toString(), DEFAULT_REALLTV_SMILES_PREFIX + smileInfo[ "image" ].toString() );
 
                     smiles_.insert( smileInfo[ "plain" ].toString(), smile );
 
@@ -427,6 +431,22 @@ void QReallTvChat::onSmilesLoaded()
 
     }
 
+    //own smiles code
+    QString smilesPath = QApplication::applicationDirPath() + "/smiles";
+
+    QStringList extList;
+    extList << "*.svg" << "*.png" << "*.gif" << "*.jpg";
+
+    QDir smilesDir( smilesPath );
+
+    QStringList smileFiles = smilesDir.entryList( extList, QDir::Files | QDir::NoSymLinks );
+
+    foreach( const QString& smileName, smileFiles )
+    {
+        QChatSmile smile( ":" + smileName.left( smileName.length() - 4 ) + ":",
+                          "file:///" + smilesPath + "/" + smileName );
+        smiles_.insert( smile.name(), smile );
+    }
 
     if( isShowSystemMessages() )
         emit newMessage( new QChatMessage( REALLTV_SERVICE, REALLTV_USER, "Smiles ready...", "", this ) );

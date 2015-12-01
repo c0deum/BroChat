@@ -1,10 +1,8 @@
 #include "qchatsmile.h"
 
-QChatSmile::QChatSmile( const QString& name, const QString &link, int width, int height )
+QChatSmile::QChatSmile( const QString& name, const QString &link )
 : name_( name )
 , link_( link )
-, width_( width )
-, height_( height )
 {
 }
 
@@ -30,25 +28,5 @@ QString QChatSmile::link() const
 void QChatSmile::setLink( const QString &link )
 {
     link_ = link;
-}
-
-int QChatSmile::width() const
-{
-    return width_;
-}
-
-void QChatSmile::setWidth( int width )
-{
-    width_ = width;
-}
-
-int QChatSmile::height() const
-{
-    return height_;
-}
-
-void QChatSmile::setHeight( int height )
-{
-    height_ = height;
 }
 

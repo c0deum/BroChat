@@ -326,9 +326,7 @@ void QTwitchChat::onEmotIconsLoaded()
                 QJsonObject jsonEmotIcon = value.toObject();
 
                 QChatSmile smile(   jsonEmotIcon[ "regex" ].toString(),
-                                    jsonEmotIcon[ "url" ].toString(),
-                                    jsonEmotIcon[ "width" ].toInt(),
-                                    jsonEmotIcon[ "height" ].toInt() );
+                                    jsonEmotIcon[ "url" ].toString() );
                 //emotIcons_.append( smile );
                 emotIcons_.insert( smile.name(), smile );
             }
@@ -350,7 +348,7 @@ void QTwitchChat::onEmotIconsLoaded()
     foreach( const QString& smileName, smileFiles )
     {
         QChatSmile smile(   ":" + smileName.left( smileName.length() - 4 ) + ":",
-                                "file:///" + smilesPath + "/" + smileName, 0, 0 );
+                                "file:///" + smilesPath + "/" + smileName );
         emotIcons_.insert( smile.name(), smile );
 
         //qDebug() << smile.name() << smile.link();

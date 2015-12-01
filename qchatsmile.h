@@ -6,7 +6,7 @@
 class QChatSmile
 {
 public:
-    explicit QChatSmile( const QString &name, const QString &link, int widt, int height );
+    explicit QChatSmile( const QString &name, const QString &link );
     ~QChatSmile();
 
     QString name() const;
@@ -14,18 +14,9 @@ public:
 
     QString link() const;
     void setLink( const QString &link );
-
-    int width() const;
-    void setWidth( int width );
-
-    int height() const;
-    void setHeight( int height );
-
 private:
     QString name_;
     QString link_;
-    int width_;
-    int height_;
 };
 
 #endif // QCHATSMILE_H

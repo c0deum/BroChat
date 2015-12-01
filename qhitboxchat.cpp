@@ -14,6 +14,10 @@
 
 #include <QTimerEvent>
 
+#include <QApplication>
+#include <QDir>
+#include <QStringList>
+
 #include "settingsconsts.h"
 
 #include "qhitboxchat.h"
@@ -259,12 +263,29 @@ void QHitBoxChat::onSmilesLoaded()
             {
                 QJsonObject smileInfo = smileInfoValue.toObject();
 
-                smiles_.append( QChatSmile( smileInfo[ "icon_short" ].toString(), DEFAULT_HITBOX_SMILES_PREFIX + smileInfo[ "icon_path" ].toString(), 0, 0 ) );
-                smiles_.append( QChatSmile( smileInfo[ "icon_short_alt" ].toString(), DEFAULT_HITBOX_SMILES_PREFIX + smileInfo[ "icon_path" ].toString(), 0, 0 ) );
+                smiles_.append( QChatSmile( smileInfo[ "icon_short" ].toString(), DEFAULT_HITBOX_SMILES_PREFIX + smileInfo[ "icon_path" ].toString() ) );
+                smiles_.append( QChatSmile( smileInfo[ "icon_short_alt" ].toString(), DEFAULT_HITBOX_SMILES_PREFIX + smileInfo[ "icon_path" ].toString() ) );
             }
 
             //qDebug() << smiles_;
         }
+    }
+
+    //own smiles code
+    QString smilesPath = QApplication::applicationDirPath() + "/smiles";
+
+    QStringList extList;
+    extList << "*.svg" << "*.png" << "*.gif" << "*.jpg";
+
+    QDir smilesDir( smilesPath );
+
+    QStringList smileFiles = smilesDir.entryList( extList, QDir::Files | QDir::NoSymLinks );
+
+    foreach( const QString& smileName, smileFiles )
+    {
+        QChatSmile smile( ":" + smileName.left( smileName.length() - 4 ) + ":",
+                          "file:///" + smilesPath + "/" + smileName );
+        smiles_.append( smile );
     }
 
     if( isShowSystemMessages() )

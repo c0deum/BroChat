@@ -63,7 +63,7 @@ private:
     int joinRequestId_;
     int statisticRequestId_;
     int historyRequestId_;
-    int historyLastMessageId_;
+    int historyLastMessageId_;        
 };
 
 #endif // QFUNSTREAMCHAT_H

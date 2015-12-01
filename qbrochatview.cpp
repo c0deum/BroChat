@@ -236,6 +236,7 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     //youtube
     QObject::connect( youtubeChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( youtubeChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), youtubeChat_, SLOT( reconnect() ) );
 
     //livecoding
