@@ -24,16 +24,26 @@ body
 
 #messagesList
 {
-	padding-bottom: 36px;
+	padding-bottom: 32px;
 }
 
-#viewersHader
+#viewersHeader
 {
 	position: fixed;
 	bottom: 0;
-	height: 36px;
+	height: 32px;
 	width: 100%;
 	font-size: 24px;
+}
+
+.viewersInfoShow
+{
+        display: inline;
+}
+
+.viewersInfoHide
+{
+        display: none;
 }
 
 .alias .messagebox
@@ -171,4 +181,58 @@ body
 {
 	content: url(../resources/youtubelogo.png);
 	height: 16px;
+}
+
+.cybergameViewers
+{
+	content: url(../resources/cybergamelogo.png);
+	height:24px;
+}
+
+.funstreamViewers
+{
+	content: url(../resources/funstreamlogo.png);
+	height:24px;
+}
+
+.goodgameViewers
+{
+	content: url(../resources/goodgamelogo.png);
+	height:24px;
+}
+
+.hitboxViewers
+{
+	content: url(../resources/hitboxlogo.png);
+	height:24px;
+}
+
+.realltvViewers
+{
+	content: url(../resources/realltvlogo.png);
+	height:24px;
+}	
+
+.twitchViewers
+{
+	content: url(../resources/twitchlogo.png);
+	height:24px;
+}	
+
+.youtubeViewers
+{
+        content: url(../resources/youtubelogo.png);
+        height:24px;
+}
+
+.gamerstvViewers
+{
+	content: url(../resources/gamerstvlogo.png);
+	height:24px;
+}
+
+.streamboxViewers
+{        
+	content: url(../resources/streamboxlogo.png);
+	height:24px;
 }

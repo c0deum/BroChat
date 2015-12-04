@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QStringList>
 
+#include <QJsonObject>
+
 #include "qchatmessage.h"
 #include "qchatstatistic.h"
 
@@ -45,6 +47,7 @@ public slots:
 signals:
     void newMessage( QChatMessage *message );
     void newStatistic( QChatStatistic *statistic );
+    void message( QJsonObject & json );
 private:
     bool enabled_;
     bool showSystemMessages_;

@@ -1,25 +1,59 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-		<link rel="stylesheet" href="viewerstest/viewerstest.css">
-    </head>
-    <script>
+        <head>
+                <meta charset="utf-8">
+                <link rel="stylesheet" href="viewerstest/viewerstest.css">
+        </head>
+        <script>
+                var VIEWERS_INFO_POSTFIX = "ViewersInfo";
+                var VIEWERS_INFO_SHOW = "viewersInfoShow";
+                var VIEWERS_INFO_HIDE = "viewersInfoHide";
+                
+                var servicesArray = [ "cybergame", "goodgame", "hitbox", "realltv", "twitch", "youtube", "funstream", "gamerstv", "streambox" ];
+                
+                var MESSAGE = "message";
+                var STATISTIC = "statistic";
+                
+                function resetViewers()
+                {
+                        for( i = 0; i < servicesArray.length; ++i )
+                        {
+                                onStatisticReceived( servicesArray[ i ], "" );
+                        }
+                }                                
+                
 		function scrollToBottom()
 		{
 			document.body.scrollTop = document.body.scrollHeight;
 		}		
-		function onStatisticReceived( service, value )
+		function onStatisticReceived( service, value )		
 		{
-			var serviceDiv = document.getElementById( service );
-			if( serviceDiv )
-			{
-				serviceDiv.innerHTML = "[" + value + "]";
-				//alert( 'ok' );
-			}
+                        var viewersInfoDiv = document.getElementById( service + VIEWERS_INFO_POSTFIX );
+                        
+                        if( viewersInfoDiv )
+                        {
+                                if( "" == value )
+                                {
+                                        viewersInfoDiv.className = VIEWERS_INFO_HIDE;
+                                }
+                                else
+                                {		
+                                        if( VIEWERS_INFO_HIDE == viewersInfoDiv.className )
+                                        {
+                                                viewersInfoDiv.className = VIEWERS_INFO_SHOW;
+                                        }
+                                                
+                                        var serviceDiv = document.getElementById( service );						
+			
+                                        if( serviceDiv )
+                                        {
+                                                serviceDiv.innerHTML = "[" + value + "]";
+                                        }                                                        
+                                }                                
+                        }                        
 		}
-        function onNewMessage( service, nickName, message, type )
-        {	
+                function onNewMessage( service, nickName, message, type )
+                {	
 			var serviceElem = document.createElement( "img" );
 			serviceElem.className = service;
 			
@@ -61,60 +95,77 @@
 				messagesList.appendChild( messageBox );
 			}		
 			scrollToBottom();			
-        }
-    </script>
-    <body>	
-        <div id="messagesList"></div>
-		<div id="viewersHader">
-			<span><span class = "cybergame"></span><span class = "statistic" id="cybergame"></span></span>
-			<span><span class = "goodgame"></span><span class = "statistic" id="goodgame"></span></span>
-			<span><span class = "hitbox"></span><span class = "statistic" id="hitbox"></span></span>
-			<span><span class = "twitch"></span><span class = "statistic" id="twitch"></span></span>
-			<span><span class = "streambox"></span><span class = "statistic" id="streambox"></span></span>
-		</div>		
-<script>
-	setInterval( scrollToBottom, 500 );	
-</script>		
+                }
+        </script>
+        <body>	
+                <div id="messagesList"></div>
+                <div id="viewersHeader">
+		<span id="cybergameViewersInfo" class = "viewersInfoShow"><span class = "cybergameViewers"></span><span class = "statistic" id="cybergame"></span></span>
+		<span id="goodgameViewersInfo" class = "viewersInfoShow"><span class = "goodgameViewers"></span><span class = "statistic" id="goodgame"></span></span>
+		<span id="hitboxViewersInfo" class = "viewersInfoShow"><span class = "hitboxViewers"></span><span class = "statistic" id="hitbox"></span></span>
+		<span id="realltvViewersInfo" class = "viewersInfoShow"><span class = "realltvViewers"></span><span class = "statistic" id="realltv"></span></span>
+		<span id="twitchViewersInfo" class = "viewersInfoShow"><span class = "twitchViewers"></span><span class = "statistic" id="twitch"></span></span>
+                <span id="youtubeViewersInfo" class = "viewersInfoShow"><span class = "youtubeViewers"></span><span class = "statistic" id="youtube"></span></span>
+		<span id="funstreamViewersInfo" class = "viewersInfoShow"><span class = "funstreamViewers"></span><span class = "statistic" id="funstream"></span></span>
+		<span id="gamerstvViewersInfo" class = "viewersInfoShow"><span class = "gamerstvViewers"></span><span class = "statistic" id="gamerstv"></span></span>
+		<span id="streamboxViewersInfo" class = "viewersInfoShow"><span class = "streamboxViewers"></span><span class = "statistic" id="streambox"></span></span>
+                </div>	
+                <script>
+                        setInterval( scrollToBottom, 500 );	
+                </script>		
 <!--START_BROWSER_CODE-->
-<script>	
-	var wsUri = "ws://localhost:15619";
-	var websocket = null;
-	
-	function initWebSocket() 
-	{
-		try 
-		{
-			if (typeof MozWebSocket == 'function')
-				webSocket = MozWebSocket;
-			if ( websocket && websocket.readyState == 1 )
-				websocket.close();
-			websocket = new WebSocket( wsUri );
-			websocket.onopen = function (event) 
-			{
-				console.log( 'initWebSocket:open' );
-			};
-			websocket.onclose = function (event) 
-			{
-				setTimeout( initWebSocket, 3000 );
-			};
-			websocket.onerror = function (event) 
-			{
-				websocket.close();
-			};
-			websocket.onmessage = function (event) 
-			{		
-				var newMessage = JSON.parse( event.data );
-				onNewMessage( newMessage.service, newMessage.nick, newMessage.message, newMessage.type );
-				document.body.scrollTop = document.body.scrollHeight;
-			};					
-		}
-		catch (exception) 
-		{
-        }
-	}
-	initWebSocket();
-	setInterval(function() { document.body.scrollTop = document.body.scrollHeight; }, 500);
-</script>
+                <script>	
+                        var wsUri = "ws://localhost:15619";
+                        var websocket = null;
+                
+                        function initWebSocket() 
+                        {
+                                try 
+                                {
+                                        if (typeof MozWebSocket == 'function')
+                                                webSocket = MozWebSocket;
+                                        if ( websocket && websocket.readyState == 1 )
+                                                websocket.close();
+                                        websocket = new WebSocket( wsUri );
+                                        websocket.onopen = function (event) 
+                                        {
+                                                console.log( 'initWebSocket:open' );
+                                        };
+                                        websocket.onclose = function (event) 
+                                        {
+                                                setTimeout( initWebSocket, 3000 );
+                                        };
+                                        websocket.onerror = function (event) 
+                                        {
+                                                websocket.close();
+                                        };
+                                        websocket.onmessage = function (event) 
+                                        {	
+                                                console.log( event.data );
+                                                var message = JSON.parse( event.data );								
+                                        
+                                                //onNewMessage( "debug", "debug", message, "" );				
+                                        
+                                                if( MESSAGE == message.type )
+                                                {
+                                                        onNewMessage( message.message.service, message.message.nick, message.message.message, message.message.type );
+                                                        document.body.scrollTop = document.body.scrollHeight;
+                                                }
+                                                else if( STATISTIC == message.type )
+                                                {
+                                                        onStatisticReceived( message.statistic.service, message.statistic.statistic );
+                                                }
+                                        };					
+                                }
+                                catch (exception) 
+                                {
+                                }
+                        }		
+                
+                        resetViewers();
+                        initWebSocket();	
+                        setInterval(function() { document.body.scrollTop = document.body.scrollHeight; }, 500);
+                </script>
 <!--END_BROWSER_CODE-->
-    </body>
+        </body>
 </html>

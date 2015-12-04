@@ -1,0 +1,7 @@
+#ifndef QTWITCHCHATV3
+#define QTWITCHCHATV3
+
+
+
+#endif // QTWITCHCHATV3
+

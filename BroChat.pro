@@ -24,7 +24,12 @@ HEADERS += \
     qrealltvchat.h \
     qyoutubechat.h \
     qlivecodingchat.h \
-    qigdcchat.h
+    qigdcchat.h \
+    qpoll.h \
+    qpolldialog.h \
+    qpollview.h \
+    qtwitchchatv3.h \
+    qmessagemanager.h
 
 SOURCES += \
     main.cpp \

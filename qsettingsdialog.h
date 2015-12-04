@@ -9,6 +9,7 @@ class QComboBox;
 class QSlider;
 class QCheckBox;
 class QSpinBox;
+class QDoubleSpinBox;
 class QLabel;
 
 class QColorDialog;
@@ -22,11 +23,25 @@ public:
 private:
     void loadDialogSettings();
     void setColorButtonStyle( QPushButton *button, QRgb color, int fontSize = 16 );    
-private slots:
+    void buttonColorSelection( QPushButton * button, QRgb & color );
+private slots:    
+    void bodyBackgroundColorSelection();
+
     void nicknamesColorSelection();
     void messagesColorSelection();
+
+    void messagesBorderColorSelection();
+    void evenMessagesBackgroundColorSelection();
+    void oddMessagesBackgroundColorSelection();
+
     void viewersColorSelection();
+
+    void viewersBackgroundColorSelection();
+
     void aliasesColorSelection();
+
+    void aliasesBorderColorSelection();
+    void aliasesBackgroundColorSelection();
 public slots:
     void saveSettings();
     void saveDialogSettings();
@@ -148,10 +163,17 @@ signals:
     void youtubeBlackListChanged( const QString & );
     void youtubeRemoveBlackListUsersChanged( bool );
 private:
+    QRgb bodyBackgroundColor;
     QRgb nicknamesTextColor;
     QRgb messagesTextColor;
+    QRgb messagesBorderColor;
+    QRgb evenMessagesBackgroundColor;
+    QRgb oddMessagesBackgroundColor;
     QRgb viewersTextColor;
+    QRgb viewersBackgroundColor;
     QRgb aliasesTextColor;
+    QRgb aliasesBorderColor;
+    QRgb aliasesBackgroundColor;
 
     QComboBox *languageCombo;
     QCheckBox *stayOnTopCheckBox;
@@ -174,22 +196,45 @@ private:
 
     QComboBox *fontNameCombo;
 
+    QPushButton * bodyBackgroundColorButton;
+
     QSpinBox *nicknamesFontSizeSpinBox;
     QPushButton *nicknamesTextColorButton;
 
     QSpinBox *messagesFontSizeSpinBox;
     QPushButton *messagesTextColorButton;
 
+    QSpinBox * messagesBorderSizeSpinBox;
+
+    QSpinBox * messagesBorderRadiusSizeSpinBox;
+
+    QPushButton * messagesBorderColorButton;
+
+    QPushButton * evenMessagesBackgroundColorButton;
+    QPushButton * oddMessagesBackgroundColorButton;
+
+
+    QSpinBox * messagesMarginBottomSizeSpinBox;
+
+
     QSpinBox *viewersFontSizeSpinBox;
     QPushButton *viewersTextColorButton;
 
+    QPushButton * viewersBackgroundColorButton;
+
     QSpinBox *aliasesFontSizeSpinBox;
     QPushButton *aliasesTextColorButton;
+
+    QSpinBox * aliasesBorderSizeSpinBox;
+    QPushButton * aliasesBorderColorButton;
+    QPushButton * aliasesBackgroundColorButton;
 
     QSpinBox *smilesSizeSpinBox;
     QSpinBox *serviceIconsSizeSpinBox;
 
     QComboBox *animationTypeCombo;
+
+    QDoubleSpinBox * animationDurationSpinBox;
 
     //channels
 

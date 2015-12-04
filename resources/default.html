@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-		<style>
+        <head>
+                <meta charset="utf-8">
+                <style>
 
 @-webkit-keyframes NoneAnim
 {
@@ -26,6 +26,13 @@
 	from{ margin-left: 100%; }
 	to{ margin-left:initial; }
 }
+
+@-webkit-keyframes SlideAndScaleAnim
+{
+	from{ margin-left: 100%; -webkit-transform: scale(0); }
+	50%{ margin-left: initial; -webkit-transform: scale(0.5); }
+	to{ margin-left:initial; -webkit-transform: scale(1); }
+}
 		
 html
 {
@@ -35,7 +42,7 @@ html
 
 body
 {
-	background-color: transparent;
+	background-color:%BODY_BACKGROUND_COLOR%;
 	padding: 0px;
 	margin: 0px;
 }
@@ -47,27 +54,69 @@ body
 
 #viewersHeader
 {
+        background-color:%VIEWERS_BACKGROUND_COLOR%;
+        
 	position: fixed;
 	bottom: 0;
 	width: 100%;
 	
 	height:%VIEWERS_HEIGHT%;
 	font-size:%VIEWERS_FONT_SIZE%;
-	color:%VIEWERS_TEXT_COLOR%;
+	color:%VIEWERS_TEXT_COLOR%;	
+	
+	padding-left:4px;
 }
 
-.alias .messagebox .message
+.statistic
+{        
+}
+
+.alias .messagebox0
+{
+        width: -webkit-calc(100% - 2*(%ALIASES_BORDER_SIZE% + 4px));
+	background-color:%ALIASES_BACKGROUND_COLOR%;
+	border: %ALIASES_BORDER_SIZE% solid %ALIASES_BORDER_COLOR%;
+}
+
+.alias .messagebox1
+{
+        width: -webkit-calc(100% - 2*(%ALIASES_BORDER_SIZE% + 4px));
+	background-color:%ALIASES_BACKGROUND_COLOR%;
+	border: %ALIASES_BORDER_SIZE% solid %ALIASES_BORDER_COLOR%;
+}
+
+.alias .messagebox0 .message
 {
 	font-size:%ALIASES_FONT_SIZE%;
 	color:%ALIASES_TEXT_COLOR%;
 }
 
-.messagebox
+.alias .messagebox1 .message
 {
-	width: 100%;
-	border-bottom: 1px solid rgba( 255,255,255, .25);
-	
-	-webkit-animation: %ANIMATION_TYPE% 0.5s;
+	font-size:%ALIASES_FONT_SIZE%;
+	color:%ALIASES_TEXT_COLOR%;
+}
+
+.messagebox0
+{
+	width: -webkit-calc(100% - 2*(%MESSAGEBOX_BORDER_SIZE% + 4px));
+	background-color:%EVEN_MESSAGESBOX_BACKGROUND_COLOR%;
+	border: %MESSAGEBOX_BORDER_SIZE% solid %MESSAGEBOX_BORDER_COLOR%;
+	border-radius: %MESSAGEBOX_BORDER_RADIUS_SIZE%;
+	-webkit-animation: %ANIMATION_TYPE% %ANIMATION_DURATION%;
+	padding:4px;
+	margin-bottom:%MESSAGESBOX_MARGIN_BOTTOM%;
+}
+
+.messagebox1
+{
+	width: -webkit-calc(100% - 2*(%MESSAGEBOX_BORDER_SIZE% + 4px));
+	background-color:%ODD_MESSAGESBOX_BACKGROUND_COLOR%;
+	border: %MESSAGEBOX_BORDER_SIZE% solid %MESSAGEBOX_BORDER_COLOR%;
+	border-radius: %MESSAGEBOX_BORDER_RADIUS_SIZE%;
+	-webkit-animation: %ANIMATION_TYPE% %ANIMATION_DURATION%;
+	padding:4px;
+	margin-bottom:%MESSAGESBOX_MARGIN_BOTTOM%;
 }
 
 .header
@@ -86,7 +135,7 @@ body
 .service
 {
 	display: inline-block;
-
+        margin-right: 4px;
 }
 
 .nick
@@ -191,180 +240,229 @@ body
 	height:%SERVICE_ICONS_SIZE%;
 }
 
-.viewersInfo
+.viewersInfoShow
+{        
+        display: inline;
+}
+
+.viewersInfoHide
 {
+        display: none;
 }
 
 .cybergameViewers
 {
+        padding-top:4px;
 	content: url(cybergamelogo.png);
-	height:%SERVICE_ICONS_SIZE%;
-}
-
-.funstreamViewers
-{
-	content: url(funstreamlogo.png);
 	height:%SERVICE_ICONS_SIZE%;
 }
 
 .goodgameViewers
 {
+        padding-top:4px;
 	content: url(goodgamelogo.png);
 	height:%SERVICE_ICONS_SIZE%;
 }
 
 .hitboxViewers
 {
+        padding-top:4px;
 	content: url(hitboxlogo.png);
 	height:%SERVICE_ICONS_SIZE%;
 }
 
 .realltvViewers
 {
+        padding-top:4px;
 	content: url(realltvlogo.png);
 	height:%SERVICE_ICONS_SIZE%;
 }	
 
 .twitchViewers
 {
+        padding-top:4px;
 	content: url(twitchlogo.png);
 	height:%SERVICE_ICONS_SIZE%;
 }	
 
 .youtubeViewers
 {
+        padding-top:4px;
         content: url(youtubelogo.png);
         height:%SERVICE_ICONS_SIZE%;
 }
 
+.funstreamViewers
+{
+        padding-top:4px;
+	content: url(funstreamlogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
 .gamerstvViewers
 {
+        padding-top:4px;
 	content: url(gamerstvlogo.png);
 	height:%SERVICE_ICONS_SIZE%;
 }
 
 .streamboxViewers
 {
+        padding-top:4px;
 	content: url(streamboxlogo.png);
 	height:%SERVICE_ICONS_SIZE%;
 }
 
 
-		</style>
-    </head>
-    <script>
-		function scrollToBottom()
+                </style>
+        </head>
+        <script>
+                var VIEWERS_INFO_POSTFIX = "ViewersInfo";
+                var VIEWERS_INFO_SHOW = "viewersInfoShow";
+                var VIEWERS_INFO_HIDE = "viewersInfoHide";
+                
+                var servicesArray = [ "cybergame", "goodgame", "hitbox", "realltv", "twitch", "youtube", "funstream", "gamerstv", "streambox" ];
+                
+                var MESSAGE = "message";
+                var STATISTIC = "statistic";
+                
+                var messages = 0;
+                
+                var userScroll = false;
+                
+		function onWheel(event) 
 		{
-			document.body.scrollTop = document.body.scrollHeight;
-		}
-		function onStatisticReceived( service, value )
+			event = event || window.event;
+
+			var delta = -( event.deltaY || event.detail || event.wheelDelta );
+			
+			userScroll = document.body.scrollTop + window.innerHeight + delta < document.body.scrollHeight;			
+			
+			document.body.scrollTop = document.body.scrollTop + delta;
+			
+			event.preventDefault ? event.preventDefault() : (event.returnValue = false);
+		}                
+                
+                function resetViewers()
                 {
-			var serviceDiv = document.getElementById( service );
-			if( serviceDiv )
+                        for( i = 0; i < servicesArray.length; ++i )
                         {
-				serviceDiv.innerHTML = "[" + value + "]";
-			}
-		}
-        function onNewMessage( service, nickName, message, type )
-        {	
-			var serviceElem = document.createElement( "img" );
-			serviceElem.className = service;
+                                onStatisticReceived( servicesArray[ i ], "" );
+                        }
+                }      
+
+                function scrollToBottom()
+                {
+                        if( userScroll )
+				return;
+                        document.body.scrollTop = document.body.scrollHeight;
+                }
+                function onStatisticReceived( service, value )
+                {
+                        var viewersInfoDiv = document.getElementById( service + VIEWERS_INFO_POSTFIX );
+                        
+                        if( viewersInfoDiv )
+                        {
+                                if( "" == value )
+                                {
+                                        viewersInfoDiv.className = VIEWERS_INFO_HIDE;
+                                }
+                                else
+                                {		
+                                        if( VIEWERS_INFO_HIDE == viewersInfoDiv.className )
+                                        {
+                                                viewersInfoDiv.className = VIEWERS_INFO_SHOW;
+                                        }
+                                                
+                                        var serviceDiv = document.getElementById( service );						
 			
-			var serviceBlock = document.createElement( "div" );
-			serviceBlock.className = "service";
-			serviceBlock.appendChild( serviceElem );
-			
-			var nickBlock = document.createElement( "div" );
-			nickBlock.className = "nick";
-			nickBlock.innerHTML = nickName + "<span class='separator'>:&nbsp;</span>";
-			
-			var headerkBlock  = document.createElement( "div" );
-			headerkBlock.className = "header";
-			headerkBlock.appendChild( serviceBlock );
-			headerkBlock.appendChild( nickBlock );
-			
-			var messageBlock = document.createElement( "div" );
-			messageBlock.className = "message";
-			messageBlock.innerHTML = message;
-			
-			var messageBox = document.createElement( "div" );
-			messageBox.className = "messagebox";
-			
-			messageBox.appendChild( headerkBlock );
-			messageBox.appendChild( messageBlock );
-			
-			var messageType = document.createElement( "div" );
-			messageType.className = type;
-			messageType.appendChild( messageBox );
-			
-			var messagesList = document.getElementById( "messagesList" );
-			
-			if( type != "" )
-			{
-				messagesList.appendChild( messageType );
-			}
-			else
-			{
-				messagesList.appendChild( messageBox );
-			}			
-			scrollToBottom();
-        }
-    </script>
-    <body>
-        <div id="messagesList"></div>		
-		<div id="viewersHeader">
-			<span class = "viewersInfo"><span class = "cybergameViewers"></span><span class = "statistic" id="cybergame"></span></span>
-			<span class = "viewersInfo"><span class = "goodgameViewers"></span><span class = "statistic" id="goodgame"></span></span>
-			<span class = "viewersInfo"><span class = "hitboxViewers"></span><span class = "statistic" id="hitbox"></span></span>
-			<span class = "viewersInfo"><span class = "realltvViewers"></span><span class = "statistic" id="realltv"></span></span>
-			<span class = "viewersInfo"><span class = "twitchViewers"></span><span class = "statistic" id="twitch"></span></span>
-                        <span class = "viewersInfo"><span class = "youtubeViewers"></span><span class = "statistic" id="youtube"></span></span>
-			<span class = "viewersInfo"><span class = "funstreamViewers"></span><span class = "statistic" id="funstream"></span></span>
-			<span class = "viewersInfo"><span class = "gamerstvViewers"></span><span class = "statistic" id="gamerstv"></span></span>
-			<span class = "viewersInfo"><span class = "streamboxViewers"></span><span class = "statistic" id="streambox"></span></span>
-		</div>			
+                                        if( serviceDiv )
+                                        {
+                                                serviceDiv.innerHTML = "[" + value + "]";
+                                        }                                                        
+                                }                                
+                        }  
+                }
+                function onNewMessage( service, nickName, message, type )
+                {	
+                        var serviceElem = document.createElement( "img" );
+                        serviceElem.className = service;
+                        
+                        var serviceBlock = document.createElement( "div" );
+                        serviceBlock.className = "service";
+                        serviceBlock.appendChild( serviceElem );
+                        
+                        var nickBlock = document.createElement( "div" );
+                        nickBlock.className = "nick";
+                        //nickBlock.innerHTML = nickName + "<span class='separator'>:&nbsp;</span>";
+                        nickBlock.innerHTML = nickName + "<span class='separator'>&nbsp;&nbsp;&nbsp;</span>";
+                        
+                        var headerkBlock  = document.createElement( "div" );
+                        headerkBlock.className = "header";
+                        headerkBlock.appendChild( serviceBlock );
+                        headerkBlock.appendChild( nickBlock );
+                        
+                        var messageBlock = document.createElement( "div" );
+                        messageBlock.className = "message";
+                        messageBlock.innerHTML = message;
+                        
+                        var messageBox = document.createElement( "div" );
+                        messageBox.className = "messagebox" + ( messages & 1 );
+                        
+                        messages++;
+                        
+                        messageBox.appendChild( headerkBlock );
+                        messageBox.appendChild( messageBlock );
+                        
+                        var messageType = document.createElement( "div" );
+                        messageType.className = type;
+                        messageType.appendChild( messageBox );
+                        
+                        var messagesList = document.getElementById( "messagesList" );
+                        
+                        if( type != "" )
+                        {
+                                messagesList.appendChild( messageType );
+                        }
+                        else
+                        {
+                                messagesList.appendChild( messageBox );
+                        }			
+                        scrollToBottom();
+                }
+        </script>
+        <body>
+                <div id="messagesList"></div>		
+                <div id="viewersHeader">
+                        <span id="cybergameViewersInfo" class = "viewersInfoShow"><span class = "cybergameViewers"></span><span class = "statistic" id="cybergame"></span></span>
+                        <span id="goodgameViewersInfo" class = "viewersInfoShow"><span class = "goodgameViewers"></span><span class = "statistic" id="goodgame"></span></span>
+                        <span id="hitboxViewersInfo" class = "viewersInfoShow"><span class = "hitboxViewers"></span><span class = "statistic" id="hitbox"></span></span>
+                        <span id="realltvViewersInfo" class = "viewersInfoShow"><span class = "realltvViewers"></span><span class = "statistic" id="realltv"></span></span>
+                        <span id="twitchViewersInfo" class = "viewersInfoShow"><span class = "twitchViewers"></span><span class = "statistic" id="twitch"></span></span>
+                        <span id="youtubeViewersInfo" class = "viewersInfoShow"><span class = "youtubeViewers"></span><span class = "statistic" id="youtube"></span></span>
+                        <span id="funstreamViewersInfo" class = "viewersInfoShow"><span class = "funstreamViewers"></span><span class = "statistic" id="funstream"></span></span>
+                        <span id="gamerstvViewersInfo" class = "viewersInfoShow"><span class = "gamerstvViewers"></span><span class = "statistic" id="gamerstv"></span></span>
+                        <span id="streamboxViewersInfo" class = "viewersInfoShow"><span class = "streamboxViewers"></span><span class = "statistic" id="streambox"></span></span>
+                </div>
 		
-<script>
-	setInterval( scrollToBottom, 500 );	
-</script>
-<!--START_BROWSER_CODE-->
-<script>	
-	var wsUri = "ws://localhost:15619";
-	var websocket = null;
-	
-	function initWebSocket() 
-	{
-		try 
-		{
-			if (typeof MozWebSocket == 'function')
-				webSocket = MozWebSocket;
-			if ( websocket && websocket.readyState == 1 )
-				websocket.close();
-			websocket = new WebSocket( wsUri );
-			websocket.onopen = function (event) 
+                <script>
+                        resetViewers();
+                        setInterval( scrollToBottom, 500 );	
+			var messagesList = document.getElementById( "messagesList" );
+			if (messagesList.addEventListener) 
 			{
-				console.log( 'initWebSocket:open' );
-			};
-			websocket.onclose = function (event) 
-			{
-				setTimeout( initWebSocket, 3000 );
-			};
-			websocket.onerror = function (event) 
-			{
-				websocket.close();
-			};
-			websocket.onmessage = function (event) 
-			{		
-				var newMessage = JSON.parse( event.data );
-				onNewMessage( newMessage.service, newMessage.nick, newMessage.message, newMessage.type );
-			};					
-		}
-		catch (exception) 
-		{
-        }
-	}
-	initWebSocket();
-</script>
-<!--END_BROWSER_CODE-->
-    </body>
+				if ('onwheel' in document) 
+				{
+					// IE9+, FF17+, Ch31+
+					messagesList.addEventListener("wheel", onWheel);
+				} 
+				else if ('onmousewheel' in document) 
+				{
+					// устаревший вариант события
+					messagesList.addEventListener("mousewheel", onWheel);
+				} 
+			}                        
+                </script>
+
+        </body>
 </html>
