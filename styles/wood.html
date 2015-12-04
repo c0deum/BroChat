@@ -5,8 +5,28 @@
 		<link rel="stylesheet" href="wood/wood.css">
     </head>
     <script>
+                var MESSAGE = "message";
+                var STATISTIC = "statistic";
+                
+                var userScroll = false;
+                
+		function onWheel(event) 
+		{
+			event = event || window.event;
+
+			var delta = -( event.deltaY || event.detail || event.wheelDelta );
+			
+			userScroll = document.body.scrollTop + window.innerHeight + delta < document.body.scrollHeight;                
+			
+			document.body.scrollTop = document.body.scrollTop + delta;
+			
+			event.preventDefault ? event.preventDefault() : (event.returnValue = false);
+		}                
+                
 		function scrollToBottom()
 		{
+                        if( userScroll )
+                                return;		
 			document.body.scrollTop = document.body.scrollHeight;
 		}	
 		function onStatisticReceived( service, value )
@@ -61,6 +81,20 @@
         <div id="messagesList"></div>
 <script>
 	setInterval( scrollToBottom, 500 );	
+        var messagesList = document.getElementById( "messagesList" );
+        if (messagesList.addEventListener) 
+        {
+                if ('onwheel' in document) 
+                {
+                        // IE9+, FF17+, Ch31+
+                        messagesList.addEventListener("wheel", onWheel);
+                } 
+                else if ('onmousewheel' in document) 
+                {
+                        // устаревший вариант события
+                        messagesList.addEventListener("mousewheel", onWheel);
+                } 
+        }		
 </script>		
 <!--START_BROWSER_CODE-->
 <script>	
@@ -90,8 +124,19 @@
 			};
 			websocket.onmessage = function (event) 
 			{		
-				var newMessage = JSON.parse( event.data );
-				onNewMessage( newMessage.service, newMessage.nick, newMessage.message, newMessage.type );
+                                var message = JSON.parse( event.data );								
+                        
+                                //onNewMessage( "debug", "debug", message, "" );				
+                        
+                                if( MESSAGE == message.type )
+                                {
+                                        onNewMessage( message.message.service, message.message.nick, message.message.message, message.message.type );
+                                        document.body.scrollTop = document.body.scrollHeight;
+                                }
+                                else if( STATISTIC == message.type )
+                                {
+                                        onStatisticReceived( message.statistic.service, message.statistic.statistic );
+                                }
 				document.body.scrollTop = document.body.scrollHeight;
 			};					
 		}
@@ -100,7 +145,7 @@
         }
 	}
 	initWebSocket();
-	setInterval(function() { document.body.scrollTop = document.body.scrollHeight; }, 500 );
+	//setInterval(function() { document.body.scrollTop = document.body.scrollHeight; }, 500 );
 </script>
 <!--END_BROWSER_CODE-->
     </body>

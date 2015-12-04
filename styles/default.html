@@ -7,19 +7,16 @@
     <script>
 		var userScroll = false;
 		
+                var MESSAGE = "message";
+                var STATISTIC = "statistic";		
+		
 		function onWheel(event) 
 		{
 			event = event || window.event;
 
 			var delta = -( event.deltaY || event.detail || event.wheelDelta );
-
-			//console.log( "document.body.scrollTop: " + document.body.scrollTop );
-			//console.log( "delta: " + delta );
-			//console.log( "document.body.scrollHeight: " + document.body.scrollHeight );
 			
-			userScroll = document.body.scrollTop + window.innerHeight + delta < document.body.scrollHeight;
-			
-			//console.log( "onWheel userScroll: " + userScroll );
+			userScroll = document.body.scrollTop + window.innerHeight + delta < document.body.scrollHeight;                
 			
 			document.body.scrollTop = document.body.scrollTop + delta;
 			
@@ -131,8 +128,19 @@
 			};
 			websocket.onmessage = function (event) 
 			{		
-				var newMessage = JSON.parse( event.data );
-				onNewMessage( newMessage.service, newMessage.nick, newMessage.message, newMessage.type );
+                                var message = JSON.parse( event.data );								
+                        
+                                //onNewMessage( "debug", "debug", message, "" );				
+                        
+                                if( MESSAGE == message.type )
+                                {
+                                        onNewMessage( message.message.service, message.message.nick, message.message.message, message.message.type );
+                                        document.body.scrollTop = document.body.scrollHeight;
+                                }
+                                else if( STATISTIC == message.type )
+                                {
+                                        onStatisticReceived( message.statistic.service, message.statistic.statistic );
+                                }
 				//document.body.scrollTop = document.body.scrollHeight;
 				//scrollToBottom();
 			};					
