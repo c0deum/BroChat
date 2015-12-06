@@ -576,6 +576,7 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
 
         if( requestId == QString( "43" + QString::number( statisticRequestId_ ) ) )
         {
+            /*
             const QString STATISTIC_PREFIX = "\"amount\":";
             const QString STATISTIC_POSTFIX = ",";
             int startStatisticPos = message.indexOf( STATISTIC_PREFIX ) + STATISTIC_PREFIX.length();
@@ -586,6 +587,37 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
                 QString statistic = message.mid( startStatisticPos, endStatisticPos - startStatisticPos + 1 ).replace( " ", "" );
                 emit newStatistic( new QChatStatistic( FUNSTREAM_SERVICE, statistic, this ) );
             }
+            */
+
+            const QString RESULT_PREFIX = "\"result\":";
+            const QString RESULT_POSTFIX = "}";
+            int startResultPos = message.indexOf( RESULT_PREFIX ) + RESULT_PREFIX.length();
+            int endResultPos = message.indexOf( RESULT_POSTFIX, startResultPos );
+
+            if( endResultPos - startResultPos + 1 > 0 )
+            {
+                QString jsonText = message.mid( startResultPos, endResultPos - startResultPos + 1 ).replace( " ", "" );
+
+                QJsonParseError parseError;
+
+                QJsonDocument jsonDoc = QJsonDocument::fromJson( jsonText.toUtf8(), &parseError );
+
+                if( QJsonParseError::NoError == parseError.error && jsonDoc.isObject() )
+                {
+                    QJsonObject jsonObj = jsonDoc.object();
+
+                    int amount = jsonObj[ "amount" ].toInt();
+
+                    QJsonArray users = jsonObj[ "users" ].toArray();
+
+                    QString statistic = QString::number( users.size() ) + "+(" + QString::number( amount - users.size() )  + ")";
+
+                    emit newStatistic( new QChatStatistic( FUNSTREAM_SERVICE, statistic, this ) );
+
+                }
+
+            }
+
         }
         else if( requestId == QString( "43" + QString::number( historyRequestId_ ) ) )
         {

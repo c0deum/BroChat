@@ -57,6 +57,8 @@ signals:
     void useServerStateChanged();
     void saveToFileStateChanged();
 
+    void saveMessagesToLogChanged();
+
     void acesChannelChanged();
     void acesChannelDisabled();
     void acesAliasesChanged( const QString & );
@@ -186,11 +188,13 @@ private:
 
     QCheckBox *showImagesCheckBox;
 
+    QCheckBox * saveMessagesToLogCheckBox;
+
     QCheckBox *useServerCheckBox;
     QSpinBox  *serverPortSpinBox;
 
     QCheckBox *saveToFileCheckBox;
-    QSpinBox  *saveToFileIntervalSpinBox;
+    QSpinBox  *saveToFileIntervalSpinBox;    
 
     //default styles
 
@@ -231,6 +235,8 @@ private:
 
     QSpinBox *smilesSizeSpinBox;
     QSpinBox *serviceIconsSizeSpinBox;
+
+    QSpinBox *maxImagesHeightSpinBox;
 
     QComboBox *animationTypeCombo;
 

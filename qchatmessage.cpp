@@ -12,8 +12,27 @@ QChatMessage::QChatMessage( const QString &service, const QString &nickName, con
 {
 }
 
+QChatMessage::QChatMessage( const QChatMessage & chatMessage )
+: QObject( chatMessage.parent() )
+, service_( chatMessage.service_ )
+, nickName_( chatMessage.nickName_ )
+, message_( chatMessage.message_ )
+, type_( chatMessage.type_ )
+{
+}
+
 QChatMessage::~QChatMessage()
 {
+}
+
+const QChatMessage & QChatMessage::operator=( const QChatMessage & chatMessage  )
+{
+    service_ = chatMessage.service_;
+    nickName_ = chatMessage.nickName_;
+    message_ = chatMessage.message_;
+    type_ = chatMessage.type_;
+
+    return *this;
 }
 
 QString QChatMessage::service() const
@@ -78,7 +97,9 @@ QString QChatMessage::insertLinks( const QString& message, bool convertImageLink
             }
             else
             {
-                convertedTokens[ i ] = "<a href=\"" + tokens.at( i ) + "\"title=\"" + tokens.at( i ) + "\">link</a>";
+                //convertedTokens[ i ] = "<a href=\"" + tokens.at( i ) + "\"title=\"" + tokens.at( i ) + "\">link</a>";
+
+                convertedTokens[ i ] = "<a href=\"" + tokens.at( i ) + "\"title=\"" + tokens.at( i ) + "\">" + tokens.at( i ) + "</a>";
             }
         }
     }

@@ -14,9 +14,13 @@
 #include <QXmppMucManager.h>
 #include <QXmppMessage.h>
 
+#include <QXmppStanza.h>
+
 #include <QApplication>
 #include <QDir>
 #include <QStringList>
+
+#include <QUuid>
 
 #include "settingsconsts.h"
 
@@ -83,10 +87,21 @@ void QLivecodingChat::connect()
     if( isShowSystemMessages() )
         emit newMessage( new QChatMessage( LIVECODING_SERVICE, LIVECODING_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
+    QXmppConfiguration conf;
+
     if( !login_.isEmpty() )
-        xmppClient_->connectToServer( login_ + DEFAULT_LIVECODING_JID_POSTFIX , password_ );
+    {
+        conf.setJid( login_ + DEFAULT_LIVECODING_JID_POSTFIX );
+        conf.setPassword( password_ );
+        conf.setResource( login_ + QUuid::createUuid().toString() );
+    }
     else
-        xmppClient_->connectToServer( DEFAULT_LIVECODING_JID , DEFAULT_LIVECODING_PASSWORD );
+    {
+        conf.setJid( DEFAULT_LIVECODING_JID );
+        conf.setPassword( DEFAULT_LIVECODING_PASSWORD );
+        conf.setResource( DEFAULT_LIVECODING_LOGIN + QUuid::createUuid().toString() );
+    }
+    xmppClient_->connectToServer( conf );
 }
 
 void QLivecodingChat::disconnect()
@@ -155,8 +170,9 @@ void QLivecodingChat::onConnected()
     getSmiles();
 }
 
-void QLivecodingChat::onError( QXmppClient::Error )
+void QLivecodingChat::onError( QXmppClient::Error error )
 {
+
     if( isShowSystemMessages() )
         emit newMessage( new QChatMessage( LIVECODING_SERVICE, LIVECODING_USER, "Unknown Error ...", "", this ) );
 

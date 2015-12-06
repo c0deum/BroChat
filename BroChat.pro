@@ -29,7 +29,7 @@ HEADERS += \
     qpolldialog.h \
     qpollview.h \
     qtwitchchatv3.h \
-    qmessagemanager.h
+    qmessagesmanager.h
 
 SOURCES += \
     main.cpp \
@@ -53,7 +53,8 @@ SOURCES += \
     qrealltvchat.cpp \
     qyoutubechat.cpp \
     qlivecodingchat.cpp \
-    qigdcchat.cpp
+    qigdcchat.cpp \
+    qmessagesmanager.cpp
 
 RESOURCES += \
     resources.rc

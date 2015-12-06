@@ -5,6 +5,8 @@
 
 #include <QWebView>
 
+#include "qmessagesmanager.h"
+
 class QChatMessage;
 class QChatStatistic;
 
@@ -66,6 +68,7 @@ public slots:
     void changeShowImagesState();
     void changeUseServerState();
     void changeSaveToFileState();
+    void changeSaveMessagesToLogState();
 
 private slots:
     void changeStyle();
@@ -105,6 +108,9 @@ private:
     bool showSystemMessages_;
     bool showImages_;
     bool saveToFile_;
+
+    QMessagesManager messagesManager_;
+    bool saveMessagesToLog_;
 };
 
 #endif // QBROCHATVIEW

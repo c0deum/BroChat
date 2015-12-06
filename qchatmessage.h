@@ -9,7 +9,10 @@ class QChatMessage: public QObject
     Q_OBJECT
 public:
     explicit QChatMessage( const QString &service, const QString &nickName, const QString &message, const QString &type, QObject *parent = 0 );
+    QChatMessage( const QChatMessage & chatMessage );
     virtual ~QChatMessage();
+public:
+    const QChatMessage & operator=( const QChatMessage & chatMessage );
 public:
     QString service() const;
     void setService( const QString &service );

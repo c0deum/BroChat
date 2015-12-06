@@ -24,6 +24,8 @@
 #include <QBitmap>
 #include <QPainter>
 
+#include <QDir>
+
 #include "qaceschat.h"
 #include "qcybergamechat.h"
 #include "qfunstreamchat.h"
@@ -92,6 +94,7 @@ QBroChatView::QBroChatView( QWidget *parent )
 , showSystemMessages_( DEFAULT_SHOW_SYSTEM_MESSAGES )
 , showImages_( DEFAULT_SHOW_IMAGES )
 , saveToFile_( DEFAULT_SAVE_TO_FILE )
+, saveMessagesToLog_( DEFAULT_SAVE_MESSAGES_TO_LOG_FILE )
 {
 
     //setAttribute( Qt::WA_TransparentForMouseEvents, true );
@@ -115,6 +118,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     changeShowImagesState();
     changeUseServerState();
     changeSaveToFileState();
+    changeSaveMessagesToLogState();
 
     loadSettings();
 
@@ -190,7 +194,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     addAction( reconnectTwitchAction );
     addAction( reconnectYoutubeAction );
 
-    addAction( exitAction );
+    addAction( exitAction );       
 
     QObject::connect( acesChat_, SIGNAL( newMessage ( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), acesChat_, SLOT( reconnect() ) );
@@ -257,7 +261,17 @@ QBroChatView::QBroChatView( QWidget *parent )
 
 QBroChatView::~QBroChatView()
 {
+    if( saveMessagesToLog_ )
+    {
+        QString logDir = qApp->applicationDirPath();
+        if( !messagesManager_.save( logDir + QDir::separator() + "logs" + QDir::separator() ) )
+        {
+            QMessageBox::warning( this, "Error", "Can not save messages log"  );
+        }
+    }
+
     page()->settings()->clearMemoryCaches();
+
 }
 
 void QBroChatView::mousePressEvent( QMouseEvent *event )
@@ -478,6 +492,8 @@ void QBroChatView::changeStyle( const QString &styleName )
             int serviceIconsSize = settings_.value( GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SERVICE_ICONS_SIZE ).toInt();
             style.replace( "%SERVICE_ICONS_SIZE%", QString::number( serviceIconsSize ) + "px" );
 
+            style.replace( "%MAX_IMAGES_HEIGHT%", QString::number( settings_.value( GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH, DEFAULT_GENERATED_STYLE_MAX_IMAGES_HEIGHT ).toInt() ) + "px" );
+
             style.replace( "%ANIMATION_TYPE%", settings_.value( GENERATED_STYLE_ANIMATION_TYPE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ANIMATION_TYPE).toString() + "Anim" );
 
             style.replace( "%ANIMATION_DURATION%", QString::number( settings_.value( GENERATED_STYLE_ANIMATION_DURATION_SETTING_PATH, DEFAULT_GENERATED_STYLE_ANIMATION_DURATION ).toDouble(), 'f' ) + "s" );
@@ -557,8 +573,14 @@ void QBroChatView::changeSaveToFileState()
     }
 }
 
+void QBroChatView::changeSaveMessagesToLogState()
+{
+    saveMessagesToLog_ = settings_.value( SAVE_MESSAGES_TO_LOG_FILE_SETTING_PATH, DEFAULT_SAVE_MESSAGES_TO_LOG_FILE ).toBool();
+}
+
 void QBroChatView::slotNewMessage( QChatMessage *message )
 {
+    messagesManager_.addMessage( message );
     addMessage( message->service(), message->nickName(), message->message(), message->type() );
     message->deleteLater();
 }
@@ -591,7 +613,7 @@ void QBroChatView::loadSettings()
     resize( width, height );
 
     changeOpacity();
-    changeStyle();
+    changeStyle();    
 }
 
 void QBroChatView::saveSettings()
@@ -705,7 +727,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( showImagesChanged() ), this, SLOT( changeShowImagesState() ) );
     QObject::connect( settingsDialog, SIGNAL( useServerStateChanged() ), this, SLOT( changeUseServerState() ) );
     QObject::connect( settingsDialog, SIGNAL( saveToFileStateChanged() ), this, SLOT( changeSaveToFileState() ) );
-
+    QObject::connect( settingsDialog, SIGNAL( saveMessagesToLogChanged() ), this, SLOT( changeSaveMessagesToLogState() ) );
 
     settingsDialog->exec();
 

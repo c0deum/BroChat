@@ -51,6 +51,8 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 , showImagesCheckBox( new QCheckBox( this ) )
 
+, saveMessagesToLogCheckBox( new QCheckBox( this ) )
+
 , useServerCheckBox( new QCheckBox( this ) )
 , serverPortSpinBox( new QSpinBox( this ) )
 
@@ -95,6 +97,8 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 , smilesSizeSpinBox( new QSpinBox( this ) )
 , serviceIconsSizeSpinBox( new QSpinBox( this ) )
+
+, maxImagesHeightSpinBox( new QSpinBox( this ) )
 
 , animationTypeCombo( new QComboBox( this ) )
 
@@ -304,8 +308,13 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     windowLayout->addWidget( showImagesCheckBox );
 
+    saveMessagesToLogCheckBox->setText( tr( "Save Messages To Log" ) );
+    saveMessagesToLogCheckBox->setChecked( settings.value( SAVE_MESSAGES_TO_LOG_FILE_SETTING_PATH, DEFAULT_SAVE_MESSAGES_TO_LOG_FILE ).toBool() );
+
+    windowLayout->addWidget( saveMessagesToLogCheckBox );
+
     useServerCheckBox->setText( tr( "Use Server" ) );
-    useServerCheckBox->setChecked( settings.value( USE_SERVER_SETTING_PAH, DEFAULT_USE_SERVER ).toBool() );
+    useServerCheckBox->setChecked( settings.value( USE_SERVER_SETTING_PAH, DEFAULT_USE_SERVER ).toBool() );    
 
     windowLayout->addWidget( useServerCheckBox );
 
@@ -633,7 +642,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     defaultStyleLayout->addLayout( smilesSizeLayout );
 
 
-
     QHBoxLayout * serviceIconsSizeLayout = new QHBoxLayout();
 
     QLabel *serviceIconsSizeLabel = new QLabel( tr( "Service Icons Size:" ) );
@@ -646,13 +654,45 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     defaultStyleLayout->addLayout( serviceIconsSizeLayout );
 
 
+
+    QHBoxLayout * maxImagesHeightLayout = new QHBoxLayout();
+
+    QLabel *maxImagesHeightLabel = new QLabel( tr( "Max Images Size( px ):" ) );
+    maxImagesHeightSpinBox->setRange( 0, 65535 );
+    maxImagesHeightSpinBox->setValue( settings.value( GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH, DEFAULT_GENERATED_STYLE_MAX_IMAGES_HEIGHT ).toInt() );
+
+    maxImagesHeightLayout->addWidget( maxImagesHeightLabel );
+    maxImagesHeightLayout->addWidget( maxImagesHeightSpinBox );
+
+    defaultStyleLayout->addLayout( maxImagesHeightLayout );
+
+
+
     QHBoxLayout * animationTypeLayout = new QHBoxLayout();
 
     QLabel *animationTypeLabel = new QLabel( tr( "Animation type:" ) );
 
     QStringList animationsList;
 
-    animationsList << "None" << "Scale" << "Slide" << "SlideAndScale";
+    //animationsList << "None" << "Scale" << "Slide" << "SlideAndScale";
+
+    animationsList << "None";
+    animationsList << "Bounce";
+    animationsList << "BounceDown";
+    animationsList << "BounceUp";
+    animationsList << "BounceLeft";
+    animationsList << "BounceRight";
+    animationsList << "Opacity";
+    animationsList << "Rotate";
+    animationsList << "Scale";
+    animationsList << "Shake";
+    animationsList << "SlideFromLeft";
+    animationsList << "SlideFromRight";
+    animationsList << "SlideAndScaleFromLeft";
+    animationsList << "SlideAndScaleFromRight";
+    animationsList << "SlideAndSkewToLeft";
+    animationsList << "SlideAndSkewToRight";
+
 
     animationTypeCombo->addItems( animationsList );
     animationTypeCombo->setEditable( false );
@@ -1516,9 +1556,13 @@ void QSettingsDialog::saveSettings()
 
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SMILES_SIZE ).toInt() != smilesSizeSpinBox->value() );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SERVICE_ICONS_SIZE ).toInt() != serviceIconsSizeSpinBox->value() );
+
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH, DEFAULT_GENERATED_STYLE_MAX_IMAGES_HEIGHT ).toInt() != maxImagesHeightSpinBox->value() );
+
+
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ANIMATION_TYPE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ANIMATION_TYPE ).toString() != animationTypeCombo->currentText() );
 
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ANIMATION_DURATION_SETTING_PATH, DEFAULT_GENERATED_STYLE_ANIMATION_DURATION ).toInt() != animationDurationSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ANIMATION_DURATION_SETTING_PATH, DEFAULT_GENERATED_STYLE_ANIMATION_DURATION ).toDouble() != animationDurationSpinBox->value() );
 
     settings.setValue( GENERATED_STYLE_FONT_NAME_SETTING_PATH, fontNameCombo->currentText() );
 
@@ -1556,6 +1600,9 @@ void QSettingsDialog::saveSettings()
 
     settings.setValue( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, smilesSizeSpinBox->value() );
     settings.setValue( GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH, serviceIconsSizeSpinBox->value() );
+
+    settings.setValue( GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH, maxImagesHeightSpinBox->value() );
+
     settings.setValue( GENERATED_STYLE_ANIMATION_TYPE_SETTING_PATH, animationTypeCombo->currentText() );
 
     settings.setValue( GENERATED_STYLE_ANIMATION_DURATION_SETTING_PATH, animationDurationSpinBox->value() );
@@ -1629,6 +1676,13 @@ void QSettingsDialog::saveSettings()
     {
         settings.setValue( SHOW_IMAGES_SETTING_PATH, showImagesCheckBox->isChecked() );
         emit showImagesChanged();
+    }
+
+    oldBoolValue = settings.value( SAVE_MESSAGES_TO_LOG_FILE_SETTING_PATH, DEFAULT_SAVE_MESSAGES_TO_LOG_FILE ).toBool();
+    if( oldBoolValue != saveMessagesToLogCheckBox->isChecked() )
+    {
+        settings.setValue( SAVE_MESSAGES_TO_LOG_FILE_SETTING_PATH, saveMessagesToLogCheckBox->isChecked() );
+        emit saveMessagesToLogChanged();
     }
 
     bool serverStateChanged = false;

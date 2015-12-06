@@ -15,6 +15,8 @@ const QString SAVE_TO_FILE_SETTING_PATTH = "/Settings/Window/SaveToFile";
 const QString OUTPUT_FILE_NAME_SETTING_PATTH = "/Settings/Window/OutputFileName";
 const QString SAVE_TO_FILE_INTERVAL_SETTING_PATH = "/Settings/Window/SaveToFileInterval";
 
+const QString SAVE_MESSAGES_TO_LOG_FILE_SETTING_PATH = "/Settings/Window/SaveMessagesToFile";
+
 //default style settings:
 
 const QString GENERATED_STYLE_FONT_NAME_SETTING_PATH = "/Settings/DefaultStyle/FontName";
@@ -55,6 +57,9 @@ const QString GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH = "/Settings
 
 const QString GENERATED_STYLE_SMILES_SIZE_SETTING_PATH = "/Settings/DefaultStyle/SmilesSize";
 const QString GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH = "/Settings/DefaultStyle/ServiceIconsSize";
+
+const QString GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH = "/Settings/DefaultStyle/MaxImagesHeight";
+
 const QString GENERATED_STYLE_ANIMATION_TYPE_SETTING_PATH = "/Settings/DefaultStyle/AnimationType";
 
 const QString GENERATED_STYLE_ANIMATION_DURATION_SETTING_PATH = "/Settings/DefaultStyle/AnimationDuration";
@@ -197,6 +202,8 @@ const bool DEFAULT_SAVE_TO_FILE = false;
 const QString DEFAULT_FILE_NAMEE = "output.png";
 const int DEFAULT_SAVE_TO_FILE_INTERVAL = 3000;
 
+const bool DEFAULT_SAVE_MESSAGES_TO_LOG_FILE = false;
+
 const bool DEFAULT_CHANNEL_ENABLE = true;
 
 const QString DEFAULT_GENERATED_STYLE_FONT_NAME = "Arial";
@@ -234,6 +241,9 @@ const unsigned int DEFAULT_GENERATED_STYLE_ALIASES_BACKGROUND_COLOR = 0x00000000
 
 const int DEFAULT_GENERATED_STYLE_SMILES_SIZE = 32;
 const int DEFAULT_GENERATED_STYLE_SERVICE_ICONS_SIZE = 16;
+
+const int DEFAULT_GENERATED_STYLE_MAX_IMAGES_HEIGHT = 256;
+
 const QString DEFAULT_GENERATED_STYLE_ANIMATION_TYPE = "None";
 
 const double DEFAULT_GENERATED_STYLE_ANIMATION_DURATION = 0.5;

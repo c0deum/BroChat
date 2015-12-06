@@ -166,6 +166,8 @@ void QYoutubeChat::onMessagesLoaded()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
+    qDebug() << reply->readAll();
+
     const QString HTML_CONTENT_START = "<html_content><![CDATA[";
     const QString HTML_CONTENT_END = "]]></html_content>";
 
