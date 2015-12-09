@@ -369,6 +369,13 @@ a
 	height:%SERVICE_ICONS_SIZE%;
 }
 
+.livecodingViewers
+{
+        padding-top:4px;
+	content: url(livecodinglogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
 .realltvViewers
 {
         padding-top:4px;
@@ -419,7 +426,7 @@ a
                 var VIEWERS_INFO_SHOW = "viewersInfoShow";
                 var VIEWERS_INFO_HIDE = "viewersInfoHide";
                 
-                var servicesArray = [ "cybergame", "goodgame", "hitbox", "realltv", "twitch", "youtube", "funstream", "gamerstv", "streambox" ];
+                var servicesArray = [ "cybergame", "goodgame", "hitbox", "livecoding", "realltv", "twitch", "youtube", "funstream", "gamerstv", "streambox" ];
                 
                 var MESSAGE = "message";
                 var STATISTIC = "statistic";
@@ -535,6 +542,7 @@ a
                         <span id="cybergameViewersInfo" class = "viewersInfoShow"><span class = "cybergameViewers"></span><span class = "statistic" id="cybergame"></span></span>
                         <span id="goodgameViewersInfo" class = "viewersInfoShow"><span class = "goodgameViewers"></span><span class = "statistic" id="goodgame"></span></span>
                         <span id="hitboxViewersInfo" class = "viewersInfoShow"><span class = "hitboxViewers"></span><span class = "statistic" id="hitbox"></span></span>
+                        <span id="livecodingViewersInfo" class = "viewersInfoShow"><span class = "livecodingViewers"></span><span class = "statistic" id="livecoding"></span></span>
                         <span id="realltvViewersInfo" class = "viewersInfoShow"><span class = "realltvViewers"></span><span class = "statistic" id="realltv"></span></span>
                         <span id="twitchViewersInfo" class = "viewersInfoShow"><span class = "twitchViewers"></span><span class = "statistic" id="twitch"></span></span>
                         <span id="youtubeViewersInfo" class = "viewersInfoShow"><span class = "youtubeViewers"></span><span class = "statistic" id="youtube"></span></span>

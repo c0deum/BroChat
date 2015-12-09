@@ -254,6 +254,7 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     //livecoding
     QObject::connect( livecodingChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( livecodingChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), livecodingChat_, SLOT( reconnect() ) );
 
 

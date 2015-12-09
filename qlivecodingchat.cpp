@@ -2,6 +2,8 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 
+#include <QWebSocket>
+
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -36,9 +38,17 @@ const QString DEFAULT_LIVECODING_CONFERENCE_JID_POSTFIX = "@chat.livecoding.tv";
 const QString DEFAULT_LIVECODING_CANDY_JS_LINK = "https://www.livecoding.tv/static/candy-chat/candy.bundle.js";
 const QString DEFAULT_LIVECODING_SMILES_LINK_PREFIX = "https://www.livecoding.tv/static/candy-chat/img/emoticons_hd/";
 
+const QString DEFAULT_LIVECODING_SID_INFO_REQUEST_PREFIX = "https://www.livecoding.tv/live.eio/?EIO=3&transport=polling";
+
+const QString DEFAULT_LIVECODING_WEBSOCKET_LINK = "wss://www.livecoding.tv/live.eio/?EIO=3&transport=websocket";
+
 
 const int DEFAULT_LIVECODING_RECONNECT_INTERVAL = 10000;
 const int DEFAULT_LIVECODING_STATISTIC_INTERVAL = 10000;
+
+const int DEFAULT_LIVECODING_RECONNECT_WEBSOCKET_INTERVAL = 10000;
+
+const int DEFAULT_LIVECODING_SAVE_WEBSOCKET_CONNECTION_INTERVAL = 10000;
 
 const QString LIVECODING_USER ="LIVECODING";
 const QString LIVECODING_SERVICE = "livecoding";
@@ -48,6 +58,8 @@ QLivecodingChat::QLivecodingChat( QObject * parent )
 , nam_( new QNetworkAccessManager( this ) )
 , xmppClient_( 0 )
 , mucManager_( 0 )
+, socket_( 0 )
+, sid_()
 , channelName_()
 , login_()
 , password_()
@@ -55,13 +67,16 @@ QLivecodingChat::QLivecodingChat( QObject * parent )
 , smiles_()
 , reconnectTimerId_( -1 )
 , reconnectInterval_( DEFAULT_LIVECODING_RECONNECT_INTERVAL )
-, statisticTimerId_( -1 )
-, statisticInterval_( DEFAULT_LIVECODING_STATISTIC_INTERVAL )
+, reconnectWebSocketTimerId_( -1 )
+, reconnectWebSocketInterval_( DEFAULT_LIVECODING_RECONNECT_WEBSOCKET_INTERVAL )
+, saveWebSocketConnectionTimerId_( -1 )
+, saveWebSocketConnectionInterval_( DEFAULT_LIVECODING_SAVE_WEBSOCKET_CONNECTION_INTERVAL )
 {
 }
 
 QLivecodingChat::~QLivecodingChat()
 {
+    disconnect();
 }
 
 void QLivecodingChat::connect()
@@ -112,11 +127,18 @@ void QLivecodingChat::disconnect()
         reconnectTimerId_ = -1;
     }
 
-    if( statisticTimerId_ != -1 )
+    if( reconnectWebSocketTimerId_ != -1 )
     {
-        killTimer( statisticTimerId_ );
-        statisticTimerId_ = -1;
+        killTimer( reconnectWebSocketTimerId_ );
+        reconnectWebSocketTimerId_ = -1;
     }
+
+    if( saveWebSocketConnectionTimerId_ != -1 )
+    {
+        killTimer( saveWebSocketConnectionTimerId_ );
+        saveWebSocketConnectionTimerId_ = -1;
+    }
+
 
     if( mucManager_ )
     {
@@ -138,7 +160,18 @@ void QLivecodingChat::disconnect()
         xmppClient_ = 0;
     }
 
-    //TODO: emit newStatistic( new QChatStatistic( LIVECODING_SERVICE, "", this ) );
+    /*
+    if( socket_ )
+    {
+        socket_->abort();
+        socket_->deleteLater();
+    }
+    socket_ = 0;
+
+    emit newStatistic( new QChatStatistic( LIVECODING_SERVICE, "", this ) );
+    */
+
+    disconnectFromWebSocket();
 }
 
 void QLivecodingChat::reconnect()
@@ -166,13 +199,16 @@ void QLivecodingChat::onConnected()
     if( isShowSystemMessages() )
         emit newMessage( new QChatMessage( LIVECODING_SERVICE, LIVECODING_USER, "Connected to " + channelName_ + "...", "", this ) );
 
+    //connectToWebSocket();
+
+    getSid();
+
     smiles_.clear();
     getSmiles();
 }
 
 void QLivecodingChat::onError( QXmppClient::Error )
 {
-
     if( isShowSystemMessages() )
         emit newMessage( new QChatMessage( LIVECODING_SERVICE, LIVECODING_USER, "Unknown Error ...", "", this ) );
 
@@ -228,6 +264,196 @@ void QLivecodingChat::onMessageReceived( const QXmppMessage & message )
             }
         }
     }
+}
+
+void QLivecodingChat::getSid()
+{
+    //+ "&t=" + QString::number( QDateTime::currentMSecsSinceEpoch() )
+    //+ "&t=" + QString::number( QDateTime::currentMSecsSinceEpoch() ) + "-0"
+    QNetworkRequest request( QUrl( DEFAULT_LIVECODING_SID_INFO_REQUEST_PREFIX + "" )  );
+
+    QNetworkReply * reply = nam_->get( request );
+
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSidLoaded() ) );
+    QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onSidLoadError() ) );
+}
+
+void QLivecodingChat::onSidLoaded()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    //qDebug() << reply->readAll();
+
+    QByteArray webSocketInfoData = reply->readAll();
+
+    webSocketInfoData = "{" + webSocketInfoData.right( webSocketInfoData.length() - webSocketInfoData.indexOf( "\"sid\":" ) );
+
+
+    qDebug() << webSocketInfoData;
+
+    QJsonParseError parseError;
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( webSocketInfoData, &parseError );
+
+    if( QJsonParseError::NoError == parseError.error && jsonDoc.isObject() )
+    {
+        QJsonObject jsonObj = jsonDoc.object();
+        sid_ = jsonObj[ "sid" ].toString();
+        qDebug() << sid_;
+
+        connectToWebSocket();
+
+        //joinToChannel();
+    }
+
+
+    reply->deleteLater();
+}
+
+void QLivecodingChat::onSidLoadError()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    reply->deleteLater();
+}
+
+void QLivecodingChat::joinToChannel()
+{
+    //"&t=" + QString::number( QDateTime::currentMSecsSinceEpoch() ) + "-1" +
+    QNetworkRequest request( QUrl( DEFAULT_LIVECODING_SID_INFO_REQUEST_PREFIX + "&sid=" + sid_ ) );
+
+    QByteArray data = QString(  "30:4[\"join\",\"stream." + channelName_ + "\"]" ).toUtf8();
+
+    //"text/plain;charset=UTF-8"
+    request.setHeader( QNetworkRequest::ContentTypeHeader, "text/plain;charset=UTF-8" );
+
+    QNetworkReply * reply = nam_->post( request, data );
+
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onJoinToChannelReplyLoaded() ) );
+    QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onJoinToChannelReplyLoadError() ) );
+}
+
+
+void QLivecodingChat::onJoinToChannelReplyLoaded()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    qDebug() << "onJoinToChannelReplyLoaded: " << reply->readAll();
+
+    //connectToWebSocket();
+    if( socket_ && socket_->isValid() && socket_->state() == QAbstractSocket::ConnectedState )
+        socket_->sendTextMessage( "5" );
+
+    reply->deleteLater();
+}
+
+void QLivecodingChat::onJoinToChannelReplyLoadError()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    qDebug() << "onJoinToChannelReplyLoadError";
+
+    reply->deleteLater();
+}
+
+
+void QLivecodingChat::connectToWebSocket()
+{
+    //assert( !socket_ );
+    socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
+
+    QObject::connect( socket_, SIGNAL( connected() ), this, SLOT( onWebSocketConnected() ) );
+    QObject::connect( socket_, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( onWebSocketError() ) );
+    QObject::connect( socket_, SIGNAL( textMessageReceived( const QString & ) ), this, SLOT( onWebSocketMessageReceived( const QString & ) ) );
+
+    //test ping-pong support
+    //QObject::connect( socket_, SIGNAL( pong( quint64,QByteArray ) ), this, SLOT( onPong( quint64,QByteArray ) ) );
+
+    socket_->open( QUrl( DEFAULT_LIVECODING_WEBSOCKET_LINK + "&sid=" + sid_ ) );
+}
+
+void QLivecodingChat::onWebSocketConnected()
+{
+    if( saveWebSocketConnectionTimerId_ == -1 )
+        saveWebSocketConnectionTimerId_ = startTimer( saveWebSocketConnectionInterval_ );
+    if( socket_ && socket_->isValid() && socket_->state() == QAbstractSocket::ConnectedState )
+    {
+        socket_->sendTextMessage( "2probe" );
+    }
+}
+
+void QLivecodingChat::onWebSocketError()
+{
+    if( isShowSystemMessages() )
+        emit newMessage( new QChatMessage( LIVECODING_SERVICE, LIVECODING_USER, "Web socket error..." + socket_->errorString(), "", this ) );
+    if( reconnectWebSocketTimerId_ == -1 )
+        reconnectWebSocketTimerId_ = startTimer( reconnectWebSocketInterval_ );
+}
+
+void QLivecodingChat::onWebSocketMessageReceived( const QString & message )
+{
+    const QString CHANNEL_MESSAGE_PREFIX = "4[\"channel_msg\"";
+
+    if( "3probe" == message )
+    {
+        joinToChannel();
+
+        //socket_->sendTextMessage( "5" );
+    }
+    else if( CHANNEL_MESSAGE_PREFIX == message.left( CHANNEL_MESSAGE_PREFIX.length() )  )
+    {
+        int infoStartPos = message.indexOf( "{" );
+        int infoEndPos = message.indexOf( "}" );
+
+        if( infoEndPos - infoStartPos + 1 > 0 )
+        {
+            QByteArray infoData = message.mid( infoStartPos, infoEndPos - infoStartPos + 1 ).toUtf8();
+
+            QJsonParseError parseError;
+
+            QJsonDocument jsonDoc = QJsonDocument::fromJson( infoData, &parseError );
+
+            if( QJsonParseError::NoError == parseError.error && jsonDoc.isObject() )
+            {
+                QJsonObject jsonObj = jsonDoc.object();
+
+                const QString VIEWS_LIVE = "views_live";
+
+                if( jsonObj.contains( VIEWS_LIVE ) )
+                    emit newStatistic ( new QChatStatistic( LIVECODING_SERVICE, QString::number( jsonObj[ VIEWS_LIVE ].toInt() ), this ) );
+            }
+
+        }
+    }
+    else
+    {
+        qDebug() << message;
+    }
+}
+
+/*
+void QLivecodingChat::onWebSocketPong()
+{
+}
+*/
+
+void QLivecodingChat::disconnectFromWebSocket()
+{
+    if( socket_ )
+    {
+        socket_->abort();
+        socket_->deleteLater();
+    }
+    socket_ = 0;
+
+    emit newStatistic( new QChatStatistic( LIVECODING_SERVICE, "", this ) );
+}
+
+void QLivecodingChat::reconnectToWebSocket()
+{
+    disconnectFromWebSocket();
+    //connectToWebSocket();
+    getSid();
 }
 
 void QLivecodingChat::getSmiles()
@@ -343,15 +569,23 @@ QString QLivecodingChat::insertSmiles( const QString & message ) const
 }
 
 void QLivecodingChat::timerEvent( QTimerEvent * event )
-{
-    if( event->timerId() == statisticTimerId_ )
+{    
+    if( event->timerId() == saveWebSocketConnectionTimerId_ )
     {
-        //getStatistic();
+        if( socket_ && socket_->isValid() && socket_->state() == QAbstractSocket::ConnectedState )
+        {
+            socket_->sendTextMessage( "2" );
+        }
+    }
+    else if( event->timerId() == reconnectWebSocketTimerId_ )
+    {
+        reconnectToWebSocket();
     }
     else if( event->timerId() == reconnectTimerId_ )
     {
         reconnect();
     }
+
 }
 
 void QLivecodingChat::loadSettings()
