@@ -54,6 +54,7 @@ const QString GENERATED_STYLE_ALIASES_BORDER_COLOR_SETTING_PATH = "/Settings/Def
 
 const QString GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/AliasesBackgroundColor";
 
+const QString GENERATED_STYLE_LINKS_COLOR_SETTING_PATH = "/Settings/DefaultStyle/LinkColor";
 
 const QString GENERATED_STYLE_SMILES_SIZE_SETTING_PATH = "/Settings/DefaultStyle/SmilesSize";
 const QString GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH = "/Settings/DefaultStyle/ServiceIconsSize";
@@ -171,6 +172,12 @@ const QString YOUTUBE_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Youtube/Supporte
 const QString YOUTUBE_BLACK_LIST_SETTING_PATH = "/Settings/Youtube/BlackList";
 const QString YOUTUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Youtube/RemoveBlackListUsers";
 
+const QString LAST_POLL_QUESTION_SETTING_PATH = "/Settings/Poll/Question";
+const QString LAST_POLL_TIME_SETTING_PATH = "/Settings/Poll/Time";
+const QString LAST_POLL_MULTI_CHOICE_SETTING_PATH = "/Settings/Poll/MultiChoice";
+const QString LAST_POLL_ENTRIES_ANSWERS_SETTING_PATH = "/Settings/Poll/EntriesAnswers";
+const QString LAST_POLL_ENTRIES_VOTES_SETTING_PATH = "/Settings/Poll/EntriesVotes";
+
 const QString BLANK_STRING = "";
 
 const QString DEFAULT_ACES_CHANNEL_NAME = BLANK_STRING;
@@ -237,6 +244,7 @@ const unsigned int DEFAULT_GENERATED_STYLE_ALIASES_BORDER_COLOR = 0x00000000;
 
 const unsigned int DEFAULT_GENERATED_STYLE_ALIASES_BACKGROUND_COLOR = 0x00000000;
 
+const unsigned int DEFAULT_GENERATED_STYLE_LINKS_COLOR = 0xffffffff;
 
 
 const int DEFAULT_GENERATED_STYLE_SMILES_SIZE = 32;
@@ -249,5 +257,8 @@ const QString DEFAULT_GENERATED_STYLE_ANIMATION_TYPE = "None";
 const double DEFAULT_GENERATED_STYLE_ANIMATION_DURATION = 0.5;
 
 const QString DEFAULT_STYLE_NAME = "[default]";
+
+const int DEFAULT_POLL_TIME = 60;
+const bool DEFAULT_POLL_MULTI_CHOICE = false;
 
 #endif // SETTINGSCONSTS_H

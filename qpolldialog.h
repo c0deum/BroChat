@@ -1,5 +1,0 @@
-#ifndef QPOLLDIALOG
-#define QPOLLDIALOG
-
-#endif // QPOLLDIALOG
-

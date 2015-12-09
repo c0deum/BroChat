@@ -42,6 +42,8 @@ private slots:
 
     void aliasesBorderColorSelection();
     void aliasesBackgroundColorSelection();
+
+    void linksColorSelection();
 public slots:
     void saveSettings();
     void saveDialogSettings();
@@ -176,6 +178,7 @@ private:
     QRgb aliasesTextColor;
     QRgb aliasesBorderColor;
     QRgb aliasesBackgroundColor;
+    QRgb linksColor;
 
     QComboBox *languageCombo;
     QCheckBox *stayOnTopCheckBox;
@@ -232,6 +235,8 @@ private:
     QSpinBox * aliasesBorderSizeSpinBox;
     QPushButton * aliasesBorderColorButton;
     QPushButton * aliasesBackgroundColorButton;
+
+    QPushButton * linksColorButton;
 
     QSpinBox *smilesSizeSpinBox;
     QSpinBox *serviceIconsSizeSpinBox;

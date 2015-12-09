@@ -74,6 +74,8 @@ private slots:
     void changeStyle();
     void changeOpacity();
     void onLinkClicked( const QUrl &url );
+
+    void showPollSettings();
 signals:
     void closeWindow();
 private:

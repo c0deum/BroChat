@@ -39,6 +39,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , aliasesTextColor()
 , aliasesBorderColor()
 , aliasesBackgroundColor()
+, linksColor()
 , languageCombo( new QComboBox( this ) )
 , stayOnTopCheckBox( new QCheckBox( this ) )
 , frameLessWindowCheckBox( new QCheckBox( this ) )
@@ -94,6 +95,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , aliasesBorderColorButton( new QPushButton( this ) )
 , aliasesBackgroundColorButton( new QPushButton( this ) )
 
+, linksColorButton( new QPushButton( this ) )
 
 , smilesSizeSpinBox( new QSpinBox( this ) )
 , serviceIconsSizeSpinBox( new QSpinBox( this ) )
@@ -630,6 +632,22 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 
 
+    QHBoxLayout * linksColorLayout = new QHBoxLayout();
+
+    QLabel * linksColorLabel = new QLabel( tr( "Links Color:" ) );
+    linksColorButton->setFlat( true );
+    linksColor = settings.value( GENERATED_STYLE_LINKS_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_LINKS_COLOR ).toUInt();
+    setColorButtonStyle( linksColorButton, linksColor );
+    QObject::connect( linksColorButton, SIGNAL( clicked() ), this, SLOT( linksColorSelection() ) );
+
+    linksColorLayout->addWidget( linksColorLabel );
+    linksColorLayout->addWidget( linksColorButton );
+
+    defaultStyleLayout->addLayout( linksColorLayout );
+
+
+
+
     QHBoxLayout * smilesSizeLayout = new QHBoxLayout();
 
     QLabel *smilesSizeLabel = new QLabel( tr( "Smiles Size:" ) );
@@ -657,7 +675,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QHBoxLayout * maxImagesHeightLayout = new QHBoxLayout();
 
-    QLabel *maxImagesHeightLabel = new QLabel( tr( "Max Images Size( px ):" ) );
+    QLabel *maxImagesHeightLabel = new QLabel( tr( "Max Images Height( px ):" ) );
     maxImagesHeightSpinBox->setRange( 0, 65535 );
     maxImagesHeightSpinBox->setValue( settings.value( GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH, DEFAULT_GENERATED_STYLE_MAX_IMAGES_HEIGHT ).toInt() );
 
@@ -1553,6 +1571,9 @@ void QSettingsDialog::saveSettings()
 
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BACKGROUND_COLOR ).toUInt() != aliasesBackgroundColor );
 
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_LINKS_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_LINKS_COLOR ).toUInt() != linksColor );
+
+
 
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SMILES_SIZE ).toInt() != smilesSizeSpinBox->value() );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SERVICE_ICONS_SIZE ).toInt() != serviceIconsSizeSpinBox->value() );
@@ -1596,6 +1617,8 @@ void QSettingsDialog::saveSettings()
     settings.setValue( GENERATED_STYLE_ALIASES_BORDER_SIZE_SETTING_PATH, aliasesBorderSizeSpinBox->value() );
     settings.setValue( GENERATED_STYLE_ALIASES_BORDER_COLOR_SETTING_PATH, aliasesBorderColor );
     settings.setValue( GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH, aliasesBackgroundColor );
+
+    settings.setValue( GENERATED_STYLE_LINKS_COLOR_SETTING_PATH, linksColor );
 
 
     settings.setValue( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, smilesSizeSpinBox->value() );
@@ -2576,6 +2599,11 @@ void QSettingsDialog::aliasesBorderColorSelection()
 void QSettingsDialog::aliasesBackgroundColorSelection()
 {
     buttonColorSelection( aliasesBackgroundColorButton, aliasesBackgroundColor );
+}
+
+void QSettingsDialog::linksColorSelection()
+{
+    buttonColorSelection( linksColorButton, linksColor );
 }
 
 

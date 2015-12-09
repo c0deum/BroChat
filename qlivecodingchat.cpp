@@ -170,7 +170,7 @@ void QLivecodingChat::onConnected()
     getSmiles();
 }
 
-void QLivecodingChat::onError( QXmppClient::Error error )
+void QLivecodingChat::onError( QXmppClient::Error )
 {
 
     if( isShowSystemMessages() )

@@ -132,7 +132,14 @@ body
 	background-color:%BODY_BACKGROUND_COLOR%;
 	padding: 0px;
 	margin: 0px;
+	word-wrap: break-word;
 }
+
+a
+{
+        color:%LINKS_COLOR%;        
+}
+
 
 #messagesList
 {
@@ -240,7 +247,11 @@ body
 
 .picture
 {
+        width: auto;
+        height: auto;
 	max-height:%MAX_IMAGES_HEIGHT%;
+	max-width:100%;
+	
 }
 
 .aces

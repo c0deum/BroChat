@@ -51,7 +51,11 @@
 
 #include "qsettingsdialog.h"
 
+#include "qpollsettingsdialog.h"
+
 #include "settingsconsts.h"
+
+
 
 #include "qbrochatview.h"
 
@@ -127,6 +131,8 @@ QBroChatView::QBroChatView( QWidget *parent )
     QAction *settingsAction = new QAction( tr( "&Settings..." ), this );
     QAction *exitAction = new QAction( tr( "&Exit" ), this );
 
+    QAction * pollSettingsAction = new QAction( tr( "&Poll Settings..." ), this );
+
     QAction *reconnectAllAction = new QAction( tr( "Reconnect All Chats" ), this );
     QAction *reconnectAcesAction = new QAction( QIcon( ":/resources/aceslogo.png" ), tr( "Reconnect Aces Chat" ), this );
     QAction *reconnectCybergameAction = new QAction( QIcon( ":/resources/cybergamelogo.png" ), tr( "Reconnect Cybergame Chat" ), this );
@@ -145,6 +151,8 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     QObject::connect( settingsAction, SIGNAL( triggered() ), this, SLOT( showSettings() ) );
     QObject::connect( exitAction, SIGNAL( triggered() ), this, SIGNAL( closeWindow() ) );
+
+    QObject::connect( pollSettingsAction, SIGNAL( triggered() ), this, SLOT( showPollSettings() ) );
 
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), acesChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), cybergameChat_, SLOT( reconnect() ) );
@@ -177,6 +185,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( reconnectYoutubeAction, SIGNAL( triggered() ), youtubeChat_, SLOT( reconnect() ) );
 
     addAction( settingsAction );
+    addAction( pollSettingsAction );
 
     addAction( reconnectAllAction );
     addAction( reconnectAcesAction );
@@ -487,6 +496,12 @@ void QBroChatView::changeStyle( const QString &styleName )
             style.replace( "%ALIASES_BACKGROUND_COLOR%", colorString );
 
 
+            color = settings_.value( GENERATED_STYLE_LINKS_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_LINKS_COLOR ).toUInt();
+            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() ) + ")";
+            style.replace( "%LINKS_COLOR%", colorString );
+
+
+
             style.replace( "%SMILES_SIZE%", QString::number( settings_.value( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SMILES_SIZE ).toInt() ) + "px" );
 
             int serviceIconsSize = settings_.value( GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SERVICE_ICONS_SIZE ).toInt();
@@ -732,6 +747,15 @@ void QBroChatView::showSettings()
     settingsDialog->exec();
 
     settingsDialog->deleteLater();
+}
+
+void QBroChatView::showPollSettings()
+{
+    QPollSettingsDialog * pollSettingsDialog = new QPollSettingsDialog( this );
+
+    pollSettingsDialog->exec();
+
+    pollSettingsDialog->deleteLater();
 }
 
 void QBroChatView::changeStyle()
