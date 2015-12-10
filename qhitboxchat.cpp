@@ -568,6 +568,9 @@ void QHitBoxChat::loadSettings()
     QSettings settings;
     channelName_ = settings.value( HITBOX_CHANNEL_SETTING_PATH, DEFAULT_HITBOX_CHANNEL_NAME ).toString();
 
+    if( QChatMessage::isLink( channelName_ ) )
+        channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
+
     enable( settings.value( HITBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     originalColors_ = settings.value( HITBOX_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();

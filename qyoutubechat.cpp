@@ -313,7 +313,7 @@ void QYoutubeChat::timerEvent( QTimerEvent * event )
 void QYoutubeChat::loadSettings()
 {    
     QSettings settings;
-    channelName_ = settings.value( YOUTUBE_CHANNEL_SETTING_PATH, DEFAULT_YOUTUBE_CHANNEL_NAME ).toString();
+    channelName_ = settings.value( YOUTUBE_CHANNEL_SETTING_PATH, DEFAULT_YOUTUBE_CHANNEL_NAME ).toString();        
 
     enable( settings.value( YOUTUBE_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 

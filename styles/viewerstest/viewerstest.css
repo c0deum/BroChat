@@ -207,6 +207,12 @@ body
 	height:24px;
 }
 
+.livecodingViewers
+{
+	content: url(../resources/livecodinglogo.png);
+	height:24px;
+}
+
 .realltvViewers
 {
 	content: url(../resources/realltvlogo.png);

@@ -143,7 +143,13 @@ void QFunStreamChat::reconnect()
 
 void QFunStreamChat::getChannelInfo()
 {
+    //QString requestLink = QChatMessage::isLink( channelName_ )? channelName_ : DEFAULT_FUNSTREAM_CHANNEL_PREFIX + channelName_;
+
     QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_CHANNEL_PREFIX + channelName_ ) );
+
+    //QNetworkRequest request( QUrl( requestLink + "" ) );
+
+
     QNetworkReply *reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChannelInfoLoaded() ) );
     QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onChannelInfoLoadError() ) );
@@ -704,6 +710,9 @@ void QFunStreamChat::loadSettings()
 {
     QSettings settings;
     channelName_ = settings.value( FUNSTREAM_CHANNEL_SETTING_PATH, DEFAULT_FUNSTREAM_CHANNEL_NAME ).toString();
+
+    if( QChatMessage::isLink( channelName_ ) )
+        channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
 
     enable( settings.value( FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 

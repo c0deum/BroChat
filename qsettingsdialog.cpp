@@ -22,6 +22,8 @@
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 
+#include <QScrollArea>
+
 #include "settingsconsts.h"
 
 #include "qsettingsdialog.h"
@@ -740,7 +742,15 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     QGroupBox *defaultStyleGroup = new QGroupBox;
     defaultStyleGroup->setLayout( defaultStyleLayout );
 
-    tabSettings->addTab( defaultStyleGroup, QIcon( ":/resources/broico.ico" ), tr( "Default Style" ) );
+    QScrollArea * defaultStyleScrollArea = new QScrollArea( this );
+
+    defaultStyleScrollArea->setWidgetResizable( true );
+    defaultStyleScrollArea->setWidget( defaultStyleGroup );
+
+    //tabSettings->addTab( defaultStyleGroup, QIcon( ":/resources/broico.ico" ), tr( "Default Style" ) );
+    tabSettings->addTab( defaultStyleScrollArea, QIcon( ":/resources/broico.ico" ), tr( "Default Style" ) );
+
+
 
     //настройки aces
 

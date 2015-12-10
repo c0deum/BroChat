@@ -612,6 +612,13 @@ void QGoodGameChat::loadSettings()
     QSettings settings;
     channelName_ = settings.value( GOODGAME_CHANNEL_SETTING_PATH, DEFAULT_GOODGAME_CHANNEL_NAME ).toString();
 
+    if( QChatMessage::isLink( channelName_ ) )
+    {
+        channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/", -2 ) - 1 );
+        channelName_ = channelName_.left( channelName_.length() - 1 );
+    }
+
+
     enable( settings.value( GOODGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     useAnimatedSmiles_ = settings.value( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, false ).toBool();

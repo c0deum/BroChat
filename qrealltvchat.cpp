@@ -529,6 +529,9 @@ void QReallTvChat::loadSettings()
 
     channelName_ = settings.value( REALLTV_CHANNEL_SETTING_PATH, DEFAULT_REALLTV_CHANNEL_NAME ).toString();
 
+    if( QChatMessage::isLink( channelName_ ) )
+        channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
+
     enable( settings.value( REALLTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     setAliasesList( settings.value( REALLTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );

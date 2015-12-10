@@ -56,7 +56,8 @@ SOURCES += \
     qigdcchat.cpp \
     qmessagesmanager.cpp \
     qpoll.cpp \
-    qpollsettingsdialog.cpp
+    qpollsettingsdialog.cpp \
+    qpollview.cpp
 
 RESOURCES += \
     resources.rc

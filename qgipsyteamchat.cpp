@@ -240,6 +240,9 @@ void QGipsyTeamChat::loadSettings()
 
     channelName_ = settings.value( GIPSYTEAM_CHANNEL_SETTING_PATH, DEFAULT_GIPSYTEAM_CHANNEL_NAME ).toString();
 
+    if( QChatMessage::isLink( channelName_ ) )
+        channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "=" ) - 1 );
+
     enable( settings.value( GIPSYTEAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     setAliasesList( settings.value( GIPSYTEAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );

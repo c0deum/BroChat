@@ -274,7 +274,9 @@ QBroChatView::~QBroChatView()
     if( saveMessagesToLog_ )
     {
         QString logDir = qApp->applicationDirPath();
-        if( !messagesManager_.save( logDir + QDir::separator() + "logs" + QDir::separator() ) )
+
+        //if( !messagesManager_.save( logDir + QDir::separator() + "logs" + QDir::separator() ) )
+        if( !messagesManager_.save( logDir + "/logs/" ) )
         {
             QMessageBox::warning( this, "Error", "Can not save messages log"  );
         }

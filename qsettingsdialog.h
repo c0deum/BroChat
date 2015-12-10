@@ -14,6 +14,8 @@ class QLabel;
 
 class QColorDialog;
 
+class QScrollArea;
+
 class QSettingsDialog: public QDialog
 {
     Q_OBJECT

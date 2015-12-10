@@ -4,6 +4,8 @@
 #include <QFile>
 #include <QDateTime>
 
+#include <QDebug>
+
 #include "qmessagesmanager.h"
 
 QMessagesManager::QMessagesManager( QObject * parent )
@@ -28,6 +30,8 @@ const QList< QChatMessage > & QMessagesManager::messages() const
 
 bool QMessagesManager::save( const QString & logDir ) const
 {
+    qDebug() << logDir;
+
     bool result = true;
 
     QString nowTime = QDateTime::currentDateTime().toString();

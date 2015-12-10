@@ -566,6 +566,9 @@ void QSc2tvChat::loadSettings()
     QSettings settings;
     channelName_ = settings.value( SC2TV_CHANNEL_SETTING_PATH, DEFAULT_SC2TV_CHANNEL_NAME ).toString();
 
+    if( QChatMessage::isLink( channelName_ ) )
+        channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
+
     enable( settings.value( SC2TV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     originalColors_ = settings.value( SC2TV_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();

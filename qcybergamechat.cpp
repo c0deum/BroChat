@@ -432,6 +432,12 @@ void QCyberGameChat::loadSettings()
     QSettings settings;
     channelName_ = settings.value( CYBERGAME_CHANNEL_SETTING_PATH, DEFAULT_CYBERGAME_CHANNEL_NAME ).toString();
 
+    if( QChatMessage::isLink( channelName_ ) )
+    {
+        channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/", -2 ) - 1 );
+        channelName_ = channelName_.left( channelName_.length() - 1 );
+    }
+
     enable( settings.value( CYBERGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     setAliasesList( settings.value( CYBERGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );

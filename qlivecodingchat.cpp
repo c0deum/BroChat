@@ -44,11 +44,8 @@ const QString DEFAULT_LIVECODING_WEBSOCKET_LINK = "wss://www.livecoding.tv/live.
 
 
 const int DEFAULT_LIVECODING_RECONNECT_INTERVAL = 10000;
-const int DEFAULT_LIVECODING_STATISTIC_INTERVAL = 10000;
-
 const int DEFAULT_LIVECODING_RECONNECT_WEBSOCKET_INTERVAL = 10000;
-
-const int DEFAULT_LIVECODING_SAVE_WEBSOCKET_CONNECTION_INTERVAL = 10000;
+const int DEFAULT_LIVECODING_SAVE_WEBSOCKET_CONNECTION_INTERVAL = 25000;
 
 const QString LIVECODING_USER ="LIVECODING";
 const QString LIVECODING_SERVICE = "livecoding";
@@ -593,6 +590,12 @@ void QLivecodingChat::loadSettings()
     QSettings settings;
 
     channelName_ = settings.value( LIVECODING_CHANNEL_SETTING_PATH, DEFAULT_LIVECODING_CHANNEL_NAME ).toString();
+
+    if( QChatMessage::isLink( channelName_ ) )
+    {
+        channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/", -2 ) - 1 );
+        channelName_ = channelName_.left( channelName_.length() - 1 );
+    }
 
     enable( settings.value( LIVECODING_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 

@@ -222,6 +222,8 @@ void QGamersTvChat::onStatisticLoaded()
 
     //{"users":"1","guests":"1"}
 
+    //qDebug() << reply->readAll();
+
     QJsonParseError parseError;
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
@@ -234,7 +236,7 @@ void QGamersTvChat::onStatisticLoaded()
 
             //qDebug() << jsonObj[ "users" ].toString() + "+(" + jsonObj[ "guests" ].toString() + ")";
 
-            emit newStatistic( new QChatStatistic( GAMERSTV_SERVICE, jsonObj[ "users" ].toString() + "+(" + jsonObj[ "guests" ].toString() + ")", this  ) );
+            emit newStatistic( new QChatStatistic( GAMERSTV_SERVICE, QString::number( jsonObj[ "users" ].toInt() ) + "+(" + QString::number( jsonObj[ "guests" ].toInt() ) + ")", this  ) );
 
         }
     }
@@ -373,6 +375,19 @@ void QGamersTvChat::loadSettings()
     QSettings settings;
 
     channelName_ = settings.value( GAMERSTV_CHANNEL_SETTING_PATH, DEFAULT_GAMERSTV_CHANNEL_NAME ).toString();
+
+    if( QChatMessage::isLink( channelName_ ) )
+    {
+        //http://gamerstv.ru/video/i217.html
+        channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
+
+        int startChannelNamePos = channelName_.indexOf( "i" ) + 1;
+        int endChannelNamePos = channelName_.indexOf( ".html" ) - 1;
+
+        channelName_ = channelName_.mid( startChannelNamePos, endChannelNamePos - startChannelNamePos + 1 );
+    }
+
+
 
     enable( settings.value( GAMERSTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 

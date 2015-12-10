@@ -521,6 +521,9 @@ void QStreamBoxChat::loadSettings()
     QSettings settings;
     channelName_ = settings.value( STREAMBOX_CHANNEL_SETTING_PATH, DEFAULT_STREAMBOX_CHANNEL_NAME ).toString();
 
+    if( QChatMessage::isLink( channelName_ ) )
+        channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
+
     enable( settings.value( STREAMBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     setAliasesList( settings.value( STREAMBOX_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );

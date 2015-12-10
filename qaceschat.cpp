@@ -92,7 +92,12 @@ void QAcesChat::reconnect()
 
 void QAcesChat::getChannelInfo()
 {
+    //QString requestLink = QChatMessage::isLink( channelName_ )? channelName_ : DEFAULT_ACES_CHANNEL_INFO_PREFIX + channelName_ + "/";
+
     QNetworkRequest request( QUrl( DEFAULT_ACES_CHANNEL_INFO_PREFIX + channelName_ + "/" ) );
+
+    //QNetworkRequest request( QUrl( requestLink + "" ) );
+
     QNetworkReply * reply = nam_->get( request );
 
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChannelInfoLoaded() ) );
@@ -400,6 +405,13 @@ void QAcesChat::loadSettings()
 {
     QSettings settings;
     channelName_ = settings.value( ACES_CHANNEL_SETTING_PATH, DEFAULT_ACES_CHANNEL_NAME ).toString();
+
+    if( QChatMessage::isLink( channelName_ ) )
+    {
+        channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/", -2 ) - 1 );
+        channelName_ = channelName_.left( channelName_.length() - 1 );
+    }
+
 
     enable( settings.value( ACES_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
