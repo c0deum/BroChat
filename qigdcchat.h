@@ -18,6 +18,8 @@ private:
 
     void loadChannelInfo();
 
+    void getStatistic();
+
     void loadMessages();
 
 public slots:
@@ -32,6 +34,9 @@ private slots:
     void onMessagesLoaded();
     void onMessagesLoadError();
 
+    void onStatisticLoaded();
+    void onStatisticLoadError();
+
 private:
     QNetworkAccessManager *nam_;
     QString channelName_;
@@ -41,6 +46,8 @@ private:
     int updateMessagesInterval_;
     int reconnectTimerId_;
     int reconnectInterval_;
+    int statisticTimerId_;
+    int statisticInterval_;
 };
 
 #endif // QIGDCCHAT

@@ -411,6 +411,13 @@ a
 	height:%SERVICE_ICONS_SIZE%;
 }
 
+.igdcViewers
+{
+        padding-top:4px;
+	content: url(igdclogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
 .streamboxViewers
 {
         padding-top:4px;
@@ -426,7 +433,7 @@ a
                 var VIEWERS_INFO_SHOW = "viewersInfoShow";
                 var VIEWERS_INFO_HIDE = "viewersInfoHide";
                 
-                var servicesArray = [ "cybergame", "goodgame", "hitbox", "livecoding", "realltv", "twitch", "youtube", "funstream", "gamerstv", "streambox" ];
+                var servicesArray = [ "cybergame", "goodgame", "hitbox", "livecoding", "realltv", "twitch", "youtube", "funstream", "gamerstv", "igdc", "streambox" ];
                 
                 var MESSAGE = "message";
                 var STATISTIC = "statistic";
@@ -548,6 +555,7 @@ a
                         <span id="youtubeViewersInfo" class = "viewersInfoShow"><span class = "youtubeViewers"></span><span class = "statistic" id="youtube"></span></span>
                         <span id="funstreamViewersInfo" class = "viewersInfoShow"><span class = "funstreamViewers"></span><span class = "statistic" id="funstream"></span></span>
                         <span id="gamerstvViewersInfo" class = "viewersInfoShow"><span class = "gamerstvViewers"></span><span class = "statistic" id="gamerstv"></span></span>
+                        <span id="igdcViewersInfo" class = "viewersInfoShow"><span class = "igdcViewers"></span><span class = "statistic" id="igdc"></span></span>
                         <span id="streamboxViewersInfo" class = "viewersInfoShow"><span class = "streamboxViewers"></span><span class = "statistic" id="streambox"></span></span>
                 </div>
 		
