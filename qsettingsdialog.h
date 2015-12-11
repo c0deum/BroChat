@@ -16,6 +16,10 @@ class QColorDialog;
 
 class QScrollArea;
 
+class QTabWidget;
+
+class QVBoxLayout;
+
 class QSettingsDialog: public QDialog
 {
     Q_OBJECT
@@ -24,31 +28,47 @@ public:
     virtual ~QSettingsDialog();
 private:
     void loadDialogSettings();
+    void setupWidgets();
+    void setupGeneralTab();
+    void setupDefaultStyleTab();
+    void setupAcesTab();
+    void setupCybergameTab();
+    void setupFunstreamTab();
+    void setupGamerstvTab();
+    void setupGipsyteamTab();
+    void setupGoodgameTab();
+    void setupHitboxTab();
+    void setupIgdcTab();
+    void setupLivecodingTab();
+    void setupRealltvTab();
+    void setupSc2tvTab();
+    void setupStreamboxTab();
+    void setupTwitchTab();
+    void setupYoutubetab();
+
     void setColorButtonStyle( QPushButton *button, QRgb color, int fontSize = 16 );    
-    void buttonColorSelection( QPushButton * button, QRgb & color );
+    void buttonColorSelection( QPushButton * button, QRgb & color );    
+
+    void addLayoutRow( QLayout * layout, std::initializer_list< QWidget* > widgets );
+    void addWidgets( QVBoxLayout * layout, std::initializer_list< QWidget* > widgets );
 private slots:    
     void bodyBackgroundColorSelection();
-
     void nicknamesColorSelection();
     void messagesColorSelection();
-
     void messagesBorderColorSelection();
     void evenMessagesBackgroundColorSelection();
     void oddMessagesBackgroundColorSelection();
-
     void viewersColorSelection();
-
     void viewersBackgroundColorSelection();
-
     void aliasesColorSelection();
-
     void aliasesBorderColorSelection();
     void aliasesBackgroundColorSelection();
-
     void linksColorSelection();
+
 public slots:
     void saveSettings();
     void saveDialogSettings();
+
 signals:
     void opacityChanged();
     void styleChanged();
@@ -60,7 +80,6 @@ signals:
     void showImagesChanged();
     void useServerStateChanged();
     void saveToFileStateChanged();
-
     void saveMessagesToLogChanged();
 
     void acesChannelChanged();
@@ -115,14 +134,12 @@ signals:
     void hitboxRemoveBlackListUsersChanged( bool );
     void hitboxOriginalColorsChanged( bool );
 
-
     void igdcChannelChanged();
     void igdcChannelDisabled();
     void igdcAliasesChanged( const QString & );
     void igdcSupportersListChanged( const QString & );
     void igdcBlackListChanged( const QString & );
     void igdcRemoveBlackListUsersChanged( bool );    
-
 
     void livecodingChannelChanged();
     void livecodingChannelDisabled();
@@ -131,14 +148,12 @@ signals:
     void livecodingBlackListChanged( const QString & );
     void livecodingRemoveBlackListUsersChanged( bool );
 
-
     void realltvChannelChanged();
     void realltvChannelDisabled();
     void realltvAliasesChanged( const QString & );
     void realltvSupportersListChanged( const QString & );
     void realltvBlackListChanged( const QString & );
     void realltvRemoveBlackListUsersChanged( bool );
-
 
     void sc2tvChannelChanged();
     void sc2tvChannelDisabled();
@@ -182,74 +197,48 @@ private:
     QRgb aliasesBackgroundColor;
     QRgb linksColor;
 
+    QTabWidget * tabSettings;
+
     QComboBox *languageCombo;
     QCheckBox *stayOnTopCheckBox;
     QCheckBox *frameLessWindowCheckBox;
     //QCheckBox *transparentWindowCheckBox;
     QComboBox *styleCombo;
     QSlider   *opacitySlider;
-
     QCheckBox *showSystemMessagesCheckBox;
-
     QCheckBox *showImagesCheckBox;
-
     QCheckBox * saveMessagesToLogCheckBox;
-
     QCheckBox *useServerCheckBox;
     QSpinBox  *serverPortSpinBox;
-
     QCheckBox *saveToFileCheckBox;
     QSpinBox  *saveToFileIntervalSpinBox;    
 
-    //default styles
-
     QComboBox *fontNameCombo;
-
     QPushButton * bodyBackgroundColorButton;
-
     QSpinBox *nicknamesFontSizeSpinBox;
     QPushButton *nicknamesTextColorButton;
-
     QSpinBox *messagesFontSizeSpinBox;
     QPushButton *messagesTextColorButton;
-
     QSpinBox * messagesBorderSizeSpinBox;
-
     QSpinBox * messagesBorderRadiusSizeSpinBox;
-
     QPushButton * messagesBorderColorButton;
-
     QPushButton * evenMessagesBackgroundColorButton;
     QPushButton * oddMessagesBackgroundColorButton;
-
-
     QSpinBox * messagesMarginBottomSizeSpinBox;
-
-
     QSpinBox *viewersFontSizeSpinBox;
     QPushButton *viewersTextColorButton;
-
     QPushButton * viewersBackgroundColorButton;
-
     QSpinBox *aliasesFontSizeSpinBox;
     QPushButton *aliasesTextColorButton;
-
     QSpinBox * aliasesBorderSizeSpinBox;
     QPushButton * aliasesBorderColorButton;
     QPushButton * aliasesBackgroundColorButton;
-
     QPushButton * linksColorButton;
-
     QSpinBox *smilesSizeSpinBox;
     QSpinBox *serviceIconsSizeSpinBox;
-
     QSpinBox *maxImagesHeightSpinBox;
-
     QComboBox *animationTypeCombo;
-
     QDoubleSpinBox * animationDurationSpinBox;
-
-    //channels
 
     QCheckBox *acesChannelCheckBox;
     QLineEdit *acesChannelEdit;
@@ -303,14 +292,12 @@ private:
     QTextEdit *hitboxBlackListEdit;
     QCheckBox *hitboxRemoveBlackListUsersCheckBox;
 
-
     QCheckBox *igdcChannelCheckBox;
     QLineEdit *igdcChannelEdit;
     QLineEdit *igdcAliasesEdit;
     QTextEdit *igdcSupportersListEdit;
     QTextEdit *igdcBlackListEdit;
     QCheckBox *igdcRemoveBlackListUsersCheckBox;
-
 
     QCheckBox *livecodingChannelCheckBox;
     QLineEdit *livecodingChannelEdit;
@@ -321,14 +308,12 @@ private:
     QTextEdit *livecodingBlackListEdit;
     QCheckBox *livecodingRemoveBlackListUsersCheckBox;
 
-
     QCheckBox *realltvChannelCheckBox;
     QLineEdit *realltvChannelEdit;
     QLineEdit *realltvAliasesEdit;
     QTextEdit *realltvSupportersListEdit;
     QTextEdit *realltvBlackListEdit;
     QCheckBox *realltvRemoveBlackListUsersCheckBox;
-
 
     QCheckBox *sc2tvChannelCheckBox;
     QLineEdit *sc2tvChannelEdit;

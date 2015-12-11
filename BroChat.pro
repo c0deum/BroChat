@@ -1,5 +1,7 @@
 QT += core network xml widgets webkitwidgets websockets svg
 
+CONFIG += c++14
+
 QMAKE_CXXFLAGS += -DQXMPP_STATIC
 
 HEADERS += \

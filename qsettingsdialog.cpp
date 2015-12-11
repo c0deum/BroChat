@@ -28,6 +28,12 @@
 
 #include "qsettingsdialog.h"
 
+const QString CHANNEL_TEXT = QT_TR_NOOP( "Channel:" );
+const QString ALIASES_TEXT = QT_TR_NOOP( "Aliases:" );
+const QString SUPPORTERS_TEXT = QT_TR_NOOP( "Supporters:" );
+const QString BLACKLIST_TEXT = QT_TR_NOOP( "Black List:" );
+const QString REMOVE_BLACKLIST_USERS_MESSAGES = QT_TR_NOOP( "Remove Black List Users Messages" );
+
 QSettingsDialog::QSettingsDialog( QWidget *parent )
 : QDialog( parent/*, Qt::WindowStaysOnTopHint*/ )
 , bodyBackgroundColor()
@@ -42,70 +48,48 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , aliasesBorderColor()
 , aliasesBackgroundColor()
 , linksColor()
+
+, tabSettings( new QTabWidget( this ) )
+
 , languageCombo( new QComboBox( this ) )
 , stayOnTopCheckBox( new QCheckBox( this ) )
 , frameLessWindowCheckBox( new QCheckBox( this ) )
 //, transparentWindowCheckBox( new QCheckBox( this ) )
 , styleCombo( new QComboBox( this ) )
 , opacitySlider( new QSlider( this ) )
-
-
 , showSystemMessagesCheckBox( new QCheckBox( this ) )
-
 , showImagesCheckBox( new QCheckBox( this ) )
-
 , saveMessagesToLogCheckBox( new QCheckBox( this ) )
-
 , useServerCheckBox( new QCheckBox( this ) )
 , serverPortSpinBox( new QSpinBox( this ) )
-
 , saveToFileCheckBox( new QCheckBox( this ) )
 , saveToFileIntervalSpinBox( new QSpinBox( this ) )
 
-
 , fontNameCombo( new QComboBox( this ) )
-
 , bodyBackgroundColorButton( new QPushButton( this ) )
-
 , nicknamesFontSizeSpinBox( new QSpinBox( this ) )
 , nicknamesTextColorButton( new QPushButton( this ) )
-
 , messagesFontSizeSpinBox( new QSpinBox( this ) )
 , messagesTextColorButton( new QPushButton( this ) )
-
-
 , messagesBorderSizeSpinBox( new QSpinBox( this ) )
-
 , messagesBorderRadiusSizeSpinBox( new QSpinBox( this ) )
-
 , messagesBorderColorButton( new QPushButton( this ) )
-
 , evenMessagesBackgroundColorButton( new QPushButton( this ) )
 , oddMessagesBackgroundColorButton( new QPushButton( this ) )
-
 , messagesMarginBottomSizeSpinBox( new QSpinBox( this ) )
-
 , viewersFontSizeSpinBox( new QSpinBox( this ) )
 , viewersTextColorButton( new QPushButton( this ) )
-
 , viewersBackgroundColorButton( new QPushButton( this ) )
-
 , aliasesFontSizeSpinBox( new QSpinBox( this ) )
 , aliasesTextColorButton( new QPushButton( this ) )
-
 , aliasesBorderSizeSpinBox( new QSpinBox( this ) )
 , aliasesBorderColorButton( new QPushButton( this ) )
 , aliasesBackgroundColorButton( new QPushButton( this ) )
-
 , linksColorButton( new QPushButton( this ) )
-
 , smilesSizeSpinBox( new QSpinBox( this ) )
 , serviceIconsSizeSpinBox( new QSpinBox( this ) )
-
 , maxImagesHeightSpinBox( new QSpinBox( this ) )
-
 , animationTypeCombo( new QComboBox( this ) )
-
 , animationDurationSpinBox( new QDoubleSpinBox( this ) )
 
 , acesChannelCheckBox( new QCheckBox( this ) )
@@ -115,13 +99,13 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , acesSupportersListEdit( new QTextEdit( this ) )
 , acesBlackListEdit( new QTextEdit( this ) )
 , acesRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
+
 , cyberGameChannelCheckBox( new QCheckBox( this ) )
 , cyberGameChannelEdit( new QLineEdit( this ) )
 , cyberGameAliasesEdit( new QLineEdit( this ) )
 , cyberGameSupportersListEdit( new QTextEdit( this ) )
 , cyberGameBlackListEdit( new QTextEdit( this ) )
 , cyberGameRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
 
 , funstreamChannelCheckBox( new QCheckBox( this ) )
 , funstreamChannelEdit( new QLineEdit( this ) )
@@ -130,7 +114,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , funstreamBlackListEdit( new QTextEdit( this ) )
 , funstreamRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-
 , gamerstvChannelCheckBox( new QCheckBox( this ) )
 , gamerstvChannelEdit( new QLineEdit( this ) )
 , gamerstvAliasesEdit( new QLineEdit( this ) )
@@ -138,15 +121,12 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , gamerstvBlackListEdit( new QTextEdit( this ) )
 , gamerstvRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-
 , gipsyteamChannelCheckBox( new QCheckBox( this ) )
 , gipsyteamChannelEdit( new QLineEdit( this ) )
 , gipsyteamAliasesEdit( new QLineEdit( this ) )
 , gipsyteamSupportersListEdit( new QTextEdit( this ) )
 , gipsyteamBlackListEdit( new QTextEdit( this ) )
 , gipsyteamRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
-
 
 , goodGameChannelCheckBox( new QCheckBox( this ) )
 , goodGameChannelEdit( new QLineEdit( this ) )
@@ -164,17 +144,12 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , hitboxBlackListEdit( new QTextEdit( this ) )
 , hitboxRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-
-
-
 , igdcChannelCheckBox( new QCheckBox( this ) )
 , igdcChannelEdit( new QLineEdit( this ) )
 , igdcAliasesEdit( new QLineEdit( this ) )
 , igdcSupportersListEdit( new QTextEdit( this ) )
 , igdcBlackListEdit( new QTextEdit( this ) )
 , igdcRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
-
 
 , livecodingChannelCheckBox( new QCheckBox( this ) )
 , livecodingChannelEdit( new QLineEdit( this ) )
@@ -185,14 +160,12 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , livecodingBlackListEdit( new QTextEdit( this ) )
 , livecodingRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-
 , realltvChannelCheckBox( new QCheckBox( this ) )
 , realltvChannelEdit( new QLineEdit( this ) )
 , realltvAliasesEdit( new QLineEdit( this ) )
 , realltvSupportersListEdit( new QTextEdit( this ) )
 , realltvBlackListEdit( new QTextEdit( this ) )
 , realltvRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
 
 , sc2tvChannelCheckBox( new QCheckBox( this ) )
 , sc2tvChannelEdit( new QLineEdit( this ) )
@@ -202,15 +175,12 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , sc2tvBlackListEdit( new QTextEdit( this ) )
 , sc2tvRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-
 , streamboxChannelCheckBox( new QCheckBox( this ) )
 , streamboxChannelEdit( new QLineEdit( this ) )
 , streamboxAliasesEdit( new QLineEdit( this ) )
 , streamboxSupportersListEdit( new QTextEdit( this ) )
 , streamboxBlackListEdit( new QTextEdit( this ) )
 , streamboxRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
-
 
 , twitchChannelCheckBox( new QCheckBox( this ) )
 , twitchChannelEdit( new QLineEdit( this ) )
@@ -227,26 +197,82 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , youtubeRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
 {
-    //setMinimumWidth( 960 );
-    //setMinimumHeight( 640 );
-
     setWindowTitle( tr( "BroChat Settings" ) );
     setModal( true );
 
-    const QString CHANNEL_TEXT = tr( "Channel:" );
-    const QString ALIASES_TEXT = tr( "Aliases:" );
-    const QString SUPPORTERS_TEXT = tr( "Supporters:" );
-    const QString BLACKLIST_TEXT = tr( "Black List:" );
-    const QString REMOVE_BLACKLIST_USERS_MESSAGES = tr( "Remove Black List Users Messages" );
+    setupWidgets();
+
+    QObject::connect( this, SIGNAL( finished( int ) ), this, SLOT( saveDialogSettings() ) );;
+
+    loadDialogSettings();
+
+    update();    
+}
+
+QSettingsDialog::~QSettingsDialog()
+{
+}
+
+void QSettingsDialog::setupWidgets()
+{
+    QVBoxLayout* mainLayout = new QVBoxLayout( this );
+    //QTabWidget* tabSettings = new QTabWidget( this );
+
+    /*
+    QVBoxLayout *aboutLayout = new QVBoxLayout;
 
 
+    //QLabel *licenseLabel = new QLabel();
 
+    aboutLayout->addStretch( 1 );
+
+    QGroupBox *aboutGroup = new QGroupBox( tabSettings );
+    aboutGroup->setLayout( aboutLayout );
+
+    tabSettings->addTab( aboutGroup, QIcon( ":/resources/broico.ico" ), tr( "About" ) );
+    */
+
+    mainLayout->addWidget( tabSettings );
+
+    QHBoxLayout* buttonsLayout = new QHBoxLayout;
+
+    QPushButton* buttonOk = new QPushButton( tr( "&OK" ) );
+    QPushButton* buttonCancel = new QPushButton( tr( "&Cancel" ) );
+
+    QObject::connect( buttonOk, SIGNAL( clicked() ), this, SLOT( accept() ) );
+    QObject::connect( buttonOk, SIGNAL( clicked() ), this, SLOT( saveSettings() ) );
+    QObject::connect( buttonCancel, SIGNAL( clicked() ), this, SLOT( reject() ) );
+
+    buttonsLayout->addStretch( 1 );
+    buttonsLayout->addWidget( buttonOk );
+    buttonsLayout->addWidget( buttonCancel );
+
+    mainLayout->addLayout( buttonsLayout );
+
+    setLayout( mainLayout );
+
+    setupGeneralTab();
+    setupDefaultStyleTab();
+    setupAcesTab();
+    setupCybergameTab();
+    setupFunstreamTab();
+    setupGamerstvTab();
+    setupGipsyteamTab();
+    setupGoodgameTab();
+    setupHitboxTab();
+    setupIgdcTab();
+    setupLivecodingTab();
+    setupRealltvTab();
+    setupSc2tvTab();
+    setupStreamboxTab();
+    setupTwitchTab();
+    setupYoutubetab();
+}
+
+void QSettingsDialog::setupGeneralTab()
+{
     QSettings settings;
 
-    QVBoxLayout* mainLayout = new QVBoxLayout( this );
-    QTabWidget* tabSettings = new QTabWidget( this );
-
-    //настройки окна
     QVBoxLayout *windowLayout = new QVBoxLayout;
 
     //QLabel *stayOnTopLabel = new QLabel( tr( "Stay on top" ) );
@@ -300,8 +326,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     windowLayout->addWidget( opacityLabel );
     windowLayout->addWidget( opacitySlider );
 
-    //TODO: NEW CODE WITHOUT IMPLEMENTATION
-
     showSystemMessagesCheckBox->setText( "Show System Messages" );
     showSystemMessagesCheckBox->setChecked( settings.value( SHOW_SYSTEM_MESSAGES_SETTING_PATH, DEFAULT_SHOW_SYSTEM_MESSAGES ).toBool() );
 
@@ -318,7 +342,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     windowLayout->addWidget( saveMessagesToLogCheckBox );
 
     useServerCheckBox->setText( tr( "Use Server" ) );
-    useServerCheckBox->setChecked( settings.value( USE_SERVER_SETTING_PAH, DEFAULT_USE_SERVER ).toBool() );    
+    useServerCheckBox->setChecked( settings.value( USE_SERVER_SETTING_PAH, DEFAULT_USE_SERVER ).toBool() );
 
     windowLayout->addWidget( useServerCheckBox );
 
@@ -343,358 +367,169 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     windowLayout->addWidget( saveToFileIntervalLabel );
     windowLayout->addWidget( saveToFileIntervalSpinBox );
 
-    //END NEW CODE
-
     windowLayout->addStretch( 1 );
 
     QGroupBox *windowGroup = new QGroupBox( tabSettings );
     windowGroup->setLayout( windowLayout );
 
     tabSettings->addTab( windowGroup, QIcon( ":/resources/broico.ico" ), tr( "Window" ) );
+}
 
-    //настройки стиля по-умолчанию
+void QSettingsDialog::setupDefaultStyleTab()
+{
+    QSettings settings;
 
     QFontDatabase fontDataBase;
 
     QVBoxLayout *defaultStyleLayout = new QVBoxLayout();
-
-
-    QHBoxLayout * fontNameLayout = new QHBoxLayout();
-
-    QLabel *fontNameLabel = new QLabel( tr( "Font Name:" ) );
 
     fontNameCombo->addItems( fontDataBase.families() );
     fontNameCombo->setEditable( false );
     int index = fontNameCombo->findText( settings.value( GENERATED_STYLE_FONT_NAME_SETTING_PATH, DEFAULT_GENERATED_STYLE_FONT_NAME ).toString() );
     fontNameCombo->setCurrentIndex( index );
 
-    fontNameLayout->addWidget( fontNameLabel );
-    fontNameLayout->addWidget( fontNameCombo );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Font Name:" ), this ), fontNameCombo } );
 
-    defaultStyleLayout->addLayout( fontNameLayout );
-
-
-    QHBoxLayout * bodyBackgroundColorLayout = new QHBoxLayout();
-
-    QLabel * bodyBackgroundColorLabel = new QLabel( tr( "Background Color:" ) );
     bodyBackgroundColorButton->setFlat( true );
     bodyBackgroundColor = settings.value( GENERATED_STYLE_BODY_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_BODY_BACKGROUND_COLOR ).toUInt();
     setColorButtonStyle( bodyBackgroundColorButton, bodyBackgroundColor );
     QObject::connect( bodyBackgroundColorButton, SIGNAL( clicked() ), this, SLOT( bodyBackgroundColorSelection() ) );
 
-    bodyBackgroundColorLayout->addWidget( bodyBackgroundColorLabel );
-    bodyBackgroundColorLayout->addWidget( bodyBackgroundColorButton );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Background Color:" ), this ), bodyBackgroundColorButton } );
 
-    defaultStyleLayout->addLayout( bodyBackgroundColorLayout );
-
-
-    QHBoxLayout * nickNamesFontSizeLayout = new QHBoxLayout();
-
-    QLabel *nicknamesFontSizeLabel = new QLabel( tr( "Nicknames Font Size:" ) );
     nicknamesFontSizeSpinBox->setRange( 1, 100 );
     nicknamesFontSizeSpinBox->setValue( settings.value( GENERATED_STYLE_NICKNAMES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE ). toInt() );
 
-    nickNamesFontSizeLayout->addWidget( nicknamesFontSizeLabel );
-    nickNamesFontSizeLayout->addWidget( nicknamesFontSizeSpinBox );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Nicknames Font Size:" ), this ), nicknamesFontSizeSpinBox } );
 
-    defaultStyleLayout->addLayout( nickNamesFontSizeLayout );
-
-
-    QHBoxLayout * nickNamesTextColorLayout = new QHBoxLayout();
-
-    QLabel *nicknamesTextColorTextLabel = new QLabel( tr( "Nicknames Text Color:" ) );
-    //nicknamesTextColorTextLabel->setStyleSheet("QLabel { border: 1px solid rgb(128,128,128) }");
     nicknamesTextColorButton->setFlat( true );
     nicknamesTextColor = settings.value( GENERATED_STYLE_NICKNAMES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_TEXT_COLOR ).toUInt();
     setColorButtonStyle( nicknamesTextColorButton, nicknamesTextColor );
     QObject::connect( nicknamesTextColorButton, SIGNAL( clicked() ), this, SLOT( nicknamesColorSelection() ) );
 
-    nickNamesTextColorLayout->addWidget( nicknamesTextColorTextLabel );
-    nickNamesTextColorLayout->addWidget( nicknamesTextColorButton );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Nicknames Text Color:" ), this ), nicknamesTextColorButton } );
 
-    defaultStyleLayout->addLayout( nickNamesTextColorLayout );
-
-
-    QHBoxLayout * messagesFontSizeLayout = new QHBoxLayout();
-
-    QLabel *messagesFontSizeLabel = new QLabel( tr( "Messages Font Size:" ) );
     messagesFontSizeSpinBox->setRange( 1, 100 );
     messagesFontSizeSpinBox->setValue( settings.value( GENERATED_STYLE_MESSAGES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE ).toInt() );
 
-    messagesFontSizeLayout->addWidget( messagesFontSizeLabel );
-    messagesFontSizeLayout->addWidget( messagesFontSizeSpinBox );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Messages Font Size:" ), this ), messagesFontSizeSpinBox } );
 
-    defaultStyleLayout->addLayout( messagesFontSizeLayout );
-
-
-    QHBoxLayout * messagesTextColorTextLayout = new QHBoxLayout();
-
-    QLabel *messagesTextColorTextLabel = new QLabel( tr( "Messages Text Color:" ) );
     messagesTextColorButton->setFlat( true );
     messagesTextColor = settings.value( GENERATED_STYLE_MESSAGES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR ).toUInt();
     setColorButtonStyle( messagesTextColorButton, messagesTextColor );
     QObject::connect( messagesTextColorButton, SIGNAL( clicked() ), this, SLOT( messagesColorSelection() ) );
 
-    messagesTextColorTextLayout->addWidget( messagesTextColorTextLabel );
-    messagesTextColorTextLayout->addWidget( messagesTextColorButton );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Messages Text Color:" ), this ), messagesTextColorButton } );
 
-    defaultStyleLayout->addLayout( messagesTextColorTextLayout );
-
-
-    QHBoxLayout * messagesBorderSizeLayout = new QHBoxLayout();
-
-    QLabel *messagesBorderSizeLabel = new QLabel( tr( "Messages Border Size:" ) );
     messagesBorderSizeSpinBox->setRange( 0, 10 );
     messagesBorderSizeSpinBox->setValue( settings.value( GENERATED_STYLE_MESSAGES_BORDER_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_SIZE ).toInt() );
 
-    messagesBorderSizeLayout->addWidget( messagesBorderSizeLabel );
-    messagesBorderSizeLayout->addWidget( messagesBorderSizeSpinBox );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Messages Border Size:" ), this ), messagesBorderSizeSpinBox } );
 
-    defaultStyleLayout->addLayout( messagesBorderSizeLayout );
-
-
-    QHBoxLayout * messagesBorderRadiusSizeLayout = new QHBoxLayout();
-
-    QLabel *messagesBorderRadiusSizeLabel = new QLabel( tr( "Messages Border Radius Size:" ) );
     messagesBorderRadiusSizeSpinBox->setRange( 0, 100 );
     messagesBorderRadiusSizeSpinBox->setValue( settings.value( GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE ).toInt() );
 
-    messagesBorderRadiusSizeLayout->addWidget( messagesBorderRadiusSizeLabel );
-    messagesBorderRadiusSizeLayout->addWidget( messagesBorderRadiusSizeSpinBox );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Messages Border Radius Size:" ), this ), messagesBorderRadiusSizeSpinBox } );
 
-    defaultStyleLayout->addLayout( messagesBorderRadiusSizeLayout );
-
-
-    QHBoxLayout * messagesBorderColorLayout = new QHBoxLayout();
-
-    QLabel * messagesBorderColorLabel = new QLabel( tr( "Messages Border Color:" ) );
     messagesBorderColorButton->setFlat( true );
     messagesBorderColor = settings.value( GENERATED_STYLE_MESSAGES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR ).toUInt();
     setColorButtonStyle( messagesBorderColorButton, messagesBorderColor );
     QObject::connect( messagesBorderColorButton, SIGNAL( clicked() ), this, SLOT( messagesBorderColorSelection() ) );
 
-    messagesBorderColorLayout->addWidget( messagesBorderColorLabel );
-    messagesBorderColorLayout->addWidget( messagesBorderColorButton );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Messages Border Color:" ), this ), messagesBorderColorButton } );
 
-    defaultStyleLayout->addLayout( messagesBorderColorLayout );
-
-
-    QHBoxLayout * evenMessagesBackgroundColorLayout = new QHBoxLayout();
-
-    QLabel * evenMessagesBackgroundColorLabel = new QLabel( tr( "Even Messages Background Color:" ) );
     evenMessagesBackgroundColorButton->setFlat( true );
     evenMessagesBackgroundColor = settings.value( GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR ).toUInt();
     setColorButtonStyle( evenMessagesBackgroundColorButton, evenMessagesBackgroundColor );
     QObject::connect( evenMessagesBackgroundColorButton, SIGNAL( clicked() ), this, SLOT( evenMessagesBackgroundColorSelection() ) );
 
-    evenMessagesBackgroundColorLayout->addWidget( evenMessagesBackgroundColorLabel );
-    evenMessagesBackgroundColorLayout->addWidget( evenMessagesBackgroundColorButton );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Even Messages Background Color:" ), this ), evenMessagesBackgroundColorButton } );
 
-    defaultStyleLayout->addLayout( evenMessagesBackgroundColorLayout );
-
-
-
-    QHBoxLayout * oddMessagesBackgroundColorLayout = new QHBoxLayout();
-
-    QLabel * oddMessagesBackgroundColorLabel = new QLabel( tr( "Odd Messages Background Color:" ) );
     oddMessagesBackgroundColorButton->setFlat( true );
     oddMessagesBackgroundColor = settings.value( GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR ).toUInt();
     setColorButtonStyle( oddMessagesBackgroundColorButton, oddMessagesBackgroundColor );
     QObject::connect( oddMessagesBackgroundColorButton, SIGNAL( clicked() ), this, SLOT( oddMessagesBackgroundColorSelection() ) );
 
-    oddMessagesBackgroundColorLayout->addWidget( oddMessagesBackgroundColorLabel );
-    oddMessagesBackgroundColorLayout->addWidget( oddMessagesBackgroundColorButton );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Odd Messages Background Color:" ), this ), oddMessagesBackgroundColorButton } );
 
-    defaultStyleLayout->addLayout( oddMessagesBackgroundColorLayout );
-
-
-
-    QHBoxLayout * messagesMarginBottomSizeLayout = new QHBoxLayout();
-
-    QLabel * messagesMarginBottomSizeLabel = new QLabel( tr( "Message Spacing:" ) );
     messagesMarginBottomSizeSpinBox->setRange( 0, 10 );
     messagesMarginBottomSizeSpinBox->setValue( settings.value( GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE ).toInt() );
 
-    messagesMarginBottomSizeLayout->addWidget( messagesMarginBottomSizeLabel );
-    messagesMarginBottomSizeLayout->addWidget( messagesMarginBottomSizeSpinBox );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Message Spacing:" ), this ), messagesMarginBottomSizeSpinBox } );
 
-    defaultStyleLayout->addLayout( messagesMarginBottomSizeLayout );
-
-
-
-
-    QHBoxLayout * viewersFontSizeLayout = new QHBoxLayout();
-
-    QLabel *viewersFontSizeLabel = new QLabel( tr( "Viewers Font Size:" ) );
     viewersFontSizeSpinBox->setRange( 1, 100 );
     viewersFontSizeSpinBox->setValue( settings.value( GENERATED_STYLE_VIEWERS_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_FONT_SIZE ).toInt() );
 
-    viewersFontSizeLayout->addWidget( viewersFontSizeLabel );
-    viewersFontSizeLayout->addWidget( viewersFontSizeSpinBox );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Viewers Font Size:" ), this ), viewersFontSizeSpinBox } );
 
-    defaultStyleLayout->addLayout( viewersFontSizeLayout );
-
-
-    QHBoxLayout * viewersTextColorTextLayout = new QHBoxLayout();
-
-    QLabel *viewersTextColorTextLabel = new QLabel( tr( "Viewers Text Color:" ) );
     viewersTextColorButton->setFlat( true );
     viewersTextColor = settings.value( GENERATED_STYLE_VIEWERS_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_TEXT_COLOR ).toUInt();
     setColorButtonStyle( viewersTextColorButton, viewersTextColor );
     QObject::connect( viewersTextColorButton, SIGNAL( clicked() ), this, SLOT( viewersColorSelection() ) );
 
-    viewersTextColorTextLayout->addWidget( viewersTextColorTextLabel );
-    viewersTextColorTextLayout->addWidget( viewersTextColorButton );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Viewers Text Color:" ), this ), viewersTextColorButton } );
 
-    defaultStyleLayout->addLayout( viewersTextColorTextLayout );
-
-
-    QHBoxLayout * viewersBackgroundColorLayout = new QHBoxLayout();
-
-    QLabel * viewersBackgroundColorLabel = new QLabel( tr( "Viewers Background Color:" ) );
     viewersBackgroundColorButton->setFlat( true );
     viewersBackgroundColor = settings.value( GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR ).toUInt();
     setColorButtonStyle( viewersBackgroundColorButton, viewersBackgroundColor );
     QObject::connect( viewersBackgroundColorButton, SIGNAL( clicked() ), this, SLOT( viewersBackgroundColorSelection() ) );
 
-    viewersBackgroundColorLayout->addWidget( viewersBackgroundColorLabel );
-    viewersBackgroundColorLayout->addWidget( viewersBackgroundColorButton );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Viewers Background Color:" ), this ), viewersBackgroundColorButton } );
 
-    defaultStyleLayout->addLayout( viewersBackgroundColorLayout );
-
-
-
-    QHBoxLayout * aliasesFontSizeLayout = new QHBoxLayout();
-
-    QLabel *aliasesFontSizeLabel = new QLabel( tr( "Aliases Font Size:" ) );
     aliasesFontSizeSpinBox->setRange( 1, 100 );
     aliasesFontSizeSpinBox->setValue( settings.value( GENERATED_STYLE_ALIASES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_FONT_SIZE ).toInt() );
 
-    aliasesFontSizeLayout->addWidget( aliasesFontSizeLabel );
-    aliasesFontSizeLayout->addWidget( aliasesFontSizeSpinBox );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Aliases Font Size:" ), this ), aliasesFontSizeSpinBox } );
 
-    defaultStyleLayout->addLayout( aliasesFontSizeLayout );
-
-
-    QHBoxLayout * aliasesTextColorTextLayout = new QHBoxLayout();
-
-    QLabel *aliasesTextColorTextLabel = new QLabel( tr( "Aliases Text Color:" ) );
     aliasesTextColorButton->setFlat( true );
     aliasesTextColor = settings.value( GENERATED_STYLE_ALIASES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_TEXT_COLOR ).toUInt();
     setColorButtonStyle( aliasesTextColorButton, aliasesTextColor );
     QObject::connect( aliasesTextColorButton, SIGNAL( clicked() ), this, SLOT( aliasesColorSelection() ) );
 
-    aliasesTextColorTextLayout->addWidget( aliasesTextColorTextLabel );
-    aliasesTextColorTextLayout->addWidget( aliasesTextColorButton );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Aliases Text Color:" ), this ), aliasesTextColorButton } );
 
-    defaultStyleLayout->addLayout( aliasesTextColorTextLayout );
-
-
-
-    QHBoxLayout * aliasesBorderSizeLayout = new QHBoxLayout();
-
-    QLabel *aliasesBorderSizeLabel = new QLabel( tr( "Aliases Border Size:" ) );
     aliasesBorderSizeSpinBox->setRange( 0, 10 );
     aliasesBorderSizeSpinBox->setValue( settings.value( GENERATED_STYLE_ALIASES_BORDER_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BORDER_SIZE ).toInt() );
 
-    aliasesBorderSizeLayout->addWidget( aliasesBorderSizeLabel );
-    aliasesBorderSizeLayout->addWidget( aliasesBorderSizeSpinBox );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Aliases Border Size:" ), this ), aliasesBorderSizeSpinBox } );
 
-    defaultStyleLayout->addLayout( aliasesBorderSizeLayout );
-
-
-    QHBoxLayout * aliasesBorderColorLayout = new QHBoxLayout();
-
-    QLabel * aliasesBorderColorLabel = new QLabel( tr( "Aliases Border Color:" ) );
     aliasesBorderColorButton->setFlat( true );
     aliasesBorderColor = settings.value( GENERATED_STYLE_ALIASES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BORDER_COLOR ).toUInt();
     setColorButtonStyle( aliasesBorderColorButton, aliasesBorderColor );
     QObject::connect( aliasesBorderColorButton, SIGNAL( clicked() ), this, SLOT( aliasesBorderColorSelection() ) );
 
-    aliasesBorderColorLayout->addWidget( aliasesBorderColorLabel );
-    aliasesBorderColorLayout->addWidget( aliasesBorderColorButton );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Aliases Border Color:" ), this ), aliasesBorderColorButton } );
 
-    defaultStyleLayout->addLayout( aliasesBorderColorLayout );
-
-
-
-    QHBoxLayout * aliasesBackgroundColorLayout = new QHBoxLayout();
-
-    QLabel * aliasesBackgroundColorLabel = new QLabel( tr( "Aliases Background Color:" ) );
     aliasesBackgroundColorButton->setFlat( true );
     aliasesBackgroundColor = settings.value( GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BACKGROUND_COLOR ).toUInt();
     setColorButtonStyle( aliasesBackgroundColorButton, aliasesBackgroundColor );
     QObject::connect( aliasesBackgroundColorButton, SIGNAL( clicked() ), this, SLOT( aliasesBackgroundColorSelection() ) );
 
-    aliasesBackgroundColorLayout->addWidget( aliasesBackgroundColorLabel );
-    aliasesBackgroundColorLayout->addWidget( aliasesBackgroundColorButton );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Aliases Background Color:" ), this ), aliasesBackgroundColorButton } );
 
-    defaultStyleLayout->addLayout( aliasesBackgroundColorLayout );
-
-
-
-
-    QHBoxLayout * linksColorLayout = new QHBoxLayout();
-
-    QLabel * linksColorLabel = new QLabel( tr( "Links Color:" ) );
     linksColorButton->setFlat( true );
     linksColor = settings.value( GENERATED_STYLE_LINKS_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_LINKS_COLOR ).toUInt();
     setColorButtonStyle( linksColorButton, linksColor );
     QObject::connect( linksColorButton, SIGNAL( clicked() ), this, SLOT( linksColorSelection() ) );
 
-    linksColorLayout->addWidget( linksColorLabel );
-    linksColorLayout->addWidget( linksColorButton );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Links Color:" ), this ), linksColorButton } );
 
-    defaultStyleLayout->addLayout( linksColorLayout );
-
-
-
-
-    QHBoxLayout * smilesSizeLayout = new QHBoxLayout();
-
-    QLabel *smilesSizeLabel = new QLabel( tr( "Smiles Size:" ) );
     smilesSizeSpinBox->setRange( 1, 100 );
     smilesSizeSpinBox->setValue( settings.value( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SMILES_SIZE ).toInt() );
 
-    smilesSizeLayout->addWidget( smilesSizeLabel );
-    smilesSizeLayout->addWidget( smilesSizeSpinBox );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Smiles Size:" ), this ), smilesSizeSpinBox } );
 
-    defaultStyleLayout->addLayout( smilesSizeLayout );
-
-
-    QHBoxLayout * serviceIconsSizeLayout = new QHBoxLayout();
-
-    QLabel *serviceIconsSizeLabel = new QLabel( tr( "Service Icons Size:" ) );
     serviceIconsSizeSpinBox->setRange( 1, 100 );
     serviceIconsSizeSpinBox->setValue( settings.value( GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SERVICE_ICONS_SIZE ).toInt() );
 
-    serviceIconsSizeLayout->addWidget( serviceIconsSizeLabel );
-    serviceIconsSizeLayout->addWidget( serviceIconsSizeSpinBox );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Service Icons Size:" ), this ), serviceIconsSizeSpinBox } );
 
-    defaultStyleLayout->addLayout( serviceIconsSizeLayout );
-
-
-
-    QHBoxLayout * maxImagesHeightLayout = new QHBoxLayout();
-
-    QLabel *maxImagesHeightLabel = new QLabel( tr( "Max Images Height( px ):" ) );
     maxImagesHeightSpinBox->setRange( 0, 65535 );
     maxImagesHeightSpinBox->setValue( settings.value( GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH, DEFAULT_GENERATED_STYLE_MAX_IMAGES_HEIGHT ).toInt() );
 
-    maxImagesHeightLayout->addWidget( maxImagesHeightLabel );
-    maxImagesHeightLayout->addWidget( maxImagesHeightSpinBox );
-
-    defaultStyleLayout->addLayout( maxImagesHeightLayout );
-
-
-
-    QHBoxLayout * animationTypeLayout = new QHBoxLayout();
-
-    QLabel *animationTypeLabel = new QLabel( tr( "Animation type:" ) );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Max Images Height( px ):" ), this ), maxImagesHeightSpinBox } );
 
     QStringList animationsList;
-
-    //animationsList << "None" << "Scale" << "Slide" << "SlideAndScale";
 
     animationsList << "None";
     animationsList << "Bounce";
@@ -713,33 +548,22 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     animationsList << "SlideAndSkewToLeft";
     animationsList << "SlideAndSkewToRight";
 
-
     animationTypeCombo->addItems( animationsList );
     animationTypeCombo->setEditable( false );
     animationTypeCombo->setCurrentIndex( animationTypeCombo->findText( settings.value( GENERATED_STYLE_ANIMATION_TYPE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ANIMATION_TYPE ).toString() ) );
 
-    animationTypeLayout->addWidget( animationTypeLabel );
-    animationTypeLayout->addWidget( animationTypeCombo );
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Animation type:" ), this ), animationTypeCombo } );
 
-    defaultStyleLayout->addLayout( animationTypeLayout );
-
-
-    QHBoxLayout * animationDurationLayout = new QHBoxLayout();
-
-    QLabel *animationDurationLabel = new QLabel( tr( "Animation Duration( sec ):" ) );
     animationDurationSpinBox->setRange( 0.0, 10.0 );
     animationDurationSpinBox->setSingleStep( 0.1 );
     animationDurationSpinBox->setValue( settings.value( GENERATED_STYLE_ANIMATION_DURATION_SETTING_PATH, DEFAULT_GENERATED_STYLE_ANIMATION_DURATION ).toDouble() );
 
-    animationDurationLayout->addWidget( animationDurationLabel );
-    animationDurationLayout->addWidget( animationDurationSpinBox );
-
-    defaultStyleLayout->addLayout( animationDurationLayout );
-
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Animation Duration( sec ):" ), this ), animationDurationSpinBox } );
 
     defaultStyleLayout->addStretch( 1 );
 
     QGroupBox *defaultStyleGroup = new QGroupBox;
+
     defaultStyleGroup->setLayout( defaultStyleLayout );
 
     QScrollArea * defaultStyleScrollArea = new QScrollArea( this );
@@ -747,16 +571,15 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
     defaultStyleScrollArea->setWidgetResizable( true );
     defaultStyleScrollArea->setWidget( defaultStyleGroup );
 
-    //tabSettings->addTab( defaultStyleGroup, QIcon( ":/resources/broico.ico" ), tr( "Default Style" ) );
     tabSettings->addTab( defaultStyleScrollArea, QIcon( ":/resources/broico.ico" ), tr( "Default Style" ) );
+}
 
+void QSettingsDialog::setupAcesTab()
+{
+    QSettings settings;
 
+    QVBoxLayout * acesLayout = new QVBoxLayout;
 
-    //настройки aces
-
-    QVBoxLayout *acesLayout = new QVBoxLayout;
-
-    //QLabel *acesChannelLabel = new QLabel( CHANNEL_TEXT );
     acesChannelCheckBox->setText( CHANNEL_TEXT );
     acesChannelCheckBox->setChecked( settings.value( ACES_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
@@ -765,34 +588,24 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( acesChannelCheckBox, SIGNAL( clicked( bool ) ), acesChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    //acesLayout->addWidget( acesChannelLabel );
-    acesLayout->addWidget( acesChannelCheckBox );
-    acesLayout->addWidget( acesChannelEdit );
+    addWidgets( acesLayout, { acesChannelCheckBox, acesChannelEdit } );
 
     //acesOriginalColorsCheckBox->setText( tr( "Original Colors" ) );
     //acesOriginalColorsCheckBox->setChecked( settings.value( ACES_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
 
     //acesLayout->addWidget( acesOriginalColorsCheckBox );
 
-    QLabel *acesAliasesLabel  = new QLabel( ALIASES_TEXT );
     acesAliasesEdit->setText( settings.value( ACES_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    acesLayout->addWidget( acesAliasesLabel );
-    acesLayout->addWidget( acesAliasesEdit );
-
-    QLabel *acesSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( acesLayout, { new QLabel( ALIASES_TEXT, this ), acesAliasesEdit } );
 
     acesSupportersListEdit->setText( settings.value( ACES_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    acesLayout->addWidget( acesSupportersListLabel );
-    acesLayout->addWidget( acesSupportersListEdit );
-
-    QLabel *acesBlackListLabel = new QLabel( BLACKLIST_TEXT );
+    addWidgets( acesLayout, { new QLabel( SUPPORTERS_TEXT, this ), acesSupportersListEdit } );
 
     acesBlackListEdit->setText( settings.value( ACES_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    acesLayout->addWidget( acesBlackListLabel );
-    acesLayout->addWidget( acesBlackListEdit );
+    addWidgets( acesLayout, { new QLabel( BLACKLIST_TEXT, this ), acesBlackListEdit } );
 
     acesRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     acesRemoveBlackListUsersCheckBox->setChecked( settings.value( ACES_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -801,16 +614,17 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     acesLayout->addStretch( 1 );
 
-    QGroupBox *acesGroup = new QGroupBox( tabSettings );
+    QGroupBox * acesGroup = new QGroupBox( tabSettings );
     acesGroup->setLayout( acesLayout );
 
     tabSettings->addTab( acesGroup, QIcon( ":/resources/aceslogo.png" ), tr( "Aces" ) );
+}
 
-    //настройки cybergame
+void QSettingsDialog::setupCybergameTab()
+{
+    QSettings settings;
 
-    QVBoxLayout *cyberGameLayout = new QVBoxLayout;
-
-    //QLabel *cyberGameChannelLabel = new QLabel( CHANNEL_TEXT );
+    QVBoxLayout * cyberGameLayout = new QVBoxLayout;
 
     cyberGameChannelCheckBox->setText( CHANNEL_TEXT );
     cyberGameChannelCheckBox->setChecked( settings.value( CYBERGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -820,29 +634,19 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( cyberGameChannelCheckBox, SIGNAL( clicked(bool) ), cyberGameChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    //cyberGameLayout->addWidget( cyberGameChannelLabel );
-    cyberGameLayout->addWidget( cyberGameChannelCheckBox );
-    cyberGameLayout->addWidget( cyberGameChannelEdit );
+    addWidgets( cyberGameLayout, { cyberGameChannelCheckBox, cyberGameChannelEdit } );
 
-    QLabel *cyberGameAliasesLabel = new QLabel( ALIASES_TEXT );
     cyberGameAliasesEdit->setText( settings.value( CYBERGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    cyberGameLayout->addWidget( cyberGameAliasesLabel );
-    cyberGameLayout->addWidget( cyberGameAliasesEdit );
-
-    QLabel *cyberGameSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( cyberGameLayout, { new QLabel( ALIASES_TEXT, this ), cyberGameAliasesEdit } );
 
     cyberGameSupportersListEdit->setText( settings.value( CYBERGAME_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    cyberGameLayout->addWidget( cyberGameSupportersListLabel );
-    cyberGameLayout->addWidget( cyberGameSupportersListEdit );
-
-    QLabel *cyberGameBlackListLabel = new QLabel( BLACKLIST_TEXT );
+    addWidgets( cyberGameLayout, { new QLabel( SUPPORTERS_TEXT, this ), cyberGameSupportersListEdit } );
 
     cyberGameBlackListEdit->setText( settings.value( CYBERGAME_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    cyberGameLayout->addWidget( cyberGameBlackListLabel );
-    cyberGameLayout->addWidget( cyberGameBlackListEdit );
+    addWidgets( cyberGameLayout, { new QLabel( BLACKLIST_TEXT, this ), cyberGameBlackListEdit } );
 
     cyberGameRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     cyberGameRemoveBlackListUsersCheckBox->setChecked( settings.value( CYBERGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -851,17 +655,17 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     cyberGameLayout->addStretch( 1 );
 
-    QGroupBox *cyberGameGroup = new QGroupBox( tabSettings );
+    QGroupBox * cyberGameGroup = new QGroupBox( tabSettings );
     cyberGameGroup->setLayout( cyberGameLayout );
 
     tabSettings->addTab( cyberGameGroup, QIcon( ":/resources/cybergamelogo.png" ), tr( "Cybergame" ) );
+}
 
+void QSettingsDialog::setupFunstreamTab()
+{
+    QSettings settings;
 
-
-    //настройки funstream
-    QVBoxLayout *funstreamLayout = new QVBoxLayout;
-
-    //QLabel *funstreamChannelLabel = new QLabel( CHANNEL_TEXT );
+    QVBoxLayout * funstreamLayout = new QVBoxLayout;
 
     funstreamChannelCheckBox->setText( CHANNEL_TEXT );
     funstreamChannelCheckBox->setChecked( settings.value( FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -871,29 +675,19 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( funstreamChannelCheckBox, SIGNAL( clicked( bool ) ), funstreamChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    //funstreamLayout->addWidget( funstreamChannelLabel );
-    funstreamLayout->addWidget( funstreamChannelCheckBox );
-    funstreamLayout->addWidget( funstreamChannelEdit );
-
-    QLabel *funstreamAliasesLabel = new QLabel( ALIASES_TEXT );
+    addWidgets( funstreamLayout, { funstreamChannelCheckBox, funstreamChannelEdit } );
 
     funstreamAliasesEdit->setText( settings.value( FUNSTREAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    funstreamLayout->addWidget( funstreamAliasesLabel );
-    funstreamLayout->addWidget( funstreamAliasesEdit );
-
-    QLabel *funstreamSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( funstreamLayout, { new QLabel( ALIASES_TEXT, this ), funstreamAliasesEdit } );
 
     funstreamSupportersListEdit->setText( settings.value( FUNSTREAM_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    funstreamLayout->addWidget( funstreamSupportersListLabel );
-    funstreamLayout->addWidget( funstreamSupportersListEdit );
+    addWidgets( funstreamLayout, { new QLabel( SUPPORTERS_TEXT, this ), funstreamSupportersListEdit } );
 
-    QLabel *funstreamBlackListLabel = new QLabel( BLACKLIST_TEXT );
     funstreamBlackListEdit->setText( settings.value( FUNSTREAM_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    funstreamLayout->addWidget( funstreamBlackListLabel );
-    funstreamLayout->addWidget( funstreamBlackListEdit );
+    addWidgets( funstreamLayout, { new QLabel( BLACKLIST_TEXT, this ), funstreamBlackListEdit } );
 
     funstreamRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     funstreamRemoveBlackListUsersCheckBox->setChecked( settings.value( FUNSTREAM_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -902,17 +696,17 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     funstreamLayout->addStretch( 1 );
 
-    QGroupBox *funstreamGroup = new QGroupBox( tabSettings );
+    QGroupBox * funstreamGroup = new QGroupBox( tabSettings );
     funstreamGroup->setLayout( funstreamLayout );
 
     tabSettings->addTab( funstreamGroup, QIcon( ":/resources/funstreamlogo.png" ), tr( "Funstream" ) );
+}
 
+void QSettingsDialog::setupGamerstvTab()
+{
+    QSettings settings;
 
-
-    //настройки gamerstv
-    QVBoxLayout *gamerstvLayout = new QVBoxLayout;
-
-    //QLabel *gamerstvChannelLabel = new QLabel( CHANNEL_TEXT );
+    QVBoxLayout * gamerstvLayout = new QVBoxLayout();
 
     gamerstvChannelCheckBox->setText( CHANNEL_TEXT );
     gamerstvChannelCheckBox->setChecked( settings.value( GAMERSTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -922,29 +716,19 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( gamerstvChannelCheckBox, SIGNAL( clicked( bool ) ), gamerstvChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    //gamerstvLayout->addWidget( gamerstvChannelLabel );
-    gamerstvLayout->addWidget( gamerstvChannelCheckBox );
-    gamerstvLayout->addWidget( gamerstvChannelEdit );
-
-    QLabel *gamerstvAliasesLabel = new QLabel( ALIASES_TEXT );
+    addWidgets( gamerstvLayout, { gamerstvChannelCheckBox, gamerstvChannelEdit } );
 
     gamerstvAliasesEdit->setText( settings.value( GAMERSTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    gamerstvLayout->addWidget( gamerstvAliasesLabel );
-    gamerstvLayout->addWidget( gamerstvAliasesEdit );
-
-    QLabel *gamerstvSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( gamerstvLayout, { new QLabel( ALIASES_TEXT, this ), gamerstvAliasesEdit } );
 
     gamerstvSupportersListEdit->setText( settings.value( GAMERSTV_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    gamerstvLayout->addWidget( gamerstvSupportersListLabel );
-    gamerstvLayout->addWidget( gamerstvSupportersListEdit );
+    addWidgets( gamerstvLayout, { new QLabel( SUPPORTERS_TEXT, this ), gamerstvSupportersListEdit } );
 
-    QLabel *gamerstvBlackListLabel = new QLabel( BLACKLIST_TEXT );
     gamerstvBlackListEdit->setText( settings.value( GAMERSTV_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    gamerstvLayout->addWidget( gamerstvBlackListLabel );
-    gamerstvLayout->addWidget( gamerstvBlackListEdit );
+    addWidgets( gamerstvLayout, { new QLabel( BLACKLIST_TEXT, this ), gamerstvBlackListEdit } );
 
     gamerstvRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     gamerstvRemoveBlackListUsersCheckBox->setChecked( settings.value( GAMERSTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -953,16 +737,17 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     gamerstvLayout->addStretch( 1 );
 
-    QGroupBox *gamerstvGroup = new QGroupBox( tabSettings );
+    QGroupBox * gamerstvGroup = new QGroupBox( tabSettings );
     gamerstvGroup->setLayout( gamerstvLayout );
 
     tabSettings->addTab( gamerstvGroup, QIcon( ":/resources/gamerstvlogo.png" ), tr( "Gamerstv" ) );
+}
 
+void QSettingsDialog::setupGipsyteamTab()
+{
+    QSettings settings;
 
-    //настройки gipsyteam
-    QVBoxLayout *gipsyteamLayout = new QVBoxLayout;
-
-    //QLabel *gipsyteamChannelLabel = new QLabel( CHANNEL_TEXT );
+    QVBoxLayout * gipsyteamLayout = new QVBoxLayout();
 
     gipsyteamChannelCheckBox->setText( CHANNEL_TEXT );
     gipsyteamChannelCheckBox->setChecked( settings.value( GIPSYTEAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -972,29 +757,19 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( gipsyteamChannelCheckBox, SIGNAL( clicked( bool ) ), gipsyteamChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    //gipsyteamLayout->addWidget( gipsyteamChannelLabel );
-    gipsyteamLayout->addWidget( gipsyteamChannelCheckBox );
-    gipsyteamLayout->addWidget( gipsyteamChannelEdit );
-
-    QLabel *gipsyteamAliasesLabel = new QLabel( ALIASES_TEXT );
+    addWidgets( gipsyteamLayout, { gipsyteamChannelCheckBox, gipsyteamChannelEdit } );
 
     gipsyteamAliasesEdit->setText( settings.value( GIPSYTEAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    gipsyteamLayout->addWidget( gipsyteamAliasesLabel );
-    gipsyteamLayout->addWidget( gipsyteamAliasesEdit );
-
-    QLabel *gipsyteamSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( gipsyteamLayout, { new QLabel( ALIASES_TEXT, this ), gipsyteamAliasesEdit } );
 
     gipsyteamSupportersListEdit->setText( settings.value( GIPSYTEAM_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    gipsyteamLayout->addWidget( gipsyteamSupportersListLabel );
-    gipsyteamLayout->addWidget( gipsyteamSupportersListEdit );
+    addWidgets( gipsyteamLayout, { new QLabel( SUPPORTERS_TEXT, this ), gipsyteamSupportersListEdit } );
 
-    QLabel *gipsyteamBlackListLabel = new QLabel( BLACKLIST_TEXT );
     gipsyteamBlackListEdit->setText( settings.value( GIPSYTEAM_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    gipsyteamLayout->addWidget( gipsyteamBlackListLabel );
-    gipsyteamLayout->addWidget( gipsyteamBlackListEdit );
+    addWidgets( gipsyteamLayout, { new QLabel( BLACKLIST_TEXT, this ), gipsyteamBlackListEdit } );
 
     gipsyteamRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     gipsyteamRemoveBlackListUsersCheckBox->setChecked( settings.value( GIPSYTEAM_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -1003,18 +778,17 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     gipsyteamLayout->addStretch( 1 );
 
-    QGroupBox *gipsyteamGroup = new QGroupBox( tabSettings );
+    QGroupBox * gipsyteamGroup = new QGroupBox( tabSettings );
     gipsyteamGroup->setLayout( gipsyteamLayout );
 
     tabSettings->addTab( gipsyteamGroup, QIcon( ":/resources/gipsyteamlogo.png" ), tr( "Gipsyteam" ) );
+}
 
+void QSettingsDialog::setupGoodgameTab()
+{
+    QSettings settings;
 
-
-    //настройки goodgame
-
-    QVBoxLayout *goodGameLayout = new QVBoxLayout;
-
-    //QLabel *goodGameChannelLabel = new QLabel( CHANNEL_TEXT );
+    QVBoxLayout * goodGameLayout = new QVBoxLayout();
 
     goodGameChannelCheckBox->setText( CHANNEL_TEXT );
     goodGameChannelCheckBox->setChecked( settings.value( GOODGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -1024,34 +798,22 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( goodGameChannelCheckBox, SIGNAL( clicked( bool ) ), goodGameChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    //goodGameLayout->addWidget( goodGameChannelLabel );
-    goodGameLayout->addWidget( goodGameChannelCheckBox );
-    goodGameLayout->addWidget( goodGameChannelEdit );
-
     goodGameUseAnimatedSmilesCheckBox->setText( tr( "Use Animated Smiles" ) );
     goodGameUseAnimatedSmilesCheckBox->setChecked( settings.value( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, false ).toBool() );
 
-    goodGameLayout->addWidget( goodGameUseAnimatedSmilesCheckBox );
+    addWidgets( goodGameLayout, { goodGameChannelCheckBox, goodGameChannelEdit, goodGameUseAnimatedSmilesCheckBox  } );
 
-    QLabel *goodGameAliasesLabel = new QLabel( ALIASES_TEXT );
     goodGameAliasesEdit->setText( settings.value( GOODGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    goodGameLayout->addWidget( goodGameAliasesLabel );
-    goodGameLayout->addWidget( goodGameAliasesEdit );
-
-    QLabel *goodGameSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( goodGameLayout, { new QLabel( ALIASES_TEXT, this ), goodGameAliasesEdit } );
 
     goodGameSupportersListEdit->setText( settings.value( GOODGAME_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    goodGameLayout->addWidget( goodGameSupportersListLabel );
-    goodGameLayout->addWidget( goodGameSupportersListEdit );
-
-    QLabel *goodGameBlackListLabel = new QLabel( BLACKLIST_TEXT );
+    addWidgets( goodGameLayout, { new QLabel( SUPPORTERS_TEXT, this ), goodGameSupportersListEdit } );
 
     goodGameBlackListEdit->setText( settings.value( GOODGAME_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    goodGameLayout->addWidget( goodGameBlackListLabel );
-    goodGameLayout->addWidget( goodGameBlackListEdit );
+    addWidgets( goodGameLayout, { new QLabel( BLACKLIST_TEXT, this ), goodGameBlackListEdit } );
 
     goodGameRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     goodGameRemoveBlackListUsersCheckBox->setChecked( settings.value( GOODGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -1060,16 +822,17 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     goodGameLayout->addStretch( 1 );
 
-    QGroupBox *goodGameGroup = new QGroupBox( tabSettings );
+    QGroupBox * goodGameGroup = new QGroupBox( tabSettings );
     goodGameGroup->setLayout( goodGameLayout );
 
     tabSettings->addTab( goodGameGroup, QIcon( ":/resources/goodgamelogo.png" ), tr( "Goodgame" ) );
+}
 
+void QSettingsDialog::setupHitboxTab()
+{
+    QSettings settings;
 
-    //настройки hitbox
-    QVBoxLayout *hitboxLayout = new QVBoxLayout;
-
-    //QLabel *hitboxChannelLabel = new QLabel( CHANNEL_TEXT );
+    QVBoxLayout * hitboxLayout = new QVBoxLayout();
 
     hitboxChannelCheckBox->setText( CHANNEL_TEXT );
     hitboxChannelCheckBox->setChecked( settings.value( HITBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -1079,34 +842,22 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( hitboxChannelCheckBox, SIGNAL( clicked( bool ) ), hitboxChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    //hitboxLayout->addWidget( hitboxChannelLabel );
-    hitboxLayout->addWidget( hitboxChannelCheckBox );
-    hitboxLayout->addWidget( hitboxChannelEdit );
-
     hitboxOriginalColorsCheckBox->setText( tr( "Original Colors" ) );
     hitboxOriginalColorsCheckBox->setChecked( settings.value( HITBOX_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
 
-    hitboxLayout->addWidget( hitboxOriginalColorsCheckBox );
+    addWidgets( hitboxLayout, { hitboxChannelCheckBox, hitboxChannelEdit, hitboxOriginalColorsCheckBox  } );
 
-    QLabel *hitboxAliasesLabel = new QLabel( ALIASES_TEXT );
     hitboxAliasesEdit->setText( settings.value( HITBOX_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    hitboxLayout->addWidget( hitboxAliasesLabel );
-    hitboxLayout->addWidget( hitboxAliasesEdit );
-
-    QLabel *hitboxSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( hitboxLayout, { new QLabel( ALIASES_TEXT, this ), hitboxAliasesEdit } );
 
     hitboxSupportersListEdit->setText( settings.value( HITBOX_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    hitboxLayout->addWidget( hitboxSupportersListLabel );
-    hitboxLayout->addWidget( hitboxSupportersListEdit );
-
-    QLabel *hitboxBlackListLabel = new QLabel( BLACKLIST_TEXT );
+    addWidgets( hitboxLayout, { new QLabel( SUPPORTERS_TEXT, this ), hitboxSupportersListEdit } );
 
     hitboxBlackListEdit->setText( settings.value( HITBOX_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    hitboxLayout->addWidget( hitboxBlackListLabel );
-    hitboxLayout->addWidget( hitboxBlackListEdit );
+    addWidgets( hitboxLayout, { new QLabel( BLACKLIST_TEXT, this ), hitboxBlackListEdit } );
 
     hitboxRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     hitboxRemoveBlackListUsersCheckBox->setChecked( settings.value( HITBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -1115,17 +866,17 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     hitboxLayout->addStretch( 1 );
 
-    QGroupBox *hitboxGroup = new QGroupBox( tabSettings );
+    QGroupBox * hitboxGroup = new QGroupBox( tabSettings );
     hitboxGroup->setLayout( hitboxLayout );
 
     tabSettings->addTab( hitboxGroup, QIcon( ":/resources/hitboxlogo.png" ), tr( "Hitbox" ) );
+}
 
+void QSettingsDialog::setupIgdcTab()
+{
+    QSettings settings;
 
-
-    //настройки igdc
-    QVBoxLayout *igdcLayout = new QVBoxLayout;
-
-    //QLabel *igdcChannelLabel = new QLabel( CHANNEL_TEXT );
+    QVBoxLayout * igdcLayout = new QVBoxLayout();
 
     igdcChannelCheckBox->setText( CHANNEL_TEXT );
     igdcChannelCheckBox->setChecked( settings.value( IGDC_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -1135,29 +886,19 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( igdcChannelCheckBox, SIGNAL( clicked( bool ) ), igdcChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    //igdcLayout->addWidget( igdcChannelLabel );
-    igdcLayout->addWidget( igdcChannelCheckBox );
-    igdcLayout->addWidget( igdcChannelEdit );
-
-    QLabel *igdcAliasesLabel = new QLabel( ALIASES_TEXT );
+    addWidgets( igdcLayout, { igdcChannelCheckBox, igdcChannelEdit } );
 
     igdcAliasesEdit->setText( settings.value( IGDC_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    igdcLayout->addWidget( igdcAliasesLabel );
-    igdcLayout->addWidget( igdcAliasesEdit );
-
-    QLabel *igdcSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( igdcLayout, { new QLabel( ALIASES_TEXT, this ), igdcAliasesEdit } );
 
     igdcSupportersListEdit->setText( settings.value( IGDC_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    igdcLayout->addWidget( igdcSupportersListLabel );
-    igdcLayout->addWidget( igdcSupportersListEdit );
+    addWidgets( igdcLayout, { new QLabel( SUPPORTERS_TEXT, this ), igdcSupportersListEdit } );
 
-    QLabel *igdcBlackListLabel = new QLabel( BLACKLIST_TEXT );
     igdcBlackListEdit->setText( settings.value( IGDC_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    igdcLayout->addWidget( igdcBlackListLabel );
-    igdcLayout->addWidget( igdcBlackListEdit );
+    addWidgets( igdcLayout, { new QLabel( BLACKLIST_TEXT, this ), igdcBlackListEdit } );
 
     igdcRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     igdcRemoveBlackListUsersCheckBox->setChecked( settings.value( IGDC_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -1166,16 +907,17 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     igdcLayout->addStretch( 1 );
 
-    QGroupBox *igdcGroup = new QGroupBox( tabSettings );
+    QGroupBox * igdcGroup = new QGroupBox( tabSettings );
     igdcGroup->setLayout( igdcLayout );
 
     tabSettings->addTab( igdcGroup, QIcon( ":/resources/igdclogo.png" ), tr( "Igdc" ) );
+}
 
+void QSettingsDialog::setupLivecodingTab()
+{
+    QSettings settings;
 
-
-
-    //настройки livecoding
-    QVBoxLayout *livecodingLayout = new QVBoxLayout;
+    QVBoxLayout * livecodingLayout = new QVBoxLayout();
 
     livecodingChannelCheckBox->setText( CHANNEL_TEXT );
     livecodingChannelCheckBox->setChecked( settings.value( LIVECODING_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -1185,43 +927,26 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( livecodingChannelCheckBox, SIGNAL( clicked( bool ) ), livecodingChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    livecodingLayout->addWidget( livecodingChannelCheckBox );
-    livecodingLayout->addWidget( livecodingChannelEdit );
-
-    QLabel *livecodingLoginLabel = new QLabel( tr( "Login:" ) );
+    addWidgets( livecodingLayout, { livecodingChannelCheckBox, livecodingChannelEdit } );
 
     livecodingLoginEdit->setText( settings.value( LIVECODING_LOGIN_SETTING_PATH, BLANK_STRING ).toString() );
-
-    livecodingLayout->addWidget( livecodingLoginLabel );
-    livecodingLayout->addWidget( livecodingLoginEdit );
-
-    QLabel *livecodingPasswordLabel = new QLabel( tr( "Password:" ) );
 
     livecodingPasswordEdit->setEchoMode( QLineEdit::Password );
     livecodingPasswordEdit->setText( settings.value( LIVECODING_PASSWORD_SETTING_PATH, BLANK_STRING ).toString() );
 
-    livecodingLayout->addWidget( livecodingPasswordLabel );
-    livecodingLayout->addWidget( livecodingPasswordEdit );
-
-    QLabel *livecodingAliasesLabel = new QLabel( ALIASES_TEXT );
+    addWidgets( livecodingLayout, { new QLabel( tr( "Login:" ), this ), livecodingLoginEdit, new QLabel( tr( "Password:" ), this ), livecodingPasswordEdit } );
 
     livecodingAliasesEdit->setText( settings.value( LIVECODING_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    livecodingLayout->addWidget( livecodingAliasesLabel );
-    livecodingLayout->addWidget( livecodingAliasesEdit );
-
-    QLabel *livecodingSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( livecodingLayout, { new QLabel( ALIASES_TEXT, this ), livecodingAliasesEdit } );
 
     livecodingSupportersListEdit->setText( settings.value( LIVECODING_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    livecodingLayout->addWidget( livecodingSupportersListLabel );
-    livecodingLayout->addWidget( livecodingSupportersListEdit );
+    addWidgets( livecodingLayout, { new QLabel( SUPPORTERS_TEXT, this ), livecodingSupportersListEdit } );
 
-    QLabel *livecodingBlackListLabel = new QLabel( BLACKLIST_TEXT );
     livecodingBlackListEdit->setText( settings.value( LIVECODING_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    livecodingLayout->addWidget( livecodingBlackListLabel );
-    livecodingLayout->addWidget( livecodingBlackListEdit );
+    addWidgets( livecodingLayout, { new QLabel( BLACKLIST_TEXT, this ), livecodingBlackListEdit } );
 
     livecodingRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     livecodingRemoveBlackListUsersCheckBox->setChecked( settings.value( LIVECODING_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -1230,18 +955,17 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     livecodingLayout->addStretch( 1 );
 
-    QGroupBox *livecodingGroup = new QGroupBox( tabSettings );
+    QGroupBox * livecodingGroup = new QGroupBox( tabSettings );
     livecodingGroup->setLayout( livecodingLayout );
 
     tabSettings->addTab( livecodingGroup, QIcon( ":/resources/livecodinglogo.png" ), tr( "Livecoding" ) );
+}
 
+void QSettingsDialog::setupRealltvTab()
+{
+    QSettings settings;
 
-
-
-    //настройки realltv
-    QVBoxLayout *realltvLayout = new QVBoxLayout;
-
-    //QLabel *realltvChannelLabel = new QLabel( CHANNEL_TEXT );
+    QVBoxLayout * realltvLayout = new QVBoxLayout();
 
     realltvChannelCheckBox->setText( CHANNEL_TEXT );
     realltvChannelCheckBox->setChecked( settings.value( REALLTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -1251,29 +975,19 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( realltvChannelCheckBox, SIGNAL( clicked( bool ) ), realltvChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    //realltvLayout->addWidget( realltvChannelLabel );
-    realltvLayout->addWidget( realltvChannelCheckBox );
-    realltvLayout->addWidget( realltvChannelEdit );
-
-    QLabel *realltvAliasesLabel = new QLabel( ALIASES_TEXT );
+    addWidgets( realltvLayout, { realltvChannelCheckBox, realltvChannelEdit } );
 
     realltvAliasesEdit->setText( settings.value( REALLTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    realltvLayout->addWidget( realltvAliasesLabel );
-    realltvLayout->addWidget( realltvAliasesEdit );
-
-    QLabel *realltvSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( realltvLayout, { new QLabel( ALIASES_TEXT, this ), realltvAliasesEdit } );
 
     realltvSupportersListEdit->setText( settings.value( REALLTV_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    realltvLayout->addWidget( realltvSupportersListLabel );
-    realltvLayout->addWidget( realltvSupportersListEdit );
+    addWidgets( realltvLayout, { new QLabel( SUPPORTERS_TEXT, this ), realltvSupportersListEdit } );
 
-    QLabel *realltvBlackListLabel = new QLabel( BLACKLIST_TEXT );
     realltvBlackListEdit->setText( settings.value( REALLTV_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    realltvLayout->addWidget( realltvBlackListLabel );
-    realltvLayout->addWidget( realltvBlackListEdit );
+    addWidgets( realltvLayout, { new QLabel( BLACKLIST_TEXT, this ), realltvBlackListEdit } );
 
     realltvRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     realltvRemoveBlackListUsersCheckBox->setChecked( settings.value( REALLTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -1282,21 +996,17 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     realltvLayout->addStretch( 1 );
 
-    QGroupBox *realltvGroup = new QGroupBox( tabSettings );
+    QGroupBox * realltvGroup = new QGroupBox( tabSettings );
     realltvGroup->setLayout( realltvLayout );
 
     tabSettings->addTab( realltvGroup, QIcon( ":/resources/realltvlogo.png" ), tr( "Realltv" ) );
+}
 
+void QSettingsDialog::setupSc2tvTab()
+{
+    QSettings settings;
 
-
-
-
-
-
-    //настройки sc2tv
-    QVBoxLayout *sc2tvLayout = new QVBoxLayout;
-
-    //QLabel *sc2tvChannelLabel = new QLabel( CHANNEL_TEXT );
+    QVBoxLayout * sc2tvLayout = new QVBoxLayout();
 
     sc2tvChannelCheckBox->setText( CHANNEL_TEXT );
     sc2tvChannelCheckBox->setChecked( settings.value( SC2TV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -1306,34 +1016,22 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( sc2tvChannelCheckBox, SIGNAL( clicked( bool ) ), sc2tvChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    //sc2tvLayout->addWidget( sc2tvChannelLabel );
-    sc2tvLayout->addWidget( sc2tvChannelCheckBox );
-    sc2tvLayout->addWidget( sc2tvChannelEdit );
-
     sc2tvOriginalColorsCheckBox->setText( tr( "Original Colors" ) );
     sc2tvOriginalColorsCheckBox->setChecked( settings.value( SC2TV_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
 
-    sc2tvLayout->addWidget( sc2tvOriginalColorsCheckBox );
+    addWidgets( sc2tvLayout, { sc2tvChannelCheckBox, sc2tvChannelEdit, sc2tvOriginalColorsCheckBox  } );
 
-    QLabel *sc2tvAliasesLabel = new QLabel( ALIASES_TEXT );
     sc2tvAliasesEdit->setText( settings.value( SC2TV_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    sc2tvLayout->addWidget( sc2tvAliasesLabel );
-    sc2tvLayout->addWidget( sc2tvAliasesEdit );
-
-    QLabel *sc2tvSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( sc2tvLayout, { new QLabel( ALIASES_TEXT, this ), sc2tvAliasesEdit } );
 
     sc2tvSupportersListEdit->setText( settings.value( SC2TV_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    sc2tvLayout->addWidget( sc2tvSupportersListLabel );
-    sc2tvLayout->addWidget( sc2tvSupportersListEdit );
-
-    QLabel *sc2tvBlackListLabel = new QLabel( BLACKLIST_TEXT );
+    addWidgets( sc2tvLayout, { new QLabel( SUPPORTERS_TEXT, this ), sc2tvSupportersListEdit } );
 
     sc2tvBlackListEdit->setText( settings.value( SC2TV_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    sc2tvLayout->addWidget( sc2tvBlackListLabel );
-    sc2tvLayout->addWidget( sc2tvBlackListEdit );
+    addWidgets( sc2tvLayout, { new QLabel( BLACKLIST_TEXT, this ), sc2tvBlackListEdit } );
 
     sc2tvRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     sc2tvRemoveBlackListUsersCheckBox->setChecked( settings.value( SC2TV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -1342,13 +1040,17 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     sc2tvLayout->addStretch( 1 );
 
-    QGroupBox *sc2tvGroup = new QGroupBox( tabSettings );
+    QGroupBox * sc2tvGroup = new QGroupBox( tabSettings );
     sc2tvGroup->setLayout( sc2tvLayout );
 
     tabSettings->addTab( sc2tvGroup, QIcon( ":/resources/sc2tvlogo.png" ), tr( "Sc2tv" ) );
+}
 
-    //настройки streambox
-    QVBoxLayout *streamboxLayout = new QVBoxLayout;
+void QSettingsDialog::setupStreamboxTab()
+{
+    QSettings settings;
+
+    QVBoxLayout * streamboxLayout = new QVBoxLayout();
 
     streamboxChannelCheckBox->setText( CHANNEL_TEXT );
     streamboxChannelCheckBox->setChecked( settings.value( STREAMBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -1358,28 +1060,19 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( streamboxChannelCheckBox, SIGNAL( clicked( bool ) ), streamboxChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    streamboxLayout->addWidget( streamboxChannelCheckBox );
-    streamboxLayout->addWidget( streamboxChannelEdit );
+    addWidgets( streamboxLayout, { streamboxChannelCheckBox, streamboxChannelEdit } );
 
-    QLabel *streamboxAliasesLabel = new QLabel( ALIASES_TEXT );
     streamboxAliasesEdit->setText( settings.value( STREAMBOX_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    streamboxLayout->addWidget( streamboxAliasesLabel );
-    streamboxLayout->addWidget( streamboxAliasesEdit );
-
-    QLabel *streamboxSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( streamboxLayout, { new QLabel( ALIASES_TEXT, this ), streamboxAliasesEdit } );
 
     streamboxSupportersListEdit->setText( settings.value( STREAMBOX_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    streamboxLayout->addWidget( streamboxSupportersListLabel );
-    streamboxLayout->addWidget( streamboxSupportersListEdit );
-
-    QLabel *streamboxBlackListLabel = new QLabel( BLACKLIST_TEXT );
+    addWidgets( streamboxLayout, { new QLabel( SUPPORTERS_TEXT, this ), streamboxSupportersListEdit } );
 
     streamboxBlackListEdit->setText( settings.value( STREAMBOX_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    streamboxLayout->addWidget( streamboxBlackListLabel );
-    streamboxLayout->addWidget( streamboxBlackListEdit );
+    addWidgets( streamboxLayout, { new QLabel( BLACKLIST_TEXT, this ), streamboxBlackListEdit } );
 
     streamboxRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     streamboxRemoveBlackListUsersCheckBox->setChecked( settings.value( STREAMBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -1388,15 +1081,17 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     streamboxLayout->addStretch( 1 );
 
-    QGroupBox *streamboxGroup = new QGroupBox( tabSettings );
+    QGroupBox * streamboxGroup = new QGroupBox( tabSettings );
     streamboxGroup->setLayout( streamboxLayout );
 
     tabSettings->addTab( streamboxGroup, QIcon( ":/resources/streamboxlogo.png" ), tr( "Streambox" ) );
+}
 
-    //настройки twitch
-    QVBoxLayout *twitchLayout = new QVBoxLayout;
+void QSettingsDialog::setupTwitchTab()
+{
+    QSettings settings;
 
-    //QLabel *twitchChannelLabel = new QLabel( CHANNEL_TEXT );
+    QVBoxLayout * twitchLayout = new QVBoxLayout();
 
     twitchChannelCheckBox->setText( CHANNEL_TEXT );
     twitchChannelCheckBox->setChecked( settings.value( TWITCH_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -1406,29 +1101,19 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( twitchChannelCheckBox, SIGNAL( clicked( bool ) ), twitchChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    //twitchLayout->addWidget( twitchChannelLabel );
-    twitchLayout->addWidget( twitchChannelCheckBox );
-    twitchLayout->addWidget( twitchChannelEdit );
+    addWidgets( twitchLayout, { twitchChannelCheckBox, twitchChannelEdit } );
 
-    QLabel *twitchAliasesLabel = new QLabel( ALIASES_TEXT );
     twitchAliasesEdit->setText( settings.value( TWITCH_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    twitchLayout->addWidget( twitchAliasesLabel );
-    twitchLayout->addWidget( twitchAliasesEdit );
-
-    QLabel *twitchSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( twitchLayout, { new QLabel( ALIASES_TEXT, this ), twitchAliasesEdit } );
 
     twitchSupportersListEdit->setText( settings.value( TWITCH_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    twitchLayout->addWidget( twitchSupportersListLabel );
-    twitchLayout->addWidget( twitchSupportersListEdit );
-
-    QLabel *twitchBlackListLabel = new QLabel( BLACKLIST_TEXT );
+    addWidgets( twitchLayout, { new QLabel( SUPPORTERS_TEXT, this ), twitchSupportersListEdit } );
 
     twitchBlackListEdit->setText( settings.value( TWITCH_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    twitchLayout->addWidget( twitchBlackListLabel );
-    twitchLayout->addWidget( twitchBlackListEdit );
+    addWidgets( twitchLayout, { new QLabel( BLACKLIST_TEXT, this ), twitchBlackListEdit } );
 
     twitchRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     twitchRemoveBlackListUsersCheckBox->setChecked( settings.value( TWITCH_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -1437,15 +1122,17 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     twitchLayout->addStretch( 1 );
 
-    QGroupBox *twitchGroup = new QGroupBox( tabSettings );
+    QGroupBox * twitchGroup = new QGroupBox( tabSettings );
     twitchGroup->setLayout( twitchLayout );
 
     tabSettings->addTab( twitchGroup, QIcon( ":/resources/twitchlogo.png" ), tr( "Twitch" ) );
+}
 
+void QSettingsDialog::setupYoutubetab()
+{
+    QSettings settings;
 
-
-    //настройки youtube
-    QVBoxLayout *youtubeLayout = new QVBoxLayout;
+    QVBoxLayout * youtubeLayout = new QVBoxLayout();
 
     youtubeChannelCheckBox->setText( CHANNEL_TEXT );
     youtubeChannelCheckBox->setChecked( settings.value( YOUTUBE_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -1455,28 +1142,19 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     QObject::connect( youtubeChannelCheckBox, SIGNAL( clicked( bool ) ), youtubeChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    youtubeLayout->addWidget( youtubeChannelCheckBox );
-    youtubeLayout->addWidget( youtubeChannelEdit );
-
-    QLabel *youtubeAliasesLabel = new QLabel( ALIASES_TEXT );
+    addWidgets( youtubeLayout, { youtubeChannelCheckBox, youtubeChannelEdit } );
 
     youtubeAliasesEdit->setText( settings.value( YOUTUBE_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    youtubeLayout->addWidget( youtubeAliasesLabel );
-    youtubeLayout->addWidget( youtubeAliasesEdit );
-
-    QLabel *youtubeSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( youtubeLayout, { new QLabel( ALIASES_TEXT, this ), youtubeAliasesEdit } );
 
     youtubeSupportersListEdit->setText( settings.value( YOUTUBE_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    youtubeLayout->addWidget( youtubeSupportersListLabel );
-    youtubeLayout->addWidget( youtubeSupportersListEdit );
+    addWidgets( youtubeLayout, { new QLabel( SUPPORTERS_TEXT, this ), youtubeSupportersListEdit } );
 
-    QLabel *youtubeBlackListLabel = new QLabel( BLACKLIST_TEXT );
     youtubeBlackListEdit->setText( settings.value( YOUTUBE_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    youtubeLayout->addWidget( youtubeBlackListLabel );
-    youtubeLayout->addWidget( youtubeBlackListEdit );
+    addWidgets( youtubeLayout, { new QLabel( BLACKLIST_TEXT, this ), youtubeBlackListEdit } );
 
     youtubeRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     youtubeRemoveBlackListUsersCheckBox->setChecked( settings.value( YOUTUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -1485,55 +1163,12 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
     youtubeLayout->addStretch( 1 );
 
-    QGroupBox *youtubeGroup = new QGroupBox( tabSettings );
+    QGroupBox * youtubeGroup = new QGroupBox( tabSettings );
     youtubeGroup->setLayout( youtubeLayout );
 
     tabSettings->addTab( youtubeGroup, QIcon( ":/resources/youtubelogo.png" ), tr( "Youtube" ) );
-
-
-    /*
-    QVBoxLayout *aboutLayout = new QVBoxLayout;
-
-
-    //QLabel *licenseLabel = new QLabel();
-
-    aboutLayout->addStretch( 1 );
-
-    QGroupBox *aboutGroup = new QGroupBox( tabSettings );
-    aboutGroup->setLayout( aboutLayout );
-
-    tabSettings->addTab( aboutGroup, QIcon( ":/resources/broico.ico" ), tr( "About" ) );
-    */
-
-    mainLayout->addWidget( tabSettings );
-
-    QHBoxLayout* buttonsLayout = new QHBoxLayout;
-
-    QPushButton* buttonOk = new QPushButton( tr( "&OK" ) );
-    QPushButton* buttonCancel = new QPushButton( tr( "&Cancel" ) );
-
-    QObject::connect( buttonOk, SIGNAL( clicked() ), this, SLOT( accept() ) );
-    QObject::connect( buttonOk, SIGNAL( clicked() ), this, SLOT( saveSettings() ) );
-    QObject::connect( buttonCancel, SIGNAL( clicked() ), this, SLOT( reject() ) );    
-
-    buttonsLayout->addStretch( 1 );
-    buttonsLayout->addWidget( buttonOk );
-    buttonsLayout->addWidget( buttonCancel );
-
-    mainLayout->addLayout( buttonsLayout );
-
-    setLayout( mainLayout );
-
-    QObject::connect( this, SIGNAL( finished( int ) ), this, SLOT( saveDialogSettings() ) );;
-
-    loadDialogSettings();
-
-    update();    
 }
 
-QSettingsDialog::~QSettingsDialog()
-{
-}
 
 void QSettingsDialog::saveSettings()
 {
@@ -1545,99 +1180,57 @@ void QSettingsDialog::saveSettings()
     bool defaultStyleChanged = false;
 
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_FONT_NAME_SETTING_PATH, DEFAULT_GENERATED_STYLE_FONT_NAME ).toString() != fontNameCombo->currentText() );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_BODY_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_BODY_BACKGROUND_COLOR ).toUInt() != bodyBackgroundColor );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_NICKNAMES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE ).toInt() != nicknamesFontSizeSpinBox->value() );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_NICKNAMES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_TEXT_COLOR ).toUInt() != nicknamesTextColor );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE ).toInt() != messagesFontSizeSpinBox->value() );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR ).toUInt() != messagesTextColor );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_BORDER_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_SIZE ).toInt() != messagesBorderSizeSpinBox->value() );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE ).toInt() != messagesBorderRadiusSizeSpinBox->value() );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR ).toUInt() != messagesBorderColor );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE ).toInt() != messagesMarginBottomSizeSpinBox->value() );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR ).toUInt() != evenMessagesBackgroundColor );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR ).toUInt() != oddMessagesBackgroundColor );
-
-
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_VIEWERS_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_FONT_SIZE ).toInt() != viewersFontSizeSpinBox->value() );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_VIEWERS_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_TEXT_COLOR ).toUInt() != viewersTextColor );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR ).toUInt() != viewersBackgroundColor );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_FONT_SIZE ).toInt() != aliasesFontSizeSpinBox->value() );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_TEXT_COLOR ).toUInt() != aliasesTextColor );
-
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_BORDER_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BORDER_SIZE ).toInt() != aliasesBorderSizeSpinBox->value() );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BORDER_COLOR ).toUInt() != aliasesBorderColor );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BACKGROUND_COLOR ).toUInt() != aliasesBackgroundColor );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_LINKS_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_LINKS_COLOR ).toUInt() != linksColor );
-
-
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SMILES_SIZE ).toInt() != smilesSizeSpinBox->value() );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SERVICE_ICONS_SIZE ).toInt() != serviceIconsSizeSpinBox->value() );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH, DEFAULT_GENERATED_STYLE_MAX_IMAGES_HEIGHT ).toInt() != maxImagesHeightSpinBox->value() );
-
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ANIMATION_TYPE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ANIMATION_TYPE ).toString() != animationTypeCombo->currentText() );
-
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ANIMATION_DURATION_SETTING_PATH, DEFAULT_GENERATED_STYLE_ANIMATION_DURATION ).toDouble() != animationDurationSpinBox->value() );
 
     settings.setValue( GENERATED_STYLE_FONT_NAME_SETTING_PATH, fontNameCombo->currentText() );
-
     settings.setValue( GENERATED_STYLE_BODY_BACKGROUND_COLOR_SETTING_PATH, bodyBackgroundColor );
-
     settings.setValue( GENERATED_STYLE_NICKNAMES_FONT_SIZE_SETTING_PATH, nicknamesFontSizeSpinBox->value() );
     settings.setValue( GENERATED_STYLE_NICKNAMES_TEXT_COLOR_SETTING_PATH, nicknamesTextColor );
-
     settings.setValue( GENERATED_STYLE_MESSAGES_FONT_SIZE_SETTING_PATH, messagesFontSizeSpinBox->value() );
     settings.setValue( GENERATED_STYLE_MESSAGES_TEXT_COLOR_SETTING_PATH, messagesTextColor );
-
     settings.setValue( GENERATED_STYLE_MESSAGES_BORDER_SIZE_SETTING_PATH, messagesBorderSizeSpinBox->value() );
-
     settings.setValue( GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE_SETTING_PATH, messagesBorderRadiusSizeSpinBox->value() );
-
     settings.setValue( GENERATED_STYLE_MESSAGES_BORDER_COLOR_SETTING_PATH, messagesBorderColor );
     settings.setValue( GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, evenMessagesBackgroundColor );
     settings.setValue( GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, oddMessagesBackgroundColor );
-
     settings.setValue( GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE_SETTING_PATH, messagesMarginBottomSizeSpinBox->value() );
-
     settings.setValue( GENERATED_STYLE_VIEWERS_FONT_SIZE_SETTING_PATH, viewersFontSizeSpinBox->value() );
     settings.setValue( GENERATED_STYLE_VIEWERS_TEXT_COLOR_SETTING_PATH, viewersTextColor );
-
     settings.setValue( GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR_SETTING_PATH, viewersBackgroundColor );
-
     settings.setValue( GENERATED_STYLE_ALIASES_FONT_SIZE_SETTING_PATH, aliasesFontSizeSpinBox->value() );
     settings.setValue( GENERATED_STYLE_ALIASES_TEXT_COLOR_SETTING_PATH, aliasesTextColor );
-
-
     settings.setValue( GENERATED_STYLE_ALIASES_BORDER_SIZE_SETTING_PATH, aliasesBorderSizeSpinBox->value() );
     settings.setValue( GENERATED_STYLE_ALIASES_BORDER_COLOR_SETTING_PATH, aliasesBorderColor );
     settings.setValue( GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH, aliasesBackgroundColor );
-
     settings.setValue( GENERATED_STYLE_LINKS_COLOR_SETTING_PATH, linksColor );
-
-
     settings.setValue( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, smilesSizeSpinBox->value() );
     settings.setValue( GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH, serviceIconsSizeSpinBox->value() );
-
     settings.setValue( GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH, maxImagesHeightSpinBox->value() );
-
     settings.setValue( GENERATED_STYLE_ANIMATION_TYPE_SETTING_PATH, animationTypeCombo->currentText() );
-
     settings.setValue( GENERATED_STYLE_ANIMATION_DURATION_SETTING_PATH, animationDurationSpinBox->value() );
 
     bool needReloadFlagsAndAtributes = false;
@@ -1760,7 +1353,6 @@ void QSettingsDialog::saveSettings()
         emit saveToFileStateChanged();
     }
 
-
     oldBoolValue = settings.value( ACES_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
     oldStringValue = settings.value( ACES_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
     if( oldBoolValue != acesChannelCheckBox->isChecked() || oldStringValue != acesChannelEdit->text() )
@@ -1811,16 +1403,6 @@ void QSettingsDialog::saveSettings()
 
     //настройки cybergame
 
-    /*
-    oldStringValue = settings.value( CYBERGAME_CHANNEL_SETTING_PATH, DEFAULT_CYBERGAME_CHANNEL_NAME ).toString();
-    if( oldStringValue != cyberGameChannelEdit->text() )
-    {
-        settings.setValue( CYBERGAME_CHANNEL_SETTING_PATH, cyberGameChannelEdit->text() );
-        emit cyberGameChannelChanged();
-    }
-    //emit cyberGameChannelChanged();
-    */
-
     oldBoolValue = settings.value( CYBERGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
     oldStringValue = settings.value( CYBERGAME_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
     if( oldBoolValue != cyberGameChannelCheckBox->isChecked() || oldStringValue != cyberGameChannelEdit->text() )
@@ -1859,17 +1441,7 @@ void QSettingsDialog::saveSettings()
         emit cyberGameRemoveBlackListUsersChanged( cyberGameRemoveBlackListUsersCheckBox->isChecked() );
     }
 
-
     //настройки funstream
-    /*
-    oldStringValue = settings.value( FUNSTREAM_CHANNEL_SETTING_PATH, DEFAULT_FUNSTREAM_CHANNEL_NAME ).toString();
-    if( oldStringValue != funstreamChannelEdit->text() )
-    {
-        settings.setValue( FUNSTREAM_CHANNEL_SETTING_PATH, funstreamChannelEdit->text() );
-        emit funstreamChannelChanged();
-    }
-    //emit funstreamChannelChanged();
-    */
 
     oldBoolValue = settings.value( FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
     oldStringValue = settings.value( FUNSTREAM_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
@@ -1911,16 +1483,6 @@ void QSettingsDialog::saveSettings()
 
     //настройки gamerstv
 
-    /*
-    oldStringValue = settings.value( GAMERSTV_CHANNEL_SETTING_PATH, DEFAULT_GAMERSTV_CHANNEL_NAME ).toString();
-    if( oldStringValue != gamerstvChannelEdit->text() )
-    {
-        settings.setValue( GAMERSTV_CHANNEL_SETTING_PATH, gamerstvChannelEdit->text() );
-        emit gamerstvChannelChanged();
-    }
-    //emit gamerstvChannelChanged();
-    */
-
     oldBoolValue = settings.value( GAMERSTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
     oldStringValue = settings.value( GAMERSTV_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
     if( oldBoolValue != gamerstvChannelCheckBox->isChecked() || oldStringValue != gamerstvChannelEdit->text() )
@@ -1958,20 +1520,7 @@ void QSettingsDialog::saveSettings()
         settings.setValue( GAMERSTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, gamerstvRemoveBlackListUsersCheckBox->isChecked() );
         emit gamerstvRemoveBlackListUsersChanged( gamerstvRemoveBlackListUsersCheckBox->isChecked() );
     }
-
-
-
     //настройки gipsyteam
-
-    /*
-    oldStringValue = settings.value( GIPSYTEAM_CHANNEL_SETTING_PATH, DEFAULT_GIPSYTEAM_CHANNEL_NAME ).toString();
-    if( oldStringValue != gipsyteamChannelEdit->text() )
-    {
-        settings.setValue( GIPSYTEAM_CHANNEL_SETTING_PATH, gipsyteamChannelEdit->text() );
-        emit gipsyteamChannelChanged();
-    }
-    //emit gamerstvChannelChanged();
-    */
 
     oldBoolValue = settings.value( GIPSYTEAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
     oldStringValue = settings.value( GIPSYTEAM_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
@@ -2013,16 +1562,6 @@ void QSettingsDialog::saveSettings()
 
     //настройки gg
 
-    /*
-    oldStringValue = settings.value( GOODGAME_CHANNEL_SETTING_PATH, DEFAULT_GOODGAME_CHANNEL_NAME ).toString();
-    if( oldStringValue != goodGameChannelEdit->text() )
-    {
-        settings.setValue( GOODGAME_CHANNEL_SETTING_PATH, goodGameChannelEdit->text() );
-        emit goodGameChannelChanged();
-    }
-    //emit goodGameChannelChanged();
-    */
-
     oldBoolValue = settings.value( GOODGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
     oldStringValue = settings.value( GOODGAME_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
     if( oldBoolValue != goodGameChannelCheckBox->isChecked() || oldStringValue != goodGameChannelEdit->text() )
@@ -2039,7 +1578,6 @@ void QSettingsDialog::saveSettings()
         settings.setValue( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, goodGameUseAnimatedSmilesCheckBox->isChecked() );
         emit goodGameUseAnimatedSmilesChanged( goodGameUseAnimatedSmilesCheckBox->isChecked() );
     }
-
 
     oldStringValue = settings.value( GOODGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != goodGameAliasesEdit->text() )
@@ -2069,18 +1607,7 @@ void QSettingsDialog::saveSettings()
         emit goodGameRemoveBlackListUsersChanged( goodGameRemoveBlackListUsersCheckBox->isChecked() );
     }
 
-
     //настройки hitbox
-
-    /*
-    oldStringValue = settings.value( HITBOX_CHANNEL_SETTING_PATH, DEFAULT_HITBOX_CHANNEL_NAME ).toString();
-    if( oldStringValue != hitboxChannelEdit->text() )
-    {
-        settings.setValue( HITBOX_CHANNEL_SETTING_PATH, hitboxChannelEdit->text() );
-        emit hitboxChannelChanged();
-    }
-    //emit hitboxChannelChanged();
-    */
 
     oldBoolValue = settings.value( HITBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
     oldStringValue = settings.value( HITBOX_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
@@ -2127,7 +1654,6 @@ void QSettingsDialog::saveSettings()
         emit hitboxRemoveBlackListUsersChanged( hitboxRemoveBlackListUsersCheckBox->isChecked() );
     }
 
-
     //настройки igdc
 
     oldBoolValue = settings.value( IGDC_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
@@ -2168,17 +1694,7 @@ void QSettingsDialog::saveSettings()
         emit igdcRemoveBlackListUsersChanged( igdcRemoveBlackListUsersCheckBox->isChecked() );
     }
 
-
     //настройки livecoding
-
-    /*
-    oldStringValue = settings.value( LIVECODING_CHANNEL_SETTING_PATH, DEFAULT_LIVECODING_CHANNEL_NAME ).toString();
-    if( oldStringValue != livecodingChannelEdit->text() )
-    {
-        settings.setValue( LIVECODING_CHANNEL_SETTING_PATH, livecodingChannelEdit->text() );
-        emit livecodingChannelChanged();
-    }
-    */
 
     bool isLivecodingChannelChanged = false;
 
@@ -2209,8 +1725,6 @@ void QSettingsDialog::saveSettings()
     if( isLivecodingChannelChanged )
         emit livecodingChannelChanged();
 
-
-
     oldStringValue = settings.value( LIVECODING_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != livecodingAliasesEdit->text() )
     {
@@ -2240,16 +1754,6 @@ void QSettingsDialog::saveSettings()
     }
 
     //настройки realltv
-
-    /*
-    oldStringValue = settings.value( REALLTV_CHANNEL_SETTING_PATH, DEFAULT_REALLTV_CHANNEL_NAME ).toString();
-    if( oldStringValue != realltvChannelEdit->text() )
-    {
-        settings.setValue( REALLTV_CHANNEL_SETTING_PATH, realltvChannelEdit->text() );
-        emit realltvChannelChanged();
-    }
-    //emit realltvChannelChanged();
-    */
 
     oldBoolValue = settings.value( REALLTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
     oldStringValue = settings.value( REALLTV_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
@@ -2289,20 +1793,7 @@ void QSettingsDialog::saveSettings()
         emit realltvRemoveBlackListUsersChanged( realltvRemoveBlackListUsersCheckBox->isChecked() );
     }
 
-
-
     //настройки sc2tv
-
-    /*
-    oldStringValue = settings.value( SC2TV_CHANNEL_SETTING_PATH, DEFAULT_SC2TV_CHANNEL_NAME ).toString();
-    if( oldStringValue != sc2tvChannelEdit->text() )
-    {
-        settings.setValue( SC2TV_CHANNEL_SETTING_PATH, sc2tvChannelEdit->text() );
-        emit sc2tvChannelChanged();
-    }
-    //emit sc2tvChannelChanged();
-    */
-
 
     oldBoolValue = settings.value( SC2TV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
     oldStringValue = settings.value( SC2TV_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
@@ -2351,16 +1842,6 @@ void QSettingsDialog::saveSettings()
 
     //настройки streambox
 
-    /*
-    oldStringValue = settings.value( STREAMBOX_CHANNEL_SETTING_PATH, DEFAULT_STREAMBOX_CHANNEL_NAME ).toString();
-    if( oldStringValue != streamboxChannelEdit->text() )
-    {
-        settings.setValue( STREAMBOX_CHANNEL_SETTING_PATH, streamboxChannelEdit->text() );
-        emit streamboxChannelChanged();
-    }
-    //emit twitchChannelChanged();
-    */
-
     oldBoolValue = settings.value( STREAMBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
     oldStringValue = settings.value( STREAMBOX_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
     if( oldBoolValue != streamboxChannelCheckBox->isChecked() || oldStringValue != streamboxChannelEdit->text() )
@@ -2401,16 +1882,6 @@ void QSettingsDialog::saveSettings()
 
     //настройки twitch
 
-    /*
-    oldStringValue = settings.value( TWITCH_CHANNEL_SETTING_PATH, DEFAULT_TWITCH_CHANNEL_NAME ).toString();
-    if( oldStringValue != twitchChannelEdit->text() )
-    {
-        settings.setValue( TWITCH_CHANNEL_SETTING_PATH, twitchChannelEdit->text() );
-        emit twitchChannelChanged();
-    }
-    //emit twitchChannelChanged();
-    */
-
     oldBoolValue = settings.value( TWITCH_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
     oldStringValue = settings.value( TWITCH_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
     if( oldBoolValue != twitchChannelCheckBox->isChecked() || oldStringValue != twitchChannelEdit->text() )
@@ -2420,7 +1891,6 @@ void QSettingsDialog::saveSettings()
 
         emit twitchChannelChanged();
     }
-
 
     oldStringValue = settings.value( TWITCH_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != twitchAliasesEdit->text() )
@@ -2450,17 +1920,7 @@ void QSettingsDialog::saveSettings()
         emit twitchRemoveBlackListUsersChanged( twitchRemoveBlackListUsersCheckBox->isChecked() );
     }
 
-
     //настройки youtube
-
-    /*
-    oldStringValue = settings.value( YOUTUBE_CHANNEL_SETTING_PATH, DEFAULT_YOUTUBE_CHANNEL_NAME ).toString();
-    if( oldStringValue != youtubeChannelEdit->text() )
-    {
-        settings.setValue( YOUTUBE_CHANNEL_SETTING_PATH, youtubeChannelEdit->text() );
-        emit youtubeChannelChanged();
-    }
-    */
 
     oldBoolValue = settings.value( YOUTUBE_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
     oldStringValue = settings.value( YOUTUBE_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
@@ -2502,78 +1962,76 @@ void QSettingsDialog::saveSettings()
 
 }
 
-void QSettingsDialog::setColorButtonStyle( QPushButton *button, QRgb color, int fontSize )
+void QSettingsDialog::setColorButtonStyle( QPushButton * button, QRgb color, int fontSize )
 {
-    QColor rgbaColor( color );
+    QColor rgbaColor = QColor::fromRgba( color );
 
     QString newButtonStyle( "QPushButton{ background-color:rgba(" +
                            QString::number( rgbaColor.red() ) + "," +
                            QString::number( rgbaColor.green() ) + "," +
                             QString::number( rgbaColor.blue() ) + "," +
-                           QString::number( rgbaColor.alpha() ) + ");" +
+                           QString::number( rgbaColor.alpha() / 255.0, 'f' ) + ");" +
                            "border: 1px solid rgba(128,128,128,0.5); font-size: " + QString::number( fontSize ) + "px;}" );
 
-
-
-    //qDebug() << newButtonStyle;
     button->setStyleSheet( newButtonStyle );
 }
 
-void QSettingsDialog::nicknamesColorSelection()
+void QSettingsDialog::addLayoutRow( QLayout * layout, std::initializer_list< QWidget * > widgets )
 {
-    bool isOk = false;
-    QRgb color = QColorDialog::getRgba( nicknamesTextColor, &isOk, this );
-    if( isOk )
+    //assert( layout );
+
+    QHBoxLayout * rowLayout = new QHBoxLayout();
+
+    for( auto widget : widgets )
     {
-        nicknamesTextColor = color;
-        setColorButtonStyle( nicknamesTextColorButton, nicknamesTextColor );
+        //assert( widget );
+        rowLayout->addWidget( widget );
     }
 
+    qobject_cast< QVBoxLayout * >( layout )->addLayout( rowLayout );
 }
 
-void QSettingsDialog::messagesColorSelection()
-{
-    bool isOk = false;
-    QRgb color = QColorDialog::getRgba( messagesTextColor, &isOk, this );
-    if( isOk )
-    {
-        messagesTextColor = color;
-        setColorButtonStyle( messagesTextColorButton, messagesTextColor );
-    }
-}
 
-void QSettingsDialog::viewersColorSelection()
+void QSettingsDialog::addWidgets( QVBoxLayout * layout, std::initializer_list< QWidget * > widgets )
 {
-    bool isOk = false;
-    QRgb color = QColorDialog::getRgba( viewersTextColor, &isOk, this );
-    if( isOk )
-    {
-        viewersTextColor = color;
-        setColorButtonStyle( viewersTextColorButton, viewersTextColor );
-    }
-}
+    //assert( layout );
 
-void QSettingsDialog::aliasesColorSelection()
-{
-
-    bool isOk = false;
-    QRgb color = QColorDialog::getRgba( aliasesTextColor, &isOk, this );
-    if( isOk )
+    for( auto widget : widgets )
     {
-        aliasesTextColor = color;
-        setColorButtonStyle( aliasesTextColorButton, aliasesTextColor );
+        //assert( widget );
+        layout->addWidget( widget );
     }
 }
 
 void QSettingsDialog::buttonColorSelection( QPushButton * button, QRgb & color )
 {
-    bool isOk = false;
-    QRgb newColor = QColorDialog::getRgba( color, &isOk, this );
-    if( isOk )
+    QColor newColor = QColorDialog::getColor( QColor::fromRgba( color ), this, QString(), QColorDialog::ShowAlphaChannel );
+
+    if( newColor.isValid() && newColor.rgba() != color  )
     {
-        color = newColor;
+        color = newColor.rgba();
         setColorButtonStyle( button, color );
-    }
+    }        
+}
+
+void QSettingsDialog::nicknamesColorSelection()
+{
+    buttonColorSelection( nicknamesTextColorButton, nicknamesTextColor );
+}
+
+void QSettingsDialog::messagesColorSelection()
+{
+    buttonColorSelection( messagesTextColorButton, messagesTextColor );
+}
+
+void QSettingsDialog::viewersColorSelection()
+{
+    buttonColorSelection( viewersTextColorButton, viewersTextColor );
+}
+
+void QSettingsDialog::aliasesColorSelection()
+{
+    buttonColorSelection( aliasesTextColorButton, aliasesTextColor );
 }
 
 void QSettingsDialog::bodyBackgroundColorSelection()

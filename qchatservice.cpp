@@ -39,7 +39,6 @@ bool QChatService::isShowSystemMessages() const
     return showSystemMessages_;
 }
 
-
 void QChatService::setAliasesSelection( bool aliasesSelection )
 {
     aliasesSelection_ = aliasesSelection;
@@ -62,9 +61,7 @@ bool QChatService::isRemoveBlackListUsers() const
 
 void QChatService::setAliasesList( const QString &aliasesList )
 {
-    //qDebug() << aliasesList;
     aliasesList_ = aliasesList.split( QRegExp( "\\s" ) );
-    //qDebug() << aliasesList_;
 }
 
 const QStringList& QChatService::aliasesList() const
@@ -74,9 +71,7 @@ const QStringList& QChatService::aliasesList() const
 
 void QChatService::setSupportersList( const QString &supportersList )
 {
-    //qDebug() << supportersList;
     supportersList_ = supportersList.split( QRegExp( "\\s" ) );
-   // qDebug() << supportersList_;
 }
 
 const QStringList& QChatService::supportersList() const
@@ -86,9 +81,7 @@ const QStringList& QChatService::supportersList() const
 
 void QChatService::setBlackList( const QString &blackList  )
 {
-    //qDebug() << blackList;
     blackList_ = blackList.split( QRegExp( "\\s" ) );
-    //qDebug() << blackList_;
 }
 
 const QStringList& QChatService::blackList() const

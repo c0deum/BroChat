@@ -429,24 +429,25 @@ void QBroChatView::changeStyle( const QString &styleName )
 
         if( styleName == DEFAULT_STYLE_NAME )
         {
+            const double ALPHA_DIVIDER = 255;
             QColor color;
             QString colorString;
             style.replace( "%FONT_NAME%", "'" + settings_.value( GENERATED_STYLE_FONT_NAME_SETTING_PATH, DEFAULT_GENERATED_STYLE_FONT_NAME ).toString() + "'" );
 
 
-            color = settings_.value( GENERATED_STYLE_BODY_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_BODY_BACKGROUND_COLOR ).toUInt();
-            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() ) + ")";
+            color = QColor::fromRgba( settings_.value( GENERATED_STYLE_BODY_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_BODY_BACKGROUND_COLOR ).toUInt() );
+            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() / ALPHA_DIVIDER, 'f' ) + ")";
             style.replace( "%BODY_BACKGROUND_COLOR%", colorString );
 
 
             style.replace( "%NICKNAMES_FONT_SIZE%", QString::number( settings_.value( GENERATED_STYLE_NICKNAMES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE ).toInt() ) + "px" );
-            color = settings_.value( GENERATED_STYLE_NICKNAMES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_TEXT_COLOR ).toUInt();
-            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() ) + ")";
+            color = QColor::fromRgba( settings_.value( GENERATED_STYLE_NICKNAMES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_TEXT_COLOR ).toUInt() );
+            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() / ALPHA_DIVIDER, 'f' ) + ")";
             style.replace( "%NICKNAMES_TEXT_COLOR%", colorString );
 
             style.replace( "%MESSAGES_FONT_SIZE%", QString::number( settings_.value( GENERATED_STYLE_MESSAGES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE ).toInt() ) + "px" );
-            color = settings_.value( GENERATED_STYLE_MESSAGES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR ).toUInt();
-            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() ) + ")";
+            color = QColor::fromRgba( settings_.value( GENERATED_STYLE_MESSAGES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR ).toUInt() );
+            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() / ALPHA_DIVIDER, 'f' ) + ")";
             style.replace( "%MESSAGES_TEXT_COLOR%", colorString );
 
 
@@ -454,17 +455,17 @@ void QBroChatView::changeStyle( const QString &styleName )
 
             style.replace( "%MESSAGEBOX_BORDER_RADIUS_SIZE%", QString::number( settings_.value( GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE ).toInt() ) + "px" );
 
-            color = settings_.value( GENERATED_STYLE_MESSAGES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR ).toUInt();
-            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() ) + ")";
+            color = QColor::fromRgba( settings_.value( GENERATED_STYLE_MESSAGES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR ).toUInt() );
+            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() / ALPHA_DIVIDER, 'f' ) + ")";
             style.replace( "%MESSAGEBOX_BORDER_COLOR%", colorString );
 
 
-            color = settings_.value( GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR ).toUInt();
-            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() ) + ")";
+            color = QColor::fromRgba( settings_.value( GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR ).toUInt() );
+            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() / ALPHA_DIVIDER, 'f' ) + ")";
             style.replace( "%EVEN_MESSAGESBOX_BACKGROUND_COLOR%", colorString );
 
-            color = settings_.value( GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR ).toUInt();
-            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() ) + ")";
+            color = QColor::fromRgba( settings_.value( GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR ).toUInt() );
+            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() / ALPHA_DIVIDER, 'f' ) + ")";
             style.replace( "%ODD_MESSAGESBOX_BACKGROUND_COLOR%", colorString );
 
             style.replace( "%MESSAGESBOX_MARGIN_BOTTOM%", QString::number( settings_.value( GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE ).toInt() ) + "px" );
@@ -473,37 +474,34 @@ void QBroChatView::changeStyle( const QString &styleName )
             int viewersFontSize = settings_.value( GENERATED_STYLE_VIEWERS_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_FONT_SIZE ).toInt();
             style.replace( "%VIEWERS_FONT_SIZE%", QString::number( viewersFontSize ) + "px" );
 
-            color = settings_.value( GENERATED_STYLE_VIEWERS_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_TEXT_COLOR ).toUInt();
-            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() ) + ")";
+            color = QColor::fromRgba( settings_.value( GENERATED_STYLE_VIEWERS_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_TEXT_COLOR ).toUInt() );
+            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() / ALPHA_DIVIDER, 'f' ) + ")";
             style.replace( "%VIEWERS_TEXT_COLOR%", colorString );
 
 
-            color = settings_.value( GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR ).toUInt();
-            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() ) + ")";
+            color = QColor::fromRgba( settings_.value( GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR ).toUInt() );
+            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() / ALPHA_DIVIDER, 'f' ) + ")";
             style.replace( "%VIEWERS_BACKGROUND_COLOR%", colorString );
 
 
             style.replace( "%ALIASES_FONT_SIZE%", QString::number( settings_.value( GENERATED_STYLE_ALIASES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_FONT_SIZE ).toInt() ) + "px" );
-            color = settings_.value( GENERATED_STYLE_ALIASES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_TEXT_COLOR ).toUInt();
-            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() ) + ")";
+            color = QColor::fromRgba( settings_.value( GENERATED_STYLE_ALIASES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_TEXT_COLOR ).toUInt() );
+            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() / ALPHA_DIVIDER, 'f' ) + ")";
             style.replace( "%ALIASES_TEXT_COLOR%", colorString );
 
 
             style.replace( "%ALIASES_BORDER_SIZE%", QString::number( settings_.value( GENERATED_STYLE_ALIASES_BORDER_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BORDER_SIZE ).toInt() ) + "px" );
-            color = settings_.value( GENERATED_STYLE_ALIASES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BORDER_COLOR ).toUInt();
-            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() ) + ")";
+            color = QColor::fromRgba( settings_.value( GENERATED_STYLE_ALIASES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BORDER_COLOR ).toUInt() );
+            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() / ALPHA_DIVIDER, 'f' ) + ")";
             style.replace( "%ALIASES_BORDER_COLOR%", colorString );
 
-            color = settings_.value( GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BACKGROUND_COLOR ).toUInt();
-            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() ) + ")";
+            color = QColor::fromRgba( settings_.value( GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BACKGROUND_COLOR ).toUInt() );
+            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() / ALPHA_DIVIDER, 'f' ) + ")";
             style.replace( "%ALIASES_BACKGROUND_COLOR%", colorString );
 
-
-            color = settings_.value( GENERATED_STYLE_LINKS_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_LINKS_COLOR ).toUInt();
-            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() ) + ")";
+            color = QColor::fromRgba( settings_.value( GENERATED_STYLE_LINKS_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_LINKS_COLOR ).toUInt() );
+            colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() / ALPHA_DIVIDER, 'f' ) + ")";
             style.replace( "%LINKS_COLOR%", colorString );
-
-
 
             style.replace( "%SMILES_SIZE%", QString::number( settings_.value( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SMILES_SIZE ).toInt() ) + "px" );
 
@@ -728,7 +726,6 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( streamboxRemoveBlackListUsersChanged( bool ) ), streamboxChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( twitchRemoveBlackListUsersChanged( bool ) ), twitchChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( youtubeRemoveBlackListUsersChanged( bool ) ), youtubeChat_, SLOT( setRemoveBlackListUsers(bool ) ) );    
-
 
     //QObject::connect( settingsDialog, SIGNAL( acesOriginalColorsChanged( bool ) ), acesChat_, SLOT( changeOriginalColors( bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( hitboxOriginalColorsChanged( bool ) ), hitboxChat_, SLOT( changeOriginalColors( bool ) ) );
