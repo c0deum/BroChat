@@ -8,7 +8,7 @@
 
 #include<QObject>
 
-class QChatMessage;
+class ChatMessage;
 
 class QPoll: public QObject
 {
@@ -22,44 +22,46 @@ public:
         int votes;
     };
 public:
-    explicit QPoll( QObject * parent = 0 );
-    virtual ~QPoll();
+    explicit                            QPoll( QObject * parent = nullptr );
+    virtual                             ~QPoll();
 public:
-    const QString & question() const;
-    void question( const QString & newQuestion );
+    const QString &                     question() const;
+    void                                question( const QString & newQuestion );
 
-    const QMap< QString, PollEntry > & entries() const;
-    void entries( const QMap< QString, PollEntry > & newEntries );
+    const QMap< QString, PollEntry > &  entries() const;
+    void                                entries( const QMap< QString, PollEntry > & newEntries );
 
-    int time() const;
-    void time( int newTime );
+    int                                 time() const;
+    void                                time( int newTime );
 
-    bool isMultiChoice() const;
-    void multiChoice( bool flag );
+    bool                                isMultiChoice() const;
+    void                                multiChoice( bool flag );
 
 protected:
-    virtual void timerEvent( QTimerEvent * event );
+    virtual void                        timerEvent( QTimerEvent * event );
+
 private:
-    void init();
-    void loadSettings();
-    void saveSettings();
+    void                                init();
+    void                                loadSettings();
+    void                                saveSettings();
+
 public slots:
-    void start();
-    void stop();
-    void finish();
-    void onNewMessage( const QChatMessage * message );
+    void                                start();
+    void                                stop();
+    void                                finish();
+    void                                onNewMessage( const ChatMessage * message );
 signals:
-    void started();
-    void finished();
+    void                                started();
+    void                                finished();
 private:
-    QString question_;
-    QMap< QString, PollEntry > entries_;
-    int time_;
-    int elapsedTime_;
-    qint64 startTime_;
-    int updateTimerId_;
-    int updateTimerInterval_;
-    bool multiChoice_;
+    QString                             question_;
+    QMap< QString, PollEntry >          entries_;
+    int                                 time_;
+    int                                 elapsedTime_;
+    qint64                              startTime_;
+    int                                 updateTimerId_;
+    int                                 updateTimerInterval_;
+    bool                                multiChoice_;
 };
 
 #endif // QPOLL

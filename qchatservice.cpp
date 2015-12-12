@@ -98,3 +98,18 @@ bool QChatService::isContainsAliases( const QString &message ) const
     }
     return false;
 }
+
+void QChatService::startUniqueTimer( int & id, int interval )
+{
+    if( -1 == id )
+        id = startTimer( interval );
+}
+
+void QChatService::resetTimer( int & id )
+{
+    if( -1 != id )
+    {
+        killTimer( id );
+        id = -1;
+    }
+}

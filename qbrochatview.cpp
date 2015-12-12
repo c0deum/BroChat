@@ -80,14 +80,13 @@ QBroChatView::QBroChatView( QWidget *parent )
 , gipsyteamChat_( new QGipsyTeamChat( this ) )
 , goodgameChat_( new QGoodGameChat( this ) )
 , hitboxChat_( new QHitBoxChat( this ) )
+, igdcChat_( new QIgdcChat( this ) )
 , livecodingChat_( new QLivecodingChat( this ) )
 , realltvChat_( new QReallTvChat( this ) )
 , sc2tvChat_( new QSc2tvChat( this ) )
 , streamboxChat_( new QStreamBoxChat( this ) )
 , twitchChat_( new QTwitchChat( this ) )
 , youtubeChat_( new QYoutubeChat( this ) )
-
-, igdcChat_( new QIgdcChat( this ) )
 
 , chatUpdateServer_( 0 )
 , settings_()
@@ -205,61 +204,61 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     addAction( exitAction );       
 
-    QObject::connect( acesChat_, SIGNAL( newMessage ( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( acesChat_, SIGNAL( newMessage ( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), acesChat_, SLOT( reconnect() ) );
 
-    QObject::connect( cybergameChat_, SIGNAL( newMessage ( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( cybergameChat_, SIGNAL( newMessage ( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( cybergameChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), cybergameChat_, SLOT( reconnect() ) );
 
-    QObject::connect( gamerstvChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( gamerstvChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( gamerstvChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), gamerstvChat_, SLOT( reconnect() ) );
 
-    QObject::connect( goodgameChat_, SIGNAL( newMessage ( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( goodgameChat_, SIGNAL( newMessage ( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( goodgameChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), goodgameChat_, SLOT( reconnect() ) );
 
-    QObject::connect( sc2tvChat_, SIGNAL( newMessage ( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( sc2tvChat_, SIGNAL( newMessage ( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), sc2tvChat_, SLOT( reconnect() ) );
 
-    QObject::connect( twitchChat_, SIGNAL( newMessage( QChatMessage * ) ), this, SLOT( slotNewMessage( QChatMessage * ) ) );
+    QObject::connect( twitchChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( twitchChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), twitchChat_, SLOT( reconnect() ) );
 
-    QObject::connect( funstreamChat_, SIGNAL( newMessage( QChatMessage * ) ), this, SLOT( slotNewMessage( QChatMessage * ) ) );
+    QObject::connect( funstreamChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( funstreamChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), funstreamChat_, SLOT( reconnect() ) );
 
-    QObject::connect( streamboxChat_, SIGNAL( newMessage( QChatMessage * ) ), this, SLOT( slotNewMessage( QChatMessage * ) ) );
+    QObject::connect( streamboxChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( streamboxChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), streamboxChat_, SLOT( reconnect() ) );
 
-    QObject::connect( hitboxChat_, SIGNAL( newMessage( QChatMessage * ) ), this, SLOT( slotNewMessage( QChatMessage * ) ) );
+    QObject::connect( hitboxChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( hitboxChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), hitboxChat_, SLOT( reconnect() ) );
 
-    QObject::connect( gipsyteamChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( gipsyteamChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), gipsyteamChat_, SLOT( reconnect() ) );
 
-    QObject::connect( realltvChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( realltvChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( realltvChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), realltvChat_, SLOT( reconnect() ) );
 
 
     //youtube
-    QObject::connect( youtubeChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( youtubeChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( youtubeChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), youtubeChat_, SLOT( reconnect() ) );
 
     //livecoding
-    QObject::connect( livecodingChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( livecodingChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( livecodingChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), livecodingChat_, SLOT( reconnect() ) );
 
 
     //igdc
-    QObject::connect( igdcChat_, SIGNAL( newMessage( QChatMessage* ) ), this, SLOT( slotNewMessage( QChatMessage* ) ) );
+    QObject::connect( igdcChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( igdcChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), igdcChat_, SLOT( reconnect() ) );
 
@@ -358,7 +357,7 @@ void QBroChatView::keyReleaseEvent( QKeyEvent * event )
 
 void QBroChatView::timerEvent( QTimerEvent *event )
 {
-    if(event->timerId() == updatePictureId_ && saveToFile_ )
+    if( event->timerId() == updatePictureId_ && saveToFile_ )
     {
         QImage image( page()->viewportSize(), QImage::Format_ARGB32 );
         image.fill( Qt::transparent );
@@ -378,9 +377,9 @@ void QBroChatView::onLinkClicked( const QUrl &url )
     QDesktopServices::openUrl( url );
 }
 
-void QBroChatView::addMessage( const QString &service, const QString &nickName, const QString &message, const QString &type )
+void QBroChatView::addMessage( const QString & service, const QString & nickName, const QString & message, const QString & type )
 {
-    QString messageWithLinks = QChatMessage::insertLinks( message, showImages_ );
+    QString messageWithLinks = ChatMessage::insertLinks( message, showImages_ );
 
     QString formattedNickName = nickName;
     formattedNickName.replace( "\"", "\\\"" );
@@ -401,7 +400,7 @@ void QBroChatView::addMessage( const QString &service, const QString &nickName, 
     }
 }
 
-void QBroChatView::changeStyle( const QString &styleName )
+void QBroChatView::changeStyle( const QString & styleName )
 {
     QString pathToStyle;
     if( styleName == DEFAULT_STYLE_NAME )
@@ -584,7 +583,7 @@ void QBroChatView::changeSaveToFileState()
     if( saveToFile_ )
     {
         updatePictureInterval_ = settings_.value( SAVE_TO_FILE_INTERVAL_SETTING_PATH, DEFAULT_SAVE_TO_FILE_INTERVAL ).toInt();
-        if( updatePictureId_ == - 1 )
+        if( -1 == updatePictureId_ )
             updatePictureId_ = startTimer( updatePictureInterval_ );
     }
 }
@@ -594,11 +593,37 @@ void QBroChatView::changeSaveMessagesToLogState()
     saveMessagesToLog_ = settings_.value( SAVE_MESSAGES_TO_LOG_FILE_SETTING_PATH, DEFAULT_SAVE_MESSAGES_TO_LOG_FILE ).toBool();
 }
 
-void QBroChatView::slotNewMessage( QChatMessage *message )
+void QBroChatView::slotNewMessage( ChatMessage message )
 {
-    messagesManager_.addMessage( message );
-    addMessage( message->service(), message->nickName(), message->message(), message->type() );
-    message->deleteLater();
+    const QChatService * chatService = message.service();
+
+    bool blackListUser = chatService->blackList().contains( message.nickName() );
+    bool supportersListUser = chatService->supportersList().contains( message.nickName() );
+    bool containsAliases = chatService->isContainsAliases( message.message() );
+
+    if( !chatService->isRemoveBlackListUsers() || !blackListUser )
+    {
+        if( blackListUser )
+        {
+            message.setType( "ignore" );
+        }
+        else if( supportersListUser )
+        {
+            message.setType( "supporter" );
+        }
+        else if( containsAliases )
+        {
+            message.setType( "alias" );
+        }
+        else
+        {
+            message.setType( "" );
+        }
+    }
+
+    messagesManager_.add( message );
+
+    addMessage( message.serviceName(), message.nickName(), message.message(), message.type() );
 }
 
 void QBroChatView::onNewStatistic( QChatStatistic *statistic )

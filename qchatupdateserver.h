@@ -11,17 +11,20 @@ class QChatUpdateServer: public QObject
 {
 Q_OBJECT
 public:
-    explicit QChatUpdateServer( unsigned short port, QObject *parent = 0 );
-    virtual ~QChatUpdateServer();
+    explicit                 QChatUpdateServer( unsigned short port, QObject * parent = nullptr );
+    virtual                 ~QChatUpdateServer();
+
 public slots:
-    void sendMessage( const QString& message );
-    void close();
+    void                    sendMessage( const QString & message );
+    void                    close();
+
 private slots:
-    void onNewConnection();
-    void onSocketDisconnected();
+    void                    onNewConnection();
+    void                    onSocketDisconnected();
+
 private:
-    QWebSocketServer *server_;
-    QList< QWebSocket * > clientsList_;
+    QWebSocketServer *      server_;
+    QList< QWebSocket * >   clientsList_;
 };
 
 #endif // QCHATUPDATESERVER

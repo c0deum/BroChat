@@ -20,49 +20,30 @@ const QString SAVE_MESSAGES_TO_LOG_FILE_SETTING_PATH = "/Settings/Window/SaveMes
 //default style settings:
 
 const QString GENERATED_STYLE_FONT_NAME_SETTING_PATH = "/Settings/DefaultStyle/FontName";
-
 const QString GENERATED_STYLE_BODY_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/BodyBackgroundColor";
-
 const QString GENERATED_STYLE_NICKNAMES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/NicknamesFontSize";
 const QString GENERATED_STYLE_NICKNAMES_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/NicknamesTextColor";
 const QString GENERATED_STYLE_MESSAGES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesFontSize";
 const QString GENERATED_STYLE_MESSAGES_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/MessagesTextColor";
-
-
 const QString GENERATED_STYLE_MESSAGES_BORDER_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesBorderSize";
-
 const QString GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesBorderRadiusSize";
-
 const QString GENERATED_STYLE_MESSAGES_BORDER_COLOR_SETTING_PATH = "/Settings/DefaultStyle/MessagesBorderColor";
 const QString GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/EvenMessagesBackgroundColor";
 const QString GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/OddMessagesBackgroundColor";
-
 const QString GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesMarginBottomSize";
-
-
 const QString GENERATED_STYLE_VIEWERS_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/ViewersFontSize";
 const QString GENERATED_STYLE_VIEWERS_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/ViewersTextColor";
-
 const QString GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/ViewersBackgroundColor";
-
-
 const QString GENERATED_STYLE_ALIASES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/AliasesFontSize";
 const QString GENERATED_STYLE_ALIASES_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/AliasesTextColor";
-
 const QString GENERATED_STYLE_ALIASES_BORDER_SIZE_SETTING_PATH = "/Settings/DefaultStyle/AliasesBorderSize";
 const QString GENERATED_STYLE_ALIASES_BORDER_COLOR_SETTING_PATH = "/Settings/DefaultStyle/AliasesBorderColor";
-
 const QString GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/AliasesBackgroundColor";
-
 const QString GENERATED_STYLE_LINKS_COLOR_SETTING_PATH = "/Settings/DefaultStyle/LinkColor";
-
 const QString GENERATED_STYLE_SMILES_SIZE_SETTING_PATH = "/Settings/DefaultStyle/SmilesSize";
 const QString GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH = "/Settings/DefaultStyle/ServiceIconsSize";
-
 const QString GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH = "/Settings/DefaultStyle/MaxImagesHeight";
-
 const QString GENERATED_STYLE_ANIMATION_TYPE_SETTING_PATH = "/Settings/DefaultStyle/AnimationType";
-
 const QString GENERATED_STYLE_ANIMATION_DURATION_SETTING_PATH = "/Settings/DefaultStyle/AnimationDuration";
 
 const QString ACES_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Aces/Enable";
@@ -117,15 +98,12 @@ const QString HITBOX_BLACK_LIST_SETTING_PATH = "/Settings/Hitbox/BlackList";
 const QString HITBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Hitbox/RemoveBlackListUsers";
 const QString HITBOX_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Hitbox/OriginalColors";
 
-
 const QString IGDC_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Igdc/Enable";
 const QString IGDC_CHANNEL_SETTING_PATH = "/Settings/Igdc/Channel";
 const QString IGDC_ALIASES_SETTING_PATH = "/Settings/Igdc/Aliases";
 const QString IGDC_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Igdc/Supporters";
 const QString IGDC_BLACK_LIST_SETTING_PATH = "/Settings/Igdc/BlackList";
 const QString IGDC_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Igdc/RemoveBlackListUsers";
-
-
 
 const QString LIVECODING_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Livecoding/Enable";
 const QString LIVECODING_CHANNEL_SETTING_PATH = "/Settings/Livecoding/Channel";
@@ -227,35 +205,21 @@ const int DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE = 0;
 const unsigned int DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR = 0x00000000;
 const unsigned int DEFAULT_GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR = 0x00000000;
 const unsigned int DEFAULT_GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR = 0x00000000;
-
 const int DEFAULT_GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE = 0;
-
-
 const int DEFAULT_GENERATED_STYLE_VIEWERS_FONT_SIZE = 14;
 const unsigned int DEFAULT_GENERATED_STYLE_VIEWERS_TEXT_COLOR = 0xffffffff;
-
 const unsigned int DEFAULT_GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR = 0x00000000;
-
 const int DEFAULT_GENERATED_STYLE_ALIASES_FONT_SIZE = 14;
 const unsigned int DEFAULT_GENERATED_STYLE_ALIASES_TEXT_COLOR = 0xffffffff;
-
 const int DEFAULT_GENERATED_STYLE_ALIASES_BORDER_SIZE = 0;
 const unsigned int DEFAULT_GENERATED_STYLE_ALIASES_BORDER_COLOR = 0x00000000;
-
 const unsigned int DEFAULT_GENERATED_STYLE_ALIASES_BACKGROUND_COLOR = 0x00000000;
-
 const unsigned int DEFAULT_GENERATED_STYLE_LINKS_COLOR = 0xffffffff;
-
-
 const int DEFAULT_GENERATED_STYLE_SMILES_SIZE = 32;
 const int DEFAULT_GENERATED_STYLE_SERVICE_ICONS_SIZE = 16;
-
 const int DEFAULT_GENERATED_STYLE_MAX_IMAGES_HEIGHT = 256;
-
 const QString DEFAULT_GENERATED_STYLE_ANIMATION_TYPE = "None";
-
 const double DEFAULT_GENERATED_STYLE_ANIMATION_DURATION = 0.5;
-
 const QString DEFAULT_STYLE_NAME = "[default]";
 
 const int DEFAULT_POLL_TIME = 60;

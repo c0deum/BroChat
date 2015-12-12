@@ -7,7 +7,7 @@
 
 #include "qmessagesmanager.h"
 
-class QChatMessage;
+class ChatMessage;
 class QChatStatistic;
 
 class QChatUpdateServer;
@@ -19,6 +19,7 @@ class QGamersTvChat;
 class QGipsyTeamChat;
 class QGoodGameChat;
 class QHitBoxChat;
+class QIgdcChat;
 class QLivecodingChat;
 class QReallTvChat;
 class QSc2tvChat;
@@ -26,93 +27,86 @@ class QStreamBoxChat;
 class QTwitchChat;
 class QYoutubeChat;
 
-class QIgdcChat;
-
-
-
 class QBroChatView: public QWebView
 {
     Q_OBJECT
 public:
-    explicit QBroChatView( QWidget *parent = 0 );
-    virtual ~QBroChatView();
+    explicit            QBroChatView( QWidget * parent = nullptr );
+    virtual             ~QBroChatView();
 
-    void addMessage( const QString &service, const QString &nickName, const QString &message, const QString &type );
+    void                addMessage( const QString & service, const QString & nickName, const QString & message, const QString & type );
 protected:
-    virtual void mousePressEvent( QMouseEvent *event );
-    virtual void mouseMoveEvent( QMouseEvent *event );
-    virtual void mouseReleaseEvent( QMouseEvent *event );
+    virtual void        mousePressEvent( QMouseEvent * event );
+    virtual void        mouseMoveEvent( QMouseEvent * event );
+    virtual void        mouseReleaseEvent( QMouseEvent * event );
 
     /*
-    virtual void keyPressEvent( QKeyEvent *event );
-    virtual void keyReleaseEvent( QKeyEvent * event );
+    virtual void        keyPressEvent( QKeyEvent *event );
+    virtual void        keyReleaseEvent( QKeyEvent * event );
     */
 
-    virtual void closeEvent( QCloseEvent *event );
+    virtual void        closeEvent( QCloseEvent * event );
 
-    virtual void timerEvent( QTimerEvent *event );
+    virtual void        timerEvent( QTimerEvent * event );
 private:
-    void loadSettings();
-    bool isLink( const QString& str );
+    void                loadSettings();
+    bool                isLink( const QString & str );
 public slots:
-    void slotNewMessage( QChatMessage *message );
-    void onNewStatistic( QChatStatistic *statistic );
-    void saveSettings();
-    void showSettings();
+    void                slotNewMessage( ChatMessage message );
+    void                onNewStatistic( QChatStatistic * statistic );
+    void                saveSettings();
+    void                showSettings();
 
-    void loadFlagsAndAttributes();
+    void                loadFlagsAndAttributes();
 
-    void changeStyle( const QString& styleName );
+    void                changeStyle( const QString & styleName );
 
-    void changeShowSystemMessagesState();
-    void changeShowImagesState();
-    void changeUseServerState();
-    void changeSaveToFileState();
-    void changeSaveMessagesToLogState();
+    void                changeShowSystemMessagesState();
+    void                changeShowImagesState();
+    void                changeUseServerState();
+    void                changeSaveToFileState();
+    void                changeSaveMessagesToLogState();
 
 private slots:
-    void changeStyle();
-    void changeOpacity();
-    void onLinkClicked( const QUrl &url );
+    void                changeStyle();
+    void                changeOpacity();
+    void                onLinkClicked( const QUrl & url );
 
-    void showPollSettings();
+    void                showPollSettings();
 signals:
-    void closeWindow();
+    void                closeWindow();
 private:
-    QAcesChat *acesChat_;
-    QCyberGameChat *cybergameChat_;
-    QFunStreamChat *funstreamChat_;
-    QGamersTvChat *gamerstvChat_;
-    QGipsyTeamChat *gipsyteamChat_;
-    QGoodGameChat *goodgameChat_;
-    QHitBoxChat *hitboxChat_;
-    QLivecodingChat * livecodingChat_;
-    QReallTvChat *realltvChat_;
-    QSc2tvChat *sc2tvChat_;
-    QStreamBoxChat *streamboxChat_;
-    QTwitchChat *twitchChat_;    
-    QYoutubeChat * youtubeChat_;
+    QAcesChat *         acesChat_;
+    QCyberGameChat *    cybergameChat_;
+    QFunStreamChat *    funstreamChat_;
+    QGamersTvChat *     gamerstvChat_;
+    QGipsyTeamChat *    gipsyteamChat_;
+    QGoodGameChat *     goodgameChat_;
+    QHitBoxChat *       hitboxChat_;
+    QIgdcChat *         igdcChat_;
+    QLivecodingChat *   livecodingChat_;
+    QReallTvChat *      realltvChat_;
+    QSc2tvChat *        sc2tvChat_;
+    QStreamBoxChat *    streamboxChat_;
+    QTwitchChat *       twitchChat_;
+    QYoutubeChat *      youtubeChat_;
 
+    QChatUpdateServer * chatUpdateServer_;
 
-    QIgdcChat * igdcChat_;
+    QSettings           settings_;
 
-    QChatUpdateServer *chatUpdateServer_;
+    bool                moveState_;
+    QPoint              mouseStartPos_;
 
-    QSettings settings_;
+    int                 updatePictureId_;
+    int                 updatePictureInterval_;
 
-    bool moveState_;
-    QPoint mouseStartPos_;
+    bool                showSystemMessages_;
+    bool                showImages_;
+    bool                saveToFile_;
 
-    int updatePictureId_;
-    int updatePictureInterval_;
-
-
-    bool showSystemMessages_;
-    bool showImages_;
-    bool saveToFile_;
-
-    QMessagesManager messagesManager_;
-    bool saveMessagesToLog_;
+    QMessagesManager    messagesManager_;
+    bool                saveMessagesToLog_;
 };
 
 #endif // QBROCHATVIEW

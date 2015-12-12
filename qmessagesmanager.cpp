@@ -18,12 +18,12 @@ QMessagesManager::~QMessagesManager()
 {
 }
 
-void QMessagesManager::add( const QChatMessage & message )
+void QMessagesManager::add( ChatMessage message )
 {
-    messages_.append( QChatMessage( message ) );
+    messages_.append( ChatMessage( message ) );
 }
 
-const QList< QChatMessage > & QMessagesManager::messages() const
+const QList< ChatMessage > & QMessagesManager::messages() const
 {
     return messages_;
 }
@@ -58,9 +58,9 @@ bool QMessagesManager::save( const QString & logDir ) const
            "</head>\r\n<body>\r\n";
     log.write( data.toUtf8() );
 
-    foreach( const QChatMessage & message, messages_ )
+    foreach( const ChatMessage & message, messages_ )
     {
-        data = "<span class =\"service\">[" + message.service() + "]</span><span class =\"nick\">" + message.nickName() + "</span>: <span class = \"message\">" + message.message() + "</span><br />\r\n";
+        data = "<span class =\"service\">[" + message.serviceName() + "]</span><span class =\"nick\">" + message.nickName() + "</span>: <span class = \"message\">" + message.message() + "</span><br />\r\n";
         log.write( data.toUtf8() );
     }
 
@@ -70,11 +70,3 @@ bool QMessagesManager::save( const QString & logDir ) const
 
     return result;
 }
-
-void QMessagesManager::addMessage( QChatMessage * message )
-{
-    assert( message );
-    if( message )
-        add( *message );
-}
-

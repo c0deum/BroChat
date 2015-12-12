@@ -13,6 +13,8 @@
 
 #include <QTimerEvent>
 
+#include "qchatmessage.h"
+
 #include "settingsconsts.h"
 
 #include "qigdcchat.h"
@@ -50,30 +52,22 @@ QIgdcChat::~QIgdcChat()
 
 void QIgdcChat::connect()
 {
-    if( !isEnabled() || channelName_ == "" )
+    if( !isEnabled() || channelName_.isEmpty() )
         return;
 
-
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( IGDC_SERVICE, IGDC_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( IGDC_SERVICE, IGDC_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
     loadChannelInfo();
 }
 
 void QIgdcChat::disconnect()
 {
-    channelId_ = "";
+    channelId_.clear();
     lastMessageId_ = "0";
-    if( updateMessagesTimerId_ >= 0 )
-    {
-        killTimer( updateMessagesTimerId_ );
-        updateMessagesTimerId_ = -1;
-    }
-    if( reconnectTimerId_ >= 0 )
-    {
-        killTimer( reconnectTimerId_ );
-        reconnectTimerId_ = -1;
-    }
+
+    resetTimer( updateMessagesTimerId_ );
+    resetTimer( reconnectTimerId_ );
 
     emit newStatistic( new QChatStatistic( IGDC_SERVICE, "", this ) );
 }
@@ -83,9 +77,9 @@ void QIgdcChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( IGDC_SERVICE, IGDC_USER, "Reconnecting...", "", this ) );
+            emit newMessage( ChatMessage( IGDC_SERVICE, IGDC_USER, "Reconnecting...", "", this ) );
     connect();
 }
 
@@ -112,7 +106,7 @@ void QIgdcChat::loadSettings()
 
     channelName_ = settings.value( IGDC_CHANNEL_SETTING_PATH, DEFAULT_IGDC_CHANNEL_NAME ).toString();
 
-    if( QChatMessage::isLink( channelName_ ) )
+    if( ChatMessage::isLink( channelName_ ) )
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "=" ) - 1 );
 
     enable( settings.value( IGDC_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -151,21 +145,19 @@ void QIgdcChat::onChannelInfoLoaded()
         qDebug() << "channelId_ = " << channelId_;
 
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( IGDC_SERVICE, IGDC_USER, "Connected to " + channelName_ + "...", "", this ) );
+            emit newMessage( ChatMessage( IGDC_SERVICE, IGDC_USER, "Connected to " + channelName_ + "...", "", this ) );
 
-        if( updateMessagesTimerId_ == -1 )
-            updateMessagesTimerId_ = startTimer( updateMessagesInterval_ );
+        startUniqueTimer( updateMessagesTimerId_, updateMessagesInterval_ );
 
         getStatistic();
 
-        if( statisticTimerId_ == -1 )
-            statisticTimerId_ = startTimer( statisticInterval_ );
+        startUniqueTimer( statisticTimerId_, statisticInterval_ );
 
     }
     else
     {
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( IGDC_SERVICE, IGDC_USER, "Can not connect to " + channelName_ + "...Can not find channel id...", "", this ) );
+            emit newMessage( ChatMessage( IGDC_SERVICE, IGDC_USER, "Can not connect to " + channelName_ + "...Can not find channel id...", "", this ) );
     }
 
 
@@ -177,10 +169,9 @@ void QIgdcChat::onChannelInfoLoadError()
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( IGDC_SERVICE, IGDC_USER, "Can not connect to " + channelName_ + "..." + reply->errorString() + "...", "", this ) );
+        emit newMessage( ChatMessage( IGDC_SERVICE, IGDC_USER, "Can not connect to " + channelName_ + "..." + reply->errorString() + "...", "", this ) );
 
-    if( reconnectTimerId_ == -1 )
-        reconnectTimerId_ = startTimer( reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 
     reply->deleteLater();
 }
@@ -208,7 +199,7 @@ void QIgdcChat::onMessagesLoaded()
     QJsonParseError parseError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -226,7 +217,7 @@ void QIgdcChat::onMessagesLoaded()
             qSort( jsonMessagesList.begin(), jsonMessagesList.end(), igdcCmpJsonObject );
 
 
-            if( lastMessageId_ != "0" )
+            if( "0" != lastMessageId_ )
             {
                 int messageIndex = 0;
                 while( messageIndex < jsonMessagesList.size() && jsonMessagesList[ messageIndex ][ "id" ].toString() <= lastMessageId_ )
@@ -241,38 +232,8 @@ void QIgdcChat::onMessagesLoaded()
 
                     QString nickName = jsonUserInfo[ "name" ].toString();
 
-                    bool blackListUser = blackList().contains( nickName );
-                    bool supportersListUser = supportersList().contains( nickName );
+                    emit newMessage( ChatMessage( IGDC_SERVICE, nickName, message, "", this ) );
 
-                    if( !isRemoveBlackListUsers() || !blackListUser )
-                    {
-                        if( blackListUser )
-                        {
-                            //TODO: игнорируемые
-                            emit newMessage( new QChatMessage( IGDC_SERVICE, nickName, message, "ignore", this ) );
-                        }
-                        else
-                        {
-                            if( supportersListUser )
-                            {
-                                //TODO: саппортеры
-                                emit newMessage( new QChatMessage( IGDC_SERVICE, nickName, message, "supporter", this ) );
-                            }
-                            else
-                            {
-                                if( isContainsAliases( message ) )
-                                {
-                                    //TODO: сообщение к стримеру
-                                    emit newMessage( new QChatMessage( IGDC_SERVICE, nickName, message, "alias", this ) );
-                                }
-                                else
-                                {
-                                    //TODO: простое сообщение
-                                    emit newMessage( new QChatMessage( IGDC_SERVICE, nickName, message, "", this ) );
-                                }
-                            }
-                        }
-                    }
                     ++messageIndex;
                 }
             }

@@ -6,6 +6,7 @@
 
 #include <QTimerEvent>
 
+#include "qchatmessage.h"
 
 #include "settingsconsts.h"
 
@@ -30,7 +31,7 @@ struct MessageData
     int messageId;
 };
 
-QAcesChat::QAcesChat( QObject *parent )
+QAcesChat::QAcesChat( QObject * parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
 , channelName_()
@@ -50,33 +51,24 @@ QAcesChat::~QAcesChat()
 
 void QAcesChat::connect()
 {
-    if( !isEnabled() || channelName_ == "" )
+    if( !isEnabled() || channelName_.isEmpty() )
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( ACES_SERVICE, ACES_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
     getChannelInfo();
-
-    //getLastMessage();
 }
 
 void QAcesChat::disconnect()
 {
-    channelName_ = "";
-    channelId_ = "";
+    channelName_.clear();
+    channelId_.clear();
+
     lastMessageId_ = -1;
 
-    if( updateChatInfoTimerId_ >= 0 )
-    {
-        killTimer( updateChatInfoTimerId_ );
-        updateChatInfoTimerId_ = -1;
-    }
-    if( reconnectTimerId_ >= 0 )
-    {
-        killTimer( reconnectTimerId_ );
-        reconnectTimerId_ = -1;
-    }
+    resetTimer( updateChatInfoTimerId_ );
+    resetTimer( reconnectTimerId_ );
 }
 
 void QAcesChat::reconnect()
@@ -84,19 +76,15 @@ void QAcesChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && channelName_ != "" && oldChannelName != ""  )
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty()  )
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( ACES_SERVICE, ACES_USER, "Reconnecting...", "", this ) );
+            emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Reconnecting...", "", this ) );
     connect();
 }
 
 void QAcesChat::getChannelInfo()
 {
-    //QString requestLink = QChatMessage::isLink( channelName_ )? channelName_ : DEFAULT_ACES_CHANNEL_INFO_PREFIX + channelName_ + "/";
-
     QNetworkRequest request( QUrl( DEFAULT_ACES_CHANNEL_INFO_PREFIX + channelName_ + "/" ) );
-
-    //QNetworkRequest request( QUrl( requestLink + "" ) );
 
     QNetworkReply * reply = nam_->get( request );
 
@@ -124,7 +112,7 @@ void QAcesChat::onChannelInfoLoaded()
     else
     {
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( ACES_SERVICE, ACES_USER, "Can not find channel_id for channel " + channelName_ + "...", "", this ) );
+            emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Can not find channel_id for channel " + channelName_ + "...", "", this ) );
     }
 
     reply->deleteLater();
@@ -148,19 +136,19 @@ void QAcesChat::onLastMessageLoaded()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
-
     QString response = reply->readAll();
 
     const QString ID_PREFIX = "data-id=\"";
     int startIdPos = response.indexOf( ID_PREFIX );
 
-    if( startIdPos == -1 )
+    if( -1 == startIdPos )
     {
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( ACES_SERVICE, ACES_USER, "Can not read last message from " + channelName_ + "..." + reply->errorString(), "", this ) );
-        if( reconnectTimerId_ == -1 )
-            reconnectTimerId_ = startTimer( reconnectInterval_ );
-        reply->deleteLater();
+            emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Can not read last message from " + channelName_ + "..." + reply->errorString(), "", this ) );
+
+        startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+
+        reply->deleteLater();        
         return;
     }
 
@@ -169,21 +157,23 @@ void QAcesChat::onLastMessageLoaded()
 
     lastMessageId_ = ( response.mid( startIdPos, endIdPos - startIdPos ) ).toInt();
 
-    if( updateChatInfoTimerId_ == -1 )
-        updateChatInfoTimerId_ = startTimer( updateChatInfoInterval_ );
+    startUniqueTimer( updateChatInfoTimerId_, updateChatInfoInterval_ );
+
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( ACES_SERVICE, ACES_USER, "Connected to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Connected to " + channelName_ + "...", "", this ) );
 
     reply->deleteLater();
 }
 
 void QAcesChat::onLastMessageLoadError()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( ACES_SERVICE, ACES_USER, "Can not connect to " + channelName_ + "..." + reply->errorString(), "", this ) );
-    if( reconnectTimerId_ == -1 )
-        reconnectTimerId_ = startTimer( reconnectInterval_ );
+        emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Can not connect to " + channelName_ + "..." + reply->errorString(), "", this ) );
+
+    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+
     reply->deleteLater();
 }
 
@@ -229,7 +219,7 @@ void QAcesChat::onChatInfoLoaded()
 
         int startNickNamePos = response.indexOf( NICKNAME_PREPREFIX, endIdPos );
 
-        if( startNickNamePos == -1 )
+        if( -1 == startNickNamePos )
         {
             reply->deleteLater();
             return;
@@ -239,7 +229,7 @@ void QAcesChat::onChatInfoLoaded()
 
         startNickNamePos = response.indexOf( NICKNAME_PREFIX, startNickNamePos );
 
-        if( startNickNamePos == -1 )
+        if( -1 == startNickNamePos )
         {
             reply->deleteLater();
             return;
@@ -250,7 +240,7 @@ void QAcesChat::onChatInfoLoaded()
 
         int endNickNamePos = response.indexOf( NICKNAME_POSTFIX, startNickNamePos );
 
-        if( endNickNamePos == -1 )
+        if( -1 == endNickNamePos )
         {
             reply->deleteLater();
             return;
@@ -260,7 +250,7 @@ void QAcesChat::onChatInfoLoaded()
 
         int startMessagePos = response.indexOf( MESSAGE_PREPREFIX, endNickNamePos );
 
-        if( startMessagePos == -1 )
+        if( -1 == startMessagePos )
         {
             reply->deleteLater();
             return;
@@ -270,7 +260,7 @@ void QAcesChat::onChatInfoLoaded()
 
         startMessagePos = response.indexOf( MESSAGE_PREFIX, startMessagePos );
 
-        if( startMessagePos == -1 )
+        if( -1 == startMessagePos )
         {
             reply->deleteLater();
             return;
@@ -280,7 +270,7 @@ void QAcesChat::onChatInfoLoaded()
 
         int endMessagePos = response.indexOf( MESSAGE_POSTFIX, startMessagePos );
 
-        if( endMessagePos == -1 )
+        if( -1 == endMessagePos )
         {
             reply->deleteLater();
             return;
@@ -293,7 +283,7 @@ void QAcesChat::onChatInfoLoaded()
 
             const QString SPAN = "<span style=";
 
-            if( message.left( SPAN.length() ) == SPAN )
+            if( SPAN == message.left( SPAN.length() ) )
             {
                 message = message.right( message.length() - message.indexOf( "\">" ) - 2 );
                 message.replace( "</span>", "" );
@@ -331,39 +321,7 @@ void QAcesChat::onChatInfoLoaded()
         QString nickName = messagesList[ i ].nickName;
         QString message = messagesList[ i ].message;
 
-        bool blackListUser = blackList().contains( nickName );
-        bool supportersListUser = supportersList().contains( nickName );
-
-        bool containsAliases = isContainsAliases( message );
-
-        if( !isRemoveBlackListUsers() || !blackListUser )
-        {
-            if( blackListUser )
-            {
-                //TODO: список игнорируемых
-                emit newMessage( new QChatMessage( ACES_SERVICE, nickName, message, "ignore", this ) );
-            }
-            else
-            {
-                if( supportersListUser )
-                {
-                    //TODO: список саппортеров
-                    emit newMessage( new QChatMessage( ACES_SERVICE, nickName, message, "supporter", this ) );
-                }
-                else
-                {
-                    if( containsAliases )
-                    {
-                        //TODO: обращение к стримеру
-                        emit newMessage( new QChatMessage( ACES_SERVICE, nickName, message, "alias", this ) );
-                    }
-                    else
-                    {
-                        emit newMessage( new QChatMessage( ACES_SERVICE, nickName, message, "", this ) );
-                    }
-                }
-            }
-        }
+        emit newMessage( ChatMessage( ACES_SERVICE, nickName, message, "", this ) );
     }
 
     if( messagesList.size() > 0 )
@@ -378,7 +336,7 @@ void QAcesChat::onChatInfoLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( ACES_SERVICE, ACES_USER, "Can not read channel messages..." + reply->errorString(), "", this ) );
+        emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Can not read channel messages..." + reply->errorString(), "", this ) );
 
     reply->deleteLater();
 }
@@ -406,7 +364,7 @@ void QAcesChat::loadSettings()
     QSettings settings;
     channelName_ = settings.value( ACES_CHANNEL_SETTING_PATH, DEFAULT_ACES_CHANNEL_NAME ).toString();
 
-    if( QChatMessage::isLink( channelName_ ) )
+    if( ChatMessage::isLink( channelName_ ) )
     {
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/", -2 ) - 1 );
         channelName_ = channelName_.left( channelName_.length() - 1 );

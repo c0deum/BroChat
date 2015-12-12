@@ -15,6 +15,8 @@
 
 #include <QTimerEvent>
 
+#include "qchatmessage.h"
+
 #include "settingsconsts.h"
 
 #include "qstreamboxchat.h"
@@ -56,11 +58,11 @@ QStreamBoxChat::~QStreamBoxChat()
 
 void QStreamBoxChat::connect()
 {
-    if( !isEnabled() || channelName_ == "" )
+    if( !isEnabled() || channelName_.isEmpty() )
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
     socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
     //socket_-
@@ -81,22 +83,10 @@ void QStreamBoxChat::connect()
 
 
 void QStreamBoxChat::disconnect()
-{
-    if( reconnectTimerId_ >= 0 )
-    {
-        killTimer( reconnectTimerId_ );
-        reconnectTimerId_ = -1;
-    }
-    if( statisticTimerId_ >= 0 )
-    {
-        killTimer( statisticTimerId_ );
-        statisticTimerId_ = -1;
-    }
-    if( saveConnectionTimerId_ >= 0 )
-    {
-        killTimer( saveConnectionTimerId_ );
-        saveConnectionTimerId_ = -1;
-    }
+{    
+    resetTimer( reconnectTimerId_ );
+    resetTimer( statisticTimerId_ );
+    resetTimer( saveConnectionTimerId_ );
 
     if( socket_ )
     {
@@ -113,9 +103,9 @@ void QStreamBoxChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, "Reconnecting...", "", this  ) );
+            emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, "Reconnecting...", "", this  ) );
     connect();
 }
 
@@ -126,15 +116,12 @@ void QStreamBoxChat::onWebSocketConnected()
     socket_->sendTextMessage( message );
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, "Connected to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, "Connected to " + channelName_ + "...", "", this ) );
 
     getStatistic();
 
-    if( statisticTimerId_ == -1 )
-        statisticTimerId_ = startTimer( statisticInterval_ );
-
-    if( saveConnectionTimerId_ == -1 )
-        saveConnectionTimerId_ = startTimer( saveConnectionInterval_ );
+    startUniqueTimer( statisticTimerId_, statisticInterval_ );
+    startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
 }
 
 void QStreamBoxChat::onWebSocketError()
@@ -144,10 +131,9 @@ void QStreamBoxChat::onWebSocketError()
     errString.replace( "\r\n", "" );
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, errString , "", this ) );
+        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, errString , "", this ) );
 
-    if( reconnectTimerId_ == -1 )
-        reconnectTimerId_ = startTimer( reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 }
 
 void QStreamBoxChat::onTextMessageReceived( const QString& message )
@@ -158,7 +144,7 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
     QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( message.toStdString().c_str() ), &parseError );
 
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -166,7 +152,7 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
 
             QString event = jsonObj[ "event" ].toString();
 
-            if( event == "message" )
+            if( "message" == event )
             {
                 QString dataString = jsonObj[ "data" ].toString();
                 //dataString.replace( "\\\"", "\'" );
@@ -175,7 +161,7 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
 
                 QJsonDocument jsonDocData = QJsonDocument::fromJson( dataString.toStdString().c_str(), &parseError );
 
-                if( parseError.error == QJsonParseError::NoError )
+                if( QJsonParseError::NoError == parseError.error )
                 {
 
                     if( jsonDocData.isObject() )
@@ -199,47 +185,15 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
 
                         qDebug() << message;
 
+                        emit newMessage( ChatMessage( STREAMBOX_SERVICE, nickName, message, "", this ) );
+
                         //message.replace( "/img/smiles/", DEFAULT_STREAMBOX_SMILE_DIR_PREFIX )  ;
 
                         //int role = jsonData[ "role" ].toInt();
-
-                        bool blackListUser = blackList().contains( nickName );
-                        bool supportersListUser = supportersList().contains( nickName );
-
-                        bool containsAliases = isContainsAliases( message );
-
-                        if( !isRemoveBlackListUsers() || !blackListUser )
-                        {
-                            if( blackListUser )
-                            {
-                                //TODO: список игнорируемых
-                                emit newMessage( new QChatMessage( STREAMBOX_SERVICE, nickName, message, "ignore", this ) );
-                            }
-                            else
-                            {
-                                if( supportersListUser )
-                                {
-                                    //TODO: список саппортеров
-                                    emit newMessage( new QChatMessage( STREAMBOX_SERVICE, nickName, message, "supporter", this ) );
-                                }
-                                else
-                                {
-                                    if( containsAliases )
-                                    {
-                                        //TODO: обращение к стримеру
-                                        emit newMessage( new QChatMessage( STREAMBOX_SERVICE, nickName, message, "alias", this ) );
-                                    }
-                                    else
-                                    {
-                                        emit newMessage( new QChatMessage( STREAMBOX_SERVICE, nickName, message, "", this ) );
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }
-            else if( event == "women" )
+            else if( "women" == event )
             {
 
                 static QMap< QString, QString > actionsMap;
@@ -264,7 +218,7 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
                 if( actionsMap.contains( action ) )
                 {
                     //if( isShowSystemMessages() )
-                    emit newMessage( new QChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, womenName + " " + actionsMap[ action ] + " " + userName, "", this ) );
+                    emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, womenName + " " + actionsMap[ action ] + " " + userName, "", this ) );
                 }
 
             }
@@ -279,14 +233,14 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
                 <span ng-if="message.role == 5" >{{message.moderator}} сделал {{message.user}} <b>Девушкой</b></span>
             </div>
 */
-            else if( event == "new_role" )
+            else if( "new_role" == event )
             {
                 QString dataString = jsonObj[ "data" ].toString();
                 dataString.replace( "\\", "" );
 
                 QJsonDocument jsonDocData = QJsonDocument::fromJson( dataString.toStdString().c_str(), &parseError );
 
-                if( parseError.error == QJsonParseError::NoError )
+                if( QJsonParseError::NoError == parseError.error )
                 {
                     if( jsonDocData.isObject() )
                     {
@@ -318,7 +272,7 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
                         if( role >= 0 && role < roleActionsMap.size() - 1 )
                         {
                             //if( isShowSystemMessages() )
-                            emit newMessage( new QChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER,
+                            emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER,
                                                                moderatorName + " " +
                                                                roleActionsMap[ role ] + " " +
                                                                userName + newRoleMap[ role ], "", this ) );
@@ -360,7 +314,7 @@ void QStreamBoxChat::onStatisticLoaded()
     QJsonParseError parseError;
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -388,7 +342,7 @@ void QStreamBoxChat::onPong( quint64 elapsedTime, const QByteArray &payload )
 {
     /*
     qDebug() << "Popongui";
-    emit newMessage( new QChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, QString( payload ) + " " + QString::number( elapsedTime ), "", this ) );
+    emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, QString( payload ) + " " + QString::number( elapsedTime ), "", this ) );
     qDebug() << elapsedTime;
     qDebug() << payload;
     */
@@ -521,7 +475,7 @@ void QStreamBoxChat::loadSettings()
     QSettings settings;
     channelName_ = settings.value( STREAMBOX_CHANNEL_SETTING_PATH, DEFAULT_STREAMBOX_CHANNEL_NAME ).toString();
 
-    if( QChatMessage::isLink( channelName_ ) )
+    if( ChatMessage::isLink( channelName_ ) )
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
 
     enable( settings.value( STREAMBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );

@@ -18,6 +18,8 @@
 #include <QDir>
 #include <QStringList>
 
+#include "qchatmessage.h"
+
 #include "settingsconsts.h"
 
 #include "qhitboxchat.h"
@@ -58,14 +60,14 @@ QHitBoxChat::~QHitBoxChat()
 
 void QHitBoxChat::connect()
 {
-    if( !isEnabled() || channelName_ == "" )
+    if( !isEnabled() || channelName_.isEmpty() )
         return;
 
     smiles_.clear();
     getSmiles();
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( HITBOX_SERVICE, HITBOX_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
     servers_.clear();
     getServersList();
@@ -74,22 +76,9 @@ void QHitBoxChat::connect()
 
 void QHitBoxChat::disconnect()
 {
-    if( reconnectTimerId_ >= 0 )
-    {
-        killTimer( reconnectTimerId_ );
-        reconnectTimerId_ = -1;
-    }
-    if( statisticTimerId_ >= 0 )
-    {
-        killTimer( statisticTimerId_ );
-        statisticTimerId_ = -1;
-    }
-
-    if( saveConnectionTimerId_ >= 0 )
-    {
-        killTimer( saveConnectionTimerId_ );
-        saveConnectionTimerId_ = -1;
-    }
+    resetTimer( reconnectTimerId_ );
+    resetTimer( statisticTimerId_ );
+    resetTimer( saveConnectionTimerId_ );
 
     if( socket_ )
     {
@@ -106,9 +95,9 @@ void QHitBoxChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( HITBOX_SERVICE, HITBOX_USER, "Reconnecting...", "", this ) );
+            emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Reconnecting...", "", this ) );
     connect();
 }
 
@@ -128,16 +117,15 @@ void QHitBoxChat::onServersListLoaded()
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(),&parseError ) ;
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error  )
     {
         if( jsonDoc.isArray() )
         {
             QJsonArray jsonArray = jsonDoc.array();
 
-            if( jsonArray.size() == 0 )
-            {
-                if( reconnectTimerId_ == -1 )
-                    reconnectTimerId_ = startTimer( reconnectInterval_ );
+            if( jsonArray.isEmpty() )
+            {                
+                startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
                 return;
             }
 
@@ -174,10 +162,9 @@ void QHitBoxChat::onServersListLoadError()
     //qDebug() << reply->readAll();
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( HITBOX_SERVICE, HITBOX_USER, "Can not load servers list..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
+        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Can not load servers list..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
 
-    if( reconnectTimerId_ == -1 )
-        reconnectTimerId_ = startTimer( reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 
     reply->deleteLater();
 }
@@ -213,8 +200,7 @@ void QHitBoxChat::onSocketHashLoaded()
     //test ping-pong support
     QObject::connect( socket_, SIGNAL( pong( quint64,QByteArray ) ), this, SLOT( onPong( quint64,QByteArray ) ) );
 
-    if( saveConnectionTimerId_ == -1 )
-        saveConnectionTimerId_ = startTimer( saveConnectionInterval_ );
+    startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
 
     reply->deleteLater();
 }
@@ -227,10 +213,9 @@ void QHitBoxChat::onSocketHashLoadError()
     //qDebug() << reply->readAll();
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( HITBOX_SERVICE, HITBOX_USER, "Can not load websocket hash..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
+        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Can not load websocket hash..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
 
-    if( reconnectTimerId_ == -1 )
-        reconnectTimerId_ = startTimer( reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 
     reply->deleteLater();
 }
@@ -253,7 +238,7 @@ void QHitBoxChat::onSmilesLoaded()
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isArray() )
         {
@@ -289,7 +274,7 @@ void QHitBoxChat::onSmilesLoaded()
     }
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( HITBOX_SERVICE, HITBOX_USER, "Smiles ready...", "", this ) );
+        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Smiles ready...", "", this ) );
 
     reply->deleteLater();
 
@@ -302,7 +287,7 @@ void QHitBoxChat::onSmilesLoadError()
     //qDebug() << reply->readAll();
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( HITBOX_SERVICE, HITBOX_USER, "Can not load styles..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
+        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Can not load styles..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
 
     reply->deleteLater();
 }
@@ -325,7 +310,7 @@ void QHitBoxChat::onStatisticLoaded()
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -333,7 +318,7 @@ void QHitBoxChat::onStatisticLoaded()
 
             QString statistic = jsonObject[ "media_views" ].toString();
 
-            if( jsonObject[ "media_is_live" ].toString() == "0" )
+            if( "0" == jsonObject[ "media_is_live" ].toString() )
                 statistic = "0";
 
             emit newStatistic( new QChatStatistic( HITBOX_SERVICE, statistic ) );
@@ -356,17 +341,17 @@ void QHitBoxChat::onTextMessageReceived( const QString &message )
 {
     //qDebug() << message;
 
-    if( message == "1::" )
+    if( "1::" == message )
     {
         //5:::{"name":"message","args":[{"method":"joinChannel","params":{"channel":"perfectbalance","name":"UnknownSoldier","token":null,"isAdmin":false}}]}
         QString response = "5:::{\"name\":\"message\",\"args\":[{\"method\":\"joinChannel\",\"params\":{\"channel\":\"" + channelName_ + "\",\"name\":\"UnknownSoldier\",\"token\":null,\"isAdmin\":false}}]}";
         socket_->sendTextMessage( response );
     }
-    else if( message == "2::" )
+    else if( "2::" == message )
     {
         socket_->sendTextMessage( "2::" );
     }
-    else if( message.left( 4 ) == "5:::" )
+    else if( "5:::" == message.left( 4 ) )
     {
         QString jsonData = message.right( message.size() - 4 );
         //qDebug() << jsonData;
@@ -375,13 +360,13 @@ void QHitBoxChat::onTextMessageReceived( const QString &message )
 
         QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( jsonData.toStdString().c_str() ), &parseError );
 
-        if( parseError.error == QJsonParseError::NoError )
+        if( QJsonParseError::NoError == parseError.error )
         {
             if( jsonDoc.isObject() )
             {
                 QJsonObject jsonObject = jsonDoc.object();
 
-                if( jsonObject[ "name" ].toString() == "message" )
+                if( "message" == jsonObject[ "name" ].toString() )
                 {
                     QJsonArray jsonArgs = jsonObject[ "args" ].toArray();
 
@@ -398,13 +383,13 @@ void QHitBoxChat::onTextMessageReceived( const QString &message )
                             QJsonDocument argsDoc = QJsonDocument::fromJson( QByteArray( argsString.toStdString().c_str() ) , &parseError );
 
 
-                            if( parseError.error == QJsonParseError::NoError  )
+                            if( QJsonParseError::NoError == parseError.error )
                             {
                                 if( argsDoc.isObject() )
                                 {
                                     QJsonObject argsObj = argsDoc.object();
 
-                                    if( argsObj[ "method" ].toString() == "chatMsg" )
+                                    if( "chatMsg" == argsObj[ "method" ].toString()  )
                                     {
                                         QJsonObject jsonParamsObj = argsObj[ "params" ].toObject();
 
@@ -418,8 +403,8 @@ void QHitBoxChat::onTextMessageReceived( const QString &message )
 
                                         message = insertSmiles( message );
 
-                                        bool blackListUser = blackList().contains( nickName );
-                                        bool supportersListUser = supportersList().contains( nickName );
+                                        //bool blackListUser = blackList().contains( nickName );
+                                        //bool supportersListUser = supportersList().contains( nickName );
 
                                         if( originalColors_ )
                                         {
@@ -428,44 +413,16 @@ void QHitBoxChat::onTextMessageReceived( const QString &message )
                                             nickName = "<span style=\"color:" + color + "\">" + nickName + "</span>";
                                         }
 
+                                        emit newMessage( ChatMessage( HITBOX_SERVICE, nickName, message, "", this ) );
 
-                                        if( !isRemoveBlackListUsers() || !blackListUser )
-                                        {
-                                            if( blackListUser )
-                                            {
-                                                //TODO: игнорируемые
-                                                emit newMessage( new QChatMessage( HITBOX_SERVICE, nickName, message, "ignore", this ) );
-                                            }
-                                            else
-                                            {
-                                                if( supportersListUser )
-                                                {
-                                                    //TODO: саппортеры
-                                                    emit newMessage( new QChatMessage( HITBOX_SERVICE, nickName, message, "supporter", this ) );
-                                                }
-                                                else
-                                                {
-                                                    if( isContainsAliases( message ) )
-                                                    {
-                                                        //TODO: сообщение к стримеру
-                                                        emit newMessage( new QChatMessage( HITBOX_SERVICE, nickName, message, "alias", this ) );
-                                                    }
-                                                    else
-                                                    {
-                                                        //TODO: простое сообщение
-                                                        emit newMessage( new QChatMessage( HITBOX_SERVICE, nickName, message, "", this ) );
-                                                    }
-                                                }
-                                            }
-                                        }
                                     }
-                                    else if( argsObj[ "method" ].toString() == "loginMsg" )
+                                    else if( "loginMsg" == argsObj[ "method" ].toString() )
                                     {
                                         if( isShowSystemMessages() )
-                                            emit newMessage( new QChatMessage( HITBOX_SERVICE, HITBOX_USER, "Connected to " + channelName_ + "...", "", this ) );
+                                            emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Connected to " + channelName_ + "...", "", this ) );
                                         getStatistic();
-                                        if( statisticTimerId_ )
-                                            statisticTimerId_ = startTimer( statisticInterval_ );
+
+                                        startUniqueTimer( statisticTimerId_, statisticInterval_ );
                                     }
                                 }
                             }
@@ -480,9 +437,9 @@ void QHitBoxChat::onTextMessageReceived( const QString &message )
 void QHitBoxChat::onWebSocketError()
 {
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( HITBOX_SERVICE, HITBOX_USER, "Web Socket Error ..." + socket_->errorString(), "", this ) );
-    if( reconnectTimerId_ == -1 )
-        reconnectTimerId_ = startTimer( reconnectInterval_ );
+        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Web Socket Error ..." + socket_->errorString(), "", this ) );    
+
+    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
     //qDebug() << socket_->errorString();
 }
 
@@ -502,7 +459,7 @@ QString QHitBoxChat::insertSmiles( const QString &message )
 
     for( int i = 0; i < tokens.size(); ++i )
     {
-        if ( !QChatMessage::isLink( tokens.at( i ) ) )//не ссылка
+        if ( !ChatMessage::isLink( tokens.at( i ) ) )//не ссылка
         {   
             //qDebug() << tokens[ i ];
             foreach( const QChatSmile &smile, smiles_ )
@@ -568,7 +525,7 @@ void QHitBoxChat::loadSettings()
     QSettings settings;
     channelName_ = settings.value( HITBOX_CHANNEL_SETTING_PATH, DEFAULT_HITBOX_CHANNEL_NAME ).toString();
 
-    if( QChatMessage::isLink( channelName_ ) )
+    if( ChatMessage::isLink( channelName_ ) )
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
 
     enable( settings.value( HITBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );

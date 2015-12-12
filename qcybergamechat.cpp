@@ -17,6 +17,8 @@
 #include <QDir>
 #include <QFileInfo>
 
+#include "qchatmessage.h"
+
 #include "settingsconsts.h"
 
 #include "qcybergamechat.h"
@@ -59,14 +61,14 @@ QCyberGameChat::~QCyberGameChat()
 
 void QCyberGameChat::connect()
 {
-    if( !isEnabled() || channelName_ == "" )
+    if( !isEnabled() || channelName_.isEmpty() )
         return;
 
     smiles_.clear();
     getSmiles();
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
     socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
 
@@ -82,21 +84,9 @@ void QCyberGameChat::connect()
 
 void QCyberGameChat::disconnect()
 {
-    if( saveConnectionTimerId_ >= 0 )
-    {
-        killTimer( saveConnectionTimerId_ );
-        saveConnectionTimerId_ = -1;
-    }
-    if( reconnectTimerId_ >= 0 )
-    {
-        killTimer( reconnectTimerId_ );
-        reconnectTimerId_ = -1;
-    }
-    if( statisticTimerId_ >= 0 )
-    {
-        killTimer( statisticTimerId_ );
-        statisticTimerId_ = -1;
-    }
+    resetTimer( saveConnectionTimerId_ );
+    resetTimer( reconnectTimerId_ );
+    resetTimer( statisticTimerId_ );
 
     lastUpd_ = 0;
 
@@ -115,9 +105,9 @@ void QCyberGameChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, "Reconnecting...", "", this ) );
+            emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, "Reconnecting...", "", this ) );
     connect();
 }
 
@@ -129,12 +119,10 @@ void QCyberGameChat::onWebSocketConnected()
 
 void QCyberGameChat::onWebSocketError()
 {
-    //qDebug() << socket_->error() << socket_->errorString() << socket_->state() << error;
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, "Web socket error..." + socket_->errorString(), "", this ) );
-    //reconnect();
-    if( reconnectTimerId_ == -1 )
-        reconnectTimerId_ = startTimer( reconnectInterval_ );
+        emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, "Web socket error..." + socket_->errorString(), "", this ) );
+
+    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 }
 
 void QCyberGameChat::onTextMessageRecieved( const QString &message )
@@ -142,7 +130,7 @@ void QCyberGameChat::onTextMessageRecieved( const QString &message )
     QJsonParseError parseError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( message.toStdString().c_str() ), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError  == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -151,27 +139,25 @@ void QCyberGameChat::onTextMessageRecieved( const QString &message )
             QString command = jsonObj[ "command" ].toString();
             QString answer;
             //a["{\"command\":\"changeWindow\",\"message\":{\"window\":\"chatPage\"}}"]
-            if( command == "changeWindow" )
+            if( "changeWindow" == command )
             {
                 answer = "{\"command\":\"getHistory\",\"message\":\"#" + channelName_ +"\"}";
                 socket_->sendTextMessage( answer );
 
                 if( isShowSystemMessages() )
-                    emit newMessage( new QChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, "Connected to " + channelName_ + "...", "", this ) );
+                    emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, "Connected to " + channelName_ + "...", "", this ) );
 
-                getStatistic();
-                if( statisticTimerId_ == -1 )
-                    statisticTimerId_ = startTimer( statisticInterval_ );
+                getStatistic();                                
+                startUniqueTimer( statisticTimerId_, statisticInterval_ );
             }
-            else if( command == "getHistory" )
+            else if( "getHistory" == command  )
             {
                 if( lastUpd_ )
                 {
-                }
-                if( saveConnectionTimerId_ == -1 )
-                    saveConnectionTimerId_ = startTimer( saveConnectionInterval_ );
+                }               
+                startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
             }
-            else if( command == "chatMessage" )
+            else if( "chatMessage" == command )
             {
              //"{"command":"chatMessage","message":"{\"when\":1416566861280,\"from\":\"c0deum\",\"text\":\"test\"}"}"
                 QString chatMessage = jsonObj[ "message" ].toString();
@@ -179,7 +165,7 @@ void QCyberGameChat::onTextMessageRecieved( const QString &message )
                 //qDebug() << chatMessage;
 
                 jsonDoc = QJsonDocument::fromJson( QByteArray( chatMessage.toStdString().c_str() ), &parseError );
-                if( parseError.error == QJsonParseError::NoError )
+                if( QJsonParseError::NoError == parseError.error  )
                 {
 
                     if( jsonDoc.isObject() )
@@ -187,50 +173,19 @@ void QCyberGameChat::onTextMessageRecieved( const QString &message )
                         QString message = jsonDoc.object()[ "text" ].toString();
 
                         message = insertSmiles( message );
-                        //message = QChatMessage::insertLinks( message );
+                        //message = ChatMessage::insertLinks( message );
 
                         QString nickName = jsonDoc.object()[ "from" ].toString();
 
-                        bool blackListUser = blackList().contains( nickName );
-                        bool supportersListUser = supportersList().contains( nickName );
+                        emit newMessage( ChatMessage( CYBERGAME_SERVICE, nickName, message, "", this ) );
 
-                        bool containsAliases = isContainsAliases( message );
-
-                        if( !isRemoveBlackListUsers() || !blackListUser )
-                        {
-                            if( blackListUser )
-                            {
-                                //TODO: список игнорируемых
-                                emit newMessage( new QChatMessage( CYBERGAME_SERVICE, nickName, message, "ignore", this ) );
-                            }
-                            else
-                            {
-                                if( supportersListUser )
-                                {
-                                    //TODO: список саппортеров
-                                    emit newMessage( new QChatMessage( CYBERGAME_SERVICE, nickName, message, "supporter", this ) );
-                                }
-                                else
-                                {
-                                    if( containsAliases )
-                                    {
-                                        //TODO: обращение к стримеру
-                                        emit newMessage( new QChatMessage( CYBERGAME_SERVICE, nickName, message, "alias", this ) );
-                                    }
-                                    else
-                                    {
-                                        emit newMessage( new QChatMessage( CYBERGAME_SERVICE, nickName, message, "", this ) );
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }
             else
             {
                 //qDebug() << "Unsupported message" << command;
-                 //emit newMessage( new QChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, command, this ) );
+                 //emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, command, this ) );
             }
         }
     }
@@ -283,7 +238,7 @@ void QCyberGameChat::onSmilesLoaded()
                 smiles_.insert( smile.name(), smile );
             }
             if( isShowSystemMessages() )
-                emit newMessage( new QChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, "Smiles ready...", "", this ) );
+                emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, "Smiles ready...", "", this ) );
         }
     }
 
@@ -314,7 +269,7 @@ void QCyberGameChat::onSmilesLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, "Can not load smiles...", "", this ) );
+        emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, "Can not load smiles...", "", this ) );
 
     //TODO: timer for smiles loading
     //getSmiles();
@@ -340,7 +295,7 @@ void QCyberGameChat::onStatisticLoaded()
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -349,7 +304,7 @@ void QCyberGameChat::onStatisticLoaded()
             QString statistic = jsonObj[ "viewers" ].toString();
             //"online":"1"
             emit newStatistic( new QChatStatistic( CYBERGAME_SERVICE, statistic, this ) );
-            //emit newMessage( new QChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, QString( "Viewers: " + statistic ), "", this ) );
+            //emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, QString( "Viewers: " + statistic ), "", this ) );
         }
     }
 
@@ -379,7 +334,7 @@ QString QCyberGameChat::insertSmiles( const QString &message )
 
     for( int i = 0; i < tokens.size(); ++i )
     {
-        if ( !QChatMessage::isLink( tokens.at( i ) ) )//не ссылка
+        if ( !ChatMessage::isLink( tokens.at( i ) ) )//не ссылка
         {
             foreach( const QChatSmile &smile, smiles_ )
             {
@@ -412,7 +367,7 @@ void QCyberGameChat::timerEvent( QTimerEvent *event )
     }
     else if( event->timerId() == saveConnectionTimerId_ )
     {
-        if( socket_ && socket_->isValid() && socket_->state() == QAbstractSocket::ConnectedState )
+        if( socket_ && socket_->isValid() && QAbstractSocket::ConnectedState == socket_->state() )
         {
 
             //QString message = "{\"command\":\"getUsers\",\"message\":\"{\\\"channel\\\":\\\"#" + channelName_ + "\\\"}\"}";
@@ -432,7 +387,7 @@ void QCyberGameChat::loadSettings()
     QSettings settings;
     channelName_ = settings.value( CYBERGAME_CHANNEL_SETTING_PATH, DEFAULT_CYBERGAME_CHANNEL_NAME ).toString();
 
-    if( QChatMessage::isLink( channelName_ ) )
+    if( ChatMessage::isLink( channelName_ ) )
     {
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/", -2 ) - 1 );
         channelName_ = channelName_.left( channelName_.length() - 1 );

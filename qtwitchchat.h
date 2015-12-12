@@ -16,70 +16,70 @@ class QTwitchChat: public QChatService
 {
     Q_OBJECT
 public:
-    explicit QTwitchChat( QObject *parent = 0 );
-    virtual ~QTwitchChat();
+    explicit                    QTwitchChat( QObject * parent = nullptr );
+    virtual                     ~QTwitchChat();
 
-    void loadSettings();
-    QString emotIcon( const QString& smileName );
+    void                        loadSettings();
+    QString                     emotIcon( const QString & smileName );
 
 private:
-    void getSelf();
-    void getEmotIcons();
-    void getBadges();
+    void                        getSelf();
+    void                        getEmotIcons();
+    void                        getBadges();
 
-    void getStatistic();
+    void                        getStatistic();
 
-    QString insertEmotIcons( const QString& message ) const;
+    QString                     insertEmotIcons( const QString & message ) const;
 
-    void safeDeleteSocket();
+    void                        safeDeleteSocket();
+
 protected:
-    virtual void timerEvent( QTimerEvent * );
+    virtual void                timerEvent( QTimerEvent * );
 
 public slots:
-    virtual void connect();
-    virtual void disconnect();
-    virtual void reconnect();
+    virtual void                connect();
+    virtual void                disconnect();
+    virtual void                reconnect();
 
 private slots:
+    void                        onConnected();
 
-    void onConnected();
+    void                        parseMessage();
 
-    void parseMessage();
+    void                        onSocketError();
 
-    void onSocketError();
+    void                        onSelfLoaded();
+    void                        onSelfLoadError();
 
-    void onSelfLoaded();
-    void onSelfLoadError();
+    void                        onEmotIconsLoaded();
+    void                        onEmotIconsLoadError();
 
-    void onEmotIconsLoaded();
-    void onEmotIconsLoadError();
+    void                        onBadgesLoaded();
+    void                        onBadgesLoadError();
 
-    void onBadgesLoaded();
-    void onBadgesLoadError();
-
-    void onStatisticLoaded();
-    void onStatisticLoadError();
+    void                        onStatisticLoaded();
+    void                        onStatisticLoadError();
 
 private:
-    QTcpSocket *socket_;
-    QNetworkAccessManager *nam_;
-    QString oauthString_;
-    QString nickName_;
-    QString channelName_;
-    QString selfLink_;
-    QString emotIconsLink_;
-    QString badgesLink_;
+    QTcpSocket *                socket_;
+    QNetworkAccessManager *     nam_;
+    QString                     oauthString_;
+    QString                     nickName_;
+    QString                     channelName_;
+    QString                     selfLink_;
+    QString                     emotIconsLink_;
+    QString                     badgesLink_;
     //QList<QChatSmile> emotIcons_;
-    QMap<QString, QChatSmile> emotIcons_;
+    QMap<QString, QChatSmile>   emotIcons_;
 
-    int reconnectTimerId_;
-    int reconnectInterval_;
+    int                         reconnectTimerId_;
+    int                         reconnectInterval_;
 
-    int statisticTimerId_;
-    int statisticInterval_;
+    int                         statisticTimerId_;
+    int                         statisticInterval_;
 
-    int saveConnectionTimerId_;
-    int saveConnectionInterval_;
+    int                         saveConnectionTimerId_;
+    int                         saveConnectionInterval_;
 };
 
 #endif // QTWITCHCHAT_H

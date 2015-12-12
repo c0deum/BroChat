@@ -9,40 +9,40 @@ class QAcesChat: public QChatService
 {
     Q_OBJECT
 public:
-    explicit QAcesChat( QObject *parent = 0 );
-    virtual ~QAcesChat();
+    explicit                QAcesChat( QObject * parent = nullptr );
+    virtual                 ~QAcesChat();
+
 protected:
-    virtual void timerEvent( QTimerEvent * );
+    virtual void            timerEvent( QTimerEvent * );
+
 private:
-    void loadSettings();
-
-    void getChannelInfo();
-
-    void getLastMessage();
+    void                    loadSettings();
+    void                    getChannelInfo();
+    void                    getLastMessage();
 
 public slots:
-    virtual void connect();
-    virtual void disconnect();
-    virtual void reconnect();
+    virtual void            connect();
+    virtual void            disconnect();
+    virtual void            reconnect();
+
 private slots:
+    void                    onChannelInfoLoaded();
+    void                    onChannelInfoLoadError();
 
-    void onChannelInfoLoaded();
-    void onChannelInfoLoadError();
+    void                    onLastMessageLoaded();
+    void                    onLastMessageLoadError();
 
-    void onLastMessageLoaded();
-    void onLastMessageLoadError();
-
-    void onChatInfoLoaded();
-    void onChatInfoLoadError();
+    void                    onChatInfoLoaded();
+    void                    onChatInfoLoadError();
 private:
-    QNetworkAccessManager *nam_;
-    QString channelName_;
-    QString channelId_;
-    int lastMessageId_;
-    int updateChatInfoTimerId_;
-    int reconnectTimerId_;
-    int updateChatInfoInterval_;
-    int reconnectInterval_;    
+    QNetworkAccessManager * nam_;
+    QString                 channelName_;
+    QString                 channelId_;
+    int                     lastMessageId_;
+    int                     updateChatInfoTimerId_;
+    int                     reconnectTimerId_;
+    int                     updateChatInfoInterval_;
+    int                     reconnectInterval_;
 };
 
 #endif // QACESCHAT_H

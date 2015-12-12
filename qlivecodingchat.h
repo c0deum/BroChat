@@ -19,69 +19,67 @@ class QLivecodingChat: public QChatService
 {
     Q_OBJECT
 public:
-    explicit QLivecodingChat( QObject * parent = 0 );
-    virtual ~QLivecodingChat();
+    explicit                    QLivecodingChat( QObject * parent = nullptr );
+    virtual                     ~QLivecodingChat();
 private:
-    void loadSettings();
+    void                        loadSettings();
 
     //sid for websocket statistic connection
-    void getSid();
+    void                        getSid();
 
     //join afte 3probe received from livecoding
-    void joinToChannel();
+    void                        joinToChannel();
 
-    void getSmiles();
+    void                        getSmiles();
 
-    void connectToWebSocket();
-    void disconnectFromWebSocket();
+    void                        connectToWebSocket();
+    void                        disconnectFromWebSocket();
+    void                        reconnectToWebSocket();
 
-    void reconnectToWebSocket();
-
-    QString insertSmiles( const QString &message ) const;
+    QString                     insertSmiles( const QString & message ) const;
 
 protected:
-    virtual void timerEvent( QTimerEvent * event );
+    virtual void                timerEvent( QTimerEvent * event );
 public slots:
-    virtual void connect();
-    virtual void disconnect();
-    virtual void reconnect();
+    virtual void                connect();
+    virtual void                disconnect();
+    virtual void                reconnect();
 private slots:
-    void onConnected();
-    void onError( QXmppClient::Error );
-    void onMessageReceived( const QXmppMessage &message );
+    void                        onConnected();
+    void                        onError( QXmppClient::Error );
+    void                        onMessageReceived( const QXmppMessage & message );
 
-    void onSidLoaded();
-    void onSidLoadError();
+    void                        onSidLoaded();
+    void                        onSidLoadError();
 
-    void onJoinToChannelReplyLoaded();
-    void onJoinToChannelReplyLoadError();
+    void                        onJoinToChannelReplyLoaded();
+    void                        onJoinToChannelReplyLoadError();
 
+    void                        onWebSocketConnected();
+    void                        onWebSocketError();
+    void                        onWebSocketMessageReceived( const QString & message );
+    //void                      onWebSocketPong();
 
-    void onWebSocketConnected();
-    void onWebSocketError();
-    void onWebSocketMessageReceived( const QString & message );
-    //void onWebSocketPong();
-
-    void onSmilesLoaded();
-    void onSmilesLoadError();
+    void                        onSmilesLoaded();
+    void                        onSmilesLoadError();
 
 private:
-    QNetworkAccessManager * nam_;
-    QXmppClient * xmppClient_;
-    QXmppMucManager *mucManager_;
-    QWebSocket * socket_;
-    QString sid_;
-    QString channelName_;
-    QString login_;
-    QString password_;
-    QDateTime connectionTime_;
-    QMap<QString, QChatSmile> smiles_;
-    int reconnectTimerId_;
-    int reconnectInterval_;
-    int reconnectWebSocketTimerId_;
-    int reconnectWebSocketInterval_;
-    int saveWebSocketConnectionTimerId_;
-    int saveWebSocketConnectionInterval_;
+    QNetworkAccessManager *     nam_;
+    QXmppClient *               xmppClient_;
+    QXmppMucManager *           mucManager_;
+    QWebSocket *                socket_;
+    QString                     sid_;
+    QString                     channelName_;
+    QString                     login_;
+    QString                     password_;
+    QDateTime                   connectionTime_;
+    QMap<QString, QChatSmile>   smiles_;
+    int                         reconnectTimerId_;
+    int                         reconnectInterval_;
+    int                         reconnectWebSocketTimerId_;
+    int                         reconnectWebSocketInterval_;
+    int                         saveWebSocketConnectionTimerId_;
+    int                         saveWebSocketConnectionInterval_;
 };
 
 #endif // QLIVECODINGCHAT

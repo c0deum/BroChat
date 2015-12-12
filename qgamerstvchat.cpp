@@ -16,6 +16,8 @@
 #include <QDir>
 #include <QStringList>
 
+#include "qchatmessage.h"
+
 #include "settingsconsts.h"
 
 #include "qgamerstvchat.h"
@@ -57,48 +59,37 @@ QGamersTvChat::~QGamersTvChat()
 
 void QGamersTvChat::connect()
 {
-    if( !isEnabled() || channelName_ == "" )
+    if( !isEnabled() || channelName_.isEmpty()  )
         return;
 
     smiles_.clear();
     loadSmiles();
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
-    channelLink_ = DEFAULT_GAMERSTV_MESSAGES_PREFIX + channelName_ + ".js";
+    channelLink_ = DEFAULT_GAMERSTV_MESSAGES_PREFIX + channelName_ + ".js";    
 
-    if( updateMessagesTimerId_ == -1 )
-        updateMessagesTimerId_ = startTimer( updateMessagesInterval_ );
+    startUniqueTimer( updateMessagesTimerId_, updateMessagesInterval_ );
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Connected to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Connected to " + channelName_ + "...", "", this ) );
 
-    getStatistic();
-    if( statisticTimerId_ == -1 )
-        statisticTimerId_ = startTimer( statisticInterval_ );
+    getStatistic();    
+
+    startUniqueTimer( statisticTimerId_, statisticInterval_ );
 
 }
 
 void QGamersTvChat::disconnect()
 {
-    channelLink_ = "";
-    lastMessageId_ = "";
-    if( updateMessagesTimerId_ >= 0 )
-    {
-        killTimer( updateMessagesTimerId_ );
-        updateMessagesTimerId_ = -1;
-    }
-    if( reconnectTimerId_ >= 0 )
-    {
-        killTimer( reconnectTimerId_ );
-        reconnectTimerId_ = -1;
-    }
-    if( statisticTimerId_ != -1 )
-    {
-        killTimer( statisticTimerId_ );
-        statisticTimerId_ = -1;
-    }
+    channelLink_.clear();
+    lastMessageId_.clear();
+
+    resetTimer( updateMessagesTimerId_  );
+    resetTimer( reconnectTimerId_  );
+    resetTimer( statisticTimerId_  );
+
     emit newStatistic( new QChatStatistic( GAMERSTV_SERVICE, "", this ) );
 }
 
@@ -107,9 +98,9 @@ void QGamersTvChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && !channelName_ .isEmpty() && !oldChannelName.isEmpty() )
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Reconnecting to " + channelName_ + "...", "", this ) );
+            emit newMessage( ChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Reconnecting to " + channelName_ + "...", "", this ) );
     connect();
 }
 
@@ -128,7 +119,7 @@ void QGamersTvChat::onSmilesLoaded()
     QJsonParseError parseError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -144,7 +135,7 @@ void QGamersTvChat::onSmilesLoaded()
                                                 DEFAULT_GAMERSTV_SMILES_DIR + smile.toObject()[ "src" ].toString() ) );
                 }
                 if( isShowSystemMessages() )
-                    emit newMessage( new QChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Smiles ready...", "", this ) );
+                    emit newMessage( ChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Smiles ready...", "", this ) );
             }
         }
     }
@@ -174,7 +165,7 @@ void QGamersTvChat::onSmilesLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Can not load smiles..." + reply->errorString(), "", this ) );
+        emit newMessage( ChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Can not load smiles..." + reply->errorString(), "", this ) );
 
     //TODO: timer for smiles loading
     //loadSmiles();
@@ -228,7 +219,7 @@ void QGamersTvChat::onStatisticLoaded()
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -270,7 +261,7 @@ void QGamersTvChat::onMessagesLoaded()
 
     QJsonParseError parseError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -289,7 +280,7 @@ void QGamersTvChat::onMessagesLoaded()
 
                 qSort( jsonMessagesList.begin(), jsonMessagesList.end(), cmpJsonObjectByChatId );
 
-                if( lastMessageId_ != "" )
+                if( !lastMessageId_.isEmpty() )
                 {
                     int messageIndex = 0;
                     while( messageIndex < jsonMessagesList.size() && jsonMessagesList[ messageIndex ][ "chat_id" ].toString() <= lastMessageId_ )
@@ -301,8 +292,10 @@ void QGamersTvChat::onMessagesLoaded()
 
                         QString nickName = jsonMessage[ "name" ].toString();
 
+                        //TODO: to do )))
+
                         bool blackListUser = blackList().contains( nickName );
-                        bool supportersListUser = supportersList().contains( nickName );
+                        //bool supportersListUser = supportersList().contains( nickName );
 
                         if( !isRemoveBlackListUsers() || !blackListUser )
                         {
@@ -311,30 +304,9 @@ void QGamersTvChat::onMessagesLoaded()
                             message.replace ( "<\\/u>", "" );
                             message.replace ( "<u>", "" );
                             message = insertSmiles( message );
-                            //message = QChatMessage::insertLinks( message );
+                            //message = ChatMessage::insertLinks( message );
 
-                            if( blackListUser )
-                            {
-                                emit newMessage( new QChatMessage( GAMERSTV_SERVICE, nickName, message, "ignore", this ) );
-                            }
-                            else
-                            {
-                                if( supportersListUser )
-                                {
-                                    emit newMessage( new QChatMessage( GAMERSTV_SERVICE, nickName, message, "supporter", this ) );
-                                }
-                                else
-                                {
-                                    if( isContainsAliases( message ) )
-                                    {
-                                        emit newMessage( new QChatMessage( GAMERSTV_SERVICE, nickName, message, "alias", this ) );
-                                    }
-                                    else
-                                    {
-                                        emit newMessage( new QChatMessage( GAMERSTV_SERVICE, nickName, message, "", this ) );
-                                    }
-                                }
-                            }
+                            emit newMessage( ChatMessage( GAMERSTV_SERVICE, nickName, message, "", this ) );
 
                         }
                         ++messageIndex;
@@ -352,7 +324,7 @@ void QGamersTvChat::onMessagesLoaded()
 void QGamersTvChat::onMessagesLoadError()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
-    //emit newMessage( new QChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Can not load messages for channel №" + channelName_ + "..." + reply->errorString(), "", this ) );
+    //emit newMessage( ChatMessage( GAMERSTV_SERVICE, GAMERSTV_USER, "Can not load messages for channel №" + channelName_ + "..." + reply->errorString(), "", this ) );
 
     //reconnectTimerId_ =  startTimer( reconnectInterval_ );
 
@@ -376,7 +348,7 @@ void QGamersTvChat::loadSettings()
 
     channelName_ = settings.value( GAMERSTV_CHANNEL_SETTING_PATH, DEFAULT_GAMERSTV_CHANNEL_NAME ).toString();
 
-    if( QChatMessage::isLink( channelName_ ) )
+    if( ChatMessage::isLink( channelName_ ) )
     {
         //http://gamerstv.ru/video/i217.html
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
@@ -403,7 +375,7 @@ void QGamersTvChat::timerEvent( QTimerEvent *event )
     {
         getStatistic();
     }
-    if( event->timerId() == updateMessagesTimerId_ && channelLink_ != "" )
+    if( event->timerId() == updateMessagesTimerId_ && !channelLink_.isEmpty() )
     {
         loadMessages();
     }

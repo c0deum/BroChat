@@ -8,14 +8,14 @@ class QChatStatistic: public QObject
 {
     Q_OBJECT
 public:
-    explicit QChatStatistic( const QString &service, const QString &statistic, QObject *parent = 0 );
+            QChatStatistic( const QString & service, const QString & statistic, QObject * parent = nullptr );
     virtual ~QChatStatistic();
 public:
     QString service() const;
-    void setService( const QString &service );
+    void    setService( const QString & service );
 
     QString statistic() const;
-    void setStatistic( const QString &statistic );
+    void    setStatistic( const QString & statistic );
 private:
     QString service_;
     QString statistic_;

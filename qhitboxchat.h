@@ -17,71 +17,73 @@ class QHitBoxChat: public QChatService
 {
     Q_OBJECT
 public:
-    explicit QHitBoxChat( QObject *parent = 0 );
-    virtual ~QHitBoxChat();
+    explicit                QHitBoxChat( QObject * parent = nullptr );
+    virtual                 ~QHitBoxChat();
+
 protected:
-    virtual void timerEvent( QTimerEvent *event );
+    virtual void            timerEvent( QTimerEvent *event );
 private:
-    void loadSettings();
+    void                    loadSettings();
 
-//    void getChannelInfo();
-    void getServersList();
-    void getSocketHash();
+//    void                  getChannelInfo();
+    void                    getServersList();
+    void                    getSocketHash();
 
-    void getSmiles();
+    void                    getSmiles();
 
-    void getStatistic();
+    void                    getStatistic();
 
-    QString insertSmiles( const QString &message );
+    QString                 insertSmiles( const QString & message );
+
 public slots:
-    virtual void connect();
-    virtual void disconnect();
-    virtual void reconnect();
+    virtual void            connect();
+    virtual void            disconnect();
+    virtual void            reconnect();
 
-    void changeOriginalColors( bool originalColors );
+    void                    changeOriginalColors( bool originalColors );
 
 private slots:
-//    void onChannelInfoLoaded();
-//    void onChannelInfoLoadError();
+//    void                  onChannelInfoLoaded();
+//    void                  onChannelInfoLoadError();
 
-    void onServersListLoaded();
-    void onServersListLoadError();
+    void                    onServersListLoaded();
+    void                    onServersListLoadError();
 
-    void onSocketHashLoaded();
-    void onSocketHashLoadError();
+    void                    onSocketHashLoaded();
+    void                    onSocketHashLoadError();
 
-    void onSmilesLoaded();
-    void onSmilesLoadError();
+    void                    onSmilesLoaded();
+    void                    onSmilesLoadError();
 
-    void onStatisticLoaded();
-    void onStatisticLoadError();
+    void                    onStatisticLoaded();
+    void                    onStatisticLoadError();
 
-    void onTextMessageReceived( const QString &message  );
-    void onWebSocketError();
+    void                    onTextMessageReceived( const QString & message  );
+    void                    onWebSocketError();
 
-    void onPong( quint64 elapsedTime, const QByteArray & payload );
+    void                    onPong( quint64 elapsedTime, const QByteArray & payload );
 
 private:
-    QNetworkAccessManager *nam_;
-    QWebSocket *socket_;
+    QNetworkAccessManager * nam_;
+    QWebSocket *            socket_;
 
-    QString channelName_;
+    QString                 channelName_;
 
-    QList< QString > servers_;
+    QList< QString >        servers_;
 
     //QMap< QString, QString > smiles_;
-    QList< QChatSmile > smiles_;
+    QList< QChatSmile >     smiles_;
 
-    int reconnectTimerId_;
-    int reconnectInterval_;
+    int                     reconnectTimerId_;
+    int                     reconnectInterval_;
 
-    int statisticTimerId_;
-    int statisticInterval_;
+    int                     statisticTimerId_;
+    int                     statisticInterval_;
 
-    int saveConnectionTimerId_;
-    int saveConnectionInterval_;
+    int                     saveConnectionTimerId_;
+    int                     saveConnectionInterval_;
 
-    bool originalColors_;
+    bool                    originalColors_;
 };
 
 #endif // QHITBOXCHAT

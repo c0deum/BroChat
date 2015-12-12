@@ -13,47 +13,48 @@ class QGamersTvChat: public QChatService
 {
     Q_OBJECT
 public:
-    explicit QGamersTvChat( QObject *parent = 0 );
-    virtual ~QGamersTvChat();
+    explicit                QGamersTvChat( QObject * parent = nullptr );
+    virtual                 ~QGamersTvChat();
 protected:
-    void timerEvent( QTimerEvent * );
+    void                    timerEvent( QTimerEvent * );
+
 private:
-    void loadSettings();
-    void loadSmiles();
+    void                    loadSettings();
+    void                    loadSmiles();
+    void                    loadMessages();
 
-    void loadMessages();
+    void                    getStatistic();
 
-    void getStatistic();
-
-    QString insertSmiles( const QString &message );
+    QString                 insertSmiles( const QString & message );
 
 public slots:
-    virtual void connect();
-    virtual void disconnect();
-    virtual void reconnect();
+    virtual void            connect();
+    virtual void            disconnect();
+    virtual void            reconnect();
+
 private slots:
 
-    void onSmilesLoaded();
-    void onSmilesLoadError();
+    void                    onSmilesLoaded();
+    void                    onSmilesLoadError();
 
-    void onMessagesLoaded();
-    void onMessagesLoadError();
+    void                    onMessagesLoaded();
+    void                    onMessagesLoadError();
 
-    void onStatisticLoaded();
-    void onStatisticLoadError();
+    void                    onStatisticLoaded();
+    void                    onStatisticLoadError();
 
 private:
-    QNetworkAccessManager *nam_;
-    QString channelName_;
-    QString channelLink_;
-    QString lastMessageId_;
-    QList< QChatSmile > smiles_;
-    int updateMessagesTimerId_;
-    int reconnectTimerId_;
-    int updateMessagesInterval_;
-    int reconnectInterval_;
-    int statisticTimerId_;
-    int statisticInterval_;
+    QNetworkAccessManager * nam_;
+    QString                 channelName_;
+    QString                 channelLink_;
+    QString                 lastMessageId_;
+    QList< QChatSmile >     smiles_;
+    int                     updateMessagesTimerId_;
+    int                     reconnectTimerId_;
+    int                     updateMessagesInterval_;
+    int                     reconnectInterval_;
+    int                     statisticTimerId_;
+    int                     statisticInterval_;
 };
 
 #endif // QGAMERSTVCHAT

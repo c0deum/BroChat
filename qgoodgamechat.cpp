@@ -20,6 +20,8 @@
 
 #include "settingsconsts.h"
 
+#include "qchatmessage.h"
+
 #include "qgoodgamechat.h"
 
 const QString DEFAULT_GOODGAME_WEBSOCKET_LINK = "ws://chat.goodgame.ru:8081/chat/websocket";
@@ -66,35 +68,23 @@ QGoodGameChat::~QGoodGameChat()
 
 void QGoodGameChat::connect()
 {
-    if( !isEnabled() || channelName_ == "" )
+    if( !isEnabled() || channelName_.isEmpty() )
         return;
 
     smiles_.clear();
     getSmiles();
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
     getChannelInfo();
 }
 
 void QGoodGameChat::disconnect()
 {
-    if( saveConnectionTimerId_ >= 0 )
-    {
-        killTimer( saveConnectionTimerId_ );
-        saveConnectionTimerId_ = -1;
-    }
-    if( reconnectTimerId_ >= 0 )
-    {
-        killTimer( reconnectTimerId_ );
-        reconnectTimerId_ = -1;
-    }
-    if( statisticTimerId_ >= 0 )
-    {
-        killTimer( statisticTimerId_ );
-        statisticTimerId_ = -1;
-    }
+    resetTimer( saveConnectionTimerId_ );
+    resetTimer( reconnectTimerId_ );
+    resetTimer( statisticTimerId_ );
 
     lastTimeStamp_ = 0;
 
@@ -114,9 +104,9 @@ void QGoodGameChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Reconnecting...", "", this ) );
+            emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Reconnecting...", "", this ) );
     connect();
 }
 
@@ -212,7 +202,7 @@ void QGoodGameChat::onSmilesLoaded()
             smiles_.insert( formattedSmileName, "file:///" + smilesPath + "/" + smileName );
     }
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Smiles ready...", "", this ) );
+        emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Smiles ready...", "", this ) );
     reply->deleteLater();
 }
 
@@ -221,7 +211,7 @@ void QGoodGameChat::onSmilesLoadError()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Can not load smiles..." + reply->errorString(), "", this ) );
+        emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Can not load smiles..." + reply->errorString(), "", this ) );
     reply->deleteLater();
 }
 
@@ -242,7 +232,7 @@ void QGoodGameChat::onChannelInfoLoaded()
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -260,10 +250,9 @@ void QGoodGameChat::onChannelInfoLoadError()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Can not connect to " + channelName_ + "..." + reply->errorString(), "", this ) );
+        emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Can not connect to " + channelName_ + "..." + reply->errorString(), "", this ) );
 
-    if( reconnectTimerId_ == -1 )
-        reconnectTimerId_ = startTimer( reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 
     reply->deleteLater();
 }
@@ -282,9 +271,9 @@ void QGoodGameChat::connectToWebClient()
 void QGoodGameChat::onWebSocketError()
 {
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Web Socket Error ..." + socket_->errorString(), "", this ) );
-    if( reconnectTimerId_ == -1 )
-        reconnectTimerId_ = startTimer( reconnectInterval_ );
+        emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Web Socket Error ..." + socket_->errorString(), "", this ) );
+
+    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 }
 
 void QGoodGameChat::onTextMessageRecieved( const QString& message )
@@ -295,7 +284,7 @@ void QGoodGameChat::onTextMessageRecieved( const QString& message )
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( message.toStdString().c_str() ), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -305,56 +294,25 @@ void QGoodGameChat::onTextMessageRecieved( const QString& message )
 
             QString answer;
 
-            if( messageType == "message" )
+            if( "message" == messageType )
             {
                 //TODO: перенаправлять в парс
                 QJsonObject jsonData = jsonMessage[ "data" ].toObject();
 
                 QString message = jsonData[ "text" ].toString();
 
-                message = QChatMessage::deleteTags( message );
+                message = ChatMessage::deleteTags( message );
 
                 message = insertSmiles( message );
-                //message = QChatMessage::insertLinks( message );
+                //message = ChatMessage::insertLinks( message );
 
                 lastTimeStamp_ = jsonData[ "timestamp" ].toInt();
 
                 QString nickName = jsonData[ "user_name" ].toString();
 
-                bool blackListUser = blackList().contains( nickName );
-                bool supportersListUser = supportersList().contains( nickName );
-
-                if( !isRemoveBlackListUsers() || !blackListUser )
-                {
-                    if( blackListUser )
-                    {
-                        //TODO: игнорируемые
-                        emit newMessage( new QChatMessage( GOODGAME_SERVICE, nickName, message, "ignore", this ) );
-                    }
-                    else
-                    {
-                        if( supportersListUser )
-                        {
-                            //TODO: саппортеры
-                            emit newMessage( new QChatMessage( GOODGAME_SERVICE, nickName, message, "supporter", this ) );
-                        }
-                        else
-                        {
-                            if( isContainsAliases( message ) )
-                            {
-                                //TODO: обращение к стримеру
-                                emit newMessage( new QChatMessage( GOODGAME_SERVICE, nickName, message, "alias", this ) );
-                            }
-                            else
-                            {
-                                //TODO: простое сообщение
-                                emit newMessage( new QChatMessage( GOODGAME_SERVICE, nickName, message, "", this ) );
-                            }
-                        }
-                    }
-                }
+                emit newMessage( ChatMessage( GOODGAME_SERVICE, nickName, message, "", this ) );
             }
-            else if( message == "private_message" )
+            else if( "private_message" == message )
             {
                 //TODO: перенаправлять в парс
                 QJsonObject jsonData = jsonMessage[ "data" ].toObject();
@@ -363,68 +321,37 @@ void QGoodGameChat::onTextMessageRecieved( const QString& message )
 
                 //message.replace( QRegExp( "~<a\\b[^>]*+>|</a\\b[^>]*+>~" ), "" );
 
-                message = QChatMessage::deleteTags( message );
+                message = ChatMessage::deleteTags( message );
 
                 message = insertSmiles( message );
-                //message = QChatMessage::insertLinks( message );
+                //message = ChatMessage::insertLinks( message );
 
                 lastTimeStamp_ = jsonData[ "timestamp" ].toInt();
 
                 QString nickName = jsonData[ "user_name" ].toString();
 
-                bool blackListUser = blackList().contains( nickName );
-                bool supportersListUser = supportersList().contains( nickName );
+                emit newMessage( ChatMessage( GOODGAME_SERVICE, nickName, message, "", this ) );
 
-                if( !isRemoveBlackListUsers() || !blackListUser )
-                {
-                    if( blackListUser )
-                    {
-                        //TODO: игнорируемые
-                        emit newMessage( new QChatMessage( GOODGAME_SERVICE, nickName, message, "ignore", this ) );
-                    }
-                    else
-                    {
-                        if( supportersListUser )
-                        {
-                            //TODO: саппортеры
-                            emit newMessage( new QChatMessage( GOODGAME_SERVICE, nickName, message, "supporter", this ) );
-                        }
-                        else
-                        {
-                            if( isContainsAliases( message ) )
-                            {
-                                //TODO: обращение к стримеру
-                                emit newMessage( new QChatMessage( GOODGAME_SERVICE, nickName, message, "alias", this ) );
-                            }
-                            else
-                            {
-                                emit newMessage( new QChatMessage( GOODGAME_SERVICE, nickName, message, "", this ) );
-                            }
-                        }
-                    }
-                }
             }
-            else if( messageType == "welcome" )
+            else if( "welcome" == messageType )
             {
                 answer = "{\"type\":\"join\",\"data\":{\"channel_id\":" + channelId_ + "}}";
                 socket_->sendTextMessage( answer );
             }
-            else if( messageType == "success_join" )
+            else if( "success_join" == messageType )
             {
                 answer = "{\"type\":\"get_channel_history\",\"data\":{\"channel_id\":" + channelId_ + "}}";
                 socket_->sendTextMessage( answer );
 
                 if( isShowSystemMessages() )
-                    emit newMessage( new QChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Connected to " + channelName_ + "...", "", this ) );
+                    emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, "Connected to " + channelName_ + "...", "", this ) );
 
                 getStatistic();
-                if( statisticTimerId_ == -1 )
-                    statisticTimerId_ = startTimer( statisticTimerInterval_ );
 
-                if( saveConnectionTimerId_ )
-                    saveConnectionTimerId_ = startTimer( saveConnectionInterval_ );                               
+                startUniqueTimer( statisticTimerId_, statisticTimerInterval_ );
+                startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
             }
-            else if( messageType == "channel_history" && lastTimeStamp_ )
+            else if( "channel_history" == messageType  && lastTimeStamp_ )
             {
                 QJsonObject jsonData = jsonMessage[ "data" ].toObject();
                 QJsonArray jsonMessages = jsonData[ "messages" ].toArray();
@@ -439,45 +366,15 @@ void QGoodGameChat::onTextMessageRecieved( const QString& message )
                         QString message = val[ "text" ].toString();
                         //message.replace( QRegExp( "~<a\\b[^>]*+>|</a\\b[^>]*+>~" ), "" );
 
-                        message = QChatMessage::deleteTags( message );
+                        message = ChatMessage::deleteTags( message );
 
                         message = insertSmiles( message );
-                        //message = QChatMessage::insertLinks( message );
+                        //message = ChatMessage::insertLinks( message );
 
                         QString nickName = val[ "user_name" ].toString();
 
-                        bool blackListUser = blackList().contains( nickName );
-                        bool supportersListUser = supportersList().contains( nickName );
+                        emit newMessage( ChatMessage( GOODGAME_SERVICE, nickName, message, "", this ) );
 
-                        if( !isRemoveBlackListUsers() || !blackListUser )
-                        {
-                            if( blackListUser )
-                            {
-                                //TODO: игнорируемые
-                                emit newMessage( new QChatMessage( GOODGAME_SERVICE, nickName, message, "ignore", this ) );
-                            }
-                            else
-                            {
-                                if( supportersListUser )
-                                {
-                                    //TODO: саппортеры
-                                    emit newMessage( new QChatMessage( GOODGAME_SERVICE, nickName, message, "supporter", this ) );
-                                }
-                                else
-                                {
-                                    if( isContainsAliases( message ) )
-                                    {
-                                        //TODO: обращение к стримеру
-                                        emit newMessage( new QChatMessage( GOODGAME_SERVICE, nickName, message, "alias", this ) );
-                                    }
-                                    else
-                                    {
-                                        //TODO: простое сообщение
-                                        emit newMessage( new QChatMessage( GOODGAME_SERVICE, nickName, message, "", this ) );
-                                    }
-                                }
-                            }
-                        }
                         lastTimeStamp_ = timeStamp;
                     }
                 }
@@ -508,7 +405,7 @@ void QGoodGameChat::onStatisticLoaded()
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error  )
     {
         if( jsonDoc.isObject() )
         {
@@ -520,7 +417,7 @@ void QGoodGameChat::onStatisticLoaded()
 
                 QString statistic = jsonStatistic[ "viewers" ].toString();
 
-                if( jsonStatistic[ "status" ].toString() != "Live" )
+                if( "Live" != jsonStatistic[ "status" ].toString() )
                     statistic = "0";
 
                 emit newStatistic( new QChatStatistic( GOODGAME_SERVICE, statistic, this ) );               
@@ -552,7 +449,7 @@ QString QGoodGameChat::insertSmiles( const QString &message ) const
 
     for( int i = 0; i < tokens.size(); ++i )
     {
-        if ( !QChatMessage::isLink( tokens.at( i ) ) )//не ссылка
+        if ( !ChatMessage::isLink( tokens.at( i ) ) )//не ссылка
         {
             bool isReplaced = false;
 
@@ -591,7 +488,7 @@ void QGoodGameChat::timerEvent( QTimerEvent * event )
     }
     else if( event->timerId() == saveConnectionTimerId_ )
     {
-        if( socket_ && socket_->isValid() && socket_->state() == QAbstractSocket::ConnectedState )
+        if( socket_ && socket_->isValid() && QAbstractSocket::ConnectedState == socket_->state() )
         {
             socket_->ping();
         }
@@ -612,7 +509,7 @@ void QGoodGameChat::loadSettings()
     QSettings settings;
     channelName_ = settings.value( GOODGAME_CHANNEL_SETTING_PATH, DEFAULT_GOODGAME_CHANNEL_NAME ).toString();
 
-    if( QChatMessage::isLink( channelName_ ) )
+    if( ChatMessage::isLink( channelName_ ) )
     {
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/", -2 ) - 1 );
         channelName_ = channelName_.left( channelName_.length() - 1 );

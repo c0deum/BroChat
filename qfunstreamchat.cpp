@@ -19,6 +19,8 @@
 #include <QDir>
 #include <QStringList>
 
+#include "qchatmessage.h"
+
 #include "settingsconsts.h"
 
 #include "qfunstreamchat.h"
@@ -72,12 +74,12 @@ QFunStreamChat::~QFunStreamChat()
 
 void QFunStreamChat::connect()
 {
-    if( !isEnabled() || channelName_ == "" )
+    if( !isEnabled() || channelName_.isEmpty() )
         return;
 
     historyLastMessageId_ = lastMessageId_;
     lastMessageId_ = 0;
-    channelId_ = "";
+    channelId_.clear();
 
     requestId_ = -1;
     joinRequestId_ = -1;
@@ -87,7 +89,7 @@ void QFunStreamChat::connect()
     smiles_.clear();
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
     getSmiles();
     getChannelInfo();
@@ -95,22 +97,9 @@ void QFunStreamChat::connect()
 
 void QFunStreamChat::disconnect()
 {
-    if( reconnectTimerId_ >= 0 )
-    {
-        killTimer( reconnectTimerId_ );
-        reconnectTimerId_ = -1;
-    }
-    if( saveConnectionTimerId_ >= 0 )
-    {
-        killTimer( saveConnectionTimerId_ );
-        saveConnectionTimerId_ = -1;
-    }
-    if( statisticTimerId_ >= 0 )
-    {
-        killTimer( statisticTimerId_ );
-        statisticTimerId_ = -1;
-    }
-
+    resetTimer( reconnectTimerId_ );
+    resetTimer( saveConnectionTimerId_ );
+    resetTimer( statisticTimerId_ );
 
     if( socket_ )
     {
@@ -127,7 +116,7 @@ void QFunStreamChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
     {
         //новый канал
         if( channelName_ != oldChannelName )
@@ -136,14 +125,14 @@ void QFunStreamChat::reconnect()
             historyLastMessageId_ = 0;
         }
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Reconnecting...", "", this ) );
+            emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Reconnecting...", "", this ) );
     }
     connect();
 }
 
 void QFunStreamChat::getChannelInfo()
 {
-    //QString requestLink = QChatMessage::isLink( channelName_ )? channelName_ : DEFAULT_FUNSTREAM_CHANNEL_PREFIX + channelName_;
+    //QString requestLink = ChatMessage::isLink( channelName_ )? channelName_ : DEFAULT_FUNSTREAM_CHANNEL_PREFIX + channelName_;
 
     QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_CHANNEL_PREFIX + channelName_ ) );
 
@@ -173,11 +162,10 @@ void QFunStreamChat::onChannelInfoLoaded()
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( info.toStdString().c_str() ), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isArray() )
         {
-
             QJsonArray jsonArr = jsonDoc.array();
 
             /*
@@ -218,7 +206,7 @@ void QFunStreamChat::onChannelInfoLoaded()
             }
 
             if( isShowSystemMessages() )
-                emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Smiles ready...", "", this ) );
+                emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Smiles ready...", "", this ) );
             */
 
             connectToWebClient();
@@ -233,10 +221,9 @@ void QFunStreamChat::onChannelInfoLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Can not connect to " + channelName_ + "..." + reply->errorString(), "", this ) );
+        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Can not connect to " + channelName_ + "..." + reply->errorString(), "", this ) );
 
-    if( reconnectTimerId_ == -1 )
-        reconnectTimerId_ = startTimer( reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 
     reply->deleteLater();
 }
@@ -265,7 +252,7 @@ void QFunStreamChat::onSmilesLoaded()
     QJsonParseError parseError;
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isArray() )
         {
@@ -282,7 +269,7 @@ void QFunStreamChat::onSmilesLoaded()
             }                        
 
             if( isShowSystemMessages() )
-                emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Smiles ready...", "", this ) );
+                emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Smiles ready...", "", this ) );
         }
     }
 
@@ -311,7 +298,7 @@ void QFunStreamChat::onSmileLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Can not load smiles...", "", this ) );
+        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Can not load smiles...", "", this ) );
 
     reply->deleteLater();
 }
@@ -320,7 +307,7 @@ void QFunStreamChat::getStatistic()
 {
     if( channelId_.isEmpty() )
         return;
-    if( socket_ && socket_->isValid() && socket_->state() == QAbstractSocket::ConnectedState )
+    if( socket_ && socket_->isValid() && QAbstractSocket::ConnectedState == socket_->state() )
     {
         requestId_++;
         statisticRequestId_ = requestId_;
@@ -335,10 +322,10 @@ void QFunStreamChat::getHistory()
     if( channelId_.isEmpty() )
         return;
 
-    if( historyLastMessageId_ == 0 )
+    if( 0 == historyLastMessageId_ )
         return;
 
-    if( socket_ && socket_->isValid() && socket_->state() == QAbstractSocket::ConnectedState )
+    if( socket_ && socket_->isValid() && QAbstractSocket::ConnectedState == socket_->state() )
     {
         requestId_++;
         historyRequestId_ = requestId_;
@@ -375,7 +362,7 @@ QString QFunStreamChat::insertSmiles( const QString &message ) const
 
     for( int i = 0; i < tokens.size(); ++i )
     {
-        if ( !QChatMessage::isLink( tokens.at( i ) ) )//не ссылка
+        if ( !ChatMessage::isLink( tokens.at( i ) ) )//не ссылка
         {
             foreach( const QChatSmile &smile, smiles_ )
             {
@@ -396,17 +383,15 @@ QString QFunStreamChat::insertSmiles( const QString &message ) const
 
 
 void QFunStreamChat::onWebSocketConnected()
-{
-    if( saveConnectionTimerId_ == -1 )
-        saveConnectionTimerId_ = startTimer( saveConnectionInterval_ );    
+{       
+    startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
 }
 
 void QFunStreamChat::onWebSocketError()
 {
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Web socket error..." + socket_->errorString(), "", this ) );
-    if( reconnectTimerId_ == -1 )
-        reconnectTimerId_ = startTimer( reconnectInterval_ );
+        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Web socket error..." + socket_->errorString(), "", this ) );    
+    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 }
 
 //TODO: переделатьнах
@@ -418,56 +403,23 @@ void QFunStreamChat::parseMessage( const QJsonObject & jsonObj )
 
         QString type = jsonObj[ "type" ].toString();
 
-        if( type == "announce" )
+        if( "announce" == type )
             return;
 
         QString nickName = jsonObj[ "from" ].toObject()[ "name" ].toString();
         QString message = jsonObj[ "text" ].toString();
 
-        message = QChatMessage::replaceEscapeCharecters( message );
+        message = ChatMessage::replaceEscapeCharecters( message );
 
-        if( type == "fastdonate" )
+        if( "fastdonate" == type )
             message += "<img class = \"smile\" src=\"http://funstream.tv/build/images/icon_donate.png\"></img>";
 
-        if( jsonObj[ "to" ].toObject()[ "name" ].toString() != "" )
+        if( !jsonObj[ "to" ].toObject()[ "name" ].toString().isEmpty() )
             message = jsonObj[ "to" ].toObject()[ "name" ].toString() + ", " + message;
 
         message = insertSmiles( message );
 
-        //qDebug() << "New message: " + message;
-
-        bool blackListUser = blackList().contains( nickName );
-        bool supportersListUser = supportersList().contains( nickName );
-
-        if( !isRemoveBlackListUsers() || !blackListUser )
-        {
-            if( blackListUser )
-            {
-                //TODO: игнорируемые
-                emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, nickName, message, "ignore", this ) );
-            }
-            else
-            {
-                if( supportersListUser )
-                {
-                    //TODO: саппортеры
-                    emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, nickName, message, "supporter", this ) );
-                }
-                else
-                {
-                    if( isContainsAliases( message ) )
-                    {
-                        //TODO: сообщение к стримеру
-                        emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, nickName, message, "alias", this ) );
-                    }
-                    else
-                    {
-                        //TODO: простое сообщение
-                        emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, nickName, message, "", this ) );
-                    }
-                }
-            }
-        }
+        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, "", this ) );
     }
 }
 
@@ -478,14 +430,14 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
 
     //qDebug() << message;
 
-    if( message.left( 18 ) == "42[\"/chat/message\"" )
+    if( "42[\"/chat/message\"" == message.left( 18 ) )
     {
         QString messageContent = message.mid( 19 );
         messageContent = messageContent.left( messageContent.length() - 1 );
 
         QJsonParseError parseError;
         QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( messageContent.toStdString().c_str() ), &parseError );
-        if( parseError.error == QJsonParseError::NoError )
+        if( QJsonParseError::NoError == parseError.error )
         {
             if( jsonDoc.isObject() )
             {
@@ -498,22 +450,25 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
 
                     QString type = jsonObj[ "type" ].toString();
 
-                    if( type == "announce" )
+                    if( "announce" == type )
                         return;
 
                     QString nickName = jsonObj[ "from" ].toObject()[ "name" ].toString();
                     QString message = jsonObj[ "text" ].toString();
 
-                    message = QChatMessage::replaceEscapeCharecters( message );
+                    message = ChatMessage::replaceEscapeCharecters( message );
 
-                    if( type == "fastdonate" )
+                    if( "fastdonate" == type )
                         message += "<img class = \"smile\" src=\"http://funstream.tv/build/images/icon_donate.png\"></img>";
 
-                    if( jsonObj[ "to" ].toObject()[ "name" ].toString() != "" )
+                    if( !jsonObj[ "to" ].toObject()[ "name" ].toString().isEmpty() )
                         message = jsonObj[ "to" ].toObject()[ "name" ].toString() + ", " + message;
 
                     message = insertSmiles( message );
 
+                    emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, "", this ) );
+
+                    /*
                     bool blackListUser = blackList().contains( nickName );
                     bool supportersListUser = supportersList().contains( nickName );
 
@@ -522,59 +477,59 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
                         if( blackListUser )
                         {
                             //TODO: игнорируемые
-                            emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, nickName, message, "ignore", this ) );
+                            emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, "ignore", this ) );
                         }
                         else
                         {
                             if( supportersListUser )
                             {
                                 //TODO: саппортеры
-                                emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, nickName, message, "supporter", this ) );
+                                emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, "supporter", this ) );
                             }
                             else
                             {
                                 if( isContainsAliases( message ) )
                                 {
                                     //TODO: сообщение к стримеру
-                                    emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, nickName, message, "alias", this ) );
+                                    emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, "alias", this ) );
                                 }
                                 else
                                 {
                                     //TODO: простое сообщение
-                                    emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, nickName, message, "", this ) );
+                                    emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, "", this ) );
                                 }
                             }
                         }
                     }
+                    */
 
 
-                    //emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, jsonObj[ "from" ].toObject()[ "name" ].toString(), jsonObj[ "to" ].toObject()[ "name" ].toString() + jsonObj[ "text" ].toString(), "", this ) );
+                    //emit newMessage( ChatMessage( FUNSTREAM_SERVICE, jsonObj[ "from" ].toObject()[ "name" ].toString(), jsonObj[ "to" ].toObject()[ "name" ].toString() + jsonObj[ "text" ].toString(), "", this ) );
                 }
 
             }
         }
     }
-    else if( message.left( 1 ) == "0" )
+    else if( "0" == message.left( 1 ) )
     {
 
     }
-    else if( message.left( 2 ) == "40" )
+    else if( "40" == message.left( 2 ) )
     {        
         requestId_ = 0;
         //QString message = "420[\"/chat/login\",{\"token\":null}]";
         QString message = "420[\"/chat/join\",{\"channel\":\"stream/" + channelId_ + "\"}]";
         socket_->sendTextMessage( message );
     }
-    else if( message.left(3) == "430" )
+    else if( "430" == message.left(3) )
     {
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Connected to " + channelName_ + "...", "", this ) );
+            emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Connected to " + channelName_ + "...", "", this ) );
 
         getHistory();
         getStatistic();
 
-        if( statisticTimerId_ == -1 )
-            statisticTimerId_ = startTimer( statisticInterval_ );
+        startUniqueTimer( statisticTimerId_, statisticInterval_ );
     }
     else
     {
@@ -648,7 +603,7 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
 
                 QJsonParseError parseError;
                 QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( messagesInfo.toStdString().c_str() ), &parseError );
-                if( parseError.error == QJsonParseError::NoError )
+                if( QJsonParseError::NoError == parseError.error )
                 {
                     if( jsonDoc.isArray() )
                     {
@@ -694,7 +649,7 @@ void QFunStreamChat::timerEvent( QTimerEvent *event )
     }
     else if( event->timerId() == saveConnectionTimerId_ )
     {
-        if( socket_ && socket_->isValid() && socket_->state() == QAbstractSocket::ConnectedState )
+        if( socket_ && socket_->isValid() && QAbstractSocket::ConnectedState == socket_->state() )
         {
             socket_->sendTextMessage( "2" );
             socket_->ping();
@@ -711,7 +666,7 @@ void QFunStreamChat::loadSettings()
     QSettings settings;
     channelName_ = settings.value( FUNSTREAM_CHANNEL_SETTING_PATH, DEFAULT_FUNSTREAM_CHANNEL_NAME ).toString();
 
-    if( QChatMessage::isLink( channelName_ ) )
+    if( ChatMessage::isLink( channelName_ ) )
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
 
     enable( settings.value( FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );

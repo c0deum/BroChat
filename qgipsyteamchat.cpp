@@ -11,6 +11,8 @@
 
 #include <QTimerEvent>
 
+#include "qchatmessage.h"
+
 #include "settingsconsts.h"
 #include "qgipsyteamchat.h"
 
@@ -45,19 +47,18 @@ QGipsyTeamChat::~QGipsyTeamChat()
 
 void QGipsyTeamChat::connect()
 {
-    if( !isEnabled() || channelName_ == "" )
+    if( !isEnabled() || channelName_.isEmpty() )
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
     channelLink_ = DEFAULT_GIPSYTEAM_CHANNEL_MESSAGES_PREFIX + channelName_ + DEFAULT_GIPSYTEAM_CHANNEL_MESSAGES_POSTFIX;
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, "Connected to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, "Connected to " + channelName_ + "...", "", this ) );
 
-    if( updateMessagesTimerId_ == -1 )
-        updateMessagesTimerId_ = startTimer( updateMessagesInterval_ );
+    startUniqueTimer( updateMessagesTimerId_, updateMessagesInterval_ );
 
     //getChannelInfo();
 }
@@ -65,20 +66,11 @@ void QGipsyTeamChat::connect()
 void QGipsyTeamChat::disconnect()
 {
     //channelName_ = "";
-    channelLink_ = "";
-    lastMessageId_ = "";
+    channelLink_.clear();
+    lastMessageId_.clear();
 
-    if( updateMessagesTimerId_ >= 0  )
-    {
-        killTimer( updateMessagesTimerId_ );
-        updateMessagesTimerId_ = -1;
-    }
-
-    if( reconnectTimerId_ >= 0 )
-    {
-        killTimer( reconnectTimerId_ );
-        reconnectTimerId_ = -1;
-    }
+    resetTimer( updateMessagesTimerId_ );
+    resetTimer( reconnectTimerId_ );
 }
 
 void QGipsyTeamChat::reconnect()
@@ -86,9 +78,9 @@ void QGipsyTeamChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, "Reconnecting to " + channelName_ + "...", "", this ) );
+            emit newMessage( ChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, "Reconnecting to " + channelName_ + "...", "", this ) );
     connect();
 }
 
@@ -123,19 +115,17 @@ void QGipsyTeamChat::onChannelInfoLoaded()
 
 
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, "Connected to " + channelName_ + "...", "", this ) );
+            emit newMessage( ChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, "Connected to " + channelName_ + "...", "", this ) );
 
-        if( updateMessagesTimerId_ == -1 )
-            updateMessagesTimerId_ = startTimer( updateMessagesInterval_ );
+        startUniqueTimer( updateMessagesTimerId_, updateMessagesInterval_ );
     }
     else
     {
 
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, "Can not connect to " + channelName_ + "...", "", this ) );
+            emit newMessage( ChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, "Can not connect to " + channelName_ + "...", "", this ) );
 
-        if( reconnectTimerId_ == -1 )
-            reconnectTimerId_ = startTimer( reconnectInterval_ );
+        startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
     }
 
     reply->deleteLater();
@@ -163,7 +153,7 @@ void QGipsyTeamChat::onMessagesLoaded()
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -171,7 +161,7 @@ void QGipsyTeamChat::onMessagesLoaded()
 
             QStringList messagesId = jsonObj.keys();
 
-            if( lastMessageId_ != "" )
+            if( !lastMessageId_.isEmpty() )
             {
 
                 foreach( const QString& id, messagesId )
@@ -202,7 +192,7 @@ void QGipsyTeamChat::onMessagesLoaded()
 
                         //qDebug() << message;
 
-                        emit newMessage( new QChatMessage( GIPSYTEAM_SERVICE, nickName, message, "", this ) );
+                        emit newMessage( ChatMessage( GIPSYTEAM_SERVICE, nickName, message, "", this ) );
                     }
 
                 }
@@ -240,7 +230,7 @@ void QGipsyTeamChat::loadSettings()
 
     channelName_ = settings.value( GIPSYTEAM_CHANNEL_SETTING_PATH, DEFAULT_GIPSYTEAM_CHANNEL_NAME ).toString();
 
-    if( QChatMessage::isLink( channelName_ ) )
+    if( ChatMessage::isLink( channelName_ ) )
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "=" ) - 1 );
 
     enable( settings.value( GIPSYTEAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );

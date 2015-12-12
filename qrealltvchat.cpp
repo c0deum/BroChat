@@ -23,6 +23,8 @@
 #include <QDir>
 #include <QStringList>
 
+#include "qchatmessage.h"
+
 #include "settingsconsts.h"
 
 
@@ -86,7 +88,7 @@ void QReallTvChat::connect()
 {
     //qDebug() << "Connect";
 
-    if( !isEnabled() || channelName_ == "" )
+    if( !isEnabled() || channelName_.isEmpty() )
         return;
 
     qsrand( QDateTime::currentDateTime().toTime_t() );
@@ -104,7 +106,7 @@ void QReallTvChat::connect()
     //xmppClient_->logger()->setLoggingType( QXmppLogger::StdoutLogging );
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( REALLTV_SERVICE, REALLTV_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( REALLTV_SERVICE, REALLTV_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
 
 
@@ -122,19 +124,10 @@ void QReallTvChat::disconnect()
 {
     //qDebug() << "Disconnect";
 
-    cid_ = "";
+    cid_.clear();
 
-    if( reconnectTimerId_ != -1 )
-    {
-        killTimer( reconnectTimerId_ );
-        reconnectTimerId_ = -1;
-    }
-
-    if( statisticTimerId_ != -1 )
-    {
-        killTimer( statisticTimerId_ );
-        statisticTimerId_ = -1;
-    }
+    resetTimer( reconnectTimerId_ );
+    resetTimer( statisticTimerId_ );
 
     if( mucManager_ )
     {
@@ -167,9 +160,9 @@ void QReallTvChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( REALLTV_SERVICE, REALLTV_USER, "Reconnecting...", "", this ) );
+            emit newMessage( ChatMessage( REALLTV_SERVICE, REALLTV_USER, "Reconnecting...", "", this ) );
     connect();
 }
 
@@ -184,7 +177,7 @@ void QReallTvChat::onConnected()
     room->join();
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( REALLTV_SERVICE, REALLTV_USER, "Connected to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( REALLTV_SERVICE, REALLTV_USER, "Connected to " + channelName_ + "...", "", this ) );
 
     getChannelInfo();
 
@@ -199,10 +192,9 @@ void QReallTvChat::onError( QXmppClient::Error error )
     qDebug() << error;
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( REALLTV_SERVICE, REALLTV_USER, "Unknown Error ...", "", this ) );
+        emit newMessage( ChatMessage( REALLTV_SERVICE, REALLTV_USER, "Unknown Error ...", "", this ) );
 
-    if( reconnectTimerId_ == -1 )
-        reconnectTimerId_ = startTimer( reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 
 }
 
@@ -216,48 +208,16 @@ void QReallTvChat::onMessageReceived( const QXmppMessage &message )
         QString messageBody = message.body();
 
         int dotPos = messageBody.indexOf( "·" );
-        if( dotPos != -1 )
+        if( -1 != dotPos )
         {
             messageBody = messageBody.right( messageBody.length() - dotPos - 1 );
         }
 
-        messageBody = QChatMessage::replaceEscapeCharecters( messageBody );
+        messageBody = ChatMessage::replaceEscapeCharecters( messageBody );
 
         messageBody = insertSmiles( messageBody );
 
-        bool blackListUser = blackList().contains( nickName );
-        bool supportersListUser = supportersList().contains( nickName );
-
-        bool containsAliases = isContainsAliases( messageBody );
-
-        if( !isRemoveBlackListUsers() || !blackListUser )
-        {
-            if( blackListUser )
-            {
-                //TODO: список игнорируемых
-                emit newMessage( new QChatMessage( REALLTV_SERVICE, nickName, messageBody, "ignore", this ) );
-            }
-            else
-            {
-                if( supportersListUser )
-                {
-                    //TODO: список саппортеров
-                    emit newMessage( new QChatMessage( REALLTV_SERVICE, nickName, messageBody, "supporter", this ) );
-                }
-                else
-                {
-                    if( containsAliases )
-                    {
-                        //TODO: обращение к стримеру
-                        emit newMessage( new QChatMessage( REALLTV_SERVICE, nickName, messageBody, "alias", this ) );
-                    }
-                    else
-                    {
-                        emit newMessage( new QChatMessage( REALLTV_SERVICE, nickName, messageBody, "", this ) );
-                    }
-                }
-            }
-        }
+        emit newMessage( ChatMessage( REALLTV_SERVICE, nickName, messageBody, "", this ) );
     }
 }
 
@@ -287,7 +247,7 @@ void QReallTvChat::onChannelInfoLoaded()
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -303,8 +263,8 @@ void QReallTvChat::onChannelInfoLoaded()
     }
 
     getStatistic();
-    if( statisticTimerId_ == -1 )
-        statisticTimerId_ = startTimer( statisticInterval_ );
+
+    startUniqueTimer( statisticTimerId_, statisticInterval_ );
 
     reply->deleteLater();
 }
@@ -336,7 +296,7 @@ void QReallTvChat::onStatisticLoaded()
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
-    if(  parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -409,7 +369,7 @@ void QReallTvChat::onSmilesLoaded()
 
         QJsonParseError parseError;
         QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( response.toStdString().c_str() ), &parseError );
-        if( parseError.error == QJsonParseError::NoError )
+        if( QJsonParseError::NoError == parseError.error )
         {
             if( jsonDoc.isArray() )
             {
@@ -449,7 +409,7 @@ void QReallTvChat::onSmilesLoaded()
     }
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( REALLTV_SERVICE, REALLTV_USER, "Smiles ready...", "", this ) );
+        emit newMessage( ChatMessage( REALLTV_SERVICE, REALLTV_USER, "Smiles ready...", "", this ) );
 
     reply->deleteLater();
 }
@@ -460,7 +420,7 @@ void QReallTvChat::onSmilesLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( REALLTV_SERVICE, REALLTV_USER, "Can not load smiles..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
+        emit newMessage( ChatMessage( REALLTV_SERVICE, REALLTV_USER, "Can not load smiles..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
 
     reply->deleteLater();
 }
@@ -475,7 +435,7 @@ QString QReallTvChat::insertSmiles( const QString &message ) const
 
     for( int i = 0; i < tokens.size(); ++i )
     {
-        if ( !QChatMessage::isLink( tokens.at( i ) ) )//не ссылка
+        if ( !ChatMessage::isLink( tokens.at( i ) ) )//не ссылка
         {
             foreach( const QChatSmile &smile, smiles_ )
             {
@@ -529,7 +489,7 @@ void QReallTvChat::loadSettings()
 
     channelName_ = settings.value( REALLTV_CHANNEL_SETTING_PATH, DEFAULT_REALLTV_CHANNEL_NAME ).toString();
 
-    if( QChatMessage::isLink( channelName_ ) )
+    if( ChatMessage::isLink( channelName_ ) )
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
 
     enable( settings.value( REALLTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );

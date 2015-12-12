@@ -13,49 +13,51 @@ class QChatService: public QObject
 {
     Q_OBJECT
 public:
-    explicit QChatService( QObject *parent = 0 );
-    virtual ~QChatService();
+    explicit            QChatService( QObject * parent = nullptr );
+    virtual             ~QChatService();
 
-    bool isEnabled() const;
+    bool                isEnabled() const;
 
-    bool isShowSystemMessages() const;
-    bool isAliasesSelection() const;
-    bool isRemoveBlackListUsers() const;
+    bool                isShowSystemMessages() const;
+    bool                isAliasesSelection() const;
+    bool                isRemoveBlackListUsers() const;
 
-    bool isContainsAliases( const QString &message ) const;
+    bool                isContainsAliases( const QString & message ) const;
 
-    const QStringList& aliasesList() const;
-    const QStringList& supportersList() const;
-    const QStringList& blackList() const;
+    const QStringList & aliasesList() const;
+    const QStringList & supportersList() const;
+    const QStringList & blackList() const;
+protected:
+    void                startUniqueTimer( int & id, int interval );
+    void                resetTimer( int & id );
 
 public slots:
-    virtual void connect() = 0;
-    virtual void disconnect() = 0;
-    virtual void reconnect() = 0;
+    virtual void        connect() = 0;
+    virtual void        disconnect() = 0;
+    virtual void        reconnect() = 0;
 
-    void enable( bool enabled );
+    void                enable( bool enabled );
 
-    void setShowSystemMessages( bool showSystemMessages );
-    void setAliasesSelection( bool aliasesSelection );
-    void setRemoveBlackListUsers( bool removeBlackListUsers );
+    void                setShowSystemMessages( bool showSystemMessages );
+    void                setAliasesSelection( bool aliasesSelection );
+    void                setRemoveBlackListUsers( bool removeBlackListUsers );
 
-    void setAliasesList( const QString &aliasesList );
-    void setSupportersList( const QString &supportersList );
-    void setBlackList( const QString &blackList );
-
+    void                setAliasesList( const QString & aliasesList );
+    void                setSupportersList( const QString & supportersList );
+    void                setBlackList( const QString & blackList );
 
 signals:
-    void newMessage( QChatMessage *message );
-    void newStatistic( QChatStatistic *statistic );
-    void message( QJsonObject & json );
+    void                newMessage( ChatMessage );
+    void                newStatistic( QChatStatistic * statistic );
+    void                message( QJsonObject & json );
 private:
-    bool enabled_;
-    bool showSystemMessages_;
-    bool aliasesSelection_;
-    bool removeBlackListUsers_;    
-    QStringList aliasesList_;
-    QStringList supportersList_;
-    QStringList blackList_;
+    bool                enabled_;
+    bool                showSystemMessages_;
+    bool                aliasesSelection_;
+    bool                removeBlackListUsers_;
+    QStringList         aliasesList_;
+    QStringList         supportersList_;
+    QStringList         blackList_;
 };
 
 #endif // QCHATSERVICE_H

@@ -16,6 +16,8 @@
 
 #include <QDebug>
 
+#include "qchatmessage.h"
+
 #include "settingsconsts.h"
 #include "qyoutubechat.h"
 
@@ -57,37 +59,23 @@ QYoutubeChat::~QYoutubeChat()
 
 void QYoutubeChat::connect()
 {
-    if( !isEnabled() || channelName_ == "" )
+    if( !isEnabled() || channelName_.isEmpty() )
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( new QChatMessage( YOUTUBE_SERVICE, YOUTUBE_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( YOUTUBE_SERVICE, YOUTUBE_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
     getChannelInfo();        
 }
 
 void QYoutubeChat::disconnect()
 {
-    lastMessageTime_ = "";
-    channelName_ = "";
+    lastMessageTime_.clear();
+    channelName_.clear();
 
-    if( updateMessagesTimerId_ >= 0 )
-    {
-        killTimer( updateMessagesTimerId_ );
-        updateMessagesTimerId_ = -1;
-    }
-
-    if( updateStatisticTimerId_ >= 0 )
-    {
-        killTimer( updateMessagesTimerId_ );
-        updateMessagesTimerId_ = -1;
-    }
-
-    if( reconnectTimerId_ >= 0 )
-    {
-        killTimer( reconnectTimerId_ );
-        reconnectTimerId_ = -1;
-    }
+    resetTimer( updateMessagesTimerId_ );
+    resetTimer( updateStatisticTimerId_ );
+    resetTimer( reconnectTimerId_ );
 
     emit newStatistic( new QChatStatistic( YOUTUBE_SERVICE, "", this ) );
 }
@@ -97,9 +85,9 @@ void QYoutubeChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && channelName_ != "" && oldChannelName != "" )
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( YOUTUBE_SERVICE, YOUTUBE_USER, "Reconnecting...", "", this ) );
+            emit newMessage( ChatMessage( YOUTUBE_SERVICE, YOUTUBE_USER, "Reconnecting...", "", this ) );
     connect();
 }
 
@@ -128,15 +116,13 @@ void QYoutubeChat::onChannelInfoLoaded()
     if( !lastMessageTime_.isEmpty() )
     {
         if( isShowSystemMessages() )
-            emit newMessage( new QChatMessage( YOUTUBE_SERVICE, YOUTUBE_USER, "Connected to " + channelName_ + "...", "", this ) );
+            emit newMessage( ChatMessage( YOUTUBE_SERVICE, YOUTUBE_USER, "Connected to " + channelName_ + "...", "", this ) );
 
-        if( updateMessagesTimerId_ == -1 )
-            updateMessagesTimerId_ = startTimer( updateMessagesInterval_ );
+        startUniqueTimer( updateMessagesTimerId_, updateMessagesInterval_ );
 
         getStatistic();
 
-        if( updateStatisticTimerId_ == -1 )
-            updateStatisticTimerId_ = startTimer( updateStatisticInterval_ );
+        startUniqueTimer( updateStatisticTimerId_, updateStatisticInterval_ );
     }
 
     reply->deleteLater();
@@ -182,7 +168,7 @@ void QYoutubeChat::onMessagesLoaded()
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( messagesData.toStdString().c_str() ), &parseError );
 
-    if( parseError.error == QJsonParseError::NoError )
+    if( QJsonParseError::NoError == parseError.error )
     {
         if( jsonDoc.isObject() )
         {
@@ -206,38 +192,7 @@ void QYoutubeChat::onMessagesLoaded()
                 QString message = jsonMessageInfo[ "comment" ].toString();
                 QString nickName = jsonMessageInfo[ "author_name" ].toString();
 
-                bool blackListUser = blackList().contains( nickName );
-                bool supportersListUser = supportersList().contains( nickName );
-
-                if( !isRemoveBlackListUsers() || !blackListUser )
-                {
-                    if( blackListUser )
-                    {
-                        //TODO: игнорируемые
-                        emit newMessage( new QChatMessage( YOUTUBE_SERVICE, nickName, message, "ignore", this ) );
-                    }
-                    else
-                    {
-                        if( supportersListUser )
-                        {
-                            //TODO: саппортеры
-                            emit newMessage( new QChatMessage( YOUTUBE_SERVICE, nickName, message, "supporter", this ) );
-                        }
-                        else
-                        {
-                            if( isContainsAliases( message ) )
-                            {
-                                //TODO: сообщение к стримеру
-                                emit newMessage( new QChatMessage( YOUTUBE_SERVICE, nickName, message, "alias", this ) );
-                            }
-                            else
-                            {
-                                //TODO: простое сообщение
-                                emit newMessage( new QChatMessage( YOUTUBE_SERVICE, nickName, message, "", this ) );
-                            }
-                        }
-                    }
-                }
+                emit newMessage( ChatMessage( YOUTUBE_SERVICE, nickName, message, "", this ) );
             }
 
             lastMessageTime_ = QString::number( jsonObj[ "latest_time" ].toInt() );
@@ -296,11 +251,11 @@ void QYoutubeChat::onStatisticLoadError()
 
 void QYoutubeChat::timerEvent( QTimerEvent * event )
 {
-    if( event->timerId() == updateMessagesTimerId_ && channelName_ != "" )
+    if( event->timerId() == updateMessagesTimerId_ && !channelName_.isEmpty() )
     {
         getMessages();
     }
-    else if( event->timerId() == updateStatisticTimerId_ && channelName_ != "" )
+    else if( event->timerId() == updateStatisticTimerId_ && !channelName_.isEmpty() )
     {
         getStatistic();
     }

@@ -5,7 +5,6 @@
 
 #include <QStringList>
 
-
 #include "qchatmessage.h"
 
 #include "settingsconsts.h"
@@ -97,7 +96,7 @@ void QPoll::finish()
     emit finished();
 }
 
-void QPoll::onNewMessage( const QChatMessage * message )
+void QPoll::onNewMessage( const ChatMessage * message )
 {
     if( elapsedTime_ < time_ )
     {

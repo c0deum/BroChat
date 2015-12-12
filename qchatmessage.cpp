@@ -1,81 +1,95 @@
 #include <QDebug>
 #include <QStringList>
 
+#include "qchatservice.h"
+
 #include "qchatmessage.h"
 
-QChatMessage::QChatMessage( const QString &service, const QString &nickName, const QString &message, const QString &type, QObject *parent )
-: QObject( parent )
-, service_( service )
+ChatMessage::ChatMessage( const QString & serviceName, const QString & nickName, const QString & message, const QString & type, QChatService * service )
+: serviceName_( serviceName )
 , nickName_( nickName )
 , message_( message )
 , type_( type )
+, service_( service )
 {
 }
 
-QChatMessage::QChatMessage( const QChatMessage & chatMessage )
-: QObject( chatMessage.parent() )
-, service_( chatMessage.service_ )
+ChatMessage::ChatMessage( const ChatMessage & chatMessage )
+: serviceName_( chatMessage.serviceName_ )
 , nickName_( chatMessage.nickName_ )
 , message_( chatMessage.message_ )
 , type_( chatMessage.type_ )
+, service_( chatMessage.service_ )
 {
 }
 
-QChatMessage::~QChatMessage()
+ChatMessage::~ChatMessage()
 {
 }
 
-const QChatMessage & QChatMessage::operator=( const QChatMessage & chatMessage  )
+const ChatMessage & ChatMessage::operator=( const ChatMessage & chatMessage  )
 {
-    service_ = chatMessage.service_;
+    serviceName_ = chatMessage.serviceName_;
     nickName_ = chatMessage.nickName_;
     message_ = chatMessage.message_;
     type_ = chatMessage.type_;
+    service_ = chatMessage.service_;
 
-    return *this;
+    return * this;
 }
 
-QString QChatMessage::service() const
+QString ChatMessage::serviceName() const
 {
-    return service_;
+    return serviceName_;
 }
 
-void QChatMessage::setService( const QString& service )
+void ChatMessage::setServiceName( const QString & serviceName )
 {
-    service_ = service;
+    serviceName_ = serviceName;
 }
 
-QString QChatMessage::nickName() const
+QString ChatMessage::nickName() const
 {
     return nickName_;
 }
 
-void QChatMessage::setNickName( const QString& nickName )
+void ChatMessage::setNickName( const QString& nickName )
 {
     nickName_ = nickName;
 }
 
-QString QChatMessage::message() const
+QString ChatMessage::message() const
 {
     return message_;
 }
 
-void QChatMessage::setMessage( const QString &message )
+void ChatMessage::setMessage( const QString &message )
 {
     message_ = message;
 }
 
-QString QChatMessage::type() const
+QString ChatMessage::type() const
 {
     return type_;
 }
 
-void QChatMessage::setType( const QString &type )
+void ChatMessage::setType( const QString &type )
 {
     type_ = type;
 }
 
-QString QChatMessage::insertLinks( const QString& message, bool convertImageLinks )
+const QChatService * ChatMessage::service() const
+{
+    return service_;
+}
+
+void ChatMessage::setService( QChatService * service )
+{
+    service_ = service;
+}
+
+
+QString ChatMessage::insertLinks( const QString & message, bool convertImageLinks )
 {
     QString convertedMessage = message;
 
@@ -89,12 +103,29 @@ QString QChatMessage::insertLinks( const QString& message, bool convertImageLink
         {
             //TODO: Try repair links
             //convertedTokens[ i ] = "<a href=\\\'" + tokens.at( i ).toLower() + "\\\'>link</a>";
-            if( convertImageLinks && ( tokens.at( i ).right(4).toLower() == ".svg" || tokens.at( i ).right(4).toLower() == ".png" || tokens.at( i ).right( 4 ).toLower() == ".jpg" || tokens.at( i ).right(4).toLower() == ".gif" || tokens.at( i ).right( 5 ).toLower() == ".jpeg" ) )
+            if( convertImageLinks && ( ".svg" == tokens.at( i ).right(4).toLower() || ".png" == tokens.at( i ).right(4).toLower() || tokens.at( i ).right( 4 ).toLower() == ".jpg" || ".gif" == tokens.at( i ).right(4).toLower() || ".jpeg" == tokens.at( i ).right( 5 ).toLower() ) )
             {
                 //convertedTokens[ i ] = "<a href=\\\'" + tokens.at( i ) + "\\\'><img src=\\\'" + tokens.at( i ) + "\\\'><></a>";
                 //convertedTokens[ i ] = "<img src=\\\'" + tokens.at( i ) + "\\\' width=100%></img>";
                 convertedTokens[ i ] = "<a href=\"" + tokens.at( i ) + "\"><img class=\"picture\" src=\"" + tokens.at( i ) + "\"></img></a>";
             }
+            /*
+            else if( convertImageLinks && ".gifv" == tokens.at( i ).right( 5 ).toLower() )
+            {
+                //class=\"picture\"
+
+                QString test( tokens.at( i ) );
+
+                test.replace( ".gifv", ".webm" );
+
+                convertedTokens[ i ] = "<video preload=\"auto\" autoplay=\"autoplay\" loop=\"loop\"><source src=\"" + tokens.at( i ) + "\" type=\"video/webm\"></source></video>";
+
+            }
+            else if( convertImageLinks && "http://coub.com/view/" == tokens.at( i ).left( 21 ) )
+            {
+                //convertedTokens[ i ] = "<iframe src=\"" + tokens.at( i ) + "?muted=true&autostart=true&originalSize=false&hideTopBar=true&startWithHD=false\" allowfullscreen=\"false\" class = \"picture\"></iframe>";
+            }
+            */
             else
             {
                 //convertedTokens[ i ] = "<a href=\"" + tokens.at( i ) + "\"title=\"" + tokens.at( i ) + "\">link</a>";
@@ -123,7 +154,7 @@ QString QChatMessage::insertLinks( const QString& message, bool convertImageLink
     return convertedMessage;
 }
 
-bool QChatMessage::isLink( const QString& link )
+bool ChatMessage::isLink( const QString& link )
 {
     QRegExp urlRegExp(
                         "((?:(?:ht|f)tps?)(?:://))"
@@ -142,7 +173,7 @@ bool QChatMessage::isLink( const QString& link )
     return retValue;
 }
 
-QString QChatMessage::replaceEscapeCharecters( const QString &message )
+QString ChatMessage::replaceEscapeCharecters( const QString &message )
 {
     QString convertedMessage = message;
 
@@ -154,7 +185,7 @@ QString QChatMessage::replaceEscapeCharecters( const QString &message )
     return convertedMessage;
 }
 
-QString QChatMessage::deleteTags( const QString &message  )
+QString ChatMessage::deleteTags( const QString &message  )
 {
     QString convertedMessage = message;
 

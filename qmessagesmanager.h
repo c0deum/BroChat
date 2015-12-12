@@ -10,17 +10,15 @@ class QMessagesManager: public QObject
 {
     Q_OBJECT
 public:
-    explicit QMessagesManager( QObject * parent = 0 );
-    virtual ~QMessagesManager();
+    explicit                        QMessagesManager( QObject * parent = nullptr );
+    virtual                         ~QMessagesManager();
 public:
-    const QList< QChatMessage > & messages() const;
-    bool save( const QString & logDir ) const;
-private:
-    void add( const QChatMessage & message );
+    const QList< ChatMessage > &    messages() const;
+    bool                            save( const QString & logDir ) const;
 public slots:
-    void addMessage( QChatMessage * message );
+    void                            add( ChatMessage message );
 private:
-    QList< QChatMessage > messages_;
+    QList< ChatMessage >            messages_;
 };
 
 

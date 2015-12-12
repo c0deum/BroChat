@@ -52,7 +52,7 @@ void QChatUpdateServer::sendMessage( const QString& message )
 {
     foreach( QWebSocket *socket, clientsList_ )
     {
-        if( socket && socket->state() == QAbstractSocket::ConnectedState )
+        if( socket && socket->isValid() && QAbstractSocket::ConnectedState == socket->state() )
         {
             socket->sendTextMessage( message );
         }

@@ -1264,9 +1264,9 @@ void QSettingsDialog::saveSettings()
     }
 
     oldStringValue = settings.value( STYLE_SETTING_PATH, DEFAULT_STYLE_NAME ).toString();
-    if( ( oldStringValue != styleCombo->currentText() ) || ( defaultStyleChanged && styleCombo->currentIndex() == 0 ) )
+    if( ( oldStringValue != styleCombo->currentText() ) || ( defaultStyleChanged && 0 == styleCombo->currentIndex() ) )
     {
-        if( styleCombo->currentIndex() == 0 )
+        if( 0 == styleCombo->currentIndex() )
         {
             settings.setValue( STYLE_SETTING_PATH, styleCombo->currentText() );
             qDebug() << "generated style";

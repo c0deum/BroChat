@@ -24,51 +24,50 @@ class QReallTvChat: public QChatService
 {
     Q_OBJECT
 public:
-    explicit QReallTvChat( QObject *parent = 0 );
-    virtual ~QReallTvChat();
+    explicit                    QReallTvChat( QObject * parent = nullptr );
+    virtual                     ~QReallTvChat();
 private:
-    void loadSettings();
+    void                        loadSettings();
 
-    void getChannelInfo();
+    void                        getChannelInfo();
+    void                        getSmiles();
+    void                        getStatistic();
 
-    void getSmiles();
-    void getStatistic();
-
-    QString insertSmiles( const QString &message ) const;
+    QString                     insertSmiles( const QString & message ) const;
 
 protected:
-    void timerEvent( QTimerEvent *event );
+    void                        timerEvent( QTimerEvent * event );
 public slots:
-    virtual void connect();
-    virtual void disconnect();
-    virtual void reconnect();
+    virtual void                connect();
+    virtual void                disconnect();
+    virtual void                reconnect();
 private slots:
-    void onConnected();
-    void onError( QXmppClient::Error );
+    void                        onConnected();
+    void                        onError( QXmppClient::Error );
 
-    void onMessageReceived( const QXmppMessage &message );
+    void                        onMessageReceived( const QXmppMessage & message );
 
-    void onChannelInfoLoaded();
-    void onChannelInfoLoadError();
+    void                        onChannelInfoLoaded();
+    void                        onChannelInfoLoadError();
 
-    void onSmilesLoaded();
-    void onSmilesLoadError();
+    void                        onSmilesLoaded();
+    void                        onSmilesLoadError();
 
-    void onStatisticLoaded();
-    void onStatisticLoadError();
+    void                        onStatisticLoaded();
+    void                        onStatisticLoadError();
 
 private:
-    QNetworkAccessManager *nam_;
-    QXmppClient *xmppClient_;
-    QXmppMucManager *mucManager_;
-    QString channelName_;
-    QString cid_;
-    QDateTime connectionTime_;
-    QMap<QString, QChatSmile> smiles_;
-    int reconnectTimerId_;
-    int reconnectInterval_;
-    int statisticTimerId_;
-    int statisticInterval_;
+    QNetworkAccessManager *     nam_;
+    QXmppClient *               xmppClient_;
+    QXmppMucManager *           mucManager_;
+    QString                     channelName_;
+    QString                     cid_;
+    QDateTime                   connectionTime_;
+    QMap<QString, QChatSmile>   smiles_;
+    int                         reconnectTimerId_;
+    int                         reconnectInterval_;
+    int                         statisticTimerId_;
+    int                         statisticInterval_;
 };
 
 #endif // QREALLTVCHAT
