@@ -23,13 +23,11 @@ public:
     QString                     emotIcon( const QString & smileName );
 
 private:
-    void                        getSelf();
-    void                        getEmotIcons();
-    void                        getBadges();
+    void                        loadSelf();
+    virtual void                loadSmiles();
+    void                        loadBadges();
 
-    void                        getStatistic();
-
-    QString                     insertEmotIcons( const QString & message ) const;
+    void                        loadStatistic();
 
     void                        safeDeleteSocket();
 
@@ -51,8 +49,8 @@ private slots:
     void                        onSelfLoaded();
     void                        onSelfLoadError();
 
-    void                        onEmotIconsLoaded();
-    void                        onEmotIconsLoadError();
+    void                        onSmilesLoaded();
+    void                        onSmilesLoadError();
 
     void                        onBadgesLoaded();
     void                        onBadgesLoadError();
@@ -69,8 +67,6 @@ private:
     QString                     selfLink_;
     QString                     emotIconsLink_;
     QString                     badgesLink_;
-    //QList<QChatSmile> emotIcons_;
-    QMap<QString, QChatSmile>   emotIcons_;
 
     int                         reconnectTimerId_;
     int                         reconnectInterval_;

@@ -28,18 +28,12 @@
 const QString DEFAULT_FUNSTREAM_WEBSOCKET_LINK = "ws://funstream.tv:3811/socket.io/?EIO=3&transport=websocket";
 const QString DEFAULT_FUNSTREAM_SMILES_LINK = "http://funstream.tv/build/images/smiles/";
 const QString DEFAULT_FUNSTREAM_STATISTIC_LINK = "https://funstream.tv/api/user/list";
-
-
 const QString DEFAULT_FUNSTREAM_SMILES_REQUEST = "https://funstream.tv/api/smile";
-
 const QString DEFAULT_FUNSTREAM_CHANNEL_PREFIX = "http://funstream.tv/stream/";
-
-
 
 const int DEFAULT_FUNSTREAM_RECONNECT_INTERVAL = 10000;
 const int DEFAULT_FUNSTREAM_SAVE_CONNECTION_INTTERVAL = 25000;
 const int DEFAULT_FUNSTREAM_STATISTIC_INTERVAL = 10000;
-
 
 const QString FUNSTREAM_USER = "FUNSTREAM";
 const QString FUNSTREAM_SERVICE = "funstream";
@@ -47,10 +41,9 @@ const QString FUNSTREAM_SERVICE = "funstream";
 QFunStreamChat::QFunStreamChat( QObject *parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
-, socket_( 0 )
+, socket_( nullptr )
 , channelName_()
 , channelId_()
-, smiles_()
 , reconnectTimerId_( -1 )
 , reconnectInterval_( DEFAULT_FUNSTREAM_RECONNECT_INTERVAL )
 , saveConnectionTimerId_( -1 )
@@ -64,7 +57,6 @@ QFunStreamChat::QFunStreamChat( QObject *parent )
 , historyRequestId_( -1 )
 , historyLastMessageId_( 0 )
 {
-
 }
 
 QFunStreamChat::~QFunStreamChat()
@@ -86,13 +78,10 @@ void QFunStreamChat::connect()
     statisticRequestId_ = -1;
     historyRequestId_ = -1;
 
-    smiles_.clear();
-
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
 
-    getSmiles();
-    getChannelInfo();
+    loadChannelInfo();
 }
 
 void QFunStreamChat::disconnect()
@@ -106,9 +95,9 @@ void QFunStreamChat::disconnect()
         socket_->abort();
         socket_->deleteLater();
     }
-    socket_ = 0;
+    socket_ = nullptr;
 
-    emit newStatistic( new QChatStatistic( FUNSTREAM_SERVICE, "", this ) );
+    emit newStatistic( new QChatStatistic( FUNSTREAM_SERVICE, QString(), this ) );
 }
 
 void QFunStreamChat::reconnect()
@@ -118,28 +107,21 @@ void QFunStreamChat::reconnect()
     loadSettings();
     if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
     {
-        //новый канал
         if( channelName_ != oldChannelName )
         {
-            //флаг, что историю грузить не надо
             historyLastMessageId_ = 0;
         }
         if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Reconnecting...", "", this ) );
+            emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, tr( "Reconnecting..." ), QString(), this ) );
     }
     connect();
 }
 
-void QFunStreamChat::getChannelInfo()
-{
-    //QString requestLink = ChatMessage::isLink( channelName_ )? channelName_ : DEFAULT_FUNSTREAM_CHANNEL_PREFIX + channelName_;
-
+void QFunStreamChat::loadChannelInfo()
+{   
     QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_CHANNEL_PREFIX + channelName_ ) );
 
-    //QNetworkRequest request( QUrl( requestLink + "" ) );
-
-
-    QNetworkReply *reply = nam_->get( request );
+    QNetworkReply * reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChannelInfoLoaded() ) );
     QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onChannelInfoLoadError() ) );
 
@@ -147,7 +129,7 @@ void QFunStreamChat::getChannelInfo()
 
 void QFunStreamChat::onChannelInfoLoaded()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     QString info = reply->readAll();
 
@@ -155,8 +137,6 @@ void QFunStreamChat::onChannelInfoLoaded()
     int endInfoPos = info.indexOf( ";</script>" );
 
     info = info.mid( startInfoPos, endInfoPos - startInfoPos );
-
-    //qDebug() << "Script:\n" << info;
 
     QJsonParseError parseError;
 
@@ -168,46 +148,12 @@ void QFunStreamChat::onChannelInfoLoaded()
         {
             QJsonArray jsonArr = jsonDoc.array();
 
-            /*
-            QJsonArray jsonStreamInfoArr = jsonArr[ 0 ].toArray();
-
-            QJsonObject streamInfo = jsonStreamInfoArr[ 1 ].toObject();
-
-            channelId_ = QString::number( streamInfo[ "id" ].toInt() );
-            */
-
-
             QJsonArray jsonStreamInfoArr = jsonArr[ 1 ].toArray();
-            //parse stream info
 
             QJsonObject jsonStreamInfoObj = jsonStreamInfoArr[ 2 ].toObject();
             QJsonObject jsonStreamerInfoObj = jsonStreamInfoObj[ "streamer" ].toObject();
 
             channelId_ = QString::number( jsonStreamerInfoObj[ "id" ].toInt() );
-
-            /*
-            //parse smile info
-            QJsonArray jsonSmilesInfoArr = jsonArr[ 3 ].toArray();
-            QJsonArray jsonSmilesTabs = jsonSmilesInfoArr[ 2 ].toArray();
-
-            //0-6 + 1(streamers smiles)
-            const int SMILES_TABS = 8;
-
-            for( int i = 0; i < SMILES_TABS; i++ )
-            {
-                foreach( const QJsonValue &smileInfo, jsonSmilesTabs[ i ].toArray() )
-                {
-                    QJsonObject smileInfoObj = smileInfo.toObject();
-                    smiles_.append( QChatSmile( ":" + smileInfoObj[ "code" ].toString() + ":", DEFAULT_FUNSTREAM_SMILES_LINK + smileInfoObj[ "image" ].toString(), 0 , 0 ) );
-
-                    //Free smiles for funstream
-                    smiles_.append( QChatSmile( ":free-" + smileInfoObj[ "code" ].toString() + ":", DEFAULT_FUNSTREAM_SMILES_LINK + smileInfoObj[ "image" ].toString(), 0 , 0 ) );
-                }
-            }
-
-            if( isShowSystemMessages() )
-                emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Smiles ready...", "", this ) );
-            */
 
             connectToWebClient();
         }
@@ -221,15 +167,17 @@ void QFunStreamChat::onChannelInfoLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Can not connect to " + channelName_ + "..." + reply->errorString(), "", this ) );
+        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString(), QString(), this ) );
 
     startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 
     reply->deleteLater();
 }
 
-void QFunStreamChat::getSmiles()
+void QFunStreamChat::loadSmiles()
 {
+    QChatService::loadSmiles();
+
     QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_SMILES_REQUEST + "" ) );
 
     request.setRawHeader( "Accept", "application/json" );
@@ -247,8 +195,6 @@ void QFunStreamChat::onSmilesLoaded()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
-    //qDebug() << reply->readAll();
-
     QJsonParseError parseError;
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
@@ -260,34 +206,17 @@ void QFunStreamChat::onSmilesLoaded()
 
             foreach( const QJsonValue &smileInfo, jsonSmilesInfoArr )
             {
-                QJsonObject smileInfoObj = smileInfo.toObject();
-                smiles_.append( QChatSmile( ":" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString() ) );
 
-                //Free smiles for funstream
-                smiles_.append( QChatSmile( ":free-" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString() ) );
+                QJsonObject smileInfoObj = smileInfo.toObject();
+
+                addSmile( ":" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString() );
+                addSmile( ":free-" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString() );
 
             }                        
 
             if( isShowSystemMessages() )
-                emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Smiles ready...", "", this ) );
+                emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, tr( "Smiles loaded..." ), QString(), this ) );
         }
-    }
-
-    //own smiles code
-    QString smilesPath = QApplication::applicationDirPath() + "/smiles";
-
-    QStringList extList;
-    extList << "*.svg" << "*.png" << "*.gif" << "*.jpg";
-
-    QDir smilesDir( smilesPath );
-
-    QStringList smileFiles = smilesDir.entryList( extList, QDir::Files | QDir::NoSymLinks );
-
-    foreach( const QString& smileName, smileFiles )
-    {
-        QChatSmile smile( ":" + smileName.left( smileName.length() - 4 ) + ":",
-                          "file:///" + smilesPath + "/" + smileName );
-        smiles_.append( smile );
     }
 
     reply->deleteLater();
@@ -295,15 +224,15 @@ void QFunStreamChat::onSmilesLoaded()
 
 void QFunStreamChat::onSmileLoadError()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Can not load smiles...", "", this ) );
+        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, tr( "Can not load smiles..." ), QString(), this ) );
 
     reply->deleteLater();
 }
 
-void QFunStreamChat::getStatistic()
+void QFunStreamChat::loadStatistic()
 {
     if( channelId_.isEmpty() )
         return;
@@ -317,7 +246,7 @@ void QFunStreamChat::getStatistic()
     }
 }
 
-void QFunStreamChat::getHistory()
+void QFunStreamChat::loadHistory()
 {
     if( channelId_.isEmpty() )
         return;
@@ -332,8 +261,6 @@ void QFunStreamChat::getHistory()
         QString message = "42" + QString::number( historyRequestId_ ) + \
                 "[\"/chat/history\",{\"channel\":\"stream/" + channelId_ + "\",\"amount\":100,\"query\":null}]";
 
-        //qDebug() << message;
-
         socket_->sendTextMessage( message );
     }
 }
@@ -346,41 +273,8 @@ void QFunStreamChat::connectToWebClient()
     QObject::connect( socket_, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( onWebSocketError() ) );
     QObject::connect( socket_, SIGNAL( connected() ), this, SLOT( onWebSocketConnected() ) );
 
-    //test ping-pong support
-    QObject::connect( socket_, SIGNAL( pong( quint64,QByteArray ) ), this, SLOT( onPong( quint64,QByteArray ) ) );
-
     socket_->open( QUrl( DEFAULT_FUNSTREAM_WEBSOCKET_LINK ) );
 }
-
-QString QFunStreamChat::insertSmiles( const QString &message ) const
-{
-    QString convertedMessage = message;
-
-    QStringList tokens = convertedMessage.split( QRegExp( "\\s" ) );
-
-    QStringList convertedTokens = tokens;
-
-    for( int i = 0; i < tokens.size(); ++i )
-    {
-        if ( !ChatMessage::isLink( tokens.at( i ) ) )//не ссылка
-        {
-            foreach( const QChatSmile &smile, smiles_ )
-            {
-               convertedTokens[ i ].replace( smile.name(), "<img class = \"smile\" src=\"" + smile.link() + "\"></img>" );
-            }
-        }
-    }
-
-    for( int i = 0; i < tokens.size(); ++i )
-    {
-        convertedMessage.replace( tokens.at( i ), convertedTokens.at( i ) );
-    }
-
-    return convertedMessage;
-}
-
-
-
 
 void QFunStreamChat::onWebSocketConnected()
 {       
@@ -390,11 +284,10 @@ void QFunStreamChat::onWebSocketConnected()
 void QFunStreamChat::onWebSocketError()
 {
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Web socket error..." + socket_->errorString(), "", this ) );    
+        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, tr( "Web socket error..." ) + socket_->errorString(), QString(), this ) );
     startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 }
 
-//TODO: переделатьнах
 void QFunStreamChat::parseMessage( const QJsonObject & jsonObj )
 {
     if( "stream/" + channelId_ == jsonObj[ "channel" ].toString() && jsonObj[ "id" ].toInt() > historyLastMessageId_ )
@@ -427,9 +320,6 @@ void QFunStreamChat::parseMessage( const QJsonObject & jsonObj )
 
 void QFunStreamChat::onTextMessageRecieved( const QString &message )
 {
-
-    //qDebug() << message;
-
     if( "42[\"/chat/message\"" == message.left( 18 ) )
     {
         QString messageContent = message.mid( 19 );
@@ -466,45 +356,7 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
 
                     message = insertSmiles( message );
 
-                    emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, "", this ) );
-
-                    /*
-                    bool blackListUser = blackList().contains( nickName );
-                    bool supportersListUser = supportersList().contains( nickName );
-
-                    if( !isRemoveBlackListUsers() || !blackListUser )
-                    {
-                        if( blackListUser )
-                        {
-                            //TODO: игнорируемые
-                            emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, "ignore", this ) );
-                        }
-                        else
-                        {
-                            if( supportersListUser )
-                            {
-                                //TODO: саппортеры
-                                emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, "supporter", this ) );
-                            }
-                            else
-                            {
-                                if( isContainsAliases( message ) )
-                                {
-                                    //TODO: сообщение к стримеру
-                                    emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, "alias", this ) );
-                                }
-                                else
-                                {
-                                    //TODO: простое сообщение
-                                    emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, "", this ) );
-                                }
-                            }
-                        }
-                    }
-                    */
-
-
-                    //emit newMessage( ChatMessage( FUNSTREAM_SERVICE, jsonObj[ "from" ].toObject()[ "name" ].toString(), jsonObj[ "to" ].toObject()[ "name" ].toString() + jsonObj[ "text" ].toString(), "", this ) );
+                    emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, QString(), this ) );
                 }
 
             }
@@ -526,8 +378,9 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
         if( isShowSystemMessages() )
             emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Connected to " + channelName_ + "...", "", this ) );
 
-        getHistory();
-        getStatistic();
+        loadSmiles();
+        loadHistory();
+        loadStatistic();
 
         startUniqueTimer( statisticTimerId_, statisticInterval_ );
     }
@@ -537,19 +390,6 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
 
         if( requestId == QString( "43" + QString::number( statisticRequestId_ ) ) )
         {
-            /*
-            const QString STATISTIC_PREFIX = "\"amount\":";
-            const QString STATISTIC_POSTFIX = ",";
-            int startStatisticPos = message.indexOf( STATISTIC_PREFIX ) + STATISTIC_PREFIX.length();
-            int endStatisticPos = message.indexOf( STATISTIC_POSTFIX, startStatisticPos ) - 1;
-
-            if( endStatisticPos - startStatisticPos + 1 > 0 )
-            {
-                QString statistic = message.mid( startStatisticPos, endStatisticPos - startStatisticPos + 1 ).replace( " ", "" );
-                emit newStatistic( new QChatStatistic( FUNSTREAM_SERVICE, statistic, this ) );
-            }
-            */
-
             const QString RESULT_PREFIX = "\"result\":";
             const QString RESULT_POSTFIX = "}";
             int startResultPos = message.indexOf( RESULT_PREFIX ) + RESULT_PREFIX.length();
@@ -582,24 +422,15 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
         }
         else if( requestId == QString( "43" + QString::number( historyRequestId_ ) ) )
         {
-            /*
-            if( lastMessageId_ == 0 )
-                return;
-                */
-
             const QString MESSAGES_INFO_PREFIX = "\"result\":";
 
             int messagesInfoStart = message.indexOf( MESSAGES_INFO_PREFIX ) + MESSAGES_INFO_PREFIX.length();
             int messagesInfoEnd = message.indexOf( ']', messagesInfoStart );
 
-
-
             if( messagesInfoEnd - messagesInfoStart + 1 > 0 )
             {
 
                 QString messagesInfo = message.mid( messagesInfoStart, messagesInfoEnd - messagesInfoStart + 1 );
-
-                //qDebug() << messagesInfo;
 
                 QJsonParseError parseError;
                 QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( messagesInfo.toStdString().c_str() ), &parseError );
@@ -633,19 +464,11 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
     }
 }
 
-
-void QFunStreamChat::onPong( quint64 elapsedTime, const QByteArray &payload )
-{
-    qDebug() << "FunStreamChat pong recieved: " << elapsedTime << " " << payload;
-}
-
-
-
 void QFunStreamChat::timerEvent( QTimerEvent *event )
 {
     if( event->timerId() == statisticTimerId_ )
     {
-        getStatistic();
+        loadStatistic();
     }
     else if( event->timerId() == saveConnectionTimerId_ )
     {

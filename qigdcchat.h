@@ -19,7 +19,7 @@ private:
 
     void                    loadChannelInfo();
 
-    void                    getStatistic();
+    void                    loadStatistic();
 
     void                    loadMessages();
 

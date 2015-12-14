@@ -25,18 +25,16 @@ private:
     void                        loadSettings();
 
     //sid for websocket statistic connection
-    void                        getSid();
+    void                        loadSid();
 
     //join afte 3probe received from livecoding
     void                        joinToChannel();
 
-    void                        getSmiles();
+    virtual void                loadSmiles();
 
     void                        connectToWebSocket();
     void                        disconnectFromWebSocket();
     void                        reconnectToWebSocket();
-
-    QString                     insertSmiles( const QString & message ) const;
 
 protected:
     virtual void                timerEvent( QTimerEvent * event );
@@ -58,7 +56,6 @@ private slots:
     void                        onWebSocketConnected();
     void                        onWebSocketError();
     void                        onWebSocketMessageReceived( const QString & message );
-    //void                      onWebSocketPong();
 
     void                        onSmilesLoaded();
     void                        onSmilesLoadError();
@@ -73,7 +70,6 @@ private:
     QString                     login_;
     QString                     password_;
     QDateTime                   connectionTime_;
-    QMap<QString, QChatSmile>   smiles_;
     int                         reconnectTimerId_;
     int                         reconnectInterval_;
     int                         reconnectWebSocketTimerId_;

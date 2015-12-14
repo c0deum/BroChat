@@ -25,15 +25,12 @@ protected:
 private:
     void                    loadSettings();
 
-//    void                  getChannelInfo();
-    void                    getServersList();
-    void                    getSocketHash();
+    void                    loadServersList();
+    void                    loadSocketHash();
 
-    void                    getSmiles();
+    virtual void            loadSmiles();
 
-    void                    getStatistic();
-
-    QString                 insertSmiles( const QString & message );
+    void                    loadStatistic();
 
 public slots:
     virtual void            connect();
@@ -43,9 +40,6 @@ public slots:
     void                    changeOriginalColors( bool originalColors );
 
 private slots:
-//    void                  onChannelInfoLoaded();
-//    void                  onChannelInfoLoadError();
-
     void                    onServersListLoaded();
     void                    onServersListLoadError();
 
@@ -61,28 +55,18 @@ private slots:
     void                    onTextMessageReceived( const QString & message  );
     void                    onWebSocketError();
 
-    void                    onPong( quint64 elapsedTime, const QByteArray & payload );
-
 private:
     QNetworkAccessManager * nam_;
     QWebSocket *            socket_;
-
     QString                 channelName_;
-
     QList< QString >        servers_;
-
-    //QMap< QString, QString > smiles_;
-    QList< QChatSmile >     smiles_;
 
     int                     reconnectTimerId_;
     int                     reconnectInterval_;
-
     int                     statisticTimerId_;
     int                     statisticInterval_;
-
     int                     saveConnectionTimerId_;
     int                     saveConnectionInterval_;
-
     bool                    originalColors_;
 };
 

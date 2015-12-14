@@ -23,9 +23,8 @@ protected:
 
 private:
     void                        loadSettings();
-    void                        getSmiles();
-    void                        getStatistic();
-    QString                     insertSmiles( const QString & message );
+    virtual void                loadSmiles();
+    void                        loadStatistic();
 
 public slots:
     virtual void                connect();
@@ -43,14 +42,11 @@ private slots:
     void                        onStatisticLoaded();
     void                        onStatisticLoadError();
 
-    void                        onPong( quint64 elapsedTime, const QByteArray & payload );
-
 private:
     QNetworkAccessManager *     nam_;
     QWebSocket *                socket_;
     QString                     channelName_;
     int                         lastUpd_;
-    QMap< QString, QChatSmile > smiles_;
     int                         saveConnectionTimerId_;
     int                         reconnectTimerId_;
     int                         saveConnectionInterval_;

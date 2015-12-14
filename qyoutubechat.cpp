@@ -65,7 +65,8 @@ void QYoutubeChat::connect()
     if( isShowSystemMessages() )
         emit newMessage( ChatMessage( YOUTUBE_SERVICE, YOUTUBE_USER, "Connecting to " + channelName_ + "...", "", this ) );
 
-    getChannelInfo();        
+    loadChannelInfo();        
+    //loadSmiles();
 }
 
 void QYoutubeChat::disconnect()
@@ -91,7 +92,7 @@ void QYoutubeChat::reconnect()
     connect();
 }
 
-void QYoutubeChat::getChannelInfo()
+void QYoutubeChat::loadChannelInfo()
 {
     QNetworkRequest request( QUrl( DEFAULT_YOUTUBE_CHANNEL_INFO_PREFIX + channelName_ + DEFAULT_YOUTUBE_CHANNEL_INFO_POSTFIX ) );
     QNetworkReply * reply = nam_->get( request );
@@ -118,9 +119,11 @@ void QYoutubeChat::onChannelInfoLoaded()
         if( isShowSystemMessages() )
             emit newMessage( ChatMessage( YOUTUBE_SERVICE, YOUTUBE_USER, "Connected to " + channelName_ + "...", "", this ) );
 
+        loadSmiles();
+
         startUniqueTimer( updateMessagesTimerId_, updateMessagesInterval_ );
 
-        getStatistic();
+        loadStatistic();
 
         startUniqueTimer( updateStatisticTimerId_, updateStatisticInterval_ );
     }
@@ -134,7 +137,7 @@ void QYoutubeChat::onChannelInfoLoadError()
     reply->deleteLater();
 }
 
-void QYoutubeChat::getMessages()
+void QYoutubeChat::loadMessages()
 {
     QNetworkRequest request( QUrl( DEFAULT_YOUTUBE_MESSAGES_PREFIX + channelName_ + DEFAULT_YOUTUBE_MESSAGES_INFIX + lastMessageTime_ + DEFAULT_YOUTUBE_MESSAGES_POSTFIX ) );
     QNetworkReply * reply = nam_->get( request );
@@ -192,6 +195,8 @@ void QYoutubeChat::onMessagesLoaded()
                 QString message = jsonMessageInfo[ "comment" ].toString();
                 QString nickName = jsonMessageInfo[ "author_name" ].toString();
 
+                message = insertSmiles( message );
+
                 emit newMessage( ChatMessage( YOUTUBE_SERVICE, nickName, message, "", this ) );
             }
 
@@ -208,7 +213,7 @@ void QYoutubeChat::onMessagesLoadError()
     reply->deleteLater();
 }
 
-void QYoutubeChat::getStatistic()
+void QYoutubeChat::loadStatistic()
 {
     //if( channelName_.isEmpty() )
     //  return;
@@ -253,11 +258,11 @@ void QYoutubeChat::timerEvent( QTimerEvent * event )
 {
     if( event->timerId() == updateMessagesTimerId_ && !channelName_.isEmpty() )
     {
-        getMessages();
+        loadMessages();
     }
     else if( event->timerId() == updateStatisticTimerId_ && !channelName_.isEmpty() )
     {
-        getStatistic();
+        loadStatistic();
     }
     else if( event->timerId() == reconnectTimerId_ )
     {

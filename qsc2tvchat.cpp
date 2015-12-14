@@ -27,7 +27,6 @@ const QString DEFAULT_SC2TV_STREAMS_LINK = "http://sc2tv.ru/streams_list.json";
 const QString DEFAULT_SC2TV_SMILES_LINK = "http://chat.sc2tv.ru/js/smiles.js";
 const QString DEFAULT_SC2TV_SMILES_DIR_LINK = "http://chat.sc2tv.ru/img/";
 
-//TODO: preload styles, as smiles
 const QString DEFAULT_SC2TV_CHAT_CSS_LINK = "http://chat.sc2tv.ru/css/chat.css";
 
 const QString DEFAULT_SC2TV_CHANNEL_PREFIX = "http://sc2tv.ru/channel/";
@@ -44,10 +43,7 @@ QSc2tvChat::QSc2tvChat( QObject *parent )
 , nam_( new QNetworkAccessManager( this ) )
 , channelName_()
 , channelLink_()
-//, lastMessageTime_()
-//, lastMainMessageId_()
 , lastMessageId_()
-, smiles_()
 , styles_()
 , updateMessagesTimerId_( -1 )
 , reconnectTimerId_( -1 )
@@ -55,10 +51,6 @@ QSc2tvChat::QSc2tvChat( QObject *parent )
 , reconnectInterval_( DEFAULT_SC2TV_RECONNECT_INTERVAL )
 , originalColors_( false )
 {
-    //loadSettings();
-    //getLastMessageId();
-    //getSmiles();
-    //getStyles();
 }
 
 QSc2tvChat::~QSc2tvChat()
@@ -71,22 +63,19 @@ void QSc2tvChat::connect()
     if( !isEnabled() || channelName_.isEmpty() )
         return;
 
-    smiles_.clear();
     styles_.clear();
-    //getLastMessageId();
-    getSmiles();
-    getStyles();
+
+    loadStyles();
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
 
-    getChannelInfo();
+    loadChannelInfo();
 }
 
 void QSc2tvChat::disconnect()
 {
     channelLink_.clear();
-    //lastMessageTime_ = "";
 
     resetTimer( updateMessagesTimerId_ );
     resetTimer( reconnectTimerId_ );
@@ -97,16 +86,17 @@ void QSc2tvChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
-        if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, "Reconnecting...", "", this ) );
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
+        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Reconnecting..." ), QString(), this ) );
     connect();
 }
 
-void QSc2tvChat::getSmiles()
+void QSc2tvChat::loadSmiles()
 {
+    QChatService::loadSmiles();
+
     QNetworkRequest request( QUrl( DEFAULT_SC2TV_SMILES_LINK + "" ) );
-    QNetworkReply *reply = nam_->get( request );
+    QNetworkReply * reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSmilesLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onSmilesLoadError() ) );
 }
@@ -130,7 +120,6 @@ void QSc2tvChat::onSmilesLoaded()
         {
             if( jsonDoc.isArray() )
             {
-                smiles_.clear();
                 QJsonArray smilesArray = jsonDoc.array();
 
                 foreach( const QJsonValue &value, smilesArray )
@@ -140,38 +129,16 @@ void QSc2tvChat::onSmilesLoaded()
                     QString img = jsonSmile[ "img" ].toString();
                     img = DEFAULT_SC2TV_SMILES_DIR_LINK + img.left( img.indexOf( '.' ) + 4 );
 
-                    //qDebug() << img;
-
-                    QChatSmile smile(   ":s" + jsonSmile[ "code" ].toString(), img );
-                    smiles_.append( smile );
-
-                    QChatSmile freeSmile( jsonSmile[ "code" ].toString().insert( 1, "free-" ), img );
-                    smiles_.append( freeSmile );
+                    addSmile( ":s" + jsonSmile[ "code" ].toString(), img );
+                    addSmile( jsonSmile[ "code" ].toString().insert( 1, "free-" ), img );
 
                 }
             }
         }
     }
 
-    //own smiles code
-    QString smilesPath = QApplication::applicationDirPath() + "/smiles";
-
-    QStringList extList;
-    extList << "*.svg" << "*.png" << "*.gif" << "*.jpg";
-
-    QDir smilesDir( smilesPath );
-
-    QStringList smileFiles = smilesDir.entryList( extList, QDir::Files | QDir::NoSymLinks );
-
-    foreach( const QString& smileName, smileFiles )
-    {
-        QChatSmile smile(   ":" + smileName.left( smileName.length() - 4 ) + ":",
-                                "file:///" + smilesPath + "/" + smileName );
-        smiles_.append( smile );
-    }
-
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, "Smiles ready...", "", this ) );
+        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, "Smiles loaded...", "", this ) );
 
     reply->deleteLater();
 }
@@ -180,13 +147,11 @@ void QSc2tvChat::onSmilesLoadError()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, "Can not load smiles..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
-    //TODO: timer for smiles loading
-    //getSmiles();// timer may be
+        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Can not load smiles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
     reply->deleteLater();
 }
 
-void QSc2tvChat::getStyles()
+void QSc2tvChat::loadStyles()
 {
     QNetworkRequest request( QUrl( DEFAULT_SC2TV_CHAT_CSS_LINK + "" ) );
     QNetworkReply *reply = nam_->get( request );
@@ -198,7 +163,6 @@ void QSc2tvChat::getStyles()
 void QSc2tvChat::onStyleLoaded()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
-    //TODO: parse styles
 
     QString chatStyles = reply->readAll();
 
@@ -214,8 +178,6 @@ void QSc2tvChat::onStyleLoaded()
         QString role = chatStyles.mid( startRolePos, endRolePos - startRolePos + 1 );
         role.replace( ' ', "" );//moderator-role fix
 
-        //qDebug() << role;
-
         int startStylePos = chatStyles.indexOf( '{', endRolePos ) + 1;
         int endStylePos = chatStyles.indexOf( '}', startStylePos ) - 1;
 
@@ -225,8 +187,6 @@ void QSc2tvChat::onStyleLoaded()
         style.replace( '\r', "" );
         style.replace( '\n', "" );
         style.replace( " !important;", "" );
-
-        //qDebug() << style;
 
         styles_.insert( role, style );
 
@@ -242,81 +202,17 @@ void QSc2tvChat::onStylesLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, "Can not load styles..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
-    //TODO: timer for loading smiles
-    //getStyles();// timer may be
+        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Can not load styles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
 
     reply->deleteLater();
 }
-
-/*
-void QSc2tvChat::getLastMessageId()
-{
-    QNetworkRequest request( QUrl( DEFAULT_SC2TV_CHANNEL_PREFIX_LINK + "0.json" ) );
-    QNetworkReply *reply = nam_->get( request );
-    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onLastMessageIdLoaded() ) );
-    QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError )  ), this, SLOT( onLastMessageIdLoadError() ) );
-}
-*/
-
 
 bool cmpJsonObject( const QJsonObject &lho, const QJsonObject& rho )
 {
     return lho[ "id" ].toString() < rho[ "id" ].toString();
 }
 
-/*
-void QSc2tvChat::onLastMessageIdLoaded()
-{
-    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
-
-    QJsonParseError parseError;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
-    if( parseError.error == QJsonParseError::NoError )
-    {
-        if( jsonDoc.isObject() )
-        {
-            QJsonArray jsonMessages = jsonDoc.object()[ "messages" ].toArray();
-            lastMainMessageId_ = jsonMessages.first().toObject()[ "id" ].toString();
-
-
-
-            QList< QJsonObject > jsonMessagesList;
-
-            foreach( const QJsonValue &value, jsonMessages )
-            {
-                jsonMessagesList.append( value.toObject() );
-                qDebug() << value.toObject()[ "id" ].toString();
-            }
-
-            qSort( jsonMessagesList.begin(), jsonMessagesList.end(), cmpJsonObject );
-
-            if( jsonMessagesList.size() > 0 )
-            {
-                lastMessageId_ = jsonMessagesList.last()[ "id" ].toString();
-                qDebug() << "lastId = " << lastMessageId_;
-            }
-
-        }
-    }
-
-    reply->deleteLater();
-}
-
-void QSc2tvChat::onLastMessageIdLoadError()
-{
-    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
-
-    qDebug() << reply->errorString();
-
-    if( lastMessageId_ == "" )
-        getLastMessageId();
-
-    reply->deleteLater();
-}
-*/
-
-void QSc2tvChat::getChannelInfo()
+void QSc2tvChat::loadChannelInfo()
 {
     QNetworkRequest request( QUrl( DEFAULT_SC2TV_CHANNEL_PREFIX + channelName_ ) );
     QNetworkReply *reply = nam_->get( request );
@@ -328,8 +224,6 @@ void QSc2tvChat::onChannelInfoLoaded()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
     QString channelInfo = reply->readAll();
-
-    //qDebug() << channelInfo;
 
     int channelIdStart = channelInfo.indexOf( "current_channel_id" );
     if( channelIdStart > 0 )
@@ -346,7 +240,9 @@ void QSc2tvChat::onChannelInfoLoaded()
             channelLink_ = DEFAULT_SC2TV_CHANNEL_PREFIX_LINK + channelInfo + ".json";
 
             if( isShowSystemMessages() )
-                emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, "Connected to " + channelName_ + "...", "", this ) );
+                emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+
+            loadSmiles();
 
             startUniqueTimer( updateMessagesTimerId_, updateMessagesInterval_ );
         }
@@ -370,17 +266,17 @@ void QSc2tvChat::onChannelInfoLoaded()
 
 void QSc2tvChat::onChannelInfoLoadError()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, "Can not connect to " + channelName_ + "..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
+        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), QString(), this ) );
 
     startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 
     reply->deleteLater();
 }
 
-void QSc2tvChat::getMessages()
+void QSc2tvChat::loadMessages()
 {
     QNetworkRequest request( QUrl( channelLink_ + "" ) );
     QNetworkReply *reply = nam_->get( request );
@@ -391,8 +287,6 @@ void QSc2tvChat::getMessages()
 void QSc2tvChat::onMessagesLoaded()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
-
-    //qDebug() << reply->readAll();
 
     QJsonParseError parseError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
@@ -411,11 +305,10 @@ void QSc2tvChat::onMessagesLoaded()
 
             qSort( jsonMessagesList.begin(), jsonMessagesList.end(), cmpJsonObject );
 
-            //if( lastMessageTime_ != "" )
             if( !lastMessageId_.isEmpty() )
             {
                 int messageIndex = 0;
-                //while( messageIndex < jsonMessagesList.size() && jsonMessagesList[ messageIndex ][ "date" ].toString() <= lastMessageTime_ )
+
                 while( messageIndex < jsonMessagesList.size() && jsonMessagesList[ messageIndex ][ "id" ].toString() <= lastMessageId_ )
                     ++messageIndex;
                 while( messageIndex < jsonMessagesList.size() )
@@ -424,9 +317,6 @@ void QSc2tvChat::onMessagesLoaded()
 
                     QString message = jsonMessage[ "message" ].toString();
 
-                    //TODO: править
-
-
                     message.replace( "[b]", "" );
                     message.replace( "[/b]", "" );
                     message.replace( "[url]", "" );
@@ -434,15 +324,9 @@ void QSc2tvChat::onMessagesLoaded()
 
                     message.replace( QRegExp( "\\[url=(.*)\\]" ), "" );
 
-
-
                     message = insertSmiles( message );
-                    //message = ChatMessage::insertLinks( message );
 
                     QString nickName = jsonMessage[ "name" ].toString();
-
-                    //bool blackListUser = blackList().contains( nickName );
-                    //bool supportersListUser = supportersList().contains( nickName );
 
                     if( originalColors_ )
                     {
@@ -453,7 +337,7 @@ void QSc2tvChat::onMessagesLoaded()
                         }
                     }
 
-                    emit newMessage( ChatMessage( SC2TV_SERVICE, nickName, message, "", this ) );
+                    emit newMessage( ChatMessage( SC2TV_SERVICE, nickName, message, QString(), this ) );
 
                     ++messageIndex;
                 }
@@ -473,49 +357,19 @@ void QSc2tvChat::onMessagesLoaded()
 
 void QSc2tvChat::onMessagesLoadError()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
-    //emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, "Can not load messages..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), this ) );
-    //reconnect(); channelId есть
-
-    //lastMessageId_ = lastMainMessageId_;
+    if( isShowSystemMessages() )
+        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Can not load messages..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
 
     reply->deleteLater();
 }
-
-QString QSc2tvChat::insertSmiles( const QString &message ) const
-{
-    QString convertedMessage = message;
-
-    QStringList tokens = convertedMessage.split( QRegExp( "\\s" ) );
-
-    QStringList convertedTokens = tokens;
-
-    for( int i = 0; i < tokens.size(); ++i )
-    {
-        if ( !ChatMessage::isLink( tokens.at( i ) ) )//не ссылка
-        {
-            foreach( const QChatSmile &smile, smiles_ )
-            {
-               convertedTokens[ i ].replace( smile.name(), "<img class = \"smile\" src=\"" + smile.link() + "\"></img>" );
-            }
-        }
-    }
-
-    for( int i = 0; i < tokens.size(); ++i )
-    {
-        convertedMessage.replace( tokens.at( i ), convertedTokens.at( i ) );
-    }
-
-    return convertedMessage;
-}
-
 
 void QSc2tvChat::timerEvent( QTimerEvent * event )
 {
     if( event->timerId() == updateMessagesTimerId_ && !channelLink_.isEmpty() )
     {
-        getMessages();
+        loadMessages();
     }
     else if( event->timerId() == reconnectTimerId_ )
     {
@@ -556,53 +410,3 @@ void QSc2tvChat::changeOriginalColors( bool originalColors )
 {
     originalColors_ = originalColors;
 }
-
-/*
-void QSc2tvChat::getStreamesList()
-{
-    QNetworkRequest request( QUrl( DEFAULT_SC2TV_STREAMS_LINK + ""  ) );
-    QNetworkReply *reply = nam_->get( request );
-    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onStreamesLoaded() ) );
-}
-*/
-/*
-void QSc2tvChat::onStreamesLoaded()
-{
-    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
-
-    if( reply->error() == QNetworkReply::NoError )
-    {
-        QJsonParseError parseError;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
-        if( parseError.error == QJsonParseError::NoError )
-        {
-            if( jsonDoc.isObject() )
-            {
-                QJsonArray streams = jsonDoc.object()[ "streams" ].toArray();
-
-                foreach( const QJsonValue& value, streams )
-                {
-                    QJsonObject stream = value.toObject();
-
-                    QString streamName = stream[ "path" ].toString();
-
-                    streamName = streamName.right( streamName.size() - streamName.indexOf( '/' ) - 1 );
-
-                    if( streamName == channelName_ )
-                    {
-                        channelLink_ = DEFAULT_SC2TV_CHANNEL_PREFIX_LINK + QString::number( stream[ "id" ].toInt() ) + ".json";
-                        //getMessages();
-                        emit newMessage( ChatMessage( "sc2tv", SC2TV_USER, "Connecting to " + channelName_ + "...", this ) );
-                        startTimer( updateInterval_ );
-//                        break;
-                    }
-                }
-                //if( channelLink_ == "" )
-                //    emit newMessage( ChatMessage( "sc2tv", SC2TV_USER, "Can not connect to " + channelName_ + "... Channel is offline...", this ) );
-            }
-        }
-    }
-
-    reply->deleteLater();
-}
-*/

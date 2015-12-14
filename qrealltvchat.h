@@ -29,11 +29,9 @@ public:
 private:
     void                        loadSettings();
 
-    void                        getChannelInfo();
-    void                        getSmiles();
-    void                        getStatistic();
-
-    QString                     insertSmiles( const QString & message ) const;
+    void                        loadChannelInfo();
+    virtual void                loadSmiles();
+    void                        loadStatistic();
 
 protected:
     void                        timerEvent( QTimerEvent * event );
@@ -63,7 +61,6 @@ private:
     QString                     channelName_;
     QString                     cid_;
     QDateTime                   connectionTime_;
-    QMap<QString, QChatSmile>   smiles_;
     int                         reconnectTimerId_;
     int                         reconnectInterval_;
     int                         statisticTimerId_;

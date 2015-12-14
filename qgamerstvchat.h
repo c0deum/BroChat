@@ -20,12 +20,10 @@ protected:
 
 private:
     void                    loadSettings();
-    void                    loadSmiles();
+    virtual void            loadSmiles();
     void                    loadMessages();
 
-    void                    getStatistic();
-
-    QString                 insertSmiles( const QString & message );
+    void                    loadStatistic();
 
 public slots:
     virtual void            connect();
@@ -48,7 +46,6 @@ private:
     QString                 channelName_;
     QString                 channelLink_;
     QString                 lastMessageId_;
-    QList< QChatSmile >     smiles_;
     int                     updateMessagesTimerId_;
     int                     reconnectTimerId_;
     int                     updateMessagesInterval_;

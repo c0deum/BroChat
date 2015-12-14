@@ -40,7 +40,7 @@ const QString TWITCH_SERVICE = "twitch";
 
 QTwitchChat::QTwitchChat( QObject *parent )
 : QChatService( parent )
-, socket_( 0 )
+, socket_( nullptr )
 , nam_( new QNetworkAccessManager( this ) )
 , oauthString_()
 , nickName_()
@@ -48,7 +48,6 @@ QTwitchChat::QTwitchChat( QObject *parent )
 , selfLink_()
 , emotIconsLink_()
 , badgesLink_()
-, emotIcons_()
 , reconnectTimerId_( -1 )
 , reconnectInterval_( DEFAULT_TWITCH_RECONNECT_INTERVAL )
 , statisticTimerId_( -1 )
@@ -56,7 +55,6 @@ QTwitchChat::QTwitchChat( QObject *parent )
 , saveConnectionTimerId_( -1 )
 , saveConnectionInterval_( DEFAULT_TWITCH_SAVE_CONNECTION_INTERVAL )
 {
-    //loadSettings();
 }
 
 QTwitchChat::~QTwitchChat()
@@ -70,23 +68,23 @@ void QTwitchChat::connect()
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
 
     if( socket_)
     {
-        if( QAbstractSocket::ConnectedState == socket_->state() )
+        if( socket_->isValid() && QAbstractSocket::ConnectedState == socket_->state() )
+        {
             return;
-        /*else
-            reconnect();*/
-    }
+        }
+        //123
+        safeDeleteSocket();
+    }    
 
     socket_ = new QTcpSocket();
 
     QObject::connect( socket_, SIGNAL( connected() ), this, SLOT( onConnected() ) );
     QObject::connect( socket_, SIGNAL( readyRead() ), this, SLOT( parseMessage() ) );
     QObject::connect( socket_, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( onSocketError() ) );
-
-    //QObject::connect( socket_, SIGNAL( disconnected() ), this, SLOT( reconnect() ) );
 
     socket_->connectToHost( DEFAULT_TWITCH_CHAT_HOST_NAME, DEFAULT_TWITCH_CHAT_PORT_NUMBER );
 }
@@ -117,7 +115,7 @@ void QTwitchChat::disconnect()
 
     safeDeleteSocket();
 
-    emit newStatistic( new QChatStatistic( TWITCH_SERVICE, "", this ) );
+    emit newStatistic( new QChatStatistic( TWITCH_SERVICE, QString(), this ) );
 }
 
 void QTwitchChat::reconnect()
@@ -125,9 +123,8 @@ void QTwitchChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
-        if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, "Reconnecting...", "", this ) );
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
+        emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, "Reconnecting...", "", this ) );
     connect();
 }
 
@@ -138,29 +135,25 @@ void QTwitchChat::parseMessage()
 
     if( QAbstractSocket::ConnectedState == socket_->state() )
     {
-        QString line = socket_->readLine();
-
-        qDebug() << line;
-
-        //поадекватнее надо быть
+        QString line = socket_->readLine();        
 
         if( line.contains ( "376 " + DEFAULT_USER_NICK_NAME ) )
         {
             socket_->write( QString( "JOIN #" + channelName_ + "\r\n" ).toStdString().c_str() );
-            getSelf();
 
-            //emit newMessage( ChatMessage( "qrc:/resources/twitchlogo.png", TWITCH_USER, "Connecting to " + channelName_ + "...", this ) );
+            loadSelf();
+
             if( isShowSystemMessages() )
-                emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, "Connected to " + channelName_ + "...", "", this ) );
+                emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
 
-            getStatistic();
+
+            loadStatistic();
 
             startUniqueTimer( statisticTimerId_, statisticInterval_ );
             startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
         }
         else if( line.contains( "PING" ) )
         {
-            qDebug() << line;
             //socket_->write( "PONG tmi.twitch.tv\r\n" );
             socket_->write( "PONG :tmi.twitch.tv\r\n" );
         }
@@ -175,13 +168,10 @@ void QTwitchChat::parseMessage()
                 //\r\n
                 message = message.left( message.size() - 2 );
 
-                //qDebug() << message;
-
                 message = ChatMessage::replaceEscapeCharecters( message );
-                message = insertEmotIcons( message );
-                //message = ChatMessage::insertLinks( message );
+                message = insertSmiles( message );
 
-                emit newMessage( ChatMessage( TWITCH_SERVICE, nickName, message, "", this ) );
+                emit newMessage( ChatMessage( TWITCH_SERVICE, nickName, message, QString(), this ) );
             }
         }
 
@@ -194,26 +184,22 @@ void QTwitchChat::parseMessage()
 
 void QTwitchChat::safeDeleteSocket()
 {
-    /*
-    delete socket_;
-    socket_ = 0;
-    */
     if( socket_ )
         socket_->deleteLater();
-    socket_ = 0;
+    socket_ = nullptr;
 }
 
-void QTwitchChat::getSelf()
+void QTwitchChat::loadSelf()
 {
     QNetworkRequest request( QUrl( DEFAULT_TWITCH_SELF_PREFIX + channelName_ ) );
-    QNetworkReply *reply = nam_->get( request );
+    QNetworkReply * reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSelfLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onSelfLoadError() ) );
 }
 
 void QTwitchChat::onSelfLoaded()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     QJsonParseError parseError;
     QJsonDocument jsonDoc;
@@ -230,7 +216,7 @@ void QTwitchChat::onSelfLoaded()
             emotIconsLink_ = _links[ "emoticons" ].toString();
             badgesLink_ = _links[ "badges" ].toString();
 
-            getEmotIcons();
+            loadSmiles();
         }
     }
     reply->deleteLater();
@@ -241,23 +227,24 @@ void QTwitchChat::onSelfLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, "Can not connect to " + channelName_ + "..." + reply->errorString(), "", this ) );
+        emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString(), QString(), this ) );
 
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
-    //qDebug() << "Twitch::onSelfLoadError(): reconnectTimerId_" << reconnectTimerId_;
+    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );    
 
     reply->deleteLater();
 }
 
-void QTwitchChat::getEmotIcons()
+void QTwitchChat::loadSmiles()
 {
+    QChatService::loadSmiles();
+
     QNetworkRequest request( QUrl( emotIconsLink_ + "" ) );
     QNetworkReply *reply = nam_->get( request );
-    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onEmotIconsLoaded() ) );
-    QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onEmotIconsLoadError() ) );
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSmilesLoaded() ) );
+    QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onSmilesLoadError() ) );
 }
 
-void QTwitchChat::onEmotIconsLoaded()
+void QTwitchChat::onSmilesLoaded()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
@@ -270,59 +257,33 @@ void QTwitchChat::onEmotIconsLoaded()
     {
         if( jsonDoc.isObject() )
         {
-            emotIcons_.clear();
-
             QJsonArray jsonEmotIcons = jsonDoc.object()[ "emoticons" ].toArray();
 
             foreach( const QJsonValue &value, jsonEmotIcons )
             {
                 QJsonObject jsonEmotIcon = value.toObject();
 
-                QChatSmile smile(   jsonEmotIcon[ "regex" ].toString(),
-                                    jsonEmotIcon[ "url" ].toString() );
-                //emotIcons_.append( smile );
-                emotIcons_.insert( smile.name(), smile );
+                addSmile( jsonEmotIcon[ "regex" ].toString(), jsonEmotIcon[ "url" ].toString() );
+
             }
             if( isShowSystemMessages() )
-                emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, "Smiles ready...", "", this ) );
+                emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, tr( "Smiles loaded..." ), QString(), this ) );
         }
     }
 
-    //own smiles code
-    QString smilesPath = QApplication::applicationDirPath() + "/smiles";
-
-    QStringList extList;
-    extList << "*.svg" << "*.png" << "*.gif" << "*.jpg";
-
-    QDir smilesDir( smilesPath );
-
-    QStringList smileFiles = smilesDir.entryList( extList, QDir::Files | QDir::NoSymLinks );
-
-    foreach( const QString& smileName, smileFiles )
-    {
-        QChatSmile smile(   ":" + smileName.left( smileName.length() - 4 ) + ":",
-                                "file:///" + smilesPath + "/" + smileName );
-        emotIcons_.insert( smile.name(), smile );
-
-        //qDebug() << smile.name() << smile.link();
-    }
-
     reply->deleteLater();
 }
 
-void QTwitchChat::onEmotIconsLoadError()
+void QTwitchChat::onSmilesLoadError()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, "Can not load smiles..." + reply->errorString(), "", this ) );
+        emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, tr( "Can not load smiles..." ) + reply->errorString(), QString(), this ) );
 
-    //TODO: timer for smiles loading
-    //getEmotIcons();
-    //reconnect();
     reply->deleteLater();
 }
 
-void QTwitchChat::getBadges()
+void QTwitchChat::loadBadges()
 {
 }
 
@@ -332,27 +293,21 @@ void QTwitchChat::onBadgesLoaded()
 
 void QTwitchChat::onBadgesLoadError()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
-    //reconnect();
-
-    //getBadges();
-
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
     reply->deleteLater();
 }
 
-void QTwitchChat::getStatistic()
+void QTwitchChat::loadStatistic()
 {
     QNetworkRequest request( QUrl( DEFAULT_TWITCH_STATISTIC_PREFIX + channelName_ ) );
-    QNetworkReply *reply = nam_->get( request );
+    QNetworkReply * reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onStatisticLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onStatisticLoadError() ) );
 }
 
 void QTwitchChat::onStatisticLoaded()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
-
-    //qDebug() << reply->readAll();
+    QNetworkReply * reply = qobject_cast< QNetworkReply* >( sender() );
 
     QJsonParseError parseError;
 
@@ -369,8 +324,6 @@ void QTwitchChat::onStatisticLoaded()
             QString statistic = QString::number( jsonStreamObj[ "viewers" ].toInt() );
 
             emit newStatistic( new QChatStatistic( TWITCH_SERVICE, statistic, this ) );
-            //emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, QString( "Viewers: " + statistic ), "", this ) );
-
         }
     }
 
@@ -379,55 +332,22 @@ void QTwitchChat::onStatisticLoaded()
 
 void QTwitchChat::onStatisticLoadError()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
     reply->deleteLater();
-}
-
-QString QTwitchChat::insertEmotIcons( const QString& message ) const
-{
-    //TODO: думать
-
-    QString convertedMessage = message;
-
-    QStringList tokens = convertedMessage.split( QRegExp( "\\s" ) );
-
-    QStringList convertedTokens = tokens;
-
-    for( int i = 0; i < tokens.size(); ++i )
-    {
-        if ( !ChatMessage::isLink( tokens.at( i ) ) )//не ссылка
-        {
-            foreach( const QChatSmile &smile, emotIcons_ )
-            {
-                if( tokens.at( i ) == smile.name() )
-                    convertedTokens[ i ].replace( smile.name(), "<img class = \"smile\" src=\"" + smile.link() + "\"></img>" );
-            }
-        }
-    }
-
-    for( int i = 0; i < tokens.size(); ++i )
-    {
-        convertedMessage.replace( tokens.at( i ), convertedTokens.at( i ) );
-    }
-
-    return convertedMessage;
 }
 
 void QTwitchChat::timerEvent( QTimerEvent *event )
 {
-    //qDebug() << "Twitch::timerEvent()";
     if( event->timerId() == statisticTimerId_ )
     {
-        getStatistic();
+        loadStatistic();
     }
     else if( event->timerId() == reconnectTimerId_ )
     {
-        //qDebug() << "Twitch::timerEvent(): reconnectTimerId_" << reconnectTimerId_;
         reconnect();
     }
     else if( event->timerId() == saveConnectionTimerId_ )
     {
-        qDebug() << "Twitch::timerEvent() - save connection ping";
         if( socket_ && socket_->isValid() && QAbstractSocket::ConnectedState == socket_->state() )
         {
             socket_->write( "PING :tmi.twitch.tv\r\n" );
@@ -460,5 +380,4 @@ void QTwitchChat::onSocketError()
         emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, "Socket Error ..." + socket_->errorString(), "", this ) );
 
     startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
-    //qDebug() << "Twitch::onSocketError: reconnectTimerId_ = " << reconnectTimerId_;
 }

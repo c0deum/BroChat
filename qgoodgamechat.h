@@ -22,11 +22,11 @@ protected:
 private:
     void                        loadSettings();
 
-    void                        getSmiles();
-    void                        getChannelInfo();
+    void                        loadSmiles();
+    void                        loadChannelInfo();
     void                        connectToWebClient();
 
-    void                        getStatistic();
+    void                        loadStatistic();
 
     QString                     insertSmiles( const QString & message ) const;
 
@@ -50,13 +50,10 @@ private slots:
     void                        onStatisticLoaded();
     void                        onStatisticLoadError();
 
-    void                        onPong( quint64 elapsedTime, const QByteArray & payload );
-
 private:
     QNetworkAccessManager *     nam_;
     QWebSocket *                socket_;
     QString                     channelName_;
-    //QString                   token_;
     QString                     channelId_;
     int                         lastTimeStamp_;
     QMap< QString, QString >    smiles_;

@@ -18,9 +18,9 @@ protected:
 private:
     void                    loadSettings();
 
-    void                    getChannelInfo();
-    void                    getMessages();
-    void                    getStatistic();
+    void                    loadChannelInfo();
+    void                    loadMessages();
+    void                    loadStatistic();
 
 public slots:
     virtual void            connect();

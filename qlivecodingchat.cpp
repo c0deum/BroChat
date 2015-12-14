@@ -36,14 +36,10 @@ const QString DEFAULT_LIVECODING_JID_POSTFIX = "@livecoding.tv";
 const QString DEFAULT_LIVECODING_JID = DEFAULT_LIVECODING_LOGIN + DEFAULT_LIVECODING_JID_POSTFIX;
 const QString DEFAULT_LIVECODING_PASSWORD = "8e4820297b36ec893f1242bc36ffc1e38";
 const QString DEFAULT_LIVECODING_CONFERENCE_JID_POSTFIX = "@chat.livecoding.tv";
-
 const QString DEFAULT_LIVECODING_CANDY_JS_LINK = "https://www.livecoding.tv/static/candy-chat/candy.bundle.js";
 const QString DEFAULT_LIVECODING_SMILES_LINK_PREFIX = "https://www.livecoding.tv/static/candy-chat/img/emoticons_hd/";
-
 const QString DEFAULT_LIVECODING_SID_INFO_REQUEST_PREFIX = "https://www.livecoding.tv/live.eio/?EIO=3&transport=polling";
-
 const QString DEFAULT_LIVECODING_WEBSOCKET_LINK = "wss://www.livecoding.tv/live.eio/?EIO=3&transport=websocket";
-
 
 const int DEFAULT_LIVECODING_RECONNECT_INTERVAL = 10000;
 const int DEFAULT_LIVECODING_RECONNECT_WEBSOCKET_INTERVAL = 10000;
@@ -55,15 +51,14 @@ const QString LIVECODING_SERVICE = "livecoding";
 QLivecodingChat::QLivecodingChat( QObject * parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
-, xmppClient_( 0 )
-, mucManager_( 0 )
-, socket_( 0 )
+, xmppClient_( nullptr )
+, mucManager_( nullptr )
+, socket_( nullptr )
 , sid_()
 , channelName_()
 , login_()
 , password_()
 , connectionTime_()
-, smiles_()
 , reconnectTimerId_( -1 )
 , reconnectInterval_( DEFAULT_LIVECODING_RECONNECT_INTERVAL )
 , reconnectWebSocketTimerId_( -1 )
@@ -99,7 +94,7 @@ void QLivecodingChat::connect()
     xmppClient_->addExtension( mucManager_ );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( LIVECODING_SERVICE, LIVECODING_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( LIVECODING_SERVICE, LIVECODING_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
 
     QXmppConfiguration conf;
 
@@ -133,7 +128,7 @@ void QLivecodingChat::disconnect()
         }
 
         mucManager_->deleteLater();
-        mucManager_ = 0;
+        mucManager_ = nullptr;
     }
 
     if( xmppClient_ )
@@ -141,19 +136,8 @@ void QLivecodingChat::disconnect()
         xmppClient_->disconnectFromServer();
         xmppClient_->deleteLater();
 
-        xmppClient_ = 0;
+        xmppClient_ = nullptr;
     }
-
-    /*
-    if( socket_ )
-    {
-        socket_->abort();
-        socket_->deleteLater();
-    }
-    socket_ = 0;
-
-    emit newStatistic( new QChatStatistic( LIVECODING_SERVICE, "", this ) );
-    */
 
     disconnectFromWebSocket();
 }
@@ -163,9 +147,8 @@ void QLivecodingChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
-        if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( LIVECODING_SERVICE, LIVECODING_USER, "Reconnecting...", "", this ) );
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
+        emit newMessage( ChatMessage( LIVECODING_SERVICE, LIVECODING_USER, tr( "Reconnecting..." ), QString(), this ) );
     connect();
 }
 
@@ -173,7 +156,8 @@ void QLivecodingChat::onConnected()
 {
     connectionTime_ = QDateTime::currentDateTimeUtc();
 
-    QXmppMucRoom *room = mucManager_->addRoom( channelName_ + DEFAULT_LIVECODING_CONFERENCE_JID_POSTFIX );
+    QXmppMucRoom * room = mucManager_->addRoom( channelName_ + DEFAULT_LIVECODING_CONFERENCE_JID_POSTFIX );
+
     if( !login_.isEmpty() )
         room->setNickName( login_ );
     else
@@ -181,20 +165,17 @@ void QLivecodingChat::onConnected()
     room->join();
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( LIVECODING_SERVICE, LIVECODING_USER, "Connected to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( LIVECODING_SERVICE, LIVECODING_USER, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
 
-    //connectToWebSocket();
+    loadSmiles();
 
-    getSid();
-
-    smiles_.clear();
-    getSmiles();
+    loadSid();
 }
 
 void QLivecodingChat::onError( QXmppClient::Error )
 {
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( LIVECODING_SERVICE, LIVECODING_USER, "Unknown Error ...", "", this ) );
+        emit newMessage( ChatMessage( LIVECODING_SERVICE, LIVECODING_USER, tr( "Unknown Error ..." ), QString(), this ) );
 
     startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 }
@@ -203,7 +184,6 @@ void QLivecodingChat::onMessageReceived( const QXmppMessage & message )
 {
     if( message.stamp().toTime_t() > connectionTime_.toTime_t() )
     {
-
         QString nickName = message.from();
         nickName = nickName.right( nickName.length() - nickName.indexOf( '/' ) - 1 );
 
@@ -213,14 +193,12 @@ void QLivecodingChat::onMessageReceived( const QXmppMessage & message )
 
         messageBody = insertSmiles( messageBody );
 
-        emit newMessage( ChatMessage( LIVECODING_SERVICE, nickName, messageBody, "", this ) );
+        emit newMessage( ChatMessage( LIVECODING_SERVICE, nickName, messageBody, QString(), this ) );
     }
 }
 
-void QLivecodingChat::getSid()
+void QLivecodingChat::loadSid()
 {
-    //+ "&t=" + QString::number( QDateTime::currentMSecsSinceEpoch() )
-    //+ "&t=" + QString::number( QDateTime::currentMSecsSinceEpoch() ) + "-0"
     QNetworkRequest request( QUrl( DEFAULT_LIVECODING_SID_INFO_REQUEST_PREFIX + "" )  );
 
     QNetworkReply * reply = nam_->get( request );
@@ -233,14 +211,9 @@ void QLivecodingChat::onSidLoaded()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
-    //qDebug() << reply->readAll();
-
     QByteArray webSocketInfoData = reply->readAll();
 
     webSocketInfoData = "{" + webSocketInfoData.right( webSocketInfoData.length() - webSocketInfoData.indexOf( "\"sid\":" ) );
-
-
-    qDebug() << webSocketInfoData;
 
     QJsonParseError parseError;
 
@@ -250,32 +223,24 @@ void QLivecodingChat::onSidLoaded()
     {
         QJsonObject jsonObj = jsonDoc.object();
         sid_ = jsonObj[ "sid" ].toString();
-        qDebug() << sid_;
 
         connectToWebSocket();
-
-        //joinToChannel();
     }
-
-
     reply->deleteLater();
 }
 
 void QLivecodingChat::onSidLoadError()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
-
     reply->deleteLater();
 }
 
 void QLivecodingChat::joinToChannel()
 {
-    //"&t=" + QString::number( QDateTime::currentMSecsSinceEpoch() ) + "-1" +
     QNetworkRequest request( QUrl( DEFAULT_LIVECODING_SID_INFO_REQUEST_PREFIX + "&sid=" + sid_ ) );
 
     QByteArray data = QString(  "30:4[\"join\",\"stream." + channelName_ + "\"]" ).toUtf8();
 
-    //"text/plain;charset=UTF-8"
     request.setHeader( QNetworkRequest::ContentTypeHeader, "text/plain;charset=UTF-8" );
 
     QNetworkReply * reply = nam_->post( request, data );
@@ -289,9 +254,6 @@ void QLivecodingChat::onJoinToChannelReplyLoaded()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
-    qDebug() << "onJoinToChannelReplyLoaded: " << reply->readAll();
-
-    //connectToWebSocket();
     if( socket_ && socket_->isValid() && QAbstractSocket::ConnectedState == socket_->state() )
         socket_->sendTextMessage( "5" );
 
@@ -301,24 +263,17 @@ void QLivecodingChat::onJoinToChannelReplyLoaded()
 void QLivecodingChat::onJoinToChannelReplyLoadError()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
-
-    qDebug() << "onJoinToChannelReplyLoadError";
-
     reply->deleteLater();
 }
 
 
 void QLivecodingChat::connectToWebSocket()
 {
-    //assert( !socket_ );
     socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
 
     QObject::connect( socket_, SIGNAL( connected() ), this, SLOT( onWebSocketConnected() ) );
     QObject::connect( socket_, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( onWebSocketError() ) );
     QObject::connect( socket_, SIGNAL( textMessageReceived( const QString & ) ), this, SLOT( onWebSocketMessageReceived( const QString & ) ) );
-
-    //test ping-pong support
-    //QObject::connect( socket_, SIGNAL( pong( quint64,QByteArray ) ), this, SLOT( onPong( quint64,QByteArray ) ) );
 
     socket_->open( QUrl( DEFAULT_LIVECODING_WEBSOCKET_LINK + "&sid=" + sid_ ) );
 }
@@ -336,7 +291,7 @@ void QLivecodingChat::onWebSocketConnected()
 void QLivecodingChat::onWebSocketError()
 {
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( LIVECODING_SERVICE, LIVECODING_USER, "Web socket error..." + socket_->errorString(), "", this ) );
+        emit newMessage( ChatMessage( LIVECODING_SERVICE, LIVECODING_USER, tr( "Web socket error..." ) + socket_->errorString(), QString(), this ) );
 
     startUniqueTimer( reconnectWebSocketTimerId_, reconnectWebSocketInterval_ );
 }
@@ -377,16 +332,9 @@ void QLivecodingChat::onWebSocketMessageReceived( const QString & message )
         }
     }
     else
-    {
-        qDebug() << message;
+    {        
     }
 }
-
-/*
-void QLivecodingChat::onWebSocketPong()
-{
-}
-*/
 
 void QLivecodingChat::disconnectFromWebSocket()
 {
@@ -395,20 +343,21 @@ void QLivecodingChat::disconnectFromWebSocket()
         socket_->abort();
         socket_->deleteLater();
     }
-    socket_ = 0;
+    socket_ = nullptr;
 
-    emit newStatistic( new QChatStatistic( LIVECODING_SERVICE, "", this ) );
+    emit newStatistic( new QChatStatistic( LIVECODING_SERVICE, QString(), this ) );
 }
 
 void QLivecodingChat::reconnectToWebSocket()
 {
     disconnectFromWebSocket();
-    //connectToWebSocket();
-    getSid();
+    loadSid();
 }
 
-void QLivecodingChat::getSmiles()
+void QLivecodingChat::loadSmiles()
 {
+    QChatService::loadSmiles();
+
     QNetworkRequest request( QUrl( DEFAULT_LIVECODING_CANDY_JS_LINK + "" ) );
 
     QNetworkReply * reply = nam_->get( request );
@@ -454,32 +403,13 @@ void QLivecodingChat::onSmilesLoaded()
             {
                 QJsonObject smileInfo = value.toObject();
 
-                QChatSmile smile(  smileInfo[ "plain" ].toString(), DEFAULT_LIVECODING_SMILES_LINK_PREFIX + smileInfo[ "image" ].toString() );
-
-                smiles_.insert( smileInfo[ "plain" ].toString(), smile );
+                addSmile( smileInfo[ "plain" ].toString(), DEFAULT_LIVECODING_SMILES_LINK_PREFIX + smileInfo[ "image" ].toString() );
             }
         }
     }
 
-    //own smiles code
-    QString smilesPath = QApplication::applicationDirPath() + "/smiles";
-
-    QStringList extList;
-    extList << "*.svg" << "*.png" << "*.gif" << "*.jpg";
-
-    QDir smilesDir( smilesPath );
-
-    QStringList smileFiles = smilesDir.entryList( extList, QDir::Files | QDir::NoSymLinks );
-
-    foreach( const QString& smileName, smileFiles )
-    {
-        QChatSmile smile( ":" + smileName.left( smileName.length() - 4 ) + ":",
-                          "file:///" + smilesPath + "/" + smileName );
-        smiles_.insert( smile.name(), smile );
-    }
-
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( LIVECODING_SERVICE, LIVECODING_USER, "Smiles ready...", "", this ) );
+        emit newMessage( ChatMessage( LIVECODING_SERVICE, LIVECODING_USER, tr( "Smiles loaded..." ), QString(), this ) );
 
     reply->deleteLater();
 
@@ -489,34 +419,6 @@ void QLivecodingChat::onSmilesLoadError()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
     reply->deleteLater();
-}
-
-QString QLivecodingChat::insertSmiles( const QString & message ) const
-{
-    QString convertedMessage = message;
-
-    QStringList tokens = convertedMessage.split( QRegExp( "\\s" ) );
-
-    QStringList convertedTokens = tokens;
-
-    for( int i = 0; i < tokens.size(); ++i )
-    {
-        if ( !ChatMessage::isLink( tokens.at( i ) ) )//не ссылка
-        {
-            foreach( const QChatSmile &smile, smiles_ )
-            {
-                if( tokens.at( i ) == smile.name() )
-                    convertedTokens[ i ].replace( smile.name(), "<img class = \"smile\" src=\"" + smile.link() + "\"></img>" );
-            }
-        }
-    }
-
-    for( int i = 0; i < tokens.size(); ++i )
-    {
-        convertedMessage.replace( tokens.at( i ), convertedTokens.at( i ) );
-    }
-
-    return convertedMessage;
 }
 
 void QLivecodingChat::timerEvent( QTimerEvent * event )
@@ -536,7 +438,6 @@ void QLivecodingChat::timerEvent( QTimerEvent * event )
     {
         reconnect();
     }
-
 }
 
 void QLivecodingChat::loadSettings()

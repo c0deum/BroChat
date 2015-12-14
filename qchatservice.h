@@ -4,7 +4,9 @@
 #include <QObject>
 #include <QStringList>
 
-#include <QJsonObject>
+//#include <QJsonObject>
+
+#include <QMap>
 
 #include "qchatmessage.h"
 #include "qchatstatistic.h"
@@ -31,6 +33,12 @@ protected:
     void                startUniqueTimer( int & id, int interval );
     void                resetTimer( int & id );
 
+    virtual void        loadSmiles();
+
+    void                addSmile( const QString & code, const QString & link );
+
+    virtual QString     insertSmiles( const QString & message ) const;
+
 public slots:
     virtual void        connect() = 0;
     virtual void        disconnect() = 0;
@@ -49,7 +57,7 @@ public slots:
 signals:
     void                newMessage( ChatMessage );
     void                newStatistic( QChatStatistic * statistic );
-    void                message( QJsonObject & json );
+    //void                message( QJsonObject & json );
 private:
     bool                enabled_;
     bool                showSystemMessages_;
@@ -58,6 +66,9 @@ private:
     QStringList         aliasesList_;
     QStringList         supportersList_;
     QStringList         blackList_;
+
+    QMap< QString, QString > smiles_;
+
 };
 
 #endif // QCHATSERVICE_H

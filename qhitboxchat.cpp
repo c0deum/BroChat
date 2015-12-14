@@ -39,10 +39,9 @@ const QString HITBOX_USER = "HITBOX";
 QHitBoxChat::QHitBoxChat( QObject *parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
-, socket_( 0 )
+, socket_( nullptr )
 , channelName_( DEFAULT_HITBOX_CHANNEL_NAME )
 , servers_()
-, smiles_()
 , reconnectTimerId_( -1 )
 , reconnectInterval_( DEFAULT_HITBOX_RECONNECT_INTERVAL )
 , statisticTimerId_( -1 )
@@ -63,15 +62,11 @@ void QHitBoxChat::connect()
     if( !isEnabled() || channelName_.isEmpty() )
         return;
 
-    smiles_.clear();
-    getSmiles();
-
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
 
     servers_.clear();
-    getServersList();
-
+    loadServersList();
 }
 
 void QHitBoxChat::disconnect()
@@ -85,9 +80,9 @@ void QHitBoxChat::disconnect()
         socket_->abort();
         socket_->deleteLater();
     }
-    socket_ = 0;
+    socket_ = nullptr;
 
-    emit newStatistic( new QChatStatistic( HITBOX_SERVICE, "", this ) );
+    emit newStatistic( new QChatStatistic( HITBOX_SERVICE, QString(), this ) );
 }
 
 void QHitBoxChat::reconnect()
@@ -95,27 +90,26 @@ void QHitBoxChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
-        if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Reconnecting...", "", this ) );
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
+        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Reconnecting...", "", this ) );
     connect();
 }
 
-void QHitBoxChat::getServersList()
+void QHitBoxChat::loadServersList()
 {
     QNetworkRequest request( QUrl( DEFAULT_HITBOX_SERVERS_LIST_LINK + "" ) );
-    QNetworkReply *reply = nam_->get( request );
+    QNetworkReply * reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onServersListLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onServersListLoadError() ) );
 }
 
 void QHitBoxChat::onServersListLoaded()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply* >( sender() );
 
     QJsonParseError parseError;
 
-    QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(),&parseError ) ;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError ) ;
 
     if( QJsonParseError::NoError == parseError.error  )
     {
@@ -138,43 +132,36 @@ void QHitBoxChat::onServersListLoaded()
                     serverNumber++;
                     QJsonObject jsonServer = value.toObject();
 
-                    //servers_.append( "ws://" + jsonServer[ "server_ip" ].toString() + "/socket.io/1/websocket" );
-                    //servers_.append( "ws://" + jsonServer[ "server_ip" ].toString() );
-
                     servers_.append( jsonServer[ "server_ip" ].toString() );
-
-                    //qDebug() << jsonServer[ "server_ip" ].toString();
                 }
             }
 
         }
     }
 
-    getSocketHash();
+    loadSocketHash();
 
     reply->deleteLater();
 }
 
 void QHitBoxChat::onServersListLoadError()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
-
-    //qDebug() << reply->readAll();
+    QNetworkReply * reply = qobject_cast< QNetworkReply* >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Can not load servers list..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
+        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, tr( "Can not load servers list..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
 
     startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 
     reply->deleteLater();
 }
 
-void QHitBoxChat::getSocketHash()
+void QHitBoxChat::loadSocketHash()
 {
     if( !servers_.isEmpty() )
     {
         QNetworkRequest request( QUrl( "http://" + servers_.first() + "/socket.io/1" ) );
-        QNetworkReply *reply = nam_->get( request );
+        QNetworkReply * reply = nam_->get( request );
         QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSocketHashLoaded() ) );
         QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onSocketHashLoadError() ) );
     }
@@ -182,23 +169,16 @@ void QHitBoxChat::getSocketHash()
 
 void QHitBoxChat::onSocketHashLoaded()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply* >( sender() );
 
     QString hash = reply->readAll();
 
-    //qDebug() << hash;
-
     hash = hash.left( hash.indexOf( ':' ) );
-
-    //qDebug() << hash;
 
     socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
     socket_->open( QUrl( "ws://" + servers_.first() + "/socket.io/1/websocket/" + hash ) );
     QObject::connect( socket_, SIGNAL( textMessageReceived( const QString & ) ), this, SLOT( onTextMessageReceived( const QString & ) ) );
     QObject::connect( socket_, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( onWebSocketError() ) );
-
-    //test ping-pong support
-    QObject::connect( socket_, SIGNAL( pong( quint64,QByteArray ) ), this, SLOT( onPong( quint64,QByteArray ) ) );
 
     startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
 
@@ -208,31 +188,29 @@ void QHitBoxChat::onSocketHashLoaded()
 
 void QHitBoxChat::onSocketHashLoadError()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
-
-    //qDebug() << reply->readAll();
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Can not load websocket hash..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
+        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, tr( "Can not load websocket hash..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
 
     startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 
     reply->deleteLater();
 }
 
-void QHitBoxChat::getSmiles()
+void QHitBoxChat::loadSmiles()
 {
+    QChatService::loadSmiles();
+
     QNetworkRequest request( QUrl( DEFAULT_HITBOX_SMILES_INFO_PEFIX + channelName_ ) );
-    QNetworkReply *reply = nam_->get( request );
+    QNetworkReply * reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSmilesLoaded() ) );
     QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onSmilesLoadError() ) );
 }
 
 void QHitBoxChat::onSmilesLoaded()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
-
-    //qDebug() << reply->readAll();
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     QJsonParseError parseError;
 
@@ -248,33 +226,14 @@ void QHitBoxChat::onSmilesLoaded()
             {
                 QJsonObject smileInfo = smileInfoValue.toObject();
 
-                smiles_.append( QChatSmile( smileInfo[ "icon_short" ].toString(), DEFAULT_HITBOX_SMILES_PREFIX + smileInfo[ "icon_path" ].toString() ) );
-                smiles_.append( QChatSmile( smileInfo[ "icon_short_alt" ].toString(), DEFAULT_HITBOX_SMILES_PREFIX + smileInfo[ "icon_path" ].toString() ) );
+                addSmile( smileInfo[ "icon_short" ].toString(), DEFAULT_HITBOX_SMILES_PREFIX + smileInfo[ "icon_path" ].toString() );
+                addSmile( smileInfo[ "icon_short_alt" ].toString(), DEFAULT_HITBOX_SMILES_PREFIX + smileInfo[ "icon_path" ].toString() );
             }
-
-            //qDebug() << smiles_;
         }
     }
 
-    //own smiles code
-    QString smilesPath = QApplication::applicationDirPath() + "/smiles";
-
-    QStringList extList;
-    extList << "*.svg" << "*.png" << "*.gif" << "*.jpg";
-
-    QDir smilesDir( smilesPath );
-
-    QStringList smileFiles = smilesDir.entryList( extList, QDir::Files | QDir::NoSymLinks );
-
-    foreach( const QString& smileName, smileFiles )
-    {
-        QChatSmile smile( ":" + smileName.left( smileName.length() - 4 ) + ":",
-                          "file:///" + smilesPath + "/" + smileName );
-        smiles_.append( smile );
-    }
-
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Smiles ready...", "", this ) );
+        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Smiles loaded...", "", this ) );
 
     reply->deleteLater();
 
@@ -284,27 +243,23 @@ void QHitBoxChat::onSmilesLoadError()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
 
-    //qDebug() << reply->readAll();
-
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Can not load styles..." + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), "", this ) );
+        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, tr( "Can not load styles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
 
     reply->deleteLater();
 }
 
-void QHitBoxChat::getStatistic()
+void QHitBoxChat::loadStatistic()
 {
     QNetworkRequest request( QUrl( DEFAULT_HITBOX_STATISTIC_PREFIX + channelName_ ) );
-    QNetworkReply *reply = nam_->get( request );
+    QNetworkReply * reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onStatisticLoaded() ) );
     QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onStatisticLoadError() ) );
 }
 
 void QHitBoxChat::onStatisticLoaded()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
-
-    //qDebug() << reply->readAll();
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     QJsonParseError parseError;
 
@@ -331,19 +286,13 @@ void QHitBoxChat::onStatisticLoaded()
 void QHitBoxChat::onStatisticLoadError()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
-
-    //qDebug() << reply->readAll();
-
     reply->deleteLater();
 }
 
 void QHitBoxChat::onTextMessageReceived( const QString &message )
 {
-    //qDebug() << message;
-
     if( "1::" == message )
     {
-        //5:::{"name":"message","args":[{"method":"joinChannel","params":{"channel":"perfectbalance","name":"UnknownSoldier","token":null,"isAdmin":false}}]}
         QString response = "5:::{\"name\":\"message\",\"args\":[{\"method\":\"joinChannel\",\"params\":{\"channel\":\"" + channelName_ + "\",\"name\":\"UnknownSoldier\",\"token\":null,\"isAdmin\":false}}]}";
         socket_->sendTextMessage( response );
     }
@@ -354,7 +303,6 @@ void QHitBoxChat::onTextMessageReceived( const QString &message )
     else if( "5:::" == message.left( 4 ) )
     {
         QString jsonData = message.right( message.size() - 4 );
-        //qDebug() << jsonData;
 
         QJsonParseError parseError;
 
@@ -377,11 +325,7 @@ void QHitBoxChat::onTextMessageReceived( const QString &message )
                         {
                             QString argsString = value.toString();
 
-
-                            //qDebug() << argsString;
-
                             QJsonDocument argsDoc = QJsonDocument::fromJson( QByteArray( argsString.toStdString().c_str() ) , &parseError );
-
 
                             if( QJsonParseError::NoError == parseError.error )
                             {
@@ -396,15 +340,10 @@ void QHitBoxChat::onTextMessageReceived( const QString &message )
                                         if( jsonParamsObj[ "buffer" ].isBool() )
                                             return;
 
-
-
                                         QString nickName = jsonParamsObj[ "name" ].toString();
                                         QString message = jsonParamsObj[ "text" ].toString();
 
                                         message = insertSmiles( message );
-
-                                        //bool blackListUser = blackList().contains( nickName );
-                                        //bool supportersListUser = supportersList().contains( nickName );
 
                                         if( originalColors_ )
                                         {
@@ -413,14 +352,16 @@ void QHitBoxChat::onTextMessageReceived( const QString &message )
                                             nickName = "<span style=\"color:" + color + "\">" + nickName + "</span>";
                                         }
 
-                                        emit newMessage( ChatMessage( HITBOX_SERVICE, nickName, message, "", this ) );
+                                        emit newMessage( ChatMessage( HITBOX_SERVICE, nickName, message, QString(), this ) );
 
                                     }
                                     else if( "loginMsg" == argsObj[ "method" ].toString() )
                                     {
                                         if( isShowSystemMessages() )
                                             emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Connected to " + channelName_ + "...", "", this ) );
-                                        getStatistic();
+
+                                        loadSmiles();
+                                        loadStatistic();
 
                                         startUniqueTimer( statisticTimerId_, statisticInterval_ );
                                     }
@@ -437,65 +378,9 @@ void QHitBoxChat::onTextMessageReceived( const QString &message )
 void QHitBoxChat::onWebSocketError()
 {
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Web Socket Error ..." + socket_->errorString(), "", this ) );    
+        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, tr( "Web Socket Error ..." ) + socket_->errorString(), QString(), this ) );
 
     startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
-    //qDebug() << socket_->errorString();
-}
-
-void QHitBoxChat::onPong( quint64 elapsedTime, const QByteArray &payload )
-{
-    qDebug() << "HitBoxChat pong recieved: " << elapsedTime << " " << payload;
-}
-
-QString QHitBoxChat::insertSmiles( const QString &message )
-{
-
-    QString convertedMessage = message;
-
-    QStringList tokens = convertedMessage.split( QRegExp( "\\s" ) );
-
-    QStringList convertedTokens = tokens;
-
-    for( int i = 0; i < tokens.size(); ++i )
-    {
-        if ( !ChatMessage::isLink( tokens.at( i ) ) )//не ссылка
-        {   
-            //qDebug() << tokens[ i ];
-            foreach( const QChatSmile &smile, smiles_ )
-            {
-                if( convertedTokens[ i ] == smile.name() )
-                {
-                    //convertedTokens[ i ].replace( smile, "<img class = \"smile\" src=\"" + smile + "\"></img>" );
-                    convertedTokens[ i ] = "<img class = \"smile\" src=\"" + smile.link() + "\"></img>";
-                    break;
-                }
-            }
-        }
-    }
-
-    /*
-    for( int i = 0; i < tokens.size(); ++i )
-    {
-        convertedMessage.replace( tokens.at( i ), convertedTokens.at( i ) );
-    }
-    */
-
-    int startPos = 0;
-
-    for( int i = 0; i < tokens.size(); ++i )
-    {
-
-        //convertedMessage.replace( tokens.at( i ), convertedTokens.at( i ) );
-
-        int pos = convertedMessage.indexOf( tokens.at( i ), startPos );
-        convertedMessage.remove( pos, tokens.at( i ).length() );
-        convertedMessage.insert( pos, convertedTokens.at( i ) );
-        startPos = pos + convertedTokens.at( i ).length();
-    }
-
-    return convertedMessage;
-
 }
 
 void QHitBoxChat::changeOriginalColors( bool originalColors )
@@ -507,7 +392,7 @@ void QHitBoxChat::timerEvent( QTimerEvent *event )
 {
     if( event->timerId() == statisticTimerId_ )
     {
-        getStatistic();
+        loadStatistic();
     }
     else if( event->timerId() == saveConnectionTimerId_ )
     {

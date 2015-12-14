@@ -22,10 +22,8 @@
 #include "qstreamboxchat.h"
 
 const QString DEFAULT_STREAMBOX_WEBSOCKET_LINK = "ws://stream-box.ru:8080";
-
 const QString DEFAULT_STREAMBOX_SMILE_DIR_PREFIX = "http://stream-box.ru/img/smiles/";
 const QString DEFAULT_STREAMBOX_CHAT_ID_PREFIX = "http://stream-box.ru/chat_";
-
 const QString DEFAULT_STREAMBOX_STATISTIC_LINK = "http://stream-box.ru/api/get_online";
 
 
@@ -39,7 +37,7 @@ const QString STREAMBOX_USER = "STREAMBOX";
 QStreamBoxChat::QStreamBoxChat( QObject *parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
-, socket_( 0 )
+, socket_( nullptr )
 , channelName_()
 , reconnectTimerId_( -1 )
 , reconnectInterval_( DEFAULT_STREAMBOX_RECONNECT_INTERVAL )
@@ -48,7 +46,6 @@ QStreamBoxChat::QStreamBoxChat( QObject *parent )
 , saveConnectionTimerId_( -1 )
 , saveConnectionInterval_( DEFAULT_STREAMBOX_SAVE_CONNECTION_INTERVAL )
 {
-    //loadSettings();
 }
 
 QStreamBoxChat::~QStreamBoxChat()
@@ -62,21 +59,13 @@ void QStreamBoxChat::connect()
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
 
     socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
-    //socket_-
 
     QObject::connect( socket_, SIGNAL( connected() ), this, SLOT( onWebSocketConnected() ) );
     QObject::connect( socket_, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( onWebSocketError() ) );
     QObject::connect( socket_, SIGNAL( textMessageReceived( const QString & ) ), this, SLOT( onTextMessageReceived( const QString & ) ) );
-
-    QObject::connect( socket_, SIGNAL( pong( quint64, QByteArray ) ), this, SLOT( onPong( quint64,QByteArray ) ) );
-
-    //QObject::connect( socket_, SIGNAL( sslErrors(QList<QSslError>) ), socket_, SLOT( ignoreSslErrors() ) );
-    //disconnect test
-    //QObject::connect( socket_, SIGNAL( disconnected() ), this, SLOT( reconnect() ) );
-
 
     socket_->open( QUrl( DEFAULT_STREAMBOX_WEBSOCKET_LINK ) );
 }
@@ -93,9 +82,9 @@ void QStreamBoxChat::disconnect()
         socket_->abort();
         socket_->deleteLater();
     }
-    socket_ = 0;
+    socket_ = nullptr;
 
-    emit newStatistic( new QChatStatistic( STREAMBOX_SERVICE, "", this ) );
+    emit newStatistic( new QChatStatistic( STREAMBOX_SERVICE, QString(), this ) );
 }
 
 void QStreamBoxChat::reconnect()
@@ -103,9 +92,8 @@ void QStreamBoxChat::reconnect()
     QString oldChannelName = channelName_;
     disconnect();
     loadSettings();
-    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
-        if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, "Reconnecting...", "", this  ) );
+    if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
+        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, tr( "Reconnecting..." ), QString(), this  ) );
     connect();
 }
 
@@ -116,9 +104,11 @@ void QStreamBoxChat::onWebSocketConnected()
     socket_->sendTextMessage( message );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, "Connected to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
 
-    getStatistic();
+    loadSmiles();
+
+    loadStatistic();
 
     startUniqueTimer( statisticTimerId_, statisticInterval_ );
     startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
@@ -126,20 +116,18 @@ void QStreamBoxChat::onWebSocketConnected()
 
 void QStreamBoxChat::onWebSocketError()
 {
-    QString errString = "Web Socket Error... " + socket_->errorString();
-    //qDebug() << errString;
+    QString errString = tr( "Web Socket Error... " ) + socket_->errorString();
+
     errString.replace( "\r\n", "" );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, errString , "", this ) );
+        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, errString , QString(), this ) );
 
     startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 }
 
 void QStreamBoxChat::onTextMessageReceived( const QString& message )
 {
-    //qDebug() << message;
-
     QJsonParseError parseError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( message.toStdString().c_str() ), &parseError );
 
@@ -155,9 +143,6 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
             if( "message" == event )
             {
                 QString dataString = jsonObj[ "data" ].toString();
-                //dataString.replace( "\\\"", "\'" );
-
-                //qDebug() << dataString;
 
                 QJsonDocument jsonDocData = QJsonDocument::fromJson( dataString.toStdString().c_str(), &parseError );
 
@@ -171,8 +156,7 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
                         QString nickName = jsonData[ "nickname" ].toString();
                         QString message = jsonData[ "text" ].toString();
 
-                        //\"text\":\"<span class=\\\"chat_text_plain\\\">1 <\\\/span><smile><img src=\\\"\\\/img\\\/smiles\\\/dembel.png\\\"><\\\/smile><span class=\\\"chat_text_plain\\\"> 2<\\\/span>\",\"nickname\":\"cppguvdvo\",\"time\":1433797894,\"id\":4751,\"role\":0}"}
-                        //qDebug() << message;
+                        //\"text\":\"<span class=\\\"chat_text_plain\\\">1 <\\\/span><smile><img src=\\\"\\\/img\\\/smiles\\\/dembel.png\\\"><\\\/smile><span class=\\\"chat_text_plain\\\"> 2<\\\/span>\",\"nickname\":\"cppguvdvo\",\"time\":1433797894,\"id\":4751,\"role\":0}"}                        
 
                         message.replace( "<smile><img src=\"/img/smiles/", "<img class=\"smile\" src=\"" + DEFAULT_STREAMBOX_SMILE_DIR_PREFIX );
                         message.replace( "</smile>", "</img>" );
@@ -183,9 +167,9 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
 
                         message.replace( QRegExp( "\\\" target(.*)\\>" ), "" );
 
-                        qDebug() << message;
+                        message = insertSmiles( message );
 
-                        emit newMessage( ChatMessage( STREAMBOX_SERVICE, nickName, message, "", this ) );
+                        emit newMessage( ChatMessage( STREAMBOX_SERVICE, nickName, message, QString(), this ) );
 
                         //message.replace( "/img/smiles/", DEFAULT_STREAMBOX_SMILE_DIR_PREFIX )  ;
 
@@ -218,7 +202,7 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
                 if( actionsMap.contains( action ) )
                 {
                     //if( isShowSystemMessages() )
-                    emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, womenName + " " + actionsMap[ action ] + " " + userName, "", this ) );
+                    emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, womenName + " " + actionsMap[ action ] + " " + userName, QString(), this ) );
                 }
 
             }
@@ -284,7 +268,7 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
     }
 }
 
-void QStreamBoxChat::getStatistic()
+void QStreamBoxChat::loadStatistic()
 {
     QNetworkRequest request( QUrl( DEFAULT_STREAMBOX_STATISTIC_LINK + "" ) ) ;
 
@@ -293,10 +277,6 @@ void QStreamBoxChat::getStatistic()
     QString dataString = "url=" + channelName_ + "&type=0";
 
     data.append( dataString );
-
-    //request.setRawHeader( "Host", "stream-box.ru" );
-    //request.setRawHeader( "Accept", "application/json, text/plain, */*" );
-    //request.setRawHeader( "Referer", QString( DEFAULT_STREAMBOX_CHAT_ID_PREFIX + channelName_ ).toStdString().c_str() );
 
     request.setHeader( QNetworkRequest::ContentTypeHeader, QVariant( "application/x-www-form-urlencoded" ) );
     request.setRawHeader( "Content-Length", QString::number( data.size() ).toStdString().c_str() );
@@ -309,7 +289,7 @@ void QStreamBoxChat::getStatistic()
 
 void QStreamBoxChat::onStatisticLoaded()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     QJsonParseError parseError;
 
@@ -334,131 +314,20 @@ void QStreamBoxChat::onStatisticLoaded()
 
 void QStreamBoxChat::onStatisticLoadError()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
     reply->deleteLater();
-}
-
-void QStreamBoxChat::onPong( quint64 elapsedTime, const QByteArray &payload )
-{
-    /*
-    qDebug() << "Popongui";
-    emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, QString( payload ) + " " + QString::number( elapsedTime ), "", this ) );
-    qDebug() << elapsedTime;
-    qDebug() << payload;
-    */
-
-    qDebug() << "StreamBoxChat pong recieved: " << elapsedTime << " " << payload;
-}
-
-
-QString QStreamBoxChat::insertSmiles( const QString &message )
-{
-    return QString( message );
 }
 
 void QStreamBoxChat::timerEvent( QTimerEvent *event )
 {
     if( event->timerId() == statisticTimerId_ )
     {
-        getStatistic();
-/*
-
-        QStringList smilesList;
-
-        smilesList <<
-        "arr" <<
-        "azaz" <<
-        "blood" <<
-        "butthurt" <<
-        "buu" <<
-        "dembel" <<
-        "diablo" <<
-        "doom" <<
-        "enemy" <<
-        "flag" <<
-        "frog" <<
-        "girl" <<
-        "hello" <<
-        "inostranez" <<
-        "jensen" <<
-        "kakashka" <<
-        "kek" <<
-        "king" <<
-        "konchita" <<
-        "leps" <<
-        "mm" <<
-        "nazi" <<
-        "nimf" <<
-        "potato" <<
-        "red" <<
-        "rofl" <<
-        "sir" <<
-        "smoke1" <<
-        "smoke2" <<
-        "tit" <<
-        "uhhh" <<
-        "uu" <<
-        "viking" <<
-        "wtf";
-
-        QString testMessage;
-
-        for( int i = 0; i < 3; i++ )
-        {
-            testMessage += " :";
-            testMessage += smilesList[ qrand() % smilesList.size() ];
-            testMessage += ": ";
-        }
-
-        for( int i = 0; i < 20; i++ )
-        {
-            testMessage += 'a' + qrand() % 26;
-        }
-
-        for( int i = 0; i < 10; i++ )
-        {
-            int hexnum = 0x3400 + qrand() % ( 0x4db5 - 0x3400 );
-
-            int utf8Bytes[ 3 ];
-
-            for( int j = 0; j < 3; j++ )
-            {
-                utf8Bytes[ j ] = hexnum % 64;
-                hexnum /= 64;
-                utf8Bytes[ j ] += 128;
-            }
-
-            utf8Bytes[ 2 ] += 96;
-
-
-            for( int j = 2; j >= 0; j--  )
-            {
-                testMessage += "%";
-
-                if( utf8Bytes[ j ] < 16 )
-                    testMessage += "0";
-
-                testMessage += QString::number( utf8Bytes[ j ], 16 ).toUpper();
-            }
-
-
-        }
-
-        qDebug() << testMessage;
-
-        QString message = "{\"event\":\"new_message\",\"data\":{\"chatID\":\"" + channelName_ + "\",\"text\":\"" + testMessage + "\"}}";
-
-        socket_->sendTextMessage( message ) ;
-        */
-
+        loadStatistic();
     }
     else if( event->timerId() == saveConnectionTimerId_ )
     {
-        //qDebug() << "Popingui";
         if( socket_ && socket_->isValid() )
         {
-            //qDebug() << "Popingui: ok";
-            //socket_->ping( "BroChat Ping Bleat'!" );
             socket_->ping();
         }
     }
@@ -467,8 +336,6 @@ void QStreamBoxChat::timerEvent( QTimerEvent *event )
         reconnect();
     }
 }
-
-
 
 void QStreamBoxChat::loadSettings()
 {

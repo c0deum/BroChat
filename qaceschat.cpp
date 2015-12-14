@@ -15,7 +15,6 @@
 const QString DEFAULT_ACES_CHAT_REQUEST_LINK_PREFIX = "http://aces.gg/engine/ajax/tournament.php/?act=chat_messages&chat_message_fix_limit=";
 const QString DEFAULT_ACES_SMILES_SHORT = "/uploads/hdgstournament/smiley/";
 const QString DEFAULT_ACES_SMILES_LINK_PREFIX = "http://aces.gg/uploads/hdgstournament/smiley/";
-
 const QString DEFAULT_ACES_CHANNEL_INFO_PREFIX = "http://aces.gg/streams/stream/";
 
 const QString ACES_USER = "ACES";
@@ -38,8 +37,8 @@ QAcesChat::QAcesChat( QObject * parent )
 , channelId_()
 , lastMessageId_( -1 )
 , updateChatInfoTimerId_( -1 )
-, reconnectTimerId_( -1 )
 , updateChatInfoInterval_( DEFAULT_ACES_UPDATE_CHAT_INFO_INTERVAL )
+, reconnectTimerId_( -1 )
 , reconnectInterval_( DEFAULT_ACES_RECONNECT_INTERVAL )
 {
 }
@@ -55,9 +54,9 @@ void QAcesChat::connect()
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Connecting to " + channelName_ + "...", "", this ) );
+        emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
 
-    getChannelInfo();
+    loadChannelInfo();
 }
 
 void QAcesChat::disconnect()
@@ -78,11 +77,11 @@ void QAcesChat::reconnect()
     loadSettings();
     if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty()  )
         if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Reconnecting...", "", this ) );
+            emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, tr( "Reconnecting..." ), QString(), this ) );
     connect();
 }
 
-void QAcesChat::getChannelInfo()
+void QAcesChat::loadChannelInfo()
 {
     QNetworkRequest request( QUrl( DEFAULT_ACES_CHANNEL_INFO_PREFIX + channelName_ + "/" ) );
 
@@ -107,12 +106,12 @@ void QAcesChat::onChannelInfoLoaded()
     if( idPosEnd - idPosStart + 1 > 0 )
     {
         channelId_ = channelInfo.mid( idPosStart, idPosEnd - idPosStart + 1 );
-        getLastMessage();
+        loadLastMessage();
     }
     else
     {
         if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Can not find channel_id for channel " + channelName_ + "...", "", this ) );
+            emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, tr( "Can not find channel_id for channel " ) + channelName_ + tr( "..." ), QString(), this ) );
     }
 
     reply->deleteLater();
@@ -124,10 +123,10 @@ void QAcesChat::onChannelInfoLoadError()
     reply->deleteLater();
 }
 
-void QAcesChat::getLastMessage()
+void QAcesChat::loadLastMessage()
 {
     QNetworkRequest request( QUrl( DEFAULT_ACES_CHAT_REQUEST_LINK_PREFIX + "1&chat_message_f_chat=" + channelId_ ) );
-    QNetworkReply *reply = nam_->get( request );
+    QNetworkReply * reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onLastMessageLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onLastMessageLoadError() ) );
 }
@@ -144,7 +143,7 @@ void QAcesChat::onLastMessageLoaded()
     if( -1 == startIdPos )
     {
         if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Can not read last message from " + channelName_ + "..." + reply->errorString(), "", this ) );
+            emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, tr( "Can not read last message from " ) + channelName_ + tr( "..." ) + reply->errorString(), QString(), this ) );
 
         startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 
@@ -159,8 +158,10 @@ void QAcesChat::onLastMessageLoaded()
 
     startUniqueTimer( updateChatInfoTimerId_, updateChatInfoInterval_ );
 
-    if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Connected to " + channelName_ + "...", "", this ) );
+    if( isShowSystemMessages() )    
+        emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+
+    loadSmiles();
 
     reply->deleteLater();
 }
@@ -170,7 +171,7 @@ void QAcesChat::onLastMessageLoadError()
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Can not connect to " + channelName_ + "..." + reply->errorString(), "", this ) );
+        emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString(), QString(), this ) );
 
     startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
 
@@ -293,14 +294,8 @@ void QAcesChat::onChatInfoLoaded()
             message.replace( "img src=", "img class = \"smile\" src=" );
             message.replace( '\'', "\"" );
 
-            //"<a href=\"http://aces.gg/index.php?do=streams&stream=52\" target=\"_blank\">http://aces.gg/index.php?do=streams&stream=52</a>"
-
-            qDebug() << message;
-
             message.replace( "</a>", "" );
             message.replace( QRegExp( "\\<a href=(.*)>" ), "" );
-
-            qDebug() << message;
 
             MessageData messageData;
             messageData.nickName = nickName;
@@ -321,7 +316,9 @@ void QAcesChat::onChatInfoLoaded()
         QString nickName = messagesList[ i ].nickName;
         QString message = messagesList[ i ].message;
 
-        emit newMessage( ChatMessage( ACES_SERVICE, nickName, message, "", this ) );
+        message = insertSmiles( message );
+
+        emit newMessage( ChatMessage( ACES_SERVICE, nickName, message, QString(), this ) );
     }
 
     if( messagesList.size() > 0 )
@@ -333,22 +330,22 @@ void QAcesChat::onChatInfoLoaded()
 
 void QAcesChat::onChatInfoLoadError()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, "Can not read channel messages..." + reply->errorString(), "", this ) );
+        emit newMessage( ChatMessage( ACES_SERVICE, ACES_USER, tr( "Can not read channel messages..." ) + reply->errorString(), QString(), this ) );
 
     reply->deleteLater();
 }
 
-void QAcesChat::timerEvent( QTimerEvent *event )
+void QAcesChat::timerEvent( QTimerEvent * event )
 {
     if( event->timerId() == updateChatInfoTimerId_ )
     {
         QString reqStr = DEFAULT_ACES_CHAT_REQUEST_LINK_PREFIX + "50&chat_message_f_chat=" + channelId_ + "&chat_message_f_msg_max_id=" + QString::number( lastMessageId_ );
 
-        QNetworkRequest request( QUrl(  reqStr + "" ) );
-        QNetworkReply *reply = nam_->get( request );
+        QNetworkRequest request( QUrl( reqStr + "" ) );
+        QNetworkReply * reply = nam_->get( request );
 
         QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChatInfoLoaded() ) );
         QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onChatInfoLoadError() ) );

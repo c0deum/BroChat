@@ -17,8 +17,8 @@ protected:
 
 private:
     void                    loadSettings();
-    void                    getChannelInfo();
-    void                    getLastMessage();
+    void                    loadChannelInfo();
+    void                    loadLastMessage();
 
 public slots:
     virtual void            connect();
@@ -40,8 +40,8 @@ private:
     QString                 channelId_;
     int                     lastMessageId_;
     int                     updateChatInfoTimerId_;
-    int                     reconnectTimerId_;
     int                     updateChatInfoInterval_;
+    int                     reconnectTimerId_;
     int                     reconnectInterval_;
 };
 

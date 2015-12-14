@@ -20,12 +20,11 @@ protected:
     virtual void            timerEvent( QTimerEvent * );
 private:
     void                    loadSettings();
-    void                    getChannelInfo();
+    void                    loadChannelInfo();
     void                    connectToWebClient();
-    void                    getStatistic();
-    void                    getHistory();
-    void                    getSmiles();
-    QString                 insertSmiles( const QString & message ) const;
+    void                    loadStatistic();
+    void                    loadHistory();
+    virtual void            loadSmiles();
 
     void                    parseMessage( const QJsonObject & jsonObj );
 
@@ -45,13 +44,11 @@ private slots:
     void                    onChannelInfoLoaded();
     void                    onChannelInfoLoadError();
 
-    void                    onPong( quint64 elapsedTime, const QByteArray & payload );
 private:
     QNetworkAccessManager * nam_;
     QWebSocket *            socket_;
     QString                 channelName_;
     QString                 channelId_;
-    QList< QChatSmile >     smiles_;
     int                     reconnectTimerId_;
     int                     reconnectInterval_;
     int                     saveConnectionTimerId_;

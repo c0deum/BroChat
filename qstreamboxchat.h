@@ -16,9 +16,8 @@ protected:
     virtual void            timerEvent( QTimerEvent * event );
 private:
     void                    loadSettings();
-    QString                 insertSmiles( const QString & message );
 
-    void                    getStatistic();
+    void                    loadStatistic();
 
 public slots:
     virtual void            connect();
@@ -32,8 +31,6 @@ private slots:
 
     void                    onStatisticLoaded();
     void                    onStatisticLoadError();
-
-    void                    onPong( quint64 elapsedTime, const QByteArray & payload );
 
 private:
     QNetworkAccessManager * nam_;

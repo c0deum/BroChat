@@ -1,4 +1,7 @@
 //#include <QRegExp>
+#include <QApplication>
+#include <QDir>
+
 #include <QDebug>
 
 #include "qchatservice.h"
@@ -12,6 +15,7 @@ QChatService::QChatService( QObject *parent )
 , aliasesList_()
 , supportersList_()
 , blackList_()
+, smiles_()
 {
 }
 
@@ -113,3 +117,71 @@ void QChatService::resetTimer( int & id )
         id = -1;
     }
 }
+
+void QChatService::loadSmiles()
+{
+    smiles_.clear();
+
+    QString smilesPath = QApplication::applicationDirPath() + "/smiles";
+
+    QStringList extList;
+    extList << "*.svg" << "*.png" << "*.gif" << "*.jpg";
+
+    QDir smilesDir( smilesPath );
+
+    QStringList smileFiles = smilesDir.entryList( extList, QDir::Files | QDir::NoSymLinks );
+
+    foreach( const QString& smileName, smileFiles )
+    {
+        smiles_.insert( ":" + smileName.left( smileName.length() - 4 ) + ":", "file:///" + smilesPath + "/" + smileName );
+    }
+}
+
+void QChatService::addSmile( const QString & code, const QString & link )
+{
+    if( !smiles_.contains( code ) )
+        smiles_.insert( code, link );
+}
+
+QString QChatService::insertSmiles( const QString & message ) const
+{
+    QString convertedMessage = message;
+
+    QStringList tokens = convertedMessage.split( QRegExp( "\\s" ) );
+
+    QStringList convertedTokens = tokens;
+
+    for( int i = 0; i < tokens.size(); ++i )
+    {
+        if( smiles_.contains( tokens.at( i ) ) )
+        {
+            convertedTokens[ i ].replace( tokens.at( i ) , "<img class = \"smile\" src=\"" + smiles_[ tokens.at( i ) ] + "\"></img>" );
+        }
+    }
+
+    for( int i = 0; i < tokens.size(); ++i )
+    {
+        convertedMessage.replace( tokens.at( i ), convertedTokens.at( i ) );
+    }
+
+    return convertedMessage;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

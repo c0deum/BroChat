@@ -16,9 +16,9 @@ protected:
     virtual void            timerEvent( QTimerEvent * event );
 
 private:
-    void                    loadSettings();
+    void                    loadSettings();    
 
-    void                    getChannelInfo();
+    void                    loadChannelInfo();
 
     void                    loadMessages();
 

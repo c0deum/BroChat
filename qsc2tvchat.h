@@ -24,14 +24,11 @@ protected:
 private:
     void                        loadSettings();
 
-    void                        getSmiles();
-    void                        getStyles();
-    //void                      getLastMessageId();
+    virtual void                loadSmiles();
+    void                        loadStyles();
 
-    void                        getChannelInfo();
-    void                        getMessages();
-
-    QString                     insertSmiles( const QString & message ) const;
+    void                        loadChannelInfo();
+    void                        loadMessages();
 
 public slots:
     virtual void                connect();
@@ -50,9 +47,6 @@ private slots:
     void                        onStyleLoaded();
     void                        onStylesLoadError();
 
-    //void                      onLastMessageIdLoaded();
-    //void                      onLastMessageIdLoadError();
-
     void                        onChannelInfoLoaded();
     void                        onChannelInfoLoadError();
 
@@ -62,10 +56,7 @@ private:
     QNetworkAccessManager *     nam_;
     QString                     channelName_;
     QString                     channelLink_;
-    //QString                   lastMessageTime_;
-    //QString                   lastMainMessageId_;
     QString                     lastMessageId_;
-    QList< QChatSmile >         smiles_;
     QMap< QString, QString >    styles_;
     int                         updateMessagesTimerId_;
     int                         reconnectTimerId_;
