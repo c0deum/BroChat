@@ -49,12 +49,6 @@ body {
     display: inline-block;
     overflow-y: scroll;
     perspective: 1px;
-
-    -webkit-mask-image: -webkit-gradient(linear, left top, left bottom,
-    color-stop(0.00, rgba(0, 0, 0, 0)),
-    color-stop(0.10, rgba(0, 0, 0, 1)),
-    color-stop(1.00, rgba(0, 0, 0, 1))
-    );
 }
 
 .alias .messagebox {
