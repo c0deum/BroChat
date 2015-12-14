@@ -112,6 +112,7 @@ body {
 
 .nick {
     display: inline-block;
+    display: inline-block;
     vertical-align: top;
     color: #151515;
     font-weight: 600;
@@ -120,11 +121,12 @@ body {
 
 .message {
     display: table-cell;
+    display: inline-block;
     vertical-align: top;
     color: #000;
     margin: 0 0 0 5px;
     padding: 0 0 0 5px;
-    word-wrap: break-word;
+    /*word-wrap: break-word;*/
     max-width: 100%;
 }
 
@@ -133,6 +135,7 @@ body {
     margin: 0 4px -25% 2px;
     vertical-align: top;
     transform: translateY(-25%);
+    -webkit-transform: translateY(-25%);
     display: inline-block;
 }
 

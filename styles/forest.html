@@ -15,5 +15,46 @@
 <!--DOTS ANIMATION-->
 <script type="text/javascript" src="forest/js/raf.js"></script>
 <script type="text/javascript" src="forest/js/forest.js"></script>
+<!--START_BROWSER_CODE-->
+<script>
+    var wsUri = "ws://localhost:15619";
+    var websocket = null;
+
+    function initWebSocket() {
+        try {
+            if (typeof MozWebSocket == 'function')
+                webSocket = MozWebSocket;
+            if (websocket && websocket.readyState == 1)
+                websocket.close();
+            websocket = new WebSocket(wsUri);
+            websocket.onopen = function (event) {
+                console.log('initWebSocket:open');
+            };
+            websocket.onclose = function (event) {
+                setTimeout(initWebSocket, 3000);
+            };
+            websocket.onerror = function (event) {
+                websocket.close();
+            };
+            websocket.onmessage = function (event) {
+                var message = JSON.parse(event.data);
+
+                //onNewMessage( "debug", "debug", message, "" );
+
+                if (MESSAGE == message.type) {
+                    onNewMessage(message.message.service, message.message.nick, message.message.message, message.message.type);
+                    document.body.scrollTop = document.body.scrollHeight;
+                }
+                else if (STATISTIC == message.type) {
+                    onStatisticReceived(message.statistic.service, message.statistic.statistic);
+                }
+            };
+        }
+        catch (exception) {
+        }
+    }
+    initWebSocket();
+</script>
+<!--END_BROWSER_CODE-->
 </body>
 </html>

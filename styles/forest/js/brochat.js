@@ -1,8 +1,6 @@
 var MESSAGE = "message",
     STATISTIC = "statistic",
-    userScroll = false,
-    wsUri = "ws://localhost:15619",
-    websocket = null;
+    userScroll = false;
 
 function onWheel(event) {
     event = event || window.event;
@@ -64,35 +62,3 @@ function onNewMessage(service, nickName, message, type) {
     }
     scrollToBottom();
 }
-function initWebSocket() {
-    try {
-        if (typeof MozWebSocket == 'function')
-            webSocket = MozWebSocket;
-        if (websocket && websocket.readyState == 1)
-            websocket.close();
-        websocket = new WebSocket(wsUri);
-        websocket.onopen = function (event) {
-            console.log('initWebSocket:open');
-        };
-        websocket.onclose = function (event) {
-            setTimeout(initWebSocket, 3000);
-        };
-        websocket.onerror = function (event) {
-            websocket.close();
-        };
-        websocket.onmessage = function (event) {
-            var message = JSON.parse(event.data);
-
-            if (MESSAGE == message.type) {
-                onNewMessage(message.message.service, message.message.nick, message.message.message, message.message.type);
-                document.body.scrollTop = document.body.scrollHeight;
-            }
-            else if (STATISTIC == message.type) {
-                onStatisticReceived(message.statistic.service, message.statistic.statistic);
-            }
-        };
-    }
-    catch (exception) {
-    }
-}
-initWebSocket();
