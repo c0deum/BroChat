@@ -39,7 +39,6 @@ body
 	font-family: 'Arial';
 	font-weight: bold;
 	color: rgb( 255, 255, 255 );
-	/*color: rgb( 255, 128, 0 );*/
 	width: 100%;
 	-webkit-animation: messageAnim .5s;
 	text-shadow: 1px 1px rgba( 128,128,128, .5 );
