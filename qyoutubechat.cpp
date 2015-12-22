@@ -155,12 +155,43 @@ void QYoutubeChat::onMessagesLoaded()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
-    qDebug() << reply->readAll();
+    //qDebug() << reply->readAll();
 
-    const QString HTML_CONTENT_START = "<html_content><![CDATA[";
-    const QString HTML_CONTENT_END = "]]></html_content>";
+    /*
+    const QString COMMENTS_START = "<comments><![CDATA[";
+    const QString COMMENTS_END = "]]></comments>";
 
-    QString messagesData = reply->readAll();
+    QByteArray messagesData = reply->readAll();
+
+    qDebug() << "Messages data: " << messagesData;
+
+    int startCommentsPos = messagesData.indexOf( COMMENTS_START ) + COMMENTS_START.length();
+    int endCommentsPos = messagesData.indexOf( COMMENTS_END, startCommentsPos ) - 1;
+
+    if( endCommentsPos - startCommentsPos + 1 > 0 )
+    {
+        QByteArray commentsData = messagesData.mid( startCommentsPos, endCommentsPos - startCommentsPos + 1 );
+
+        qDebug() << "Comments data: " << commentsData;
+
+        unsigned int size = *( reinterpret_cast< unsigned int * >( commentsData.data() + 18 ) );
+
+        qDebug() << "size: " << size;
+
+        QByteArray uncompressedCommentsData = qUncompress( commentsData );
+
+        qDebug() << uncompressedCommentsData;
+
+
+
+    }
+
+    */
+
+
+
+
+    /*
 
     int startMessagesDataPos = messagesData.indexOf( HTML_CONTENT_START ) + HTML_CONTENT_START.length();
     int endMessagesDataPos = messagesData.indexOf( HTML_CONTENT_END, startMessagesDataPos ) - 1;
@@ -203,6 +234,8 @@ void QYoutubeChat::onMessagesLoaded()
             lastMessageTime_ = QString::number( jsonObj[ "latest_time" ].toInt() );
         }
     }
+    */
+
 
     reply->deleteLater();
 }

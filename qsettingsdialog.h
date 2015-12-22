@@ -19,6 +19,7 @@ class QScrollArea;
 class QTabWidget;
 
 class QVBoxLayout;
+class QHBoxLayout;
 
 class QSettingsDialog: public QDialog
 {
@@ -49,21 +50,45 @@ private:
     void                setColorButtonStyle( QPushButton * button, QRgb color, int fontSize = 16 );
     void                buttonColorSelection( QPushButton * button, QRgb & color );
 
-    void                addLayoutRow( QLayout * layout, std::initializer_list< QWidget * > widgets );
+    void                addLayoutRow( QVBoxLayout * layout, std::initializer_list< QWidget * > widgets );
+    void                addLayoutRow( QVBoxLayout * layout, std::initializer_list< QVBoxLayout * > layouts );
     void                addWidgets( QVBoxLayout * layout, std::initializer_list< QWidget * > widgets );
+    void                addLayouts( QHBoxLayout * layout, std::initializer_list< QVBoxLayout * > layouts );
 
-private slots:    
+    void                setupSpinBox( QSpinBox * spinBox, int min, int max, int defaultValue, const QString & settingPath );
+    void                setupColorButton( QPushButton * button, QRgb & color, unsigned int defaultColor, const QString & settingPath );
+
+
+private slots:
     void                bodyBackgroundColorSelection();
-    void                nicknamesColorSelection();
-    void                messagesColorSelection();
-    void                messagesBorderColorSelection();
+
+    void                evenMessagesNicknamesColorSelection();
+    void                oddMessagesNicknamesColorSelection();
+    void                aliasesMessagesNicknamesColorSelection();
+    void                supportersMessagesNicknamesColorSelection();
+    void                blackListMessagesNicknamesColorSelection();
+
     void                evenMessagesBackgroundColorSelection();
     void                oddMessagesBackgroundColorSelection();
+    void                aliasesBackgroundColorSelection();
+    void                supportersBackgroundColorSelection();
+    void                blackListBackgroundColorSelection();
+
+    void                evenMessagesTextColorSelection();
+    void                oddMessagesTextColorSelection();
+    void                aliasesMessagesTextColorSelection();
+    void                supportersMessagesTextColorSelection();
+    void                blackListMessagesTextColorSelection();
+
+    void                evenMessagesBorderColorSelection();
+    void                oddMessagesBorderColorSelection();
+    void                aliasesMessagesBorderColorSelection();
+    void                supportersMessagesBorderColorSelection();
+    void                blackListMessagesBorderColorSelection();
+
     void                viewersColorSelection();
     void                viewersBackgroundColorSelection();
-    void                aliasesColorSelection();
-    void                aliasesBorderColorSelection();
-    void                aliasesBackgroundColorSelection();
+
     void                linksColorSelection();
 
 public slots:
@@ -177,6 +202,7 @@ signals:
     void                twitchSupportersListChanged( const QString & );
     void                twitchBlackListChanged( const QString & );
     void                twitchRemoveBlackListUsersChanged( bool );
+    void                twitchOriginalColorsChanged( bool );
 
     void                youtubeChannelChanged();
     void                youtubeChannelDisabled();
@@ -186,16 +212,34 @@ signals:
     void                youtubeRemoveBlackListUsersChanged( bool );
 private:
     QRgb                bodyBackgroundColor;
-    QRgb                nicknamesTextColor;
-    QRgb                messagesTextColor;
-    QRgb                messagesBorderColor;
+
+    QRgb                evenMessagesNicknamesColor;
+    QRgb                oddMessagesNicknamesColor;
+    QRgb                aliasesNicknamesColor;
+    QRgb                supportersNicknamesColor;
+    QRgb                blackListNicknamesColor;
+
     QRgb                evenMessagesBackgroundColor;
     QRgb                oddMessagesBackgroundColor;
+    QRgb                aliasesBackgroundColor;
+    QRgb                supportersBackgroundColor;
+    QRgb                blackListBackgroundColor;
+
+    QRgb                evenMessagesTextColor;
+    QRgb                oddMessagesTextColor;
+    QRgb                aliasesMessagesTextColor;
+    QRgb                supportersMessagesTextColor;
+    QRgb                blackListMessagesTextColor;
+
+    QRgb                evenMessagesBorderColor;
+    QRgb                oddMessagesBorderColor;
+    QRgb                aliasesMessagesBorderColor;
+    QRgb                supportersMessagesBorderColor;
+    QRgb                blackListMessagesBorderColor;
+
     QRgb                viewersTextColor;
     QRgb                viewersBackgroundColor;
-    QRgb                aliasesTextColor;
-    QRgb                aliasesBorderColor;
-    QRgb                aliasesBackgroundColor;
+
     QRgb                linksColor;
 
     QTabWidget *        tabSettings;
@@ -215,25 +259,62 @@ private:
     QSpinBox  *         saveToFileIntervalSpinBox;
 
     QComboBox *         fontNameCombo;
-    QPushButton *       bodyBackgroundColorButton;
-    QSpinBox *          nicknamesFontSizeSpinBox;
-    QPushButton *       nicknamesTextColorButton;
-    QSpinBox *          messagesFontSizeSpinBox;
-    QPushButton *       messagesTextColorButton;
-    QSpinBox *          messagesBorderSizeSpinBox;
-    QSpinBox *          messagesBorderRadiusSizeSpinBox;
-    QPushButton *       messagesBorderColorButton;
+    QPushButton *       bodyBackgroundColorButton;    
+
+    QPushButton *       evenMessagesNicknamesColorButton;
+    QPushButton *       oddMessagesNicknamesColorButton;
+    QPushButton *       aliasesNicknamesColorButton;
+    QPushButton *       supportersNicknamesColorButton;
+    QPushButton *       blackListNicknamesColorButton;
+
+    QSpinBox *          evenMessagesNicknamesFontSizeSpinBox;
+    QSpinBox *          oddMessagesNicknamesFontSizeSpinBox;
+    QSpinBox *          aliasesNicknamesFontSizeSpinBox;
+    QSpinBox *          supportersNicknamesFontSizeSpinBox;
+    QSpinBox *          blackListNicknamesFontSizeSpinBox;
+
     QPushButton *       evenMessagesBackgroundColorButton;
     QPushButton *       oddMessagesBackgroundColorButton;
+    QPushButton *       aliasesBackgroundColorButton;
+    QPushButton *       supportersBackgroundColorButton;
+    QPushButton *       blackListBackgroundColorButton;
+
+    QPushButton *       evenMessagesTextColorButton;
+    QPushButton *       oddMessagesTextColorButton;
+    QPushButton *       aliasesMessagesTextColorButton;
+    QPushButton *       supportersMessagesTextColorButton;
+    QPushButton *       blackListMessagesTextColorButton;
+
+    QSpinBox *          evenMessagesFontSizeSpinBox;
+    QSpinBox *          oddMessagesFontSizeSpinBox;
+    QSpinBox *          aliasesMessagesFontSizeSpinBox;
+    QSpinBox *          supportersMessagesFontSizeSpinBox;
+    QSpinBox *          blackListMessagesFontSizeSpinBox;
+
+    QPushButton *       evenMessagesBorderColorButton;
+    QPushButton *       oddMessagesBorderColorButton;
+    QPushButton *       aliasesMessagesBorderColorButton;
+    QPushButton *       supportersMessagesBorderColorButton;
+    QPushButton *       blackListMessagesBorderColorButton;       
+
+    QSpinBox *          messagesLeftBorderSizeSpinBox;
+    QSpinBox *          messagesRightBorderSizeSpinBox;
+    QSpinBox *          messagesTopBorderSizeSpinBox;
+    QSpinBox *          messagesBottomBorderSizeSpinBox;
+
+    QSpinBox *          messagesTopLeftBorderRadiusSizeSpinBox;
+    QSpinBox *          messagesTopRightBorderRadiusSizeSpinBox;
+    QSpinBox *          messagesBottomLeftBorderRadiusSizeSpinBox;
+    QSpinBox *          messagesBottomRightBorderRadiusSizeSpinBox;
+
     QSpinBox *          messagesMarginBottomSizeSpinBox;
+
+    QSpinBox *          messagesIndentSizeSpinBox;
+
     QSpinBox *          viewersFontSizeSpinBox;
     QPushButton *       viewersTextColorButton;
     QPushButton *       viewersBackgroundColorButton;
-    QSpinBox *          aliasesFontSizeSpinBox;
-    QPushButton *       aliasesTextColorButton;
-    QSpinBox *          aliasesBorderSizeSpinBox;
-    QPushButton *       aliasesBorderColorButton;
-    QPushButton *       aliasesBackgroundColorButton;
+
     QPushButton *       linksColorButton;
     QSpinBox *          smilesSizeSpinBox;
     QSpinBox *          serviceIconsSizeSpinBox;
@@ -333,6 +414,7 @@ private:
 
     QCheckBox *         twitchChannelCheckBox;
     QLineEdit *         twitchChannelEdit;
+    QCheckBox *         twitchOriginalColorsCheckBox;
     QLineEdit *         twitchAliasesEdit;
     QTextEdit *         twitchSupportersListEdit;
     QTextEdit *         twitchBlackListEdit;

@@ -24,6 +24,8 @@
 
 #include <QScrollArea>
 
+#include <QGridLayout>
+
 #include "settingsconsts.h"
 
 #include "qsettingsdialog.h"
@@ -37,16 +39,33 @@ const QString REMOVE_BLACKLIST_USERS_MESSAGES = QT_TR_NOOP( "Remove Black List U
 QSettingsDialog::QSettingsDialog( QWidget *parent )
 : QDialog( parent/*, Qt::WindowStaysOnTopHint*/ )
 , bodyBackgroundColor()
-, nicknamesTextColor()
-, messagesTextColor()
-, messagesBorderColor()
+
+, evenMessagesNicknamesColor()
+, oddMessagesNicknamesColor()
+, aliasesNicknamesColor()
+, supportersNicknamesColor()
+, blackListNicknamesColor()
+
 , evenMessagesBackgroundColor()
 , oddMessagesBackgroundColor()
+, aliasesBackgroundColor()
+, supportersBackgroundColor()
+, blackListBackgroundColor()
+
+, evenMessagesTextColor()
+, oddMessagesTextColor()
+, aliasesMessagesTextColor()
+, supportersMessagesTextColor()
+, blackListMessagesTextColor()
+
+, evenMessagesBorderColor()
+, oddMessagesBorderColor()
+, aliasesMessagesBorderColor()
+, supportersMessagesBorderColor()
+, blackListMessagesBorderColor()
+
 , viewersTextColor()
 , viewersBackgroundColor()
-, aliasesTextColor()
-, aliasesBorderColor()
-, aliasesBackgroundColor()
 , linksColor()
 
 , tabSettings( new QTabWidget( this ) )
@@ -67,24 +86,62 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 , fontNameCombo( new QComboBox( this ) )
 , bodyBackgroundColorButton( new QPushButton( this ) )
-, nicknamesFontSizeSpinBox( new QSpinBox( this ) )
-, nicknamesTextColorButton( new QPushButton( this ) )
-, messagesFontSizeSpinBox( new QSpinBox( this ) )
-, messagesTextColorButton( new QPushButton( this ) )
-, messagesBorderSizeSpinBox( new QSpinBox( this ) )
-, messagesBorderRadiusSizeSpinBox( new QSpinBox( this ) )
-, messagesBorderColorButton( new QPushButton( this ) )
+
+
+, evenMessagesNicknamesColorButton( new QPushButton( this ) )
+, oddMessagesNicknamesColorButton( new QPushButton( this ) )
+, aliasesNicknamesColorButton( new QPushButton( this ) )
+, supportersNicknamesColorButton( new QPushButton( this ) )
+, blackListNicknamesColorButton( new QPushButton( this ) )
+
+, evenMessagesNicknamesFontSizeSpinBox( new QSpinBox( this ) )
+, oddMessagesNicknamesFontSizeSpinBox( new QSpinBox( this ) )
+, aliasesNicknamesFontSizeSpinBox( new QSpinBox( this ) )
+, supportersNicknamesFontSizeSpinBox( new QSpinBox( this ) )
+, blackListNicknamesFontSizeSpinBox( new QSpinBox( this ) )
+
 , evenMessagesBackgroundColorButton( new QPushButton( this ) )
 , oddMessagesBackgroundColorButton( new QPushButton( this ) )
+, aliasesBackgroundColorButton( new QPushButton( this ) )
+, supportersBackgroundColorButton( new QPushButton( this ) )
+, blackListBackgroundColorButton( new QPushButton( this ) )
+
+, evenMessagesTextColorButton( new QPushButton( this ) )
+, oddMessagesTextColorButton( new QPushButton( this ) )
+, aliasesMessagesTextColorButton( new QPushButton( this ) )
+, supportersMessagesTextColorButton( new QPushButton( this ) )
+, blackListMessagesTextColorButton( new QPushButton( this ) )
+
+, evenMessagesFontSizeSpinBox( new QSpinBox( this ) )
+, oddMessagesFontSizeSpinBox( new QSpinBox( this ) )
+, aliasesMessagesFontSizeSpinBox( new QSpinBox( this ) )
+, supportersMessagesFontSizeSpinBox( new QSpinBox( this ) )
+, blackListMessagesFontSizeSpinBox( new QSpinBox( this ) )
+
+, evenMessagesBorderColorButton( new QPushButton( this ) )
+, oddMessagesBorderColorButton( new QPushButton( this ) )
+, aliasesMessagesBorderColorButton( new QPushButton( this ) )
+, supportersMessagesBorderColorButton( new QPushButton( this ) )
+, blackListMessagesBorderColorButton( new QPushButton( this ) )
+
+, messagesLeftBorderSizeSpinBox( new QSpinBox( this ) )
+, messagesRightBorderSizeSpinBox( new QSpinBox( this ) )
+, messagesTopBorderSizeSpinBox( new QSpinBox( this ) )
+, messagesBottomBorderSizeSpinBox( new QSpinBox( this ) )
+
+, messagesTopLeftBorderRadiusSizeSpinBox( new QSpinBox( this ) )
+, messagesTopRightBorderRadiusSizeSpinBox( new QSpinBox( this ) )
+, messagesBottomLeftBorderRadiusSizeSpinBox( new QSpinBox( this ) )
+, messagesBottomRightBorderRadiusSizeSpinBox( new QSpinBox( this ) )
+
 , messagesMarginBottomSizeSpinBox( new QSpinBox( this ) )
+
+, messagesIndentSizeSpinBox( new QSpinBox( this ) )
+
 , viewersFontSizeSpinBox( new QSpinBox( this ) )
 , viewersTextColorButton( new QPushButton( this ) )
 , viewersBackgroundColorButton( new QPushButton( this ) )
-, aliasesFontSizeSpinBox( new QSpinBox( this ) )
-, aliasesTextColorButton( new QPushButton( this ) )
-, aliasesBorderSizeSpinBox( new QSpinBox( this ) )
-, aliasesBorderColorButton( new QPushButton( this ) )
-, aliasesBackgroundColorButton( new QPushButton( this ) )
+
 , linksColorButton( new QPushButton( this ) )
 , smilesSizeSpinBox( new QSpinBox( this ) )
 , serviceIconsSizeSpinBox( new QSpinBox( this ) )
@@ -184,6 +241,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 , twitchChannelCheckBox( new QCheckBox( this ) )
 , twitchChannelEdit( new QLineEdit( this ) )
+, twitchOriginalColorsCheckBox( new QCheckBox( this ) )
 , twitchAliasesEdit( new QLineEdit( this ) )
 , twitchSupportersListEdit( new QTextEdit( this ) )
 , twitchBlackListEdit( new QTextEdit( this ) )
@@ -273,9 +331,7 @@ void QSettingsDialog::setupGeneralTab()
 {
     QSettings settings;
 
-    QVBoxLayout *windowLayout = new QVBoxLayout;
-
-    //QLabel *stayOnTopLabel = new QLabel( tr( "Stay on top" ) );
+    QVBoxLayout * windowLayout = new QVBoxLayout;
 
     QLabel *languageLabel = new QLabel( tr( "Language:" ) );
 
@@ -304,7 +360,6 @@ void QSettingsDialog::setupGeneralTab()
 
     QDir stylesDir = QApplication::applicationDirPath() + "/styles";
 
-    //QStringList styleFiles = stylesDir.entryList( QStringList( "*.css" ), QDir::Files | QDir::NoSymLinks );
     QStringList styleFiles = stylesDir.entryList( QStringList( "*.html" ), QDir::Files | QDir::NoSymLinks );
 
     styleCombo->addItem( DEFAULT_STYLE_NAME );
@@ -326,7 +381,7 @@ void QSettingsDialog::setupGeneralTab()
     windowLayout->addWidget( opacityLabel );
     windowLayout->addWidget( opacitySlider );
 
-    showSystemMessagesCheckBox->setText( "Show System Messages" );
+    showSystemMessagesCheckBox->setText( tr( "Show System Messages" ) );
     showSystemMessagesCheckBox->setChecked( settings.value( SHOW_SYSTEM_MESSAGES_SETTING_PATH, DEFAULT_SHOW_SYSTEM_MESSAGES ).toBool() );
 
     windowLayout->addWidget( showSystemMessagesCheckBox );
@@ -381,7 +436,8 @@ void QSettingsDialog::setupDefaultStyleTab()
 
     QFontDatabase fontDataBase;
 
-    QVBoxLayout *defaultStyleLayout = new QVBoxLayout();
+    QVBoxLayout * defaultStyleLayout = new QVBoxLayout();
+
 
     fontNameCombo->addItems( fontDataBase.families() );
     fontNameCombo->setEditable( false );
@@ -390,142 +446,301 @@ void QSettingsDialog::setupDefaultStyleTab()
 
     addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Font Name:" ), this ), fontNameCombo } );
 
-    bodyBackgroundColorButton->setFlat( true );
-    bodyBackgroundColor = settings.value( GENERATED_STYLE_BODY_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_BODY_BACKGROUND_COLOR ).toUInt();
-    setColorButtonStyle( bodyBackgroundColorButton, bodyBackgroundColor );
+    setupColorButton( bodyBackgroundColorButton, bodyBackgroundColor, DEFAULT_GENERATED_STYLE_BODY_BACKGROUND_COLOR, GENERATED_STYLE_BODY_BACKGROUND_COLOR_SETTING_PATH );
     QObject::connect( bodyBackgroundColorButton, SIGNAL( clicked() ), this, SLOT( bodyBackgroundColorSelection() ) );
 
     addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Background Color:" ), this ), bodyBackgroundColorButton } );
 
-    nicknamesFontSizeSpinBox->setRange( 1, 100 );
-    nicknamesFontSizeSpinBox->setValue( settings.value( GENERATED_STYLE_NICKNAMES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE ). toInt() );
 
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Nicknames Font Size:" ), this ), nicknamesFontSizeSpinBox } );
+    QGridLayout * nicknamesTextColorsValueLayout = new QGridLayout();
 
-    nicknamesTextColorButton->setFlat( true );
-    nicknamesTextColor = settings.value( GENERATED_STYLE_NICKNAMES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_TEXT_COLOR ).toUInt();
-    setColorButtonStyle( nicknamesTextColorButton, nicknamesTextColor );
-    QObject::connect( nicknamesTextColorButton, SIGNAL( clicked() ), this, SLOT( nicknamesColorSelection() ) );
+    nicknamesTextColorsValueLayout->addWidget( new QLabel( tr( "Even" ), this ), 0, 0 );
+    nicknamesTextColorsValueLayout->addWidget( new QLabel( tr( "Odd" ), this ), 0, 1 );
+    nicknamesTextColorsValueLayout->addWidget( new QLabel( tr( "Aliases" ), this ), 0, 2 );
+    nicknamesTextColorsValueLayout->addWidget( new QLabel( tr( "Supporters" ), this ), 0, 3 );
+    nicknamesTextColorsValueLayout->addWidget( new QLabel( tr( "Black List" ), this ), 0, 4 );   
 
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Nicknames Text Color:" ), this ), nicknamesTextColorButton } );
 
-    messagesFontSizeSpinBox->setRange( 1, 100 );
-    messagesFontSizeSpinBox->setValue( settings.value( GENERATED_STYLE_MESSAGES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE ).toInt() );
+    nicknamesTextColorsValueLayout->addWidget( evenMessagesNicknamesColorButton, 1, 0 );
+    nicknamesTextColorsValueLayout->addWidget( oddMessagesNicknamesColorButton, 1, 1 );
+    nicknamesTextColorsValueLayout->addWidget( aliasesNicknamesColorButton, 1, 2 );
+    nicknamesTextColorsValueLayout->addWidget( supportersNicknamesColorButton, 1, 3 );
+    nicknamesTextColorsValueLayout->addWidget( blackListNicknamesColorButton, 1, 4 );
 
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Messages Font Size:" ), this ), messagesFontSizeSpinBox } );
+    setupColorButton( evenMessagesNicknamesColorButton, evenMessagesNicknamesColor, DEFAULT_GENERATED_STYLE_NICKNAMES_COLOR, GENERATED_STYLE_EVEN_MESSAGES_NICKNAMES_COLOR_SETTING_PATH );
+    QObject::connect( evenMessagesNicknamesColorButton, SIGNAL( clicked() ), this, SLOT( evenMessagesNicknamesColorSelection() ) );
 
-    messagesTextColorButton->setFlat( true );
-    messagesTextColor = settings.value( GENERATED_STYLE_MESSAGES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR ).toUInt();
-    setColorButtonStyle( messagesTextColorButton, messagesTextColor );
-    QObject::connect( messagesTextColorButton, SIGNAL( clicked() ), this, SLOT( messagesColorSelection() ) );
+    setupColorButton( oddMessagesNicknamesColorButton, oddMessagesNicknamesColor, DEFAULT_GENERATED_STYLE_NICKNAMES_COLOR, GENERATED_STYLE_ODD_MESSAGES_NICKNAMES_COLOR_SETTING_PATH );
+    QObject::connect( oddMessagesNicknamesColorButton, SIGNAL( clicked() ), this, SLOT( oddMessagesNicknamesColorSelection() ) );
 
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Messages Text Color:" ), this ), messagesTextColorButton } );
+    setupColorButton( aliasesNicknamesColorButton, aliasesNicknamesColor, DEFAULT_GENERATED_STYLE_NICKNAMES_COLOR, GENERATED_STYLE_ALIASES_MESSAGES_NICKNAMES_COLOR_SETTING_PATH );
+    QObject::connect( aliasesNicknamesColorButton, SIGNAL( clicked() ), this, SLOT( aliasesMessagesNicknamesColorSelection() ) );
 
-    messagesBorderSizeSpinBox->setRange( 0, 10 );
-    messagesBorderSizeSpinBox->setValue( settings.value( GENERATED_STYLE_MESSAGES_BORDER_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_SIZE ).toInt() );
+    setupColorButton( supportersNicknamesColorButton, supportersNicknamesColor, DEFAULT_GENERATED_STYLE_NICKNAMES_COLOR, GENERATED_STYLE_SUPPORTERS_MESSAGES_NICKNAMES_COLOR_SETTING_PATH );
+    QObject::connect( supportersNicknamesColorButton, SIGNAL( clicked() ), this, SLOT( supportersMessagesNicknamesColorSelection() ) );
 
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Messages Border Size:" ), this ), messagesBorderSizeSpinBox } );
+    setupColorButton( blackListNicknamesColorButton, blackListNicknamesColor, DEFAULT_GENERATED_STYLE_NICKNAMES_COLOR, GENERATED_STYLE_BLACK_LIST_MESSAGES_NICKNAMES_COLOR_SETTING_PATH );
+    QObject::connect( blackListNicknamesColorButton, SIGNAL( clicked() ), this, SLOT( blackListMessagesNicknamesColorSelection() ) );
 
-    messagesBorderRadiusSizeSpinBox->setRange( 0, 100 );
-    messagesBorderRadiusSizeSpinBox->setValue( settings.value( GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE ).toInt() );
 
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Messages Border Radius Size:" ), this ), messagesBorderRadiusSizeSpinBox } );
+    QHBoxLayout * nicknamesColorlayout = new QHBoxLayout();
+    nicknamesColorlayout->addWidget( new QLabel( tr( "Nicknames Colors:" ), this ) );
+    nicknamesColorlayout->addLayout( nicknamesTextColorsValueLayout );
 
-    messagesBorderColorButton->setFlat( true );
-    messagesBorderColor = settings.value( GENERATED_STYLE_MESSAGES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR ).toUInt();
-    setColorButtonStyle( messagesBorderColorButton, messagesBorderColor );
-    QObject::connect( messagesBorderColorButton, SIGNAL( clicked() ), this, SLOT( messagesBorderColorSelection() ) );
+    defaultStyleLayout->addLayout( nicknamesColorlayout );
 
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Messages Border Color:" ), this ), messagesBorderColorButton } );
+    QGridLayout * nicknamesFontSizeValueLayout = new QGridLayout();
 
-    evenMessagesBackgroundColorButton->setFlat( true );
-    evenMessagesBackgroundColor = settings.value( GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR ).toUInt();
-    setColorButtonStyle( evenMessagesBackgroundColorButton, evenMessagesBackgroundColor );
+    nicknamesFontSizeValueLayout->addWidget( new QLabel( tr( "Even" ), this ), 0, 0 );
+    nicknamesFontSizeValueLayout->addWidget( new QLabel( tr( "Odd" ), this ), 0, 1 );
+    nicknamesFontSizeValueLayout->addWidget( new QLabel( tr( "Aliases" ), this ), 0, 2 );
+    nicknamesFontSizeValueLayout->addWidget( new QLabel( tr( "Supporters" ), this ), 0, 3 );
+    nicknamesFontSizeValueLayout->addWidget( new QLabel( tr( "Black List" ), this ), 0, 4 );
+
+    nicknamesFontSizeValueLayout->addWidget( evenMessagesNicknamesFontSizeSpinBox, 1, 0 );
+    nicknamesFontSizeValueLayout->addWidget( oddMessagesNicknamesFontSizeSpinBox, 1, 1 );
+    nicknamesFontSizeValueLayout->addWidget( aliasesNicknamesFontSizeSpinBox, 1, 2 );
+    nicknamesFontSizeValueLayout->addWidget( supportersNicknamesFontSizeSpinBox, 1, 3 );
+    nicknamesFontSizeValueLayout->addWidget( blackListNicknamesFontSizeSpinBox, 1, 4 );   
+
+    setupSpinBox( evenMessagesNicknamesFontSizeSpinBox, 1, 100, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE, GENERATED_STYLE_EVEN_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH );
+    setupSpinBox( oddMessagesNicknamesFontSizeSpinBox, 1, 100, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE, GENERATED_STYLE_ODD_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH );
+    setupSpinBox( aliasesNicknamesFontSizeSpinBox, 1, 100, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE, GENERATED_STYLE_ALIASES_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH );
+    setupSpinBox( supportersNicknamesFontSizeSpinBox, 1, 100, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE, GENERATED_STYLE_SUPPORTERS_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH );
+    setupSpinBox( blackListNicknamesFontSizeSpinBox, 1, 100, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE, GENERATED_STYLE_BLACK_LIST_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH );
+
+    QHBoxLayout * nicknamesFontSizeLayout = new QHBoxLayout();
+    nicknamesFontSizeLayout->addWidget( new QLabel( tr( "Messages Font Size:" ), this ) );
+    nicknamesFontSizeLayout->addLayout( nicknamesFontSizeValueLayout );
+
+    defaultStyleLayout->addLayout( nicknamesFontSizeLayout );
+
+
+    QGridLayout * messagesBackgroundColorsValueLayout = new QGridLayout();
+
+    messagesBackgroundColorsValueLayout->addWidget( new QLabel( tr( "Even" ), this ), 0, 0 );
+    messagesBackgroundColorsValueLayout->addWidget( new QLabel( tr( "Odd" ), this ), 0, 1 );
+    messagesBackgroundColorsValueLayout->addWidget( new QLabel( tr( "Aliases" ), this ), 0, 2 );
+    messagesBackgroundColorsValueLayout->addWidget( new QLabel( tr( "Supporters" ), this ), 0, 3 );
+    messagesBackgroundColorsValueLayout->addWidget( new QLabel( tr( "Black List" ), this ), 0, 4 );
+
+
+    messagesBackgroundColorsValueLayout->addWidget( evenMessagesBackgroundColorButton, 1, 0 );
+    messagesBackgroundColorsValueLayout->addWidget( oddMessagesBackgroundColorButton, 1, 1 );
+    messagesBackgroundColorsValueLayout->addWidget( aliasesBackgroundColorButton, 1, 2 );
+    messagesBackgroundColorsValueLayout->addWidget( supportersBackgroundColorButton, 1, 3 );
+    messagesBackgroundColorsValueLayout->addWidget( blackListBackgroundColorButton, 1, 4 );
+
+    setupColorButton( evenMessagesBackgroundColorButton, evenMessagesBackgroundColor, DEFAULT_GENERATED_STYLE_MESSAGES_BACKGROUND_COLOR, GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH );
     QObject::connect( evenMessagesBackgroundColorButton, SIGNAL( clicked() ), this, SLOT( evenMessagesBackgroundColorSelection() ) );
 
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Even Messages Background Color:" ), this ), evenMessagesBackgroundColorButton } );
-
-    oddMessagesBackgroundColorButton->setFlat( true );
-    oddMessagesBackgroundColor = settings.value( GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR ).toUInt();
-    setColorButtonStyle( oddMessagesBackgroundColorButton, oddMessagesBackgroundColor );
+    setupColorButton( oddMessagesBackgroundColorButton, oddMessagesBackgroundColor, DEFAULT_GENERATED_STYLE_MESSAGES_BACKGROUND_COLOR, GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH );
     QObject::connect( oddMessagesBackgroundColorButton, SIGNAL( clicked() ), this, SLOT( oddMessagesBackgroundColorSelection() ) );
 
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Odd Messages Background Color:" ), this ), oddMessagesBackgroundColorButton } );
+    setupColorButton( aliasesBackgroundColorButton, aliasesBackgroundColor, DEFAULT_GENERATED_STYLE_MESSAGES_BACKGROUND_COLOR, GENERATED_STYLE_ALIASES_MESSAGES_BACKGROUND_COLOR_SETTING_PATH );
+    QObject::connect( aliasesBackgroundColorButton, SIGNAL( clicked() ), this, SLOT( aliasesBackgroundColorSelection() ) );
 
-    messagesMarginBottomSizeSpinBox->setRange( 0, 10 );
-    messagesMarginBottomSizeSpinBox->setValue( settings.value( GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE ).toInt() );
+    setupColorButton( supportersBackgroundColorButton, supportersBackgroundColor, DEFAULT_GENERATED_STYLE_MESSAGES_BACKGROUND_COLOR, GENERATED_STYLE_SUPPORTERS_MESSAGES_BACKGROUND_COLOR_SETTING_PATH );
+    QObject::connect( supportersBackgroundColorButton, SIGNAL( clicked() ), this, SLOT( supportersBackgroundColorSelection() ) );
+
+    setupColorButton( blackListBackgroundColorButton, blackListBackgroundColor, DEFAULT_GENERATED_STYLE_MESSAGES_BACKGROUND_COLOR, GENERATED_STYLE_BLACK_LIST_MESSAGES_BACKGROUND_COLOR_SETTING_PATH );
+    QObject::connect( blackListBackgroundColorButton, SIGNAL( clicked() ), this, SLOT( blackListBackgroundColorSelection() ) );
+
+
+    QHBoxLayout * messagesBackgroundColorlayout = new QHBoxLayout();
+    messagesBackgroundColorlayout->addWidget( new QLabel( tr( "Messages Background Colors:" ), this ) );
+    messagesBackgroundColorlayout->addLayout( messagesBackgroundColorsValueLayout );
+
+    //messagesBackgroundColorlayout->addLayout( messagesBackgroundColorlayout );
+
+    defaultStyleLayout->addLayout( messagesBackgroundColorlayout );
+
+
+    QGridLayout * messagesTextColorsValueLayout = new QGridLayout();
+
+    messagesTextColorsValueLayout->addWidget( new QLabel( tr( "Even" ), this ), 0, 0 );
+    messagesTextColorsValueLayout->addWidget( new QLabel( tr( "Odd" ), this ), 0, 1 );
+    messagesTextColorsValueLayout->addWidget( new QLabel( tr( "Aliases" ), this ), 0, 2 );
+    messagesTextColorsValueLayout->addWidget( new QLabel( tr( "Supporters" ), this ), 0, 3 );
+    messagesTextColorsValueLayout->addWidget( new QLabel( tr( "Black List" ), this ), 0, 4 );
+
+
+    messagesTextColorsValueLayout->addWidget( evenMessagesTextColorButton, 1, 0 );
+    messagesTextColorsValueLayout->addWidget( oddMessagesTextColorButton, 1, 1 );
+    messagesTextColorsValueLayout->addWidget( aliasesMessagesTextColorButton, 1, 2 );
+    messagesTextColorsValueLayout->addWidget( supportersMessagesTextColorButton, 1, 3 );
+    messagesTextColorsValueLayout->addWidget( blackListMessagesTextColorButton, 1, 4 );
+
+    setupColorButton( evenMessagesTextColorButton, evenMessagesTextColor, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR, GENERATED_STYLE_EVEN_MESSAGES_TEXT_COLOR_SETTING_PATH );
+    QObject::connect( evenMessagesTextColorButton, SIGNAL( clicked() ), this, SLOT( evenMessagesTextColorSelection() ) );
+
+    setupColorButton( oddMessagesTextColorButton, oddMessagesTextColor, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR, GENERATED_STYLE_ODD_MESSAGES_TEXT_COLOR_SETTING_PATH );
+    QObject::connect( oddMessagesTextColorButton, SIGNAL( clicked() ), this, SLOT( oddMessagesTextColorSelection() ) );
+
+    setupColorButton( aliasesMessagesTextColorButton, aliasesMessagesTextColor, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR, GENERATED_STYLE_ALIASES_MESSAGES_TEXT_COLOR_SETTING_PATH );
+    QObject::connect( aliasesMessagesTextColorButton, SIGNAL( clicked() ), this, SLOT( aliasesMessagesTextColorSelection() ) );
+
+    setupColorButton( supportersMessagesTextColorButton, supportersMessagesTextColor, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR, GENERATED_STYLE_SUPPORTERS_MESSAGES_TEXT_COLOR_SETTING_PATH );
+    QObject::connect( supportersMessagesTextColorButton, SIGNAL( clicked() ), this, SLOT( supportersMessagesTextColorSelection() ) );
+
+    setupColorButton( blackListMessagesTextColorButton, blackListMessagesTextColor, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR, GENERATED_STYLE_BLACK_LIST_MESSAGES_TEXT_COLOR_SETTING_PATH );
+    QObject::connect( blackListMessagesTextColorButton, SIGNAL( clicked() ), this, SLOT( blackListMessagesTextColorSelection() ) );
+
+    QHBoxLayout * messagesTextColorlayout = new QHBoxLayout();
+    messagesTextColorlayout->addWidget( new QLabel( tr( "Messages Text Colors:" ), this ) );
+    messagesTextColorlayout->addLayout( messagesTextColorsValueLayout );
+
+    defaultStyleLayout->addLayout( messagesTextColorlayout );
+
+
+    QGridLayout * messagesFontSizeValueLayout = new QGridLayout();
+
+    messagesFontSizeValueLayout->addWidget( new QLabel( tr( "Even" ), this ), 0, 0 );
+    messagesFontSizeValueLayout->addWidget( new QLabel( tr( "Odd" ), this ), 0, 1 );
+    messagesFontSizeValueLayout->addWidget( new QLabel( tr( "Aliases" ), this ), 0, 2 );
+    messagesFontSizeValueLayout->addWidget( new QLabel( tr( "Supporters" ), this ), 0, 3 );
+    messagesFontSizeValueLayout->addWidget( new QLabel( tr( "Black List" ), this ), 0, 4 );
+
+    messagesFontSizeValueLayout->addWidget( evenMessagesFontSizeSpinBox, 1, 0 );
+    messagesFontSizeValueLayout->addWidget( oddMessagesFontSizeSpinBox, 1, 1 );
+    messagesFontSizeValueLayout->addWidget( aliasesMessagesFontSizeSpinBox, 1, 2 );
+    messagesFontSizeValueLayout->addWidget( supportersMessagesFontSizeSpinBox, 1, 3 );
+    messagesFontSizeValueLayout->addWidget( blackListMessagesFontSizeSpinBox, 1, 4 );
+
+    setupSpinBox( evenMessagesFontSizeSpinBox, 1, 100, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE, GENERATED_STYLE_EVEN_MESSAGES_FONT_SIZE_SETTING_PATH );
+    setupSpinBox( oddMessagesFontSizeSpinBox, 1, 100, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE, GENERATED_STYLE_ODD_MESSAGES_FONT_SIZE_SETTING_PATH );
+    setupSpinBox( aliasesMessagesFontSizeSpinBox, 1, 100, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE, GENERATED_STYLE_ALIASES_MESSAGES_FONT_SIZE_SETTING_PATH );
+    setupSpinBox( supportersMessagesFontSizeSpinBox, 1, 100, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE, GENERATED_STYLE_SUPPORTERS_MESSAGES_FONT_SIZE_SETTING_PATH );
+    setupSpinBox( blackListMessagesFontSizeSpinBox, 1, 100, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE, GENERATED_STYLE_BLACK_LIST_MESSAGES_FONT_SIZE_SETTING_PATH );
+
+    QHBoxLayout * messagesFontSizeLayout = new QHBoxLayout();
+    messagesFontSizeLayout->addWidget( new QLabel( tr( "Messages Font Size:" ), this ) );
+    messagesFontSizeLayout->addLayout( messagesFontSizeValueLayout );
+
+    defaultStyleLayout->addLayout( messagesFontSizeLayout );
+
+    QGridLayout * messagesBorderColorsValueLayout = new QGridLayout();
+
+    messagesBorderColorsValueLayout->addWidget( new QLabel( tr( "Even" ), this ), 0, 0 );
+    messagesBorderColorsValueLayout->addWidget( new QLabel( tr( "Odd" ), this ), 0, 1 );
+    messagesBorderColorsValueLayout->addWidget( new QLabel( tr( "Aliases" ), this ), 0, 2 );
+    messagesBorderColorsValueLayout->addWidget( new QLabel( tr( "Supporters" ), this ), 0, 3 );
+    messagesBorderColorsValueLayout->addWidget( new QLabel( tr( "Black List" ), this ), 0, 4 );
+
+    messagesBorderColorsValueLayout->addWidget( evenMessagesBorderColorButton, 1, 0 );
+    messagesBorderColorsValueLayout->addWidget( oddMessagesBorderColorButton, 1, 1 );
+    messagesBorderColorsValueLayout->addWidget( aliasesMessagesBorderColorButton, 1, 2 );
+    messagesBorderColorsValueLayout->addWidget( supportersMessagesBorderColorButton, 1, 3 );
+    messagesBorderColorsValueLayout->addWidget( blackListMessagesBorderColorButton, 1, 4 );
+
+    setupColorButton( evenMessagesBorderColorButton, evenMessagesBorderColor, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR, GENERATED_STYLE_EVEN_MESSAGES_BORDER_COLOR_SETTING_PATH );
+    QObject::connect( evenMessagesBorderColorButton, SIGNAL( clicked() ), this, SLOT( evenMessagesBorderColorSelection() ) );
+
+    setupColorButton( oddMessagesBorderColorButton, oddMessagesBorderColor, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR, GENERATED_STYLE_ODD_MESSAGES_BORDER_COLOR_SETTING_PATH );
+    QObject::connect( oddMessagesBorderColorButton, SIGNAL( clicked() ), this, SLOT( oddMessagesBorderColorSelection() ) );
+
+    setupColorButton( aliasesMessagesBorderColorButton, aliasesMessagesBorderColor, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR, GENERATED_STYLE_ALIASES_MESSAGES_BORDER_COLOR_SETTING_PATH );
+    QObject::connect( aliasesMessagesBorderColorButton, SIGNAL( clicked() ), this, SLOT( aliasesMessagesBorderColorSelection() ) );
+
+    setupColorButton( supportersMessagesBorderColorButton, supportersMessagesBorderColor, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR, GENERATED_STYLE_SUPPORTERS_MESSAGES_BORDER_COLOR_SETTING_PATH );
+    QObject::connect( supportersMessagesBorderColorButton, SIGNAL( clicked() ), this, SLOT( supportersMessagesBorderColorSelection() ) );
+
+    setupColorButton( blackListMessagesBorderColorButton, blackListMessagesBorderColor, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR, GENERATED_STYLE_BLACK_LIST_MESSAGES_BORDER_COLOR_SETTING_PATH );
+    QObject::connect( blackListMessagesBorderColorButton, SIGNAL( clicked() ), this, SLOT( blackListMessagesBorderColorSelection() ) );
+
+    QHBoxLayout * messagesBorderColorlayout = new QHBoxLayout();
+    messagesBorderColorlayout->addWidget( new QLabel( tr( "Messages Border Colors:" ), this ) );
+    messagesBorderColorlayout->addLayout( messagesBorderColorsValueLayout );
+
+    //messagesBorderColorlayout->addLayout( messagesBorderColorlayout );
+
+    defaultStyleLayout->addLayout( messagesBorderColorlayout );
+
+    QGridLayout * messagesBorderSizeValueLayout = new QGridLayout();
+
+    messagesBorderSizeValueLayout->addWidget( messagesTopBorderSizeSpinBox, 0, 1 );
+    messagesBorderSizeValueLayout->addWidget( messagesLeftBorderSizeSpinBox, 1, 0 );
+    messagesBorderSizeValueLayout->addWidget( messagesRightBorderSizeSpinBox, 1, 2 );
+    messagesBorderSizeValueLayout->addWidget( messagesBottomBorderSizeSpinBox, 2, 1 );
+
+    setupSpinBox( messagesTopBorderSizeSpinBox, 0, 100, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_SIZE, GENERATED_STYLE_MESSAGES_TOP_BORDER_SIZE_SETTING_PATH );
+    setupSpinBox( messagesLeftBorderSizeSpinBox, 0, 100, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_SIZE, GENERATED_STYLE_MESSAGES_LEFT_BORDER_SIZE_SETTING_PATH );
+    setupSpinBox( messagesRightBorderSizeSpinBox, 0, 100, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_SIZE, GENERATED_STYLE_MESSAGES_RIGHT_BORDER_SIZE_SETTING_PATH );
+    setupSpinBox( messagesBottomBorderSizeSpinBox, 0, 100, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_SIZE, GENERATED_STYLE_MESSAGES_BOTTOM_BORDER_SIZE_SETTING_PATH );
+
+
+    QHBoxLayout * messagesBorderSizeLayout = new QHBoxLayout();
+    messagesBorderSizeLayout->addWidget( new QLabel( tr( "Messages Border Size:" ), this ) );
+    messagesBorderSizeLayout->addLayout( messagesBorderSizeValueLayout );
+
+    //messagesBorderSizeLayout->addLayout( messagesBorderSizeLayout );
+
+    defaultStyleLayout->addLayout( messagesBorderSizeLayout );
+
+
+    QGridLayout * messagesBorderRadiusSizeValueLayout = new QGridLayout();
+
+    messagesBorderRadiusSizeValueLayout->addWidget( messagesTopLeftBorderRadiusSizeSpinBox, 0, 0 );
+    messagesBorderRadiusSizeValueLayout->addWidget( messagesTopRightBorderRadiusSizeSpinBox, 0, 2 );
+    messagesBorderRadiusSizeValueLayout->addWidget( messagesBottomLeftBorderRadiusSizeSpinBox, 2, 0 );
+    messagesBorderRadiusSizeValueLayout->addWidget( messagesBottomRightBorderRadiusSizeSpinBox, 2, 2 );
+
+    setupSpinBox( messagesTopLeftBorderRadiusSizeSpinBox, 0, 100, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE, GENERATED_STYLE_MESSAGES_TOP_LEFT_BORDER_RADIUS_SIZE_SETTING_PATH );
+    setupSpinBox( messagesTopRightBorderRadiusSizeSpinBox, 0, 100, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE, GENERATED_STYLE_MESSAGES_TOP_RIGHT_BORDER_RADIUS_SIZE_SETTING_PATH );
+    setupSpinBox( messagesBottomLeftBorderRadiusSizeSpinBox, 0, 100, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE, GENERATED_STYLE_MESSAGES_BOTTOM_LEFT_BORDER_RADIUS_SIZE_SETTING_PATH );
+    setupSpinBox( messagesBottomRightBorderRadiusSizeSpinBox, 0, 100, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE, GENERATED_STYLE_MESSAGES_BOTTOM_RIGHT_BORDER_RADIUS_SIZE_SETTING_PATH );
+
+    QHBoxLayout * messagesBorderRadiusSizeLayout = new QHBoxLayout();
+    messagesBorderRadiusSizeLayout->addWidget( new QLabel( tr( "Messages Border Radius Size:" ), this ) );
+    messagesBorderRadiusSizeLayout->addLayout( messagesBorderRadiusSizeValueLayout );
+
+    //messagesBorderRadiusSizeLayout->addLayout( messagesBorderRadiusSizeLayout );
+
+    defaultStyleLayout->addLayout( messagesBorderRadiusSizeLayout );
+
+
+    setupSpinBox( messagesMarginBottomSizeSpinBox, 0, 100, DEFAULT_GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE, GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE_SETTING_PATH );
 
     addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Message Spacing:" ), this ), messagesMarginBottomSizeSpinBox } );
 
-    viewersFontSizeSpinBox->setRange( 1, 100 );
-    viewersFontSizeSpinBox->setValue( settings.value( GENERATED_STYLE_VIEWERS_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_FONT_SIZE ).toInt() );
+
+    setupSpinBox( messagesIndentSizeSpinBox, 0, 100, DEFAULT_GENERATED_STYLE_MESSAGES_INDENT_SIZE, GENERATED_STYLE_MESSAGES_INDENT_SIZE_SETTING_PATH );
+
+    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Message Indent Size:" ), this ), messagesIndentSizeSpinBox } );
+
+
+
+    setupSpinBox( viewersFontSizeSpinBox, 0, 100, DEFAULT_GENERATED_STYLE_VIEWERS_FONT_SIZE, GENERATED_STYLE_VIEWERS_FONT_SIZE_SETTING_PATH );
 
     addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Viewers Font Size:" ), this ), viewersFontSizeSpinBox } );
 
-    viewersTextColorButton->setFlat( true );
-    viewersTextColor = settings.value( GENERATED_STYLE_VIEWERS_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_TEXT_COLOR ).toUInt();
-    setColorButtonStyle( viewersTextColorButton, viewersTextColor );
+    setupColorButton( viewersTextColorButton, viewersTextColor, DEFAULT_GENERATED_STYLE_VIEWERS_TEXT_COLOR, GENERATED_STYLE_VIEWERS_TEXT_COLOR_SETTING_PATH );
     QObject::connect( viewersTextColorButton, SIGNAL( clicked() ), this, SLOT( viewersColorSelection() ) );
 
     addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Viewers Text Color:" ), this ), viewersTextColorButton } );
 
-    viewersBackgroundColorButton->setFlat( true );
-    viewersBackgroundColor = settings.value( GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR ).toUInt();
-    setColorButtonStyle( viewersBackgroundColorButton, viewersBackgroundColor );
+
+    setupColorButton( viewersBackgroundColorButton, viewersBackgroundColor, DEFAULT_GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR, GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR_SETTING_PATH );
     QObject::connect( viewersBackgroundColorButton, SIGNAL( clicked() ), this, SLOT( viewersBackgroundColorSelection() ) );
 
     addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Viewers Background Color:" ), this ), viewersBackgroundColorButton } );
 
-    aliasesFontSizeSpinBox->setRange( 1, 100 );
-    aliasesFontSizeSpinBox->setValue( settings.value( GENERATED_STYLE_ALIASES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_FONT_SIZE ).toInt() );
 
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Aliases Font Size:" ), this ), aliasesFontSizeSpinBox } );
-
-    aliasesTextColorButton->setFlat( true );
-    aliasesTextColor = settings.value( GENERATED_STYLE_ALIASES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_TEXT_COLOR ).toUInt();
-    setColorButtonStyle( aliasesTextColorButton, aliasesTextColor );
-    QObject::connect( aliasesTextColorButton, SIGNAL( clicked() ), this, SLOT( aliasesColorSelection() ) );
-
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Aliases Text Color:" ), this ), aliasesTextColorButton } );
-
-    aliasesBorderSizeSpinBox->setRange( 0, 10 );
-    aliasesBorderSizeSpinBox->setValue( settings.value( GENERATED_STYLE_ALIASES_BORDER_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BORDER_SIZE ).toInt() );
-
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Aliases Border Size:" ), this ), aliasesBorderSizeSpinBox } );
-
-    aliasesBorderColorButton->setFlat( true );
-    aliasesBorderColor = settings.value( GENERATED_STYLE_ALIASES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BORDER_COLOR ).toUInt();
-    setColorButtonStyle( aliasesBorderColorButton, aliasesBorderColor );
-    QObject::connect( aliasesBorderColorButton, SIGNAL( clicked() ), this, SLOT( aliasesBorderColorSelection() ) );
-
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Aliases Border Color:" ), this ), aliasesBorderColorButton } );
-
-    aliasesBackgroundColorButton->setFlat( true );
-    aliasesBackgroundColor = settings.value( GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BACKGROUND_COLOR ).toUInt();
-    setColorButtonStyle( aliasesBackgroundColorButton, aliasesBackgroundColor );
-    QObject::connect( aliasesBackgroundColorButton, SIGNAL( clicked() ), this, SLOT( aliasesBackgroundColorSelection() ) );
-
-    addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Aliases Background Color:" ), this ), aliasesBackgroundColorButton } );
-
-    linksColorButton->setFlat( true );
-    linksColor = settings.value( GENERATED_STYLE_LINKS_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_LINKS_COLOR ).toUInt();
-    setColorButtonStyle( linksColorButton, linksColor );
+    setupColorButton( linksColorButton, linksColor, DEFAULT_GENERATED_STYLE_LINKS_COLOR, GENERATED_STYLE_LINKS_COLOR_SETTING_PATH );
     QObject::connect( linksColorButton, SIGNAL( clicked() ), this, SLOT( linksColorSelection() ) );
 
     addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Links Color:" ), this ), linksColorButton } );
 
-    smilesSizeSpinBox->setRange( 1, 100 );
-    smilesSizeSpinBox->setValue( settings.value( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SMILES_SIZE ).toInt() );
+    setupSpinBox( smilesSizeSpinBox, 1, 100, DEFAULT_GENERATED_STYLE_SMILES_SIZE, GENERATED_STYLE_SMILES_SIZE_SETTING_PATH );
 
     addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Smiles Size:" ), this ), smilesSizeSpinBox } );
 
-    serviceIconsSizeSpinBox->setRange( 1, 100 );
-    serviceIconsSizeSpinBox->setValue( settings.value( GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SERVICE_ICONS_SIZE ).toInt() );
+    setupSpinBox( serviceIconsSizeSpinBox, 1, 100, DEFAULT_GENERATED_STYLE_SERVICE_ICONS_SIZE, GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH );
 
     addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Service Icons Size:" ), this ), serviceIconsSizeSpinBox } );
 
-    maxImagesHeightSpinBox->setRange( 0, 65535 );
-    maxImagesHeightSpinBox->setValue( settings.value( GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH, DEFAULT_GENERATED_STYLE_MAX_IMAGES_HEIGHT ).toInt() );
+    setupSpinBox( maxImagesHeightSpinBox, 0, 2160, DEFAULT_GENERATED_STYLE_MAX_IMAGES_HEIGHT, GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH );
+
 
     addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Max Images Height( px ):" ), this ), maxImagesHeightSpinBox } );
 
@@ -560,18 +775,23 @@ void QSettingsDialog::setupDefaultStyleTab()
 
     addLayoutRow( defaultStyleLayout, { new QLabel( tr( "Animation Duration( sec ):" ), this ), animationDurationSpinBox } );
 
+
     defaultStyleLayout->addStretch( 1 );
 
-    QGroupBox *defaultStyleGroup = new QGroupBox;
+    QGroupBox * defaultStyleGroup = new QGroupBox;
 
     defaultStyleGroup->setLayout( defaultStyleLayout );
+
+
 
     QScrollArea * defaultStyleScrollArea = new QScrollArea( this );
 
     defaultStyleScrollArea->setWidgetResizable( true );
     defaultStyleScrollArea->setWidget( defaultStyleGroup );
 
+
     tabSettings->addTab( defaultStyleScrollArea, QIcon( ":/resources/broico.ico" ), tr( "Default Style" ) );
+
 }
 
 void QSettingsDialog::setupAcesTab()
@@ -1101,7 +1321,10 @@ void QSettingsDialog::setupTwitchTab()
 
     QObject::connect( twitchChannelCheckBox, SIGNAL( clicked( bool ) ), twitchChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    addWidgets( twitchLayout, { twitchChannelCheckBox, twitchChannelEdit } );
+    twitchOriginalColorsCheckBox->setText( tr( "Original Colors" ) );
+    twitchOriginalColorsCheckBox->setChecked( settings.value( TWITCH_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
+
+    addWidgets( twitchLayout, { twitchChannelCheckBox, twitchChannelEdit, twitchOriginalColorsCheckBox } );
 
     twitchAliasesEdit->setText( settings.value( TWITCH_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
@@ -1181,24 +1404,67 @@ void QSettingsDialog::saveSettings()
 
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_FONT_NAME_SETTING_PATH, DEFAULT_GENERATED_STYLE_FONT_NAME ).toString() != fontNameCombo->currentText() );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_BODY_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_BODY_BACKGROUND_COLOR ).toUInt() != bodyBackgroundColor );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_NICKNAMES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE ).toInt() != nicknamesFontSizeSpinBox->value() );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_NICKNAMES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_TEXT_COLOR ).toUInt() != nicknamesTextColor );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE ).toInt() != messagesFontSizeSpinBox->value() );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR ).toUInt() != messagesTextColor );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_BORDER_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_SIZE ).toInt() != messagesBorderSizeSpinBox->value() );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE ).toInt() != messagesBorderRadiusSizeSpinBox->value() );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR ).toUInt() != messagesBorderColor );
+
+
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_EVEN_MESSAGES_NICKNAMES_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_COLOR ).toUInt() != evenMessagesNicknamesColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ODD_MESSAGES_NICKNAMES_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_COLOR ).toUInt() != oddMessagesNicknamesColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_MESSAGES_NICKNAMES_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_COLOR ).toUInt() != aliasesNicknamesColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SUPPORTERS_MESSAGES_NICKNAMES_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_COLOR ).toUInt() != supportersNicknamesColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_BLACK_LIST_MESSAGES_NICKNAMES_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_COLOR ).toUInt() != blackListNicknamesColor );
+
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_EVEN_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE ).toInt() != evenMessagesNicknamesFontSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ODD_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE ).toInt() != oddMessagesNicknamesFontSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE ).toInt() != aliasesNicknamesFontSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SUPPORTERS_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE ).toInt() != supportersNicknamesFontSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_BLACK_LIST_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE ).toInt() != blackListNicknamesFontSizeSpinBox->value() );
+
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BACKGROUND_COLOR ).toUInt() != evenMessagesBackgroundColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BACKGROUND_COLOR ).toUInt() != oddMessagesBackgroundColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BACKGROUND_COLOR ).toUInt() != aliasesBackgroundColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SUPPORTERS_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BACKGROUND_COLOR ).toUInt() != supportersBackgroundColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_BLACK_LIST_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BACKGROUND_COLOR ).toUInt() != blackListBackgroundColor );
+
+
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_EVEN_MESSAGES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR ).toUInt() != evenMessagesTextColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ODD_MESSAGES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR ).toUInt() != oddMessagesTextColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_MESSAGES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR ).toUInt() != aliasesMessagesTextColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SUPPORTERS_MESSAGES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR ).toUInt() != supportersMessagesTextColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_BLACK_LIST_MESSAGES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR ).toUInt() != blackListMessagesTextColor );
+
+
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_EVEN_MESSAGES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE ).toInt() != evenMessagesFontSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ODD_MESSAGES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE ).toInt() != oddMessagesFontSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_MESSAGES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE ).toInt() != aliasesMessagesFontSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SUPPORTERS_MESSAGES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE ).toInt() != supportersMessagesFontSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_BLACK_LIST_MESSAGES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE ).toInt() != blackListMessagesFontSizeSpinBox->value() );
+
+
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_EVEN_MESSAGES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR ).toUInt() != evenMessagesBorderColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ODD_MESSAGES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR ).toUInt() != oddMessagesBorderColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_MESSAGES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR ).toUInt() != aliasesMessagesBorderColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SUPPORTERS_MESSAGES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR ).toUInt() != supportersMessagesBorderColor );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_BLACK_LIST_MESSAGES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR ).toUInt() != blackListMessagesBorderColor );
+
+
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_LEFT_BORDER_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_SIZE ).toInt() != messagesLeftBorderSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_RIGHT_BORDER_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_SIZE ).toInt() != messagesRightBorderSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_TOP_BORDER_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_SIZE ).toInt() != messagesTopBorderSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_BOTTOM_BORDER_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_SIZE ).toInt() != messagesBottomBorderSizeSpinBox->value() );
+
+
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_TOP_LEFT_BORDER_RADIUS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE ).toInt() != messagesTopLeftBorderRadiusSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_TOP_RIGHT_BORDER_RADIUS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE ).toInt() != messagesTopRightBorderRadiusSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_BOTTOM_LEFT_BORDER_RADIUS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE ).toInt() != messagesBottomLeftBorderRadiusSizeSpinBox->value() );
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_BOTTOM_RIGHT_BORDER_RADIUS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE ).toInt() != messagesBottomRightBorderRadiusSizeSpinBox->value() );
+
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE ).toInt() != messagesMarginBottomSizeSpinBox->value() );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR ).toUInt() != evenMessagesBackgroundColor );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR ).toUInt() != oddMessagesBackgroundColor );
+
+    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_MESSAGES_INDENT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_MESSAGES_INDENT_SIZE ).toInt() != messagesIndentSizeSpinBox->value() );
+
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_VIEWERS_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_FONT_SIZE ).toInt() != viewersFontSizeSpinBox->value() );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_VIEWERS_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_TEXT_COLOR ).toUInt() != viewersTextColor );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR ).toUInt() != viewersBackgroundColor );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_FONT_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_FONT_SIZE ).toInt() != aliasesFontSizeSpinBox->value() );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_TEXT_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_TEXT_COLOR ).toUInt() != aliasesTextColor );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_BORDER_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BORDER_SIZE ).toInt() != aliasesBorderSizeSpinBox->value() );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_BORDER_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BORDER_COLOR ).toUInt() != aliasesBorderColor );
-    defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_ALIASES_BACKGROUND_COLOR ).toUInt() != aliasesBackgroundColor );
+
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_LINKS_COLOR_SETTING_PATH, DEFAULT_GENERATED_STYLE_LINKS_COLOR ).toUInt() != linksColor );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SMILES_SIZE ).toInt() != smilesSizeSpinBox->value() );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH, DEFAULT_GENERATED_STYLE_SERVICE_ICONS_SIZE ).toInt() != serviceIconsSizeSpinBox->value() );
@@ -1206,32 +1472,71 @@ void QSettingsDialog::saveSettings()
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ANIMATION_TYPE_SETTING_PATH, DEFAULT_GENERATED_STYLE_ANIMATION_TYPE ).toString() != animationTypeCombo->currentText() );
     defaultStyleChanged |= ( settings.value( GENERATED_STYLE_ANIMATION_DURATION_SETTING_PATH, DEFAULT_GENERATED_STYLE_ANIMATION_DURATION ).toDouble() != animationDurationSpinBox->value() );
 
-    settings.setValue( GENERATED_STYLE_FONT_NAME_SETTING_PATH, fontNameCombo->currentText() );
-    settings.setValue( GENERATED_STYLE_BODY_BACKGROUND_COLOR_SETTING_PATH, bodyBackgroundColor );
-    settings.setValue( GENERATED_STYLE_NICKNAMES_FONT_SIZE_SETTING_PATH, nicknamesFontSizeSpinBox->value() );
-    settings.setValue( GENERATED_STYLE_NICKNAMES_TEXT_COLOR_SETTING_PATH, nicknamesTextColor );
-    settings.setValue( GENERATED_STYLE_MESSAGES_FONT_SIZE_SETTING_PATH, messagesFontSizeSpinBox->value() );
-    settings.setValue( GENERATED_STYLE_MESSAGES_TEXT_COLOR_SETTING_PATH, messagesTextColor );
-    settings.setValue( GENERATED_STYLE_MESSAGES_BORDER_SIZE_SETTING_PATH, messagesBorderSizeSpinBox->value() );
-    settings.setValue( GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE_SETTING_PATH, messagesBorderRadiusSizeSpinBox->value() );
-    settings.setValue( GENERATED_STYLE_MESSAGES_BORDER_COLOR_SETTING_PATH, messagesBorderColor );
-    settings.setValue( GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, evenMessagesBackgroundColor );
-    settings.setValue( GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, oddMessagesBackgroundColor );
-    settings.setValue( GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE_SETTING_PATH, messagesMarginBottomSizeSpinBox->value() );
-    settings.setValue( GENERATED_STYLE_VIEWERS_FONT_SIZE_SETTING_PATH, viewersFontSizeSpinBox->value() );
-    settings.setValue( GENERATED_STYLE_VIEWERS_TEXT_COLOR_SETTING_PATH, viewersTextColor );
-    settings.setValue( GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR_SETTING_PATH, viewersBackgroundColor );
-    settings.setValue( GENERATED_STYLE_ALIASES_FONT_SIZE_SETTING_PATH, aliasesFontSizeSpinBox->value() );
-    settings.setValue( GENERATED_STYLE_ALIASES_TEXT_COLOR_SETTING_PATH, aliasesTextColor );
-    settings.setValue( GENERATED_STYLE_ALIASES_BORDER_SIZE_SETTING_PATH, aliasesBorderSizeSpinBox->value() );
-    settings.setValue( GENERATED_STYLE_ALIASES_BORDER_COLOR_SETTING_PATH, aliasesBorderColor );
-    settings.setValue( GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH, aliasesBackgroundColor );
-    settings.setValue( GENERATED_STYLE_LINKS_COLOR_SETTING_PATH, linksColor );
-    settings.setValue( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, smilesSizeSpinBox->value() );
-    settings.setValue( GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH, serviceIconsSizeSpinBox->value() );
-    settings.setValue( GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH, maxImagesHeightSpinBox->value() );
-    settings.setValue( GENERATED_STYLE_ANIMATION_TYPE_SETTING_PATH, animationTypeCombo->currentText() );
-    settings.setValue( GENERATED_STYLE_ANIMATION_DURATION_SETTING_PATH, animationDurationSpinBox->value() );
+    if( defaultStyleChanged )
+    {
+        settings.setValue( GENERATED_STYLE_FONT_NAME_SETTING_PATH, fontNameCombo->currentText() );
+        settings.setValue( GENERATED_STYLE_BODY_BACKGROUND_COLOR_SETTING_PATH, bodyBackgroundColor );
+
+        settings.setValue( GENERATED_STYLE_EVEN_MESSAGES_NICKNAMES_COLOR_SETTING_PATH, evenMessagesNicknamesColor );
+        settings.setValue( GENERATED_STYLE_ODD_MESSAGES_NICKNAMES_COLOR_SETTING_PATH, oddMessagesNicknamesColor );
+        settings.setValue( GENERATED_STYLE_ALIASES_MESSAGES_NICKNAMES_COLOR_SETTING_PATH, aliasesNicknamesColor );
+        settings.setValue( GENERATED_STYLE_SUPPORTERS_MESSAGES_NICKNAMES_COLOR_SETTING_PATH, supportersNicknamesColor );
+        settings.setValue( GENERATED_STYLE_BLACK_LIST_MESSAGES_NICKNAMES_COLOR_SETTING_PATH, blackListNicknamesColor );
+
+        settings.setValue( GENERATED_STYLE_EVEN_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH, evenMessagesNicknamesFontSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_ODD_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH, oddMessagesNicknamesFontSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_ALIASES_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH, aliasesNicknamesFontSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_SUPPORTERS_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH, supportersNicknamesFontSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_BLACK_LIST_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH, blackListNicknamesFontSizeSpinBox->value() );
+
+        settings.setValue( GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, evenMessagesBackgroundColor );
+        settings.setValue( GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, oddMessagesBackgroundColor );
+        settings.setValue( GENERATED_STYLE_ALIASES_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, aliasesBackgroundColor );
+        settings.setValue( GENERATED_STYLE_SUPPORTERS_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, supportersBackgroundColor );
+        settings.setValue( GENERATED_STYLE_BLACK_LIST_MESSAGES_BACKGROUND_COLOR_SETTING_PATH, blackListBackgroundColor );
+
+        settings.setValue( GENERATED_STYLE_EVEN_MESSAGES_TEXT_COLOR_SETTING_PATH, evenMessagesTextColor );
+        settings.setValue( GENERATED_STYLE_ODD_MESSAGES_TEXT_COLOR_SETTING_PATH, oddMessagesTextColor );
+        settings.setValue( GENERATED_STYLE_ALIASES_MESSAGES_TEXT_COLOR_SETTING_PATH, aliasesMessagesTextColor );
+        settings.setValue( GENERATED_STYLE_SUPPORTERS_MESSAGES_TEXT_COLOR_SETTING_PATH, supportersMessagesTextColor );
+        settings.setValue( GENERATED_STYLE_BLACK_LIST_MESSAGES_TEXT_COLOR_SETTING_PATH, blackListMessagesTextColor );
+
+        settings.setValue( GENERATED_STYLE_EVEN_MESSAGES_FONT_SIZE_SETTING_PATH, evenMessagesFontSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_ODD_MESSAGES_FONT_SIZE_SETTING_PATH, oddMessagesFontSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_ALIASES_MESSAGES_FONT_SIZE_SETTING_PATH, aliasesMessagesFontSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_SUPPORTERS_MESSAGES_FONT_SIZE_SETTING_PATH, supportersMessagesFontSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_BLACK_LIST_MESSAGES_FONT_SIZE_SETTING_PATH, blackListMessagesFontSizeSpinBox->value() );
+
+        settings.setValue( GENERATED_STYLE_EVEN_MESSAGES_BORDER_COLOR_SETTING_PATH, evenMessagesBorderColor );
+        settings.setValue( GENERATED_STYLE_ODD_MESSAGES_BORDER_COLOR_SETTING_PATH, oddMessagesBorderColor );
+        settings.setValue( GENERATED_STYLE_ALIASES_MESSAGES_BORDER_COLOR_SETTING_PATH, aliasesMessagesBorderColor );
+        settings.setValue( GENERATED_STYLE_SUPPORTERS_MESSAGES_BORDER_COLOR_SETTING_PATH, supportersMessagesBorderColor );
+        settings.setValue( GENERATED_STYLE_BLACK_LIST_MESSAGES_BORDER_COLOR_SETTING_PATH, blackListMessagesBorderColor );
+
+        settings.setValue( GENERATED_STYLE_MESSAGES_LEFT_BORDER_SIZE_SETTING_PATH, messagesLeftBorderSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_MESSAGES_RIGHT_BORDER_SIZE_SETTING_PATH, messagesRightBorderSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_MESSAGES_TOP_BORDER_SIZE_SETTING_PATH, messagesTopBorderSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_MESSAGES_BOTTOM_BORDER_SIZE_SETTING_PATH, messagesBottomBorderSizeSpinBox->value() );
+
+        settings.setValue( GENERATED_STYLE_MESSAGES_TOP_LEFT_BORDER_RADIUS_SIZE_SETTING_PATH, messagesTopLeftBorderRadiusSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_MESSAGES_TOP_RIGHT_BORDER_RADIUS_SIZE_SETTING_PATH, messagesTopRightBorderRadiusSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_MESSAGES_BOTTOM_LEFT_BORDER_RADIUS_SIZE_SETTING_PATH, messagesBottomLeftBorderRadiusSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_MESSAGES_BOTTOM_RIGHT_BORDER_RADIUS_SIZE_SETTING_PATH, messagesBottomRightBorderRadiusSizeSpinBox->value() );
+
+        settings.setValue( GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE_SETTING_PATH, messagesMarginBottomSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_MESSAGES_INDENT_SIZE_SETTING_PATH, messagesIndentSizeSpinBox->value() );
+
+        settings.setValue( GENERATED_STYLE_VIEWERS_FONT_SIZE_SETTING_PATH, viewersFontSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_VIEWERS_TEXT_COLOR_SETTING_PATH, viewersTextColor );
+        settings.setValue( GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR_SETTING_PATH, viewersBackgroundColor );
+
+        settings.setValue( GENERATED_STYLE_LINKS_COLOR_SETTING_PATH, linksColor );
+        settings.setValue( GENERATED_STYLE_SMILES_SIZE_SETTING_PATH, smilesSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH, serviceIconsSizeSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_MAX_IMAGES_HEIGHT_SETTING_PATH, maxImagesHeightSpinBox->value() );
+        settings.setValue( GENERATED_STYLE_ANIMATION_TYPE_SETTING_PATH, animationTypeCombo->currentText() );
+        settings.setValue( GENERATED_STYLE_ANIMATION_DURATION_SETTING_PATH, animationDurationSpinBox->value() );
+    }
 
     bool needReloadFlagsAndAtributes = false;
 
@@ -1892,6 +2197,14 @@ void QSettingsDialog::saveSettings()
         emit twitchChannelChanged();
     }
 
+
+    oldBoolValue = settings.value( TWITCH_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != twitchOriginalColorsCheckBox->isChecked() )
+    {
+        settings.setValue( TWITCH_ORIGINAL_COLORS_SETTING_PATH, twitchOriginalColorsCheckBox->isChecked() );
+        emit twitchOriginalColorsChanged( twitchOriginalColorsCheckBox->isChecked() );
+    }
+
     oldStringValue = settings.value( TWITCH_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != twitchAliasesEdit->text() )
     {
@@ -1976,30 +2289,44 @@ void QSettingsDialog::setColorButtonStyle( QPushButton * button, QRgb color, int
     button->setStyleSheet( newButtonStyle );
 }
 
-void QSettingsDialog::addLayoutRow( QLayout * layout, std::initializer_list< QWidget * > widgets )
+void QSettingsDialog::addLayoutRow( QVBoxLayout * layout, std::initializer_list< QWidget * > widgets )
 {
-    //assert( layout );
-
     QHBoxLayout * rowLayout = new QHBoxLayout();
 
     for( auto widget : widgets )
     {
-        //assert( widget );
         rowLayout->addWidget( widget );
     }
 
-    qobject_cast< QVBoxLayout * >( layout )->addLayout( rowLayout );
+    layout->addLayout( rowLayout );
+}
+
+void QSettingsDialog::addLayoutRow( QVBoxLayout * layout, std::initializer_list< QVBoxLayout * > layouts )
+{
+    QHBoxLayout * rowLayout = new QHBoxLayout();
+
+    for( auto layout : layouts )
+    {
+        rowLayout->addLayout( layout );
+    }
+
+    layout->addLayout( rowLayout );
 }
 
 
 void QSettingsDialog::addWidgets( QVBoxLayout * layout, std::initializer_list< QWidget * > widgets )
-{
-    //assert( layout );
-
+{    
     for( auto widget : widgets )
     {
-        //assert( widget );
         layout->addWidget( widget );
+    }
+}
+
+void QSettingsDialog::addLayouts( QHBoxLayout * layout, std::initializer_list< QVBoxLayout * > layouts )
+{
+    for( auto vboxLayout : layouts )
+    {
+        layout->addLayout( vboxLayout );
     }
 }
 
@@ -2014,35 +2341,37 @@ void QSettingsDialog::buttonColorSelection( QPushButton * button, QRgb & color )
     }        
 }
 
-void QSettingsDialog::nicknamesColorSelection()
-{
-    buttonColorSelection( nicknamesTextColorButton, nicknamesTextColor );
-}
-
-void QSettingsDialog::messagesColorSelection()
-{
-    buttonColorSelection( messagesTextColorButton, messagesTextColor );
-}
-
-void QSettingsDialog::viewersColorSelection()
-{
-    buttonColorSelection( viewersTextColorButton, viewersTextColor );
-}
-
-void QSettingsDialog::aliasesColorSelection()
-{
-    buttonColorSelection( aliasesTextColorButton, aliasesTextColor );
-}
-
 void QSettingsDialog::bodyBackgroundColorSelection()
 {
     buttonColorSelection( bodyBackgroundColorButton, bodyBackgroundColor );
 }
 
-void QSettingsDialog::messagesBorderColorSelection()
+
+void QSettingsDialog::evenMessagesNicknamesColorSelection()
 {
-    buttonColorSelection( messagesBorderColorButton, messagesBorderColor );
+    buttonColorSelection( evenMessagesNicknamesColorButton, evenMessagesNicknamesColor );
 }
+
+void QSettingsDialog::oddMessagesNicknamesColorSelection()
+{
+    buttonColorSelection( oddMessagesNicknamesColorButton, oddMessagesNicknamesColor );
+}
+
+void QSettingsDialog::aliasesMessagesNicknamesColorSelection()
+{
+    buttonColorSelection( aliasesNicknamesColorButton, aliasesNicknamesColor );
+}
+
+void QSettingsDialog::supportersMessagesNicknamesColorSelection()
+{
+    buttonColorSelection( supportersNicknamesColorButton, supportersNicknamesColor );
+}
+
+void QSettingsDialog::blackListMessagesNicknamesColorSelection()
+{
+    buttonColorSelection( blackListNicknamesColorButton, blackListNicknamesColor );
+}
+
 
 void QSettingsDialog::evenMessagesBackgroundColorSelection()
 {
@@ -2054,26 +2383,86 @@ void QSettingsDialog::oddMessagesBackgroundColorSelection()
     buttonColorSelection( oddMessagesBackgroundColorButton, oddMessagesBackgroundColor );
 }
 
-void QSettingsDialog::viewersBackgroundColorSelection()
-{
-    buttonColorSelection( viewersBackgroundColorButton, viewersBackgroundColor );
-}
-
-void QSettingsDialog::aliasesBorderColorSelection()
-{
-    buttonColorSelection( aliasesBorderColorButton, aliasesBorderColor );
-}
-
 void QSettingsDialog::aliasesBackgroundColorSelection()
 {
     buttonColorSelection( aliasesBackgroundColorButton, aliasesBackgroundColor );
+}
+
+void QSettingsDialog::supportersBackgroundColorSelection()
+{
+    buttonColorSelection( supportersBackgroundColorButton, supportersBackgroundColor );
+}
+
+void QSettingsDialog::blackListBackgroundColorSelection()
+{
+    buttonColorSelection( blackListBackgroundColorButton, blackListBackgroundColor );
+}
+
+
+void QSettingsDialog::evenMessagesTextColorSelection()
+{
+    buttonColorSelection( evenMessagesTextColorButton, evenMessagesTextColor );
+}
+
+void QSettingsDialog::oddMessagesTextColorSelection()
+{
+    buttonColorSelection( oddMessagesTextColorButton, oddMessagesTextColor );
+}
+
+void QSettingsDialog::aliasesMessagesTextColorSelection()
+{
+    buttonColorSelection( aliasesMessagesTextColorButton, aliasesMessagesTextColor );
+}
+
+void QSettingsDialog::supportersMessagesTextColorSelection()
+{
+    buttonColorSelection( supportersMessagesTextColorButton, supportersMessagesTextColor );
+}
+
+void QSettingsDialog::blackListMessagesTextColorSelection()
+{
+    buttonColorSelection( blackListMessagesTextColorButton, blackListMessagesTextColor );
+}
+
+void QSettingsDialog::evenMessagesBorderColorSelection()
+{
+    buttonColorSelection( evenMessagesBorderColorButton, evenMessagesBorderColor );
+}
+
+void QSettingsDialog::oddMessagesBorderColorSelection()
+{
+    buttonColorSelection( oddMessagesBorderColorButton, oddMessagesBorderColor );
+}
+
+void QSettingsDialog::aliasesMessagesBorderColorSelection()
+{
+    buttonColorSelection( aliasesMessagesBorderColorButton, aliasesMessagesBorderColor );
+}
+
+void QSettingsDialog::supportersMessagesBorderColorSelection()
+{
+    buttonColorSelection( supportersMessagesBorderColorButton, supportersMessagesBorderColor );
+}
+
+void QSettingsDialog::blackListMessagesBorderColorSelection()
+{
+    buttonColorSelection( blackListMessagesBorderColorButton, blackListMessagesBorderColor );
+}
+
+void QSettingsDialog::viewersColorSelection()
+{
+    buttonColorSelection( viewersTextColorButton, viewersTextColor );
+}
+
+void QSettingsDialog::viewersBackgroundColorSelection()
+{
+    buttonColorSelection( viewersBackgroundColorButton, viewersBackgroundColor );
 }
 
 void QSettingsDialog::linksColorSelection()
 {
     buttonColorSelection( linksColorButton, linksColor );
 }
-
 
 void QSettingsDialog::loadDialogSettings()
 {
@@ -2103,5 +2492,21 @@ void QSettingsDialog::saveDialogSettings()
     settings.setValue( "/Settings/SettingsWindow/Height", height() );
 }
 
+void QSettingsDialog::setupSpinBox( QSpinBox * spinBox, int min, int max, int defaultValue, const QString & settingPath )
+{
+    QSettings settings;
+
+    spinBox->setRange( min, max );
+    spinBox->setValue( settings.value( settingPath, defaultValue ).toInt() );
+}
+
+void QSettingsDialog::setupColorButton( QPushButton * button, QRgb & color, unsigned int defaultColor, const QString & settingPath  )
+{
+    QSettings settings;
+
+    button->setFlat( true );
+    color = settings.value( settingPath, defaultColor ).toUInt();
+    setColorButtonStyle( button, color );
+}
 //TODO: retranslate
 

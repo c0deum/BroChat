@@ -21,8 +21,58 @@ const QString SAVE_MESSAGES_TO_LOG_FILE_SETTING_PATH = "/Settings/Window/SaveMes
 
 const QString GENERATED_STYLE_FONT_NAME_SETTING_PATH = "/Settings/DefaultStyle/FontName";
 const QString GENERATED_STYLE_BODY_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/BodyBackgroundColor";
-const QString GENERATED_STYLE_NICKNAMES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/NicknamesFontSize";
-const QString GENERATED_STYLE_NICKNAMES_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/NicknamesTextColor";
+
+
+const QString GENERATED_STYLE_EVEN_MESSAGES_NICKNAMES_COLOR_SETTING_PATH = "/Settings/DefaultStyle/EvenMessagesNicknamesColor";
+const QString GENERATED_STYLE_ODD_MESSAGES_NICKNAMES_COLOR_SETTING_PATH = "/Settings/DefaultStyle/OddMessagesNicknamesColor";
+const QString GENERATED_STYLE_ALIASES_MESSAGES_NICKNAMES_COLOR_SETTING_PATH = "/Settings/DefaultStyle/AliasesMessagesNicknamesColor";
+const QString GENERATED_STYLE_SUPPORTERS_MESSAGES_NICKNAMES_COLOR_SETTING_PATH = "/Settings/DefaultStyle/SupportersMessagesNicknamesColor";
+const QString GENERATED_STYLE_BLACK_LIST_MESSAGES_NICKNAMES_COLOR_SETTING_PATH = "/Settings/DefaultStyle/BlackListMessagesNicknamesColor";
+
+const QString GENERATED_STYLE_EVEN_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/EvenMessagesNicknamesFontSize";
+const QString GENERATED_STYLE_ODD_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/OddMessagesNicknamesFontSize";
+const QString GENERATED_STYLE_ALIASES_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/AliasesMessagesNicknamesFontSize";
+const QString GENERATED_STYLE_SUPPORTERS_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/SupportersMessagesNicknamesFontSize";
+const QString GENERATED_STYLE_BLACK_LIST_MESSAGES_NICKNAMES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/BlackListMessagesNicknamesFontSize";
+
+const QString GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/EvenMessagesBackgroundColor";
+const QString GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/OddMessagesBackgroundColor";
+const QString GENERATED_STYLE_ALIASES_MESSAGES_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/AliasesMessagesBackgroundColor";
+const QString GENERATED_STYLE_SUPPORTERS_MESSAGES_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/SupportersMessagesBackgroundColor";
+const QString GENERATED_STYLE_BLACK_LIST_MESSAGES_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/BlackListMessagesBackgroundColor";
+
+const QString GENERATED_STYLE_EVEN_MESSAGES_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/EvenMessagesTextColor";
+const QString GENERATED_STYLE_ODD_MESSAGES_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/OddMessagesTextColor";
+const QString GENERATED_STYLE_ALIASES_MESSAGES_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/AliasesMessagesTextColor";
+const QString GENERATED_STYLE_SUPPORTERS_MESSAGES_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/SupportersMessagesTextColor";
+const QString GENERATED_STYLE_BLACK_LIST_MESSAGES_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/BlackListMessagesTextColor";
+
+const QString GENERATED_STYLE_EVEN_MESSAGES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/EvenMessagesFontSize";
+const QString GENERATED_STYLE_ODD_MESSAGES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/OddMessagesFontSize";
+const QString GENERATED_STYLE_ALIASES_MESSAGES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/AliasesMessagesFontSize";
+const QString GENERATED_STYLE_SUPPORTERS_MESSAGES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/SupportersMessagesFontSize";
+const QString GENERATED_STYLE_BLACK_LIST_MESSAGES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/BlackListMessagesFontSize";
+
+const QString GENERATED_STYLE_EVEN_MESSAGES_BORDER_COLOR_SETTING_PATH = "/Settings/DefaultStyle/EvenMessagesBorderColor";
+const QString GENERATED_STYLE_ODD_MESSAGES_BORDER_COLOR_SETTING_PATH = "/Settings/DefaultStyle/OddMessagesBorderColor";
+const QString GENERATED_STYLE_ALIASES_MESSAGES_BORDER_COLOR_SETTING_PATH = "/Settings/DefaultStyle/AliasesMessagesBorderColor";
+const QString GENERATED_STYLE_SUPPORTERS_MESSAGES_BORDER_COLOR_SETTING_PATH = "/Settings/DefaultStyle/SupportersMessagesBorderColor";
+const QString GENERATED_STYLE_BLACK_LIST_MESSAGES_BORDER_COLOR_SETTING_PATH = "/Settings/DefaultStyle/BlackListMessagesBorderColor";
+
+const QString GENERATED_STYLE_MESSAGES_LEFT_BORDER_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesLeftBorderSize";
+const QString GENERATED_STYLE_MESSAGES_RIGHT_BORDER_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesRightBorderSize";
+const QString GENERATED_STYLE_MESSAGES_TOP_BORDER_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesTopBorderSize";
+const QString GENERATED_STYLE_MESSAGES_BOTTOM_BORDER_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesBottomBorderSize";
+
+const QString GENERATED_STYLE_MESSAGES_TOP_LEFT_BORDER_RADIUS_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesTopLeftBorderRadiusSize";
+const QString GENERATED_STYLE_MESSAGES_TOP_RIGHT_BORDER_RADIUS_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesTopRightBorderRadiusSize";
+const QString GENERATED_STYLE_MESSAGES_BOTTOM_LEFT_BORDER_RADIUS_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesBottomLeftBorderRadiusSize";
+const QString GENERATED_STYLE_MESSAGES_BOTTOM_RIGHT_BORDER_RADIUS_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesBottomRightBorderRadiusSize";
+
+//const QString GENERATED_STYLE_NICKNAMES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/NicknamesFontSize";
+//const QString GENERATED_STYLE_NICKNAMES_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/NicknamesTextColor";
+
+/*
 const QString GENERATED_STYLE_MESSAGES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesFontSize";
 const QString GENERATED_STYLE_MESSAGES_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/MessagesTextColor";
 const QString GENERATED_STYLE_MESSAGES_BORDER_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesBorderSize";
@@ -30,15 +80,21 @@ const QString GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE_SETTING_PATH = "/Setti
 const QString GENERATED_STYLE_MESSAGES_BORDER_COLOR_SETTING_PATH = "/Settings/DefaultStyle/MessagesBorderColor";
 const QString GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/EvenMessagesBackgroundColor";
 const QString GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/OddMessagesBackgroundColor";
+*/
 const QString GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesMarginBottomSize";
-const QString GENERATED_STYLE_VIEWERS_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/ViewersFontSize";
-const QString GENERATED_STYLE_VIEWERS_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/ViewersTextColor";
-const QString GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/ViewersBackgroundColor";
+const QString GENERATED_STYLE_MESSAGES_INDENT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/MessagesIndentSize";
+/*
 const QString GENERATED_STYLE_ALIASES_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/AliasesFontSize";
 const QString GENERATED_STYLE_ALIASES_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/AliasesTextColor";
 const QString GENERATED_STYLE_ALIASES_BORDER_SIZE_SETTING_PATH = "/Settings/DefaultStyle/AliasesBorderSize";
 const QString GENERATED_STYLE_ALIASES_BORDER_COLOR_SETTING_PATH = "/Settings/DefaultStyle/AliasesBorderColor";
 const QString GENERATED_STYLE_ALIASES_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/AliasesBackgroundColor";
+*/
+
+const QString GENERATED_STYLE_VIEWERS_FONT_SIZE_SETTING_PATH = "/Settings/DefaultStyle/ViewersFontSize";
+const QString GENERATED_STYLE_VIEWERS_TEXT_COLOR_SETTING_PATH = "/Settings/DefaultStyle/ViewersTextColor";
+const QString GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR_SETTING_PATH = "/Settings/DefaultStyle/ViewersBackgroundColor";
+
 const QString GENERATED_STYLE_LINKS_COLOR_SETTING_PATH = "/Settings/DefaultStyle/LinkColor";
 const QString GENERATED_STYLE_SMILES_SIZE_SETTING_PATH = "/Settings/DefaultStyle/SmilesSize";
 const QString GENERATED_STYLE_SERVICE_ICONS_SIZE_SETTING_PATH = "/Settings/DefaultStyle/ServiceIconsSize";
@@ -142,6 +198,7 @@ const QString TWITCH_ALIASES_SETTING_PATH = "/Settings/Twitch/Aliases";
 const QString TWITCH_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Twitch/Supporters";
 const QString TWITCH_BLACK_LIST_SETTING_PATH = "/Settings/Twitch/BlackList";
 const QString TWITCH_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Twitch/RemoveBlackListUsers";
+const QString TWITCH_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Twitch/OriginalColors";
 
 const QString YOUTUBE_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Youtube/Enable";
 const QString YOUTUBE_CHANNEL_SETTING_PATH = "/Settings/Youtube/Channel";
@@ -196,16 +253,21 @@ const QString DEFAULT_GENERATED_STYLE_FONT_NAME = "Arial";
 const unsigned int DEFAULT_GENERATED_STYLE_BODY_BACKGROUND_COLOR = 0x00000000;
 
 const int DEFAULT_GENERATED_STYLE_NICKNAMES_FONT_SIZE = 14;
-const unsigned int DEFAULT_GENERATED_STYLE_NICKNAMES_TEXT_COLOR = 0xffffffff;
+
+const unsigned int DEFAULT_GENERATED_STYLE_NICKNAMES_COLOR = 0xffffffff;
+
 const int DEFAULT_GENERATED_STYLE_MESSAGES_FONT_SIZE = 14;
 const unsigned int DEFAULT_GENERATED_STYLE_MESSAGES_TEXT_COLOR = 0xffffffff;
 
 const int DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_SIZE = 0;
 const int DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_RADIUS_SIZE = 0;
 const unsigned int DEFAULT_GENERATED_STYLE_MESSAGES_BORDER_COLOR = 0x00000000;
-const unsigned int DEFAULT_GENERATED_STYLE_EVEN_MESSAGES_BACKGROUND_COLOR = 0x00000000;
-const unsigned int DEFAULT_GENERATED_STYLE_ODD_MESSAGES_BACKGROUND_COLOR = 0x00000000;
+
+const unsigned int DEFAULT_GENERATED_STYLE_MESSAGES_BACKGROUND_COLOR = 0x00000000;
+
+
 const int DEFAULT_GENERATED_STYLE_MESSAGES_MARGIN_BOTTOM_SIZE = 0;
+const int DEFAULT_GENERATED_STYLE_MESSAGES_INDENT_SIZE = 0;
 const int DEFAULT_GENERATED_STYLE_VIEWERS_FONT_SIZE = 14;
 const unsigned int DEFAULT_GENERATED_STYLE_VIEWERS_TEXT_COLOR = 0xffffffff;
 const unsigned int DEFAULT_GENERATED_STYLE_VIEWERS_BACKGROUND_COLOR = 0x00000000;

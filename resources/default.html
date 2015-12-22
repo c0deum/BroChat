@@ -137,7 +137,7 @@ body
 
 a
 {
-        color:%LINKS_COLOR%;        
+        color:%LINKS_COLOR%;
 }
 
 
@@ -154,9 +154,9 @@ a
 	bottom: 0;
 	width: 100%;
 	
-	height:%VIEWERS_HEIGHT%;
-	font-size:%VIEWERS_FONT_SIZE%;
-	color:%VIEWERS_TEXT_COLOR%;	
+        height:%VIEWERS_HEIGHT%;
+        font-size:%VIEWERS_FONT_SIZE%;
+        color:%VIEWERS_TEXT_COLOR%;
 	
 	padding-left:4px;
 }
@@ -168,50 +168,201 @@ a
 .alias .messagebox0
 {
         width: -webkit-calc(100% - 2*(%ALIASES_BORDER_SIZE% + 4px));
-	background-color:%ALIASES_BACKGROUND_COLOR%;
-	border: %ALIASES_BORDER_SIZE% solid %ALIASES_BORDER_COLOR%;
+        background-color:%ALIASES_MESSAGES_BACKGROUND_COLOR%;
+        /*border: %ALIASES_BORDER_SIZE% solid %ALIASES_BORDER_COLOR%;*/
+
+        border-color: %ALIASES_MESSAGES_BORDER_COLOR%;
 }
 
 .alias .messagebox1
 {
         width: -webkit-calc(100% - 2*(%ALIASES_BORDER_SIZE% + 4px));
-	background-color:%ALIASES_BACKGROUND_COLOR%;
-	border: %ALIASES_BORDER_SIZE% solid %ALIASES_BORDER_COLOR%;
+        background-color:%ALIASES_MESSAGES_BACKGROUND_COLOR%;
+        /*border: %ALIASES_BORDER_SIZE% solid %ALIASES_BORDER_COLOR%;*/
+
+        border-color: %ALIASES_MESSAGES_BORDER_COLOR%;
+}
+
+
+.alias .messagebox0 .nick
+{
+    font-size:%ALIASES_MESSAGES_NICKNAMES_FONT_SIZE%;
+    color:%ALIASES_MESSAGES_NICKNAMES_COLOR%;
+}
+
+.alias .messagebox1 .nick
+{
+    font-size:%ALIASES_MESSAGES_NICKNAMES_FONT_SIZE%;
+    color:%ALIASES_MESSAGES_NICKNAMES_COLOR%;
 }
 
 .alias .messagebox0 .message
 {
-	font-size:%ALIASES_FONT_SIZE%;
-	color:%ALIASES_TEXT_COLOR%;
+        font-size:%ALIASES_MESSAGES_FONT_SIZE%;
+        color:%ALIASES_MESSAGES_TEXT_COLOR%;
 }
 
 .alias .messagebox1 .message
 {
-	font-size:%ALIASES_FONT_SIZE%;
-	color:%ALIASES_TEXT_COLOR%;
+        font-size:%ALIASES_MESSAGES_FONT_SIZE%;
+        color:%ALIASES_MESSAGES_TEXT_COLOR%;
 }
+
+.supporter .messagebox0
+{
+    background-color:%SUPPORTERS_MESSAGES_BACKGROUND_COLOR%;
+    border-color: %SUPPORTERS_MESSAGES_BORDER_COLOR%;
+}
+
+.supporter .messagebox1
+{
+    background-color:%SUPPORTERS_MESSAGES_BACKGROUND_COLOR%;
+    border-color: %SUPPORTERS_MESSAGES_BORDER_COLOR%;
+}
+
+.supporter .messagebox0 .nick
+{
+    font-size:%SUPPORTERS_MESSAGES_NICKNAMES_FONT_SIZE%;
+    color:%SUPPORTERS_MESSAGES_NICKNAMES_COLOR%;
+}
+
+.supporter .messagebox1 .nick
+{
+    font-size:%SUPPORTERS_MESSAGES_NICKNAMES_FONT_SIZE%;
+    color:%SUPPORTERS_MESSAGES_NICKNAMES_COLOR%;
+}
+
+.supporter .messagebox0 .message
+{
+    font-size:%SUPPORTERS_MESSAGES_FONT_SIZE%;
+    color:%SUPPORTERS_MESSAGES_TEXT_COLOR%;
+}
+
+.supporter .messagebox1 .message
+{
+    font-size:%SUPPORTERS_MESSAGES_FONT_SIZE%;
+    color:%SUPPORTERS_MESSAGES_TEXT_COLOR%;
+}
+
+
+.ignore .messagebox0
+{
+    background-color:%BLACK_LIST_MESSAGES_BACKGROUND_COLOR%;
+    border-color: %BLACK_LIST_MESSAGES_BORDER_COLOR%;
+}
+
+.ignore .messagebox1
+{
+    background-color:%BLACK_LIST_MESSAGES_BACKGROUND_COLOR%;
+    border-color: %BLACK_LIST_MESSAGES_BORDER_COLOR%;
+}
+
+.ignore .messagebox0 .nick
+{
+    font-size:%BLACK_LIST_MESSAGES_NICKNAMES_FONT_SIZE%;
+    color:%BLACK_LIST_MESSAGES_NICKNAMES_COLOR%;
+}
+
+.ignore .messagebox1 .nick
+{
+    font-size:%BLACK_LIST_MESSAGES_NICKNAMES_FONT_SIZE%;
+    color:%BLACK_LIST_MESSAGES_NICKNAMES_COLOR%;
+}
+
+
+.ignore .messagebox0 .message
+{
+    font-size:%BLACK_LIST_MESSAGES_FONT_SIZE%;
+    color:%BLACK_LIST_MESSAGES_TEXT_COLOR%;
+}
+
+.ignore .messagebox1 .message
+{
+    font-size:%BLACK_LIST_MESSAGES_FONT_SIZE%;
+    color:%BLACK_LIST_MESSAGES_TEXT_COLOR%;
+}
+
+
 
 .messagebox0
 {
-	width: -webkit-calc(100% - 2*(%MESSAGEBOX_BORDER_SIZE% + 4px));
-	background-color:%EVEN_MESSAGESBOX_BACKGROUND_COLOR%;
-	border: %MESSAGEBOX_BORDER_SIZE% solid %MESSAGEBOX_BORDER_COLOR%;
-	border-radius: %MESSAGEBOX_BORDER_RADIUS_SIZE%;
+        width: -webkit-calc(100% - (%MESSAGES_LEFT_BORDER_SIZE% + %MESSAGES_RIGHT_BORDER_SIZE% + 2 * %MESSAGES_INDENT_SIZE%));
+        background-color:%EVEN_MESSAGES_BACKGROUND_COLOR%;
+        font-size:%EVEN_MESSAGES_NICKNAMES_FONT_SIZE%;
+
+        border-color: %EVEN_MESSAGES_BORDER_COLOR%;
+        border-style: solid;
+
+        border-left-width: %MESSAGES_LEFT_BORDER_SIZE%;
+        border-right-width: %MESSAGES_RIGHT_BORDER_SIZE%;
+        border-top-width: %MESSAGES_TOP_BORDER_SIZE%;
+        border-bottom-width: %MESSAGES_BOTTOM_BORDER_SIZE%;
+
+        border-top-left-radius: %MESSAGEBOX_TOP_LEFT_BORDER_RADIUS_SIZE%;
+        border-top-right-radius: %MESSAGEBOX_TOP_RIGHT_BORDER_RADIUS_SIZE%;
+        border-bottom-left-radius: %MESSAGEBOX_BOTTOM_LEFT_BORDER_RADIUS_SIZE%;
+        border-bottom-right-radius: %MESSAGEBOX_BOTTOM_RIGHT_BORDER_RADIUS_SIZE%;
+
+
+        /*border: %MESSAGEBOX_BORDER_SIZE% solid %MESSAGEBOX_BORDER_COLOR%;
+        border-radius: %MESSAGEBOX_BORDER_RADIUS_SIZE%;*/
+
 	-webkit-animation: %ANIMATION_TYPE% %ANIMATION_DURATION%;
-	padding:4px;
-	margin-bottom:%MESSAGESBOX_MARGIN_BOTTOM%;
+        padding: %MESSAGES_INDENT_SIZE%;
+        margin-bottom:%MESSAGESBOX_MARGIN_BOTTOM%;
 }
 
 .messagebox1
 {
-	width: -webkit-calc(100% - 2*(%MESSAGEBOX_BORDER_SIZE% + 4px));
-	background-color:%ODD_MESSAGESBOX_BACKGROUND_COLOR%;
-	border: %MESSAGEBOX_BORDER_SIZE% solid %MESSAGEBOX_BORDER_COLOR%;
-	border-radius: %MESSAGEBOX_BORDER_RADIUS_SIZE%;
+        width: -webkit-calc(100% - (%MESSAGES_LEFT_BORDER_SIZE% + %MESSAGES_RIGHT_BORDER_SIZE% + 2 * %MESSAGES_INDENT_SIZE%));
+        background-color:%ODD_MESSAGES_BACKGROUND_COLOR%;
+        font-size:%ODD_MESSAGES_NICKNAMES_FONT_SIZE%;
+
+        border-color: %ODD_MESSAGES_BORDER_COLOR%;
+        border-style: solid;
+
+        border-left-width: %MESSAGES_LEFT_BORDER_SIZE%;
+        border-right-width: %MESSAGES_RIGHT_BORDER_SIZE%;
+        border-top-width: %MESSAGES_TOP_BORDER_SIZE%;
+        border-bottom-width: %MESSAGES_BOTTOM_BORDER_SIZE%;
+
+        border-top-left-radius: %MESSAGEBOX_TOP_LEFT_BORDER_RADIUS_SIZE%;
+        border-top-right-radius: %MESSAGEBOX_TOP_RIGHT_BORDER_RADIUS_SIZE%;
+        border-bottom-left-radius: %MESSAGEBOX_BOTTOM_LEFT_BORDER_RADIUS_SIZE%;
+        border-bottom-right-radius: %MESSAGEBOX_BOTTOM_RIGHT_BORDER_RADIUS_SIZE%;
+
+
+        /*border: %MESSAGEBOX_BORDER_SIZE% solid %MESSAGEBOX_BORDER_COLOR%;
+	border-radius: %MESSAGEBOX_BORDER_RADIUS_SIZE%;*/
 	-webkit-animation: %ANIMATION_TYPE% %ANIMATION_DURATION%;
-	padding:4px;
-	margin-bottom:%MESSAGESBOX_MARGIN_BOTTOM%;
+        padding: %MESSAGES_INDENT_SIZE%;
+        margin-bottom:%MESSAGESBOX_MARGIN_BOTTOM%;
 }
+
+.messagebox0 .nick
+{
+    font-size:%EVEN_MESSAGES_NICKNAMES_FONT_SIZE%;
+    color:%EVEN_MESSAGES_NICKNAMES_COLOR%;
+}
+
+.messagebox1 .nick
+{
+    font-size:%ODD_MESSAGES_NICKNAMES_FONT_SIZE%;
+    color:%ODD_MESSAGES_NICKNAMES_COLOR%;
+}
+
+.messagebox0 .message
+{
+    font-size:%EVEN_MESSAGES_FONT_SIZE%;
+    color:%EVEN_MESSAGES_TEXT_COLOR%;
+}
+
+.messagebox1 .message
+{
+    font-size:%ODD_MESSAGES_FONT_SIZE%;
+    color:%ODD_MESSAGES_TEXT_COLOR%;
+}
+
 
 .header
 {
@@ -229,27 +380,33 @@ a
 .service
 {
 	display: inline-block;
-        margin-right: 4px;
+        margin-right: %MESSAGES_INDENT_SIZE%;
 }
 
 .nick
 {
 	display: inline-block;
 	
+/*
 	font-size:%NICKNAMES_FONT_SIZE%;
 	color:%NICKNAMES_TEXT_COLOR%;
+        */
 }
 
 .smile
 {
-	height:%SMILES_SIZE%;
+    width: auto;
+    height: auto;
+    max-height:%SMILES_SIZE%;
+    max-width:100%;
+    /*height:%SMILES_SIZE%;*/
 }
 
 .picture
 {
         width: auto;
         height: auto;
-	max-height:%MAX_IMAGES_HEIGHT%;
+        max-height:%MAX_IMAGES_HEIGHT%;
 	max-width:100%;
 	
 }

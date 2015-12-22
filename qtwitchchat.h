@@ -39,6 +39,8 @@ public slots:
     virtual void                disconnect();
     virtual void                reconnect();
 
+    void                        changeOriginalColors( bool originalColors );
+
 private slots:
     void                        onConnected();
 
@@ -76,6 +78,8 @@ private:
 
     int                         saveConnectionTimerId_;
     int                         saveConnectionInterval_;
+
+    bool                        originalColors_;
 };
 
 #endif // QTWITCHCHAT_H

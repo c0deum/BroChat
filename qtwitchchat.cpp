@@ -31,6 +31,8 @@ const QString DEFAULT_USER_NICK_NAME = "broadcasterchat";
 const QString DEFAULT_TWITCH_SELF_PREFIX = "https://api.twitch.tv/kraken/chat/";
 const QString DEFAULT_TWITCH_STATISTIC_PREFIX = "https://api.twitch.tv/kraken/streams/";
 
+const QString DEFAULT_TWITCH_SMILE_PREFIX = "http://static-cdn.jtvnw.net/emoticons/v1/";
+
 const int DEFAULT_TWITCH_RECONNECT_INTERVAL = 10000;
 const int DEFAULT_TWITCH_STATISTIC_INTERVAL = 10000;
 const int DEFAULT_TWITCH_SAVE_CONNECTION_INTERVAL = 25000;
@@ -54,6 +56,7 @@ QTwitchChat::QTwitchChat( QObject *parent )
 , statisticInterval_( DEFAULT_TWITCH_STATISTIC_INTERVAL  )
 , saveConnectionTimerId_( -1 )
 , saveConnectionInterval_( DEFAULT_TWITCH_SAVE_CONNECTION_INTERVAL )
+, originalColors_( false )
 {
 }
 
@@ -133,9 +136,13 @@ void QTwitchChat::parseMessage()
     if( !socket_ )
         return;
 
+
+
     if( QAbstractSocket::ConnectedState == socket_->state() )
     {
-        QString line = socket_->readLine();        
+        QString line = socket_->readLine();
+
+        //qDebug() << line;
 
         if( line.contains ( "376 " + DEFAULT_USER_NICK_NAME ) )
         {
@@ -152,6 +159,11 @@ void QTwitchChat::parseMessage()
             startUniqueTimer( statisticTimerId_, statisticInterval_ );
             startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
         }
+        else if( line.contains ( "366 " + DEFAULT_USER_NICK_NAME ) )
+        {
+            //socket_->write( "CAP REQ :twitch.tv/commands\r\n" );
+            socket_->write( "CAP REQ :twitch.tv/tags\r\n" );
+        }
         else if( line.contains( "PING" ) )
         {
             //socket_->write( "PONG tmi.twitch.tv\r\n" );
@@ -162,11 +174,72 @@ void QTwitchChat::parseMessage()
             //TODO: parse message
             if( line.contains( "PRIVMSG" ) && !line.contains( "HISTORYEND" ) && !line.contains( "USERCOLOR") )
             {
+                //@color=;display-name=c0deum;emotes=28:0-12,14-26;subscriber=0;turbo=0;user-id=64078456;user-type= :c0deum!c0deum@c0deum.tmi.twitch.tv PRIVMSG #c0deum :MrDestructoid MrDestructoid\r\n
+
+
+                /*
                 QString nickName = line.mid( 1, line.indexOf( '!' ) - 1 );
                 QString message = line.right( line.size() - line.indexOf( ':', 1 ) - 1 );
 
                 //\r\n
                 message = message.left( message.size() - 2 );
+
+                message = ChatMessage::replaceEscapeCharecters( message );
+                message = insertSmiles( message );
+                */
+
+                const QString COLOR = "@color=";
+                QString color;
+
+                int startColorPos = line.indexOf( COLOR ) + COLOR.length();
+                int endColorPos = line.indexOf( ";", startColorPos ) - 1;
+
+                if( endColorPos - startColorPos + 1 > 0 )
+                {
+                    color = line.mid( startColorPos, endColorPos - startColorPos + 1 );
+                }
+
+                const QString DISPLAY_NAME = "display-name=";
+                QString nickName;
+
+                int startDisplayNamePos = line.indexOf( DISPLAY_NAME ) + DISPLAY_NAME.length();
+                int endDisplayNamePos = line.indexOf( ";", startDisplayNamePos ) - 1;
+
+                if( endDisplayNamePos - startDisplayNamePos + 1 > 0 )
+                {
+                    nickName = line.mid( startDisplayNamePos, endDisplayNamePos - startDisplayNamePos + 1 );
+                }
+                else
+                {
+                    const QString USER_TYPE = "user-type=";
+                    int startNickNamePos = line.indexOf( USER_TYPE ) + USER_TYPE.length();
+
+                    startNickNamePos = line.indexOf( ":", startNickNamePos ) + 1;
+
+                    int endNickNamePos = line.indexOf( "!", startNickNamePos ) - 1;
+
+                    if( endNickNamePos - startNickNamePos + 1 > 0 )
+                    {
+                        nickName = line.mid( startNickNamePos, endNickNamePos - startNickNamePos + 1 );
+                    }
+                }
+
+                if( originalColors_ && !color.isEmpty() )
+                {
+                    nickName = "<span style=\"color:" + color + "\">" + nickName + "</span>";
+                    //nickName = "<span style=\"" + styles_[ role ] + "\">" + nickName + "</span>";
+                }
+
+                QString messagePrefix = "PRIVMSG #" + channelName_ + " :";
+                QString message;
+
+                int startMessagePos = line.indexOf( messagePrefix ) + messagePrefix.length();
+                int endMessagePos = line.indexOf( "\r\n", startMessagePos ) - 1;
+
+                if( endMessagePos - startMessagePos + 1 > 0 )
+                {
+                    message = line.mid( startMessagePos, endMessagePos - startMessagePos + 1 );
+                }
 
                 message = ChatMessage::replaceEscapeCharecters( message );
                 message = insertSmiles( message );
@@ -238,7 +311,18 @@ void QTwitchChat::loadSmiles()
 {
     QChatService::loadSmiles();
 
-    QNetworkRequest request( QUrl( emotIconsLink_ + "" ) );
+    QString smilesCodes[] = { ":)", ":(", ":D", ">(", ":|", "O_o", "B)", ":O", "&lt;3", ":/", ";)", ":P", ";P", "R)" };
+
+    for( int i = 0; i < 14; i++ )
+    {
+        //qDebug() << DEFAULT_TWITCH_SMILE_PREFIX + QString::number( i + 1 ) + "/1.0";
+        addSmile( smilesCodes[ i ], DEFAULT_TWITCH_SMILE_PREFIX + QString::number( i + 1 ) + "/1.0" );
+    }
+
+    //QNetworkRequest request( QUrl( emotIconsLink_ + "" ) );
+
+    QNetworkRequest request( QUrl( "https://api.twitch.tv/kraken/chat/emoticon_images" ) );
+
     QNetworkReply *reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSmilesLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onSmilesLoadError() ) );
@@ -263,7 +347,9 @@ void QTwitchChat::onSmilesLoaded()
             {
                 QJsonObject jsonEmotIcon = value.toObject();
 
-                addSmile( jsonEmotIcon[ "regex" ].toString(), jsonEmotIcon[ "url" ].toString() );
+                //addSmile( jsonEmotIcon[ "regex" ].toString(), jsonEmotIcon[ "url" ].toString() );
+
+                addSmile( jsonEmotIcon[ "code" ].toString(), DEFAULT_TWITCH_SMILE_PREFIX + QString::number( jsonEmotIcon[ "id" ].toInt() ) + "/1.0" );
 
             }
             if( isShowSystemMessages() )
@@ -362,6 +448,8 @@ void QTwitchChat::loadSettings()
     nickName_ = settings.value( "/Settings/Twitch/nickName", DEFAULT_USER_NICK_NAME ).toString();
     channelName_= settings.value( "/Settings/Twitch/Channel", DEFAULT_TWITCH_CHANNEL_NAME ).toString();
 
+    originalColors_ = settings.value( TWITCH_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
+
     if( ChatMessage::isLink( channelName_ ) )
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
 
@@ -371,7 +459,7 @@ void QTwitchChat::loadSettings()
     setSupportersList( settings.value( TWITCH_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
     setBlackList( settings.value( TWITCH_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    setRemoveBlackListUsers( settings.value( TWITCH_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
+    setRemoveBlackListUsers( settings.value( TWITCH_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );        
 }
 
 void QTwitchChat::onSocketError()
@@ -380,4 +468,9 @@ void QTwitchChat::onSocketError()
         emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, "Socket Error ..." + socket_->errorString(), "", this ) );
 
     startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+}
+
+void QTwitchChat::changeOriginalColors( bool originalColors )
+{
+    originalColors_ = originalColors;
 }

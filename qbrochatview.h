@@ -51,6 +51,9 @@ protected:
 private:
     void                loadSettings();
     bool                isLink( const QString & str );
+
+    void                replaceColorString( QString & str, const QString & colorTemplate, unsigned int defaultColor, const QString & settingPath );
+
 public slots:
     void                slotNewMessage( ChatMessage message );
     void                onNewStatistic( QChatStatistic * statistic );
