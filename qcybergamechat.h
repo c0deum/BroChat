@@ -4,8 +4,6 @@
 ///#include <QAbstractSocket>
 #include <QMap>
 
-#include "qchatsmile.h"
-
 #include "qchatservice.h"
 
 class QNetworkAccessManager;

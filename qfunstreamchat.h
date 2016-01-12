@@ -2,10 +2,8 @@
 #define QFUNSTREAMCHAT_H
 
 #include <QMap>
-#include "qchatsmile.h"
 
 #include "qchatservice.h"
-
 
 class QNetworkAccessManager;
 class QWebSocket;

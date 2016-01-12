@@ -6,7 +6,6 @@
 #include <QXmppClient.h>
 
 #include "qchatservice.h"
-#include "qchatsmile.h"
 
 class QNetworkAccessManager;
 

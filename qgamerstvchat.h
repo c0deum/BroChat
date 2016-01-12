@@ -3,9 +3,7 @@
 
 #include <QList>
 
-#include "qchatsmile.h"
 #include "qchatservice.h"
-
 
 class QNetworkAccessManager;
 

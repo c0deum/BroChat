@@ -3,15 +3,11 @@
 
 //#include <QMap>
 #include <QList>
-#include "qchatsmile.h"
+
 #include "qchatservice.h"
 
 class QNetworkAccessManager;
 class QWebSocket;
-
-
-//class QChatSmile;
-
 
 class QHitBoxChat: public QChatService
 {

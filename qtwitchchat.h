@@ -4,8 +4,6 @@
 //#include <QList>
 #include <QMap>
 
-#include "qchatsmile.h"
-
 #include "qchatservice.h"
 
 class QTcpSocket;

@@ -5,8 +5,6 @@
 #include <QMap>
 #include <QTimer>
 
-#include "qchatsmile.h"
-
 #include "qchatservice.h"
 
 class QNetworkAccessManager;
