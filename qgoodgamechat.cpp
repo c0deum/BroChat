@@ -33,28 +33,16 @@ const QString DEFAULT_GOODGAME_CHANNEL_STATUS_POSTFIX = "&fmt=json";
 const QString DEFAULT_GOOD_GAME_STATISTIC_PREFIX = "http://goodgame.ru/api/getggchannelstatus?id=";
 const QString DEFAULT_GOOD_GAME_STATISTIC_POSTFIX = "&fmt=json";
 
-const int DEFAULT_GOODGAME_SAVE_CONNECTION_INTERVAL = 25000;
-const int DEFAULT_GOODGAME_RECONNECT_INTERVAL = 10000;
-const int DEFAULT_GOODGAME_STATISTIC_INTERVAL = 10000;
+const QString QGoodGameChat::SERVICE_USER_NAME = "GOODGAME";
+const QString QGoodGameChat::SERVICE_NAME = "goodgame";
 
-const QString GOODGAME_USER = "GOODGAME";
-const QString GOODGAME_SERVICE = "goodgame";
+const int QGoodGameChat::SAVE_CONNECTION_INTERVAL = 25000;
+const int QGoodGameChat::RECONNECT_INTERVAL = 10000;
+const int QGoodGameChat::STATISTIC_INTERVAL = 10000;
 
 QGoodGameChat::QGoodGameChat( QObject * parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
-, socket_( nullptr )
-, channelName_()
-, lastTimeStamp_( 0 )
-, smiles_()
-, animatedSmiles_()
-, saveConnectionTimerId_( -1 )
-, reconnectTimerId_( -1 )
-, saveConnectionInterval_( DEFAULT_GOODGAME_SAVE_CONNECTION_INTERVAL )
-, reconnectInterval_( DEFAULT_GOODGAME_RECONNECT_INTERVAL )
-, statisticTimerId_( -1 )
-, statisticTimerInterval_( DEFAULT_GOODGAME_STATISTIC_INTERVAL )
-, useAnimatedSmiles_( false )
 {
 }
 
@@ -71,7 +59,10 @@ void QGoodGameChat::connect()
     smiles_.clear();
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ) );
+    }
 
     loadChannelInfo();
 }
@@ -91,7 +82,7 @@ void QGoodGameChat::disconnect()
     }
     socket_ = nullptr;
 
-    emit newStatistic( new QChatStatistic( GOODGAME_SERVICE, QString(), this ) );
+    emit newStatistic( new QChatStatistic( SERVICE_NAME, QString(), this ) );
 
 }
 
@@ -101,7 +92,10 @@ void QGoodGameChat::reconnect()
     disconnect();
     loadSettings();
     if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
-        emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, tr( "Reconnecting..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ) );
+    }
     connect();
 }
 
@@ -183,7 +177,10 @@ void QGoodGameChat::onSmilesLoaded()
     }
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, tr( "Smiles loaded..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ) );
+    }
     reply->deleteLater();
 }
 
@@ -192,7 +189,10 @@ void QGoodGameChat::onSmilesLoadError()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, tr( "Can not load smiles..." ) + reply->errorString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ) + reply->errorString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ) + reply->errorString() );
+    }
     reply->deleteLater();
 }
 
@@ -231,9 +231,12 @@ void QGoodGameChat::onChannelInfoLoadError()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString() );
+    }
 
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 
     reply->deleteLater();
 }
@@ -250,9 +253,12 @@ void QGoodGameChat::connectToWebClient()
 void QGoodGameChat::onWebSocketError()
 {
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, tr( "Web Socket Error ..." ) + socket_->errorString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Web Socket Error ..." ) + socket_->errorString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Web Socket Error ..." ) + socket_->errorString() );
+    }
 
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 }
 
 void QGoodGameChat::onTextMessageRecieved( const QString & message )
@@ -285,7 +291,7 @@ void QGoodGameChat::onTextMessageRecieved( const QString & message )
 
                 QString nickName = jsonData[ "user_name" ].toString();
 
-                emit newMessage( ChatMessage( GOODGAME_SERVICE, nickName, message, QString(), this ) );
+                emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, QString(), this ) );
             }
             else if( "private_message" == message )
             {
@@ -302,7 +308,7 @@ void QGoodGameChat::onTextMessageRecieved( const QString & message )
 
                 QString nickName = jsonData[ "user_name" ].toString();
 
-                emit newMessage( ChatMessage( GOODGAME_SERVICE, nickName, message, QString(), this ) );
+                emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, QString(), this ) );
             }
             else if( "welcome" == messageType )
             {
@@ -315,13 +321,16 @@ void QGoodGameChat::onTextMessageRecieved( const QString & message )
                 socket_->sendTextMessage( answer );
 
                 if( isShowSystemMessages() )
-                    emit newMessage( ChatMessage( GOODGAME_SERVICE, GOODGAME_USER, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+                {
+                    emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+                    emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+                }
 
                 loadSmiles();
                 loadStatistic();
 
-                startUniqueTimer( statisticTimerId_, statisticTimerInterval_ );
-                startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
+                startUniqueTimer( statisticTimerId_, STATISTIC_INTERVAL );
+                startUniqueTimer( saveConnectionTimerId_, SAVE_CONNECTION_INTERVAL );
             }
             else if( "channel_history" == messageType  && lastTimeStamp_ )
             {
@@ -344,7 +353,7 @@ void QGoodGameChat::onTextMessageRecieved( const QString & message )
 
                         QString nickName = val[ "user_name" ].toString();
 
-                        emit newMessage( ChatMessage( GOODGAME_SERVICE, nickName, message, QString(), this ) );
+                        emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, QString(), this ) );
 
                         lastTimeStamp_ = timeStamp;
                     }
@@ -390,7 +399,7 @@ void QGoodGameChat::onStatisticLoaded()
                 if( "Live" != jsonStatistic[ "status" ].toString() )
                     statistic = "0";
 
-                emit newStatistic( new QChatStatistic( GOODGAME_SERVICE, statistic, this ) );               
+                emit newStatistic( new QChatStatistic( SERVICE_NAME, statistic, this ) );
             }
         }
     }
@@ -482,6 +491,8 @@ void QGoodGameChat::loadSettings()
 
     enable( settings.value( GOODGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
+    badges_ = settings.value( GOODGAME_BADGES_SETTING_PATH, false ).toBool();
+
     useAnimatedSmiles_ = settings.value( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, false ).toBool();
 
     setAliasesList( settings.value( GOODGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
@@ -489,4 +500,9 @@ void QGoodGameChat::loadSettings()
     setBlackList( settings.value( GOODGAME_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
     setRemoveBlackListUsers( settings.value( GOODGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
+}
+
+void QGoodGameChat::changeBadges( bool badges )
+{
+    badges_ = badges;
 }

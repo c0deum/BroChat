@@ -30,9 +30,7 @@ const QList< ChatMessage > & QMessagesManager::messages() const
 
 bool QMessagesManager::save( const QString & logDir ) const
 {
-    qDebug() << logDir;
-
-    bool result = true;
+    qDebug() << logDir;    
 
     QString nowTime = QDateTime::currentDateTime().toString();
 
@@ -46,7 +44,7 @@ bool QMessagesManager::save( const QString & logDir ) const
         log.setFileName( logDir + "log" + nowTime + QString::number( index ) + ".log" );
     }
 
-    result = log.open( QIODevice::WriteOnly );
+    bool result = log.open( QIODevice::WriteOnly );
 
     if( !result )
         return result;

@@ -50,21 +50,28 @@ private slots:
     void                        onStatisticLoaded();
     void                        onStatisticLoadError();
 
+    void                        changeBadges( bool badges );
+
 private:
     QNetworkAccessManager *     nam_;
-    QWebSocket *                socket_;
+    QWebSocket *                socket_ = {nullptr};
     QString                     channelName_;
     QString                     channelId_;
-    int                         lastTimeStamp_;
+    int                         lastTimeStamp_ = {0};
     QMap< QString, QString >    smiles_;
     QMap< QString, QString >    animatedSmiles_;
-    int                         saveConnectionTimerId_;
-    int                         reconnectTimerId_;
-    int                         saveConnectionInterval_;
-    int                         reconnectInterval_;
-    int                         statisticTimerId_;
-    int                         statisticTimerInterval_;
-    bool                        useAnimatedSmiles_;
+    int                         saveConnectionTimerId_ = {-1};
+    int                         reconnectTimerId_ = {-1};
+    int                         statisticTimerId_ = {-1};
+    bool                        useAnimatedSmiles_ = {false};
+    bool                        badges_ = {false};
+
+    static const QString        SERVICE_NAME;
+    static const QString        SERVICE_USER_NAME;
+
+    static const int            SAVE_CONNECTION_INTERVAL;
+    static const int            RECONNECT_INTERVAL;
+    static const int            STATISTIC_INTERVAL;
 };
 
 #endif // QGOODGAMECHAT_H

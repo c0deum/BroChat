@@ -44,15 +44,20 @@ private slots:
 
 private:
     QNetworkAccessManager *     nam_;
-    QWebSocket *                socket_;
+    QWebSocket *                socket_ = {nullptr};
     QString                     channelName_;
-    int                         lastUpd_;
-    int                         saveConnectionTimerId_;
-    int                         reconnectTimerId_;
-    int                         saveConnectionInterval_;
-    int                         reconnectInterval_;
-    int                         statisticTimerId_;
-    int                         statisticInterval_;
+    int                         lastUpd_ = {0};
+    int                         saveConnectionTimerId_= {-1};
+    int                         reconnectTimerId_ = {-1};
+    int                         statisticTimerId_ = {-1};
+
+    static const QString        SERVICE_NAME;
+    static const QString        SERVICE_USER_NAME;
+
+    static const int            SAVE_CONNECTION_INTERVAL;
+    static const int            RECONNECT_INTERVAL;
+    static const int            STATISTIC_INTERVAL;
+
 };
 
 #endif // QCYBERGAMECHAT_H

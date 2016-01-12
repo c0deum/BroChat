@@ -91,6 +91,8 @@ private slots:
 
     void                linksColorSelection();
 
+    void                onExportDefaultThemeClick();
+
 public slots:
     void                saveSettings();
     void                saveDialogSettings();
@@ -129,6 +131,8 @@ signals:
     void                funstreamSupportersListChanged( const QString & );
     void                funstreamBlackListChanged( const QString & );
     void                funstreamRemoveBlackListUsersChanged( bool );
+    void                funstreamOriginalColorsChanged( bool );
+    void                funstreamBadgesChanged( bool );
 
     void                gamerstvChannelChanged();
     void                gamerstvChannelDisabled();
@@ -136,6 +140,7 @@ signals:
     void                gamerstvSupportersListChanged( const QString & );
     void                gamerstvBlackListChanged( const QString & );
     void                gamerstvRemoveBlackListUsersChanged( bool );
+    void                gamerstvBadgesChanged( bool );
 
     void                gipsyteamChannelChanged();
     void                gipsyteamChannelDisabled();
@@ -151,6 +156,7 @@ signals:
     void                goodGameSupportersListChanged( const QString & );
     void                goodGameBlackListChanged( const QString & );
     void                goodGameRemoveBlackListUsersChanged( bool );
+    void                goodGameBadgesChanged( bool );
 
     void                hitboxChannelChanged();
     void                hitboxChannelDisabled();
@@ -166,6 +172,7 @@ signals:
     void                igdcSupportersListChanged( const QString & );
     void                igdcBlackListChanged( const QString & );
     void                igdcRemoveBlackListUsersChanged( bool );
+    void                igdcBadgesChanged( bool );
 
     void                livecodingChannelChanged();
     void                livecodingChannelDisabled();
@@ -180,6 +187,7 @@ signals:
     void                realltvSupportersListChanged( const QString & );
     void                realltvBlackListChanged( const QString & );
     void                realltvRemoveBlackListUsersChanged( bool );
+    void                realltvBadgesChanged( bool );
 
     void                sc2tvChannelChanged();
     void                sc2tvChannelDisabled();
@@ -195,6 +203,7 @@ signals:
     void                streamboxSupportersListChanged( const QString & );
     void                streamboxBlackListChanged( const QString & );
     void                streamboxRemoveBlackListUsersChanged( bool );
+    void                streamboxBadgesChanged( bool );
 
     void                twitchChannelChanged();
     void                twitchChannelDisabled();
@@ -203,6 +212,7 @@ signals:
     void                twitchBlackListChanged( const QString & );
     void                twitchRemoveBlackListUsersChanged( bool );
     void                twitchOriginalColorsChanged( bool );
+    void                twitchBadgesChanged( bool );
 
     void                youtubeChannelChanged();
     void                youtubeChannelDisabled();
@@ -322,6 +332,8 @@ private:
     QComboBox *         animationTypeCombo;
     QDoubleSpinBox *    animationDurationSpinBox;
 
+    QPushButton *       exportDefaultTheme;
+
     QCheckBox *         acesChannelCheckBox;
     QLineEdit *         acesChannelEdit;
     //QCheckBox *       acesOriginalColorsCheckBox;
@@ -339,13 +351,17 @@ private:
 
     QCheckBox *         funstreamChannelCheckBox;
     QLineEdit *         funstreamChannelEdit;
+    QCheckBox *         funstreamOriginalColorsCheckBox;
+    QCheckBox *         funstreamBadgesCheckBox;
     QLineEdit *         funstreamAliasesEdit;
     QTextEdit *         funstreamSupportersListEdit;
     QTextEdit *         funstreamBlackListEdit;
     QCheckBox *         funstreamRemoveBlackListUsersCheckBox;
 
+
     QCheckBox *         gamerstvChannelCheckBox;
     QLineEdit *         gamerstvChannelEdit;
+    QCheckBox *         gamerstvBadgesCheckBox;
     QLineEdit *         gamerstvAliasesEdit;
     QTextEdit *         gamerstvSupportersListEdit;
     QTextEdit *         gamerstvBlackListEdit;
@@ -360,6 +376,7 @@ private:
 
     QCheckBox *         goodGameChannelCheckBox;
     QLineEdit *         goodGameChannelEdit;
+    QCheckBox *         goodGameBadgesCheckBox;
     QCheckBox *         goodGameUseAnimatedSmilesCheckBox;
     QLineEdit *         goodGameAliasesEdit;
     QTextEdit *         goodGameSupportersListEdit;
@@ -376,6 +393,7 @@ private:
 
     QCheckBox *         igdcChannelCheckBox;
     QLineEdit *         igdcChannelEdit;
+    QCheckBox *         igdcBadgesCheckBox;
     QLineEdit *         igdcAliasesEdit;
     QTextEdit *         igdcSupportersListEdit;
     QTextEdit *         igdcBlackListEdit;
@@ -392,6 +410,7 @@ private:
 
     QCheckBox *         realltvChannelCheckBox;
     QLineEdit *         realltvChannelEdit;
+    QCheckBox *         realltvBadgesCheckBox;
     QLineEdit *         realltvAliasesEdit;
     QTextEdit *         realltvSupportersListEdit;
     QTextEdit *         realltvBlackListEdit;
@@ -407,14 +426,16 @@ private:
 
     QCheckBox *         streamboxChannelCheckBox;
     QLineEdit *         streamboxChannelEdit;
+    QCheckBox *         streamboxBadgesCheckBox;
     QLineEdit *         streamboxAliasesEdit;
     QTextEdit *         streamboxSupportersListEdit;
     QTextEdit *         streamboxBlackListEdit;
     QCheckBox *         streamboxRemoveBlackListUsersCheckBox;
 
     QCheckBox *         twitchChannelCheckBox;
-    QLineEdit *         twitchChannelEdit;
+    QLineEdit *         twitchChannelEdit;    
     QCheckBox *         twitchOriginalColorsCheckBox;
+    QCheckBox *         twitchBadgesCheckBox;
     QLineEdit *         twitchAliasesEdit;
     QTextEdit *         twitchSupportersListEdit;
     QTextEdit *         twitchBlackListEdit;

@@ -28,9 +28,11 @@ private:
     void                        loadSid();
 
     //join afte 3probe received from livecoding
-    void                        joinToChannel();
+    //void                        joinToChannel();
 
     virtual void                loadSmiles();
+
+//    void                        loadStatistic();
 
     void                        connectToWebSocket();
     void                        disconnectFromWebSocket();
@@ -50,8 +52,8 @@ private slots:
     void                        onSidLoaded();
     void                        onSidLoadError();
 
-    void                        onJoinToChannelReplyLoaded();
-    void                        onJoinToChannelReplyLoadError();
+//    void                        onJoinToChannelReplyLoaded();
+//    void                        onJoinToChannelReplyLoadError();
 
     void                        onWebSocketConnected();
     void                        onWebSocketError();
@@ -60,22 +62,31 @@ private slots:
     void                        onSmilesLoaded();
     void                        onSmilesLoadError();
 
+//    void                        onStatisticLoaded();
+//    void                        onStatisticLoadError();
+
 private:
     QNetworkAccessManager *     nam_;
-    QXmppClient *               xmppClient_;
-    QXmppMucManager *           mucManager_;
-    QWebSocket *                socket_;
+    QXmppClient *               xmppClient_ = {nullptr};
+    QXmppMucManager *           mucManager_ = {nullptr};
+    QWebSocket *                socket_ = {nullptr};
     QString                     sid_;
     QString                     channelName_;
     QString                     login_;
     QString                     password_;
     QDateTime                   connectionTime_;
-    int                         reconnectTimerId_;
-    int                         reconnectInterval_;
-    int                         reconnectWebSocketTimerId_;
-    int                         reconnectWebSocketInterval_;
-    int                         saveWebSocketConnectionTimerId_;
-    int                         saveWebSocketConnectionInterval_;
+    int                         reconnectTimerId_ = {-1};
+    int                         reconnectWebSocketTimerId_ = {-1};
+    int                         saveWebSocketConnectionTimerId_ = {-1};
+//    int                         statisticTimerId_;
+//    int                         statisticInterval_;
+
+    static const QString        SERVICE_NAME;
+    static const QString        SERVICE_USER_NAME;
+
+    static const int            RECONNECT_INTERVAL;
+    static const int            RECONNECT_WEB_SOCKET_INTERVAL;
+    static const int            SAVE_WEB_SOCKET_CONNECTION_INTERVAL;
 };
 
 #endif // QLIVECODINGCHAT

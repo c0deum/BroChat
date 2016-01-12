@@ -26,25 +26,17 @@ const QString DEFAULT_STREAMBOX_SMILE_DIR_PREFIX = "http://stream-box.ru/img/smi
 const QString DEFAULT_STREAMBOX_CHAT_ID_PREFIX = "http://stream-box.ru/chat_";
 const QString DEFAULT_STREAMBOX_STATISTIC_LINK = "http://stream-box.ru/api/get_online";
 
+const QString QStreamBoxChat::SERVICE_NAME = "streambox";
+const QString QStreamBoxChat::SERVICE_USER_NAME = "STREAMBOX";
 
-const int DEFAULT_STREAMBOX_RECONNECT_INTERVAL = 10000;
-const int DEFAULT_STATISTIC_INTERVAL = 10000;
-const int DEFAULT_STREAMBOX_SAVE_CONNECTION_INTERVAL = 25000;
+const int QStreamBoxChat::RECONNECT_INTERVAL = 10000;
+const int QStreamBoxChat::STATISTIC_INTERVAL = 10000;
+const int QStreamBoxChat::SAVE_CONNECTION_INTERVAL = 25000;
 
-const QString STREAMBOX_SERVICE = "streambox";
-const QString STREAMBOX_USER = "STREAMBOX";
 
 QStreamBoxChat::QStreamBoxChat( QObject *parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
-, socket_( nullptr )
-, channelName_()
-, reconnectTimerId_( -1 )
-, reconnectInterval_( DEFAULT_STREAMBOX_RECONNECT_INTERVAL )
-, statisticTimerId_( -1 )
-, statisticInterval_( DEFAULT_STATISTIC_INTERVAL )
-, saveConnectionTimerId_( -1 )
-, saveConnectionInterval_( DEFAULT_STREAMBOX_SAVE_CONNECTION_INTERVAL )
 {
 }
 
@@ -59,7 +51,10 @@ void QStreamBoxChat::connect()
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ) );
+    }
 
     socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
 
@@ -84,7 +79,7 @@ void QStreamBoxChat::disconnect()
     }
     socket_ = nullptr;
 
-    emit newStatistic( new QChatStatistic( STREAMBOX_SERVICE, QString(), this ) );
+    emit newStatistic( new QChatStatistic( SERVICE_NAME, QString(), this ) );
 }
 
 void QStreamBoxChat::reconnect()
@@ -93,7 +88,10 @@ void QStreamBoxChat::reconnect()
     disconnect();
     loadSettings();
     if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
-        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, tr( "Reconnecting..." ), QString(), this  ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ), QString(), this  ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ) );
+    }
     connect();
 }
 
@@ -104,14 +102,25 @@ void QStreamBoxChat::onWebSocketConnected()
     socket_->sendTextMessage( message );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+    }
 
     loadSmiles();
 
     loadStatistic();
 
-    startUniqueTimer( statisticTimerId_, statisticInterval_ );
-    startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
+    //test badges
+    badgesMap_.clear();
+
+    badgesMap_.insert( 2, "http://stream-box.ru/img/award.svg" );
+    badgesMap_.insert( 5, "http://stream-box.ru/img/woman160.svg" );
+    badgesMap_.insert( 10, "http://stream-box.ru/img/award.svg" );
+
+
+    startUniqueTimer( statisticTimerId_, STATISTIC_INTERVAL );
+    startUniqueTimer( saveConnectionTimerId_, SAVE_CONNECTION_INTERVAL );
 }
 
 void QStreamBoxChat::onWebSocketError()
@@ -121,9 +130,9 @@ void QStreamBoxChat::onWebSocketError()
     errString.replace( "\r\n", "" );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, errString , QString(), this ) );
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, errString , QString(), this ) );
 
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 }
 
 void QStreamBoxChat::onTextMessageReceived( const QString& message )
@@ -154,6 +163,18 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
                         QJsonObject jsonData = jsonDocData.object();
 
                         QString nickName = jsonData[ "nickname" ].toString();
+
+                        //test badges
+                        if( badges_ )
+                        {
+                            int role = jsonData[ "role" ].toInt();
+                            if( badgesMap_.contains( role ) )
+                            {
+                                nickName = "<img class =\"badge\" src=\""+ badgesMap_[ role ] + "\"></img>" + nickName;
+                            }
+                        }
+
+
                         QString message = jsonData[ "text" ].toString();
 
                         //\"text\":\"<span class=\\\"chat_text_plain\\\">1 <\\\/span><smile><img src=\\\"\\\/img\\\/smiles\\\/dembel.png\\\"><\\\/smile><span class=\\\"chat_text_plain\\\"> 2<\\\/span>\",\"nickname\":\"cppguvdvo\",\"time\":1433797894,\"id\":4751,\"role\":0}"}                        
@@ -169,7 +190,7 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
 
                         message = insertSmiles( message );
 
-                        emit newMessage( ChatMessage( STREAMBOX_SERVICE, nickName, message, QString(), this ) );
+                        emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, QString(), this ) );
 
                         //message.replace( "/img/smiles/", DEFAULT_STREAMBOX_SMILE_DIR_PREFIX )  ;
 
@@ -202,7 +223,7 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
                 if( actionsMap.contains( action ) )
                 {
                     //if( isShowSystemMessages() )
-                    emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER, womenName + " " + actionsMap[ action ] + " " + userName, QString(), this ) );
+                    emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, womenName + " " + actionsMap[ action ] + " " + userName, QString(), this ) );
                 }
 
             }
@@ -256,7 +277,7 @@ void QStreamBoxChat::onTextMessageReceived( const QString& message )
                         if( role >= 0 && role < roleActionsMap.size() - 1 )
                         {
                             //if( isShowSystemMessages() )
-                            emit newMessage( ChatMessage( STREAMBOX_SERVICE, STREAMBOX_USER,
+                            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME,
                                                                moderatorName + " " +
                                                                roleActionsMap[ role ] + " " +
                                                                userName + newRoleMap[ role ], "", this ) );
@@ -305,7 +326,7 @@ void QStreamBoxChat::onStatisticLoaded()
 
             QString statistic = QString::number( usersCount ) + "+(" + QString::number( online - usersCount ) + ")";
 
-            emit newStatistic( new QChatStatistic( STREAMBOX_SERVICE, statistic, this ) );            
+            emit newStatistic( new QChatStatistic( SERVICE_NAME, statistic, this ) );
         }
     }
 
@@ -345,6 +366,8 @@ void QStreamBoxChat::loadSettings()
     if( ChatMessage::isLink( channelName_ ) )
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
 
+    badges_ = settings.value( STREAMBOX_BADGES_SETTING_PATH, false ).toBool();
+
     enable( settings.value( STREAMBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     setAliasesList( settings.value( STREAMBOX_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
@@ -354,4 +377,8 @@ void QStreamBoxChat::loadSettings()
     setRemoveBlackListUsers( settings.value( STREAMBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
 }
 
+void QStreamBoxChat::changeBadges( bool badges )
+{
+    badges_ = badges;
+}
 

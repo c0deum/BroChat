@@ -2,11 +2,37 @@
 #include <QApplication>
 #include <QDir>
 
+#include <QPair>
+
 #include <QDebug>
 
 #include "qchatservice.h"
 
-QChatService::QChatService( QObject *parent )
+
+const QString QChatService::TYPE_FIELD = "type";
+
+const QString QChatService::SERVICE_NAME_FIELD = "service";
+
+const QString QChatService::NICKNAME_FIELD = "nickname";
+const QString QChatService::MESSAGE_TEXT_FIELD = "text";
+const QString QChatService::MESSAGE_TYPE_FIELD = "messageType";
+const QString QChatService::NICKNAME_COLOR_FIELD = "color";
+const QString QChatService::MESSAGE_ICON_SUBSCRIBER_FIELD = "subscriberIcon";
+const QString QChatService::MESSAGE_ICON_MODERATOR_FIELD = "moderatorIcon";
+const QString QChatService::MESSAGE_ICON_TWITCH_TURBO_FIELD = "twitchTurboIcon";
+
+const QString QChatService::STATISTIC_VALUE_FIELD = "value";
+
+const QString QChatService::MESSAGE_TYPE = "message";
+const QString QChatService::STATISTIC_TYPE = "statistic";
+
+const QString QChatService::MESSAGE_TYPE_EMPTY = "";
+const QString QChatService::MESSAGE_TYPE_ALIAS = "alias";
+const QString QChatService::MESSAGE_TYPE_SUPPORTER = "supporter";
+const QString QChatService::MESSAGE_TYPE_IGNORE = "ignore";
+
+
+QChatService::QChatService( QObject * parent )
 : QObject( parent )
 , enabled_( true )
 , showSystemMessages_( true )
@@ -97,7 +123,7 @@ bool QChatService::isContainsAliases( const QString &message ) const
 {
     foreach( const QString &alias, aliasesList_ )
     {
-        if( alias != "" && message.contains( alias ) )
+        if( !alias.isEmpty() && message.contains( alias ) )
             return true;
     }
     return false;
@@ -167,12 +193,67 @@ QString QChatService::insertSmiles( const QString & message ) const
     return convertedMessage;
 }
 
+void QChatService::emitJsonMessage( std::initializer_list<QPair<QString, QString> > fields )
+{
+    QJsonObject json;
 
+    for( auto field : fields )
+    {
+        json.insert( field.first, field.second );
+    }
 
+    emit message( json, this );
+}
 
+void QChatService::emitSystemMessage( const QString & service, const QString & nickname, const QString & message )
+{
+    emitJsonMessage( { qMakePair( TYPE_FIELD, MESSAGE_TYPE ),\
+                   qMakePair( SERVICE_NAME_FIELD, service ),\
+                   qMakePair( NICKNAME_FIELD, nickname ),\
+                   qMakePair( MESSAGE_TEXT_FIELD, message ),\
+                   qMakePair( MESSAGE_TYPE_FIELD, MESSAGE_TYPE_EMPTY ) } );
+}
 
+void QChatService::emitMessage( const QString & service, const QString & nickname, const QString & text, std::initializer_list<QPair<QString, QString> > fields )
+{
+    bool blackListUser = blackList().contains( nickname );
+    bool supportersListUser = supportersList().contains( nickname );
+    bool containsAliases = isContainsAliases( text );
 
+    QString type = MESSAGE_TYPE_EMPTY;
 
+    if( !isRemoveBlackListUsers() || !blackListUser )
+    {
+        if( blackListUser )
+        {
+            type = MESSAGE_TYPE_IGNORE;
+        }
+        else if( supportersListUser )
+        {
+            type = MESSAGE_TYPE_SUPPORTER;
+        }
+        else if( containsAliases )
+        {
+            type = MESSAGE_TYPE_ALIAS;
+        }
+    }
+
+    QJsonObject json;
+
+    json.insert( TYPE_FIELD, MESSAGE_TYPE );
+    json.insert( SERVICE_NAME_FIELD, service );
+    json.insert( NICKNAME_FIELD, nickname );
+    json.insert( MESSAGE_TEXT_FIELD, text );
+    json.insert( MESSAGE_TYPE_FIELD, type );
+
+    for( auto field : fields )
+    {
+        json.insert( field.first, field.second );
+    }
+
+    emit message( json, this );
+
+}
 
 
 

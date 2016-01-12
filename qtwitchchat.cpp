@@ -33,30 +33,17 @@ const QString DEFAULT_TWITCH_STATISTIC_PREFIX = "https://api.twitch.tv/kraken/st
 
 const QString DEFAULT_TWITCH_SMILE_PREFIX = "http://static-cdn.jtvnw.net/emoticons/v1/";
 
-const int DEFAULT_TWITCH_RECONNECT_INTERVAL = 10000;
-const int DEFAULT_TWITCH_STATISTIC_INTERVAL = 10000;
-const int DEFAULT_TWITCH_SAVE_CONNECTION_INTERVAL = 25000;
+const QString QTwitchChat::SERVICE_NAME = "twitch";
+const QString QTwitchChat::SERVICE_USER_NAME = "TWITCH";
 
-const QString TWITCH_USER = "TWITCH";
-const QString TWITCH_SERVICE = "twitch";
+const int QTwitchChat::RECONNECT_INTERVAL = 10000;
+const int QTwitchChat::STATISTIC_INTERVAL = 10000;
+const int QTwitchChat::SAVE_CONNECTION_INTERVAL = 25000;
 
 QTwitchChat::QTwitchChat( QObject *parent )
 : QChatService( parent )
 , socket_( nullptr )
 , nam_( new QNetworkAccessManager( this ) )
-, oauthString_()
-, nickName_()
-, channelName_()
-, selfLink_()
-, emotIconsLink_()
-, badgesLink_()
-, reconnectTimerId_( -1 )
-, reconnectInterval_( DEFAULT_TWITCH_RECONNECT_INTERVAL )
-, statisticTimerId_( -1 )
-, statisticInterval_( DEFAULT_TWITCH_STATISTIC_INTERVAL  )
-, saveConnectionTimerId_( -1 )
-, saveConnectionInterval_( DEFAULT_TWITCH_SAVE_CONNECTION_INTERVAL )
-, originalColors_( false )
 {
 }
 
@@ -71,7 +58,10 @@ void QTwitchChat::connect()
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ) );
+    }
 
     if( socket_)
     {
@@ -118,7 +108,7 @@ void QTwitchChat::disconnect()
 
     safeDeleteSocket();
 
-    emit newStatistic( new QChatStatistic( TWITCH_SERVICE, QString(), this ) );
+    emit newStatistic( new QChatStatistic( SERVICE_NAME, QString(), this ) );
 }
 
 void QTwitchChat::reconnect()
@@ -127,7 +117,10 @@ void QTwitchChat::reconnect()
     disconnect();
     loadSettings();
     if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
-        emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, "Reconnecting...", "", this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, "Reconnecting...", "", this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, "Reconnecting..." );
+    }
     connect();
 }
 
@@ -142,7 +135,7 @@ void QTwitchChat::parseMessage()
     {
         QString line = socket_->readLine();
 
-        //qDebug() << line;
+        qDebug() << line;
 
         if( line.contains ( "376 " + DEFAULT_USER_NICK_NAME ) )
         {
@@ -151,13 +144,16 @@ void QTwitchChat::parseMessage()
             loadSelf();
 
             if( isShowSystemMessages() )
-                emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+            {
+                emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+                emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+            }
 
 
             loadStatistic();
 
-            startUniqueTimer( statisticTimerId_, statisticInterval_ );
-            startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
+            startUniqueTimer( statisticTimerId_, STATISTIC_INTERVAL );
+            startUniqueTimer( saveConnectionTimerId_, SAVE_CONNECTION_INTERVAL );
         }
         else if( line.contains ( "366 " + DEFAULT_USER_NICK_NAME ) )
         {
@@ -230,6 +226,54 @@ void QTwitchChat::parseMessage()
                     //nickName = "<span style=\"" + styles_[ role ] + "\">" + nickName + "</span>";
                 }
 
+                //test badges
+
+
+                if( badges_ )
+                {
+                    QString nickNameIcons;
+
+                    const QString USER_TYPE_PREFIX = "user-type=";
+
+                    int startUserTypePos = line.indexOf( USER_TYPE_PREFIX ) + USER_TYPE_PREFIX.length();
+                    int endUserTypePos = line.indexOf( " ", startUserTypePos ) - 1;
+
+                    if( endUserTypePos - startUserTypePos + 1 > 0 )
+                    {
+                        QString userType = line.mid( startUserTypePos, endUserTypePos - startUserTypePos + 1 );
+
+                        if( badgesMap_.contains( userType ) )
+                        {
+                            nickNameIcons += "<img class =\"badge\" src=\""+ badgesMap_[ userType ] + "\"></img>";
+                        }
+                    }
+
+
+
+                    const QString TURBO_PREFIX = "turbo=";
+
+                    int startTurboPos = line.indexOf( TURBO_PREFIX ) + TURBO_PREFIX.length();
+                    int endTurboPos = line.indexOf( ";", startTurboPos ) - 1;
+
+                    if( badgesMap_.contains( "turbo" ) && endTurboPos - startTurboPos + 1 > 0 && ( "1" == line.mid( startTurboPos, endTurboPos - startTurboPos + 1 ) ) )
+                    {
+                        nickNameIcons += "<img class =\"badge\" src=\""+ badgesMap_[ "turbo" ] + "\"></img>";
+                    }
+
+                    const QString SUBSCRIBER_PREFIX = "subscriber=";
+
+                    int startSubscriberPos = line.indexOf( SUBSCRIBER_PREFIX ) + SUBSCRIBER_PREFIX.length();
+                    int endSubscriberPos = line.indexOf( ";", startSubscriberPos ) - 1;
+
+                    if( badgesMap_.contains( "subscriber" ) && endSubscriberPos - startSubscriberPos + 1 > 0 && ( "1" == line.mid( startSubscriberPos, endSubscriberPos - startSubscriberPos + 1 ) ) )
+                    {
+                        nickNameIcons += "<img class =\"badge\" src=\""+ badgesMap_[ "subscriber" ] + "\"></img>";
+                    }
+
+                    nickName = nickNameIcons + nickName;
+
+                }
+
                 QString messagePrefix = "PRIVMSG #" + channelName_ + " :";
                 QString message;
 
@@ -244,7 +288,7 @@ void QTwitchChat::parseMessage()
                 message = ChatMessage::replaceEscapeCharecters( message );
                 message = insertSmiles( message );
 
-                emit newMessage( ChatMessage( TWITCH_SERVICE, nickName, message, QString(), this ) );
+                emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, QString(), this ) );
             }
         }
 
@@ -290,6 +334,8 @@ void QTwitchChat::onSelfLoaded()
             badgesLink_ = _links[ "badges" ].toString();
 
             loadSmiles();
+            loadBadges();
+
         }
     }
     reply->deleteLater();
@@ -300,9 +346,12 @@ void QTwitchChat::onSelfLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString() );
+    }
 
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );    
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 
     reply->deleteLater();
 }
@@ -353,7 +402,10 @@ void QTwitchChat::onSmilesLoaded()
 
             }
             if( isShowSystemMessages() )
-                emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, tr( "Smiles loaded..." ), QString(), this ) );
+            {
+                emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ), QString(), this ) );
+                emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ) );
+            }
         }
     }
 
@@ -364,22 +416,74 @@ void QTwitchChat::onSmilesLoadError()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, tr( "Can not load smiles..." ) + reply->errorString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ) + reply->errorString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ) + reply->errorString() );
+    }
 
     reply->deleteLater();
 }
 
 void QTwitchChat::loadBadges()
 {
+    badgesMap_.clear();
+
+    QNetworkRequest request( QUrl( badgesLink_ + "" ) );
+
+    QNetworkReply * reply = nam_->get( request );
+
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onBadgesLoaded() ) );
+    QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onBadgesLoadError() ) );
 }
 
 void QTwitchChat::onBadgesLoaded()
 {
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+
+    QJsonParseError parseError;
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
+
+    if( QJsonParseError::NoError == parseError.error && jsonDoc.isObject() )
+    {
+        QJsonObject jsonBadges = jsonDoc.object();
+
+        QStringList keys = jsonBadges.keys();
+
+        foreach( const QString & key, keys )
+        {
+            if( jsonBadges[ key ].isObject() )
+            {
+                QJsonObject jsonBadge = jsonBadges[ key ].toObject();
+
+                if( jsonBadge.contains( "image" ) && jsonBadge[ "image" ].isString() )
+                {
+                    badgesMap_.insert( key, jsonBadge[ "image" ].toString() );
+                }
+            }
+        }
+
+        qDebug() << badgesMap_;
+
+        if( isShowSystemMessages() )
+        {
+            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Badges loaded..." ) + reply->errorString(), QString(), this ) );
+            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Badges loaded..." ) + reply->errorString() );
+        }
+    }
+
+    reply->deleteLater();
 }
 
 void QTwitchChat::onBadgesLoadError()
 {
-    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );    
+    if( isShowSystemMessages() )
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load badges..." ) + reply->errorString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load badges..." ) + reply->errorString() );
+    }
     reply->deleteLater();
 }
 
@@ -409,7 +513,7 @@ void QTwitchChat::onStatisticLoaded()
 
             QString statistic = QString::number( jsonStreamObj[ "viewers" ].toInt() );
 
-            emit newStatistic( new QChatStatistic( TWITCH_SERVICE, statistic, this ) );
+            emit newStatistic( new QChatStatistic( SERVICE_NAME, statistic, this ) );
         }
     }
 
@@ -450,6 +554,8 @@ void QTwitchChat::loadSettings()
 
     originalColors_ = settings.value( TWITCH_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
 
+    badges_ = settings.value( TWITCH_BADGES_SETTING_PATH, false ).toBool();
+
     if( ChatMessage::isLink( channelName_ ) )
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
 
@@ -465,12 +571,20 @@ void QTwitchChat::loadSettings()
 void QTwitchChat::onSocketError()
 {
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( TWITCH_SERVICE, TWITCH_USER, "Socket Error ..." + socket_->errorString(), "", this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, "Socket Error ..." + socket_->errorString(), "", this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, "Socket Error ..." + socket_->errorString() );
+    }
 
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 }
 
 void QTwitchChat::changeOriginalColors( bool originalColors )
 {
     originalColors_ = originalColors;
+}
+
+void QTwitchChat::changeBadges( bool badges )
+{
+    badges_ = badges;
 }

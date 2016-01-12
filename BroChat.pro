@@ -9,7 +9,6 @@ HEADERS += \
     qchatservice.h \
     qchatmessage.h \
     qsettingsdialog.h \
-    qchatsmile.h \
     qsc2tvchat.h \
     settingsconsts.h \
     qgoodgamechat.h \
@@ -29,7 +28,6 @@ HEADERS += \
     qigdcchat.h \
     qpoll.h \
     qpollview.h \
-    qtwitchchatv3.h \
     qmessagesmanager.h \
     qpollsettingsdialog.h
 
@@ -39,7 +37,6 @@ SOURCES += \
     qchatservice.cpp \
     qchatmessage.cpp \
     qsettingsdialog.cpp \
-    qchatsmile.cpp \
     qsc2tvchat.cpp \
     qgoodgamechat.cpp \
     qcybergamechat.cpp \

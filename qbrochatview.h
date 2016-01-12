@@ -5,6 +5,8 @@
 
 #include <QWebView>
 
+#include <QJsonObject>
+
 #include "qmessagesmanager.h"
 
 class ChatMessage;
@@ -55,6 +57,7 @@ private:
     void                replaceColorString( QString & str, const QString & colorTemplate, unsigned int defaultColor, const QString & settingPath );
 
 public slots:
+    void                onNewMessage( QJsonObject json, const QChatService * service );
     void                slotNewMessage( ChatMessage message );
     void                onNewStatistic( QChatStatistic * statistic );
     void                saveSettings();

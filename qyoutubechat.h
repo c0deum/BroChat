@@ -40,15 +40,17 @@ private slots:
 private:
     QNetworkAccessManager * nam_;
     QString                 channelName_;
-
     QString                 lastMessageTime_;
+    int                     updateMessagesTimerId_ = {-1};
+    int                     updateStatisticTimerId_ = {-1};
+    int                     reconnectTimerId_ = {-1};
 
-    int                     updateMessagesTimerId_;
-    int                     updateMessagesInterval_;
-    int                     updateStatisticTimerId_;
-    int                     updateStatisticInterval_;
-    int                     reconnectTimerId_;
-    int                     reconnectInterval_;
+    static const QString    SERVICE_NAME;
+    static const QString    SERVICE_USER_NAME;
+
+    static const int        UPDATE_INTERVAL;
+    static const int        STATISTIC_INTERVAL;
+    static const int        RECONNECT_INTERVAL;
 };
 
 #endif // QYOUTUBECHAT

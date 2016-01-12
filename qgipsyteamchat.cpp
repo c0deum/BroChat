@@ -23,19 +23,18 @@ const QString DEFAULT_GIPSYTEAM_CHANNEL_MESSAGES_POSTFIX = ".js";
 const int DEFAULT_GIPSYTEAM_UPDATE_MESSAGES_INTERVAL = 3000;
 const int DEFAULT_GIPSYTEAM_RECONNECT_INTERVAL = 10000;
 
-const QString GIPSYTEAM_SERVICE = "gipsyteam";
-const QString GIPSYTEAM_USER = "GIPSYTEAM";
+const QString SERVICE_NAME = "gipsyteam";
+const QString SERVICE_USER_NAME = "GIPSYTEAM";
+
+const QString QGipsyTeamChat::SERVICE_NAME = "gipsyteam";
+const QString QGipsyTeamChat::SERVICE_USER_NAME = "GIPSYTEAM";
+
+const int QGipsyTeamChat::UPDATE_INTERVAL = 3000;
+const int QGipsyTeamChat::RECONNECT_INTERVAL = 10000;
 
 QGipsyTeamChat::QGipsyTeamChat( QObject * parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
-, channelName_()
-, channelLink_()
-, lastMessageId_()
-, updateMessagesTimerId_( -1 )
-, updateMessagesInterval_( DEFAULT_GIPSYTEAM_UPDATE_MESSAGES_INTERVAL )
-, reconnectTimerId_( -1 )
-, reconnectInterval_( DEFAULT_GIPSYTEAM_RECONNECT_INTERVAL )
 {
 }
 
@@ -50,16 +49,22 @@ void QGipsyTeamChat::connect()
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ) );
+    }
 
     channelLink_ = DEFAULT_GIPSYTEAM_CHANNEL_MESSAGES_PREFIX + channelName_ + DEFAULT_GIPSYTEAM_CHANNEL_MESSAGES_POSTFIX;
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+    }
 
     loadSmiles();
 
-    startUniqueTimer( updateMessagesTimerId_, updateMessagesInterval_ );
+    startUniqueTimer( updateMessagesTimerId_, UPDATE_INTERVAL );
 
 }
 
@@ -78,7 +83,10 @@ void QGipsyTeamChat::reconnect()
     disconnect();
     loadSettings();
     if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
-        emit newMessage( ChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, tr( "Reconnecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting to " ) + channelName_ + tr( "..." ) );
+    }
     connect();
 }
 
@@ -110,16 +118,22 @@ void QGipsyTeamChat::onChannelInfoLoaded()
         channelLink_ = DEFAULT_GIPSYTEAM_CHANNEL_MESSAGES_PREFIX + channelId + DEFAULT_GIPSYTEAM_CHANNEL_MESSAGES_POSTFIX;
 
         if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        {
+            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+        }
 
-        startUniqueTimer( updateMessagesTimerId_, updateMessagesInterval_ );
+        startUniqueTimer( updateMessagesTimerId_, UPDATE_INTERVAL );
     }
     else
     {
         if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( GIPSYTEAM_SERVICE, GIPSYTEAM_USER, tr( "Can not connect to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        {
+            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ), QString(), this ) );
+            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) );
+        }
 
-        startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+        startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
     }
 
     reply->deleteLater();
@@ -181,7 +195,7 @@ void QGipsyTeamChat::onMessagesLoaded()
 
                         message = insertSmiles( message );
 
-                        emit newMessage( ChatMessage( GIPSYTEAM_SERVICE, nickName, message, QString(), this ) );
+                        emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, QString(), this ) );
                     }
                 }
             }

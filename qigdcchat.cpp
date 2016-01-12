@@ -23,23 +23,16 @@ const QString DEFAULT_IGDC_CHANNEl_INFO_LINK_PREFIX = "http://igdc.ru/streams/?c
 const QString DEFAULT_IGDC_MESSAGES_INFO_LINK_PREFIX = "http://igdc.ru/streams/chat.php?";
 const QString DEFAULT_IGDC_STATISTIC_INFO_LINK_PREFIX = "http://igdc.ru/streams/chat.php?";
 
-const QString IGDC_SERVICE = "igdc";
-const QString IGDC_USER = "IGDC";
+const QString QIgdcChat::SERVICE_NAME = "igdc";
+const QString QIgdcChat::SERVICE_USER_NAME = "IGDC";
 
-const int DEFAULT_IGDC_UPDATE_MESSAGES_INTERVAL = 3000;
-const int DEFAULT_IGDC_RECONNECT_INTERVAL = 10000;
-const int DEFAULT_IGDC_STATISTIC_INTERVAL = 10000;
+const int QIgdcChat::UPDATE_INTERVAL = 3000;
+const int QIgdcChat::RECONNECT_INTERVAL = 10000;
+const int QIgdcChat::STATISTIC_INTERVAL = 10000;
 
 QIgdcChat::QIgdcChat( QObject * parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
-, channelName_()
-, channelId_()
-, lastMessageId_( "0" )
-, updateMessagesTimerId_( -1 )
-, updateMessagesInterval_( DEFAULT_IGDC_UPDATE_MESSAGES_INTERVAL )
-, reconnectTimerId_( -1 )
-, reconnectInterval_( DEFAULT_IGDC_RECONNECT_INTERVAL )
 {
 }
 
@@ -54,7 +47,10 @@ void QIgdcChat::connect()
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( IGDC_SERVICE, IGDC_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ) );
+    }
 
     loadChannelInfo();
 }
@@ -67,7 +63,7 @@ void QIgdcChat::disconnect()
     resetTimer( updateMessagesTimerId_ );
     resetTimer( reconnectTimerId_ );
 
-    emit newStatistic( new QChatStatistic( IGDC_SERVICE, QString(), this ) );
+    emit newStatistic( new QChatStatistic( SERVICE_NAME, QString(), this ) );
 }
 
 void QIgdcChat::reconnect()
@@ -76,7 +72,10 @@ void QIgdcChat::reconnect()
     disconnect();
     loadSettings();
     if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
-        emit newMessage( ChatMessage( IGDC_SERVICE, IGDC_USER, tr( "Reconnecting..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ) );
+    }
     connect();
 }
 
@@ -105,6 +104,8 @@ void QIgdcChat::loadSettings()
 
     if( ChatMessage::isLink( channelName_ ) )
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "=" ) - 1 );
+
+    badges_ = settings.value( IGDC_BADGES_SETTING_PATH, false ).toBool();
 
     enable( settings.value( IGDC_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
@@ -142,21 +143,27 @@ void QIgdcChat::onChannelInfoLoaded()
         qDebug() << "channelId_ = " << channelId_;
 
         if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( IGDC_SERVICE, IGDC_USER, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        {
+            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+        }
 
         loadSmiles();
 
-        startUniqueTimer( updateMessagesTimerId_, updateMessagesInterval_ );
+        startUniqueTimer( updateMessagesTimerId_, UPDATE_INTERVAL );
 
         loadStatistic();
 
-        startUniqueTimer( statisticTimerId_, statisticInterval_ );
+        startUniqueTimer( statisticTimerId_, STATISTIC_INTERVAL );
 
     }
     else
     {
         if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( IGDC_SERVICE, IGDC_USER, tr( "Can not connect to " ) + channelName_ + tr( "...Can not find channel id..." ), QString(), this ) );
+        {
+            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "...Can not find channel id..." ), QString(), this ) );
+            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "...Can not find channel id..." ) );
+        }
     }
 
     reply->deleteLater();
@@ -167,9 +174,12 @@ void QIgdcChat::onChannelInfoLoadError()
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( IGDC_SERVICE, IGDC_USER, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString() + tr( "..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString() + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString() + tr( "..." ) );
+    }
 
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 
     reply->deleteLater();
 }
@@ -228,9 +238,15 @@ void QIgdcChat::onMessagesLoaded()
 
                     QString nickName = jsonUserInfo[ "name" ].toString();
 
+                    //test badges
+                    if( badges_ && jsonUserInfo[ "avatar" ].isString() )
+                    {
+                        nickName = "<img class =\"badge\" src=\"http://igdc.ru/images/avatars/" + jsonUserInfo[ "avatar" ].toString() + "\"></img>" + nickName;
+                    }
+
                     message = insertSmiles( message );
 
-                    emit newMessage( ChatMessage( IGDC_SERVICE, nickName, message, QString(), this ) );
+                    emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, QString(), this ) );
 
                     ++messageIndex;
                 }
@@ -273,7 +289,7 @@ void QIgdcChat::onStatisticLoaded()
     {
         QJsonObject jsonObj = jsonDoc.object();
 
-        emit newStatistic( new QChatStatistic( IGDC_SERVICE, QString::number( jsonObj[ "count" ].toInt() ), this ) );
+        emit newStatistic( new QChatStatistic( SERVICE_NAME, QString::number( jsonObj[ "count" ].toInt() ), this ) );
     }
 
     reply->deleteLater();
@@ -285,11 +301,9 @@ void QIgdcChat::onStatisticLoadError()
     reply->deleteLater();
 }
 
-
-
-
-
-
-
+void QIgdcChat::changeBadges( bool badges )
+{
+    badges_ = badges;
+}
 
 

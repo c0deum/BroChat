@@ -23,8 +23,11 @@ private:
     void                    loadChannelInfo();
     void                    connectToWebClient();
     void                    loadStatistic();
-    void                    loadHistory();
+    void                    loadHistory();    
     virtual void            loadSmiles();
+    void                    loadStyles();
+
+    void                    loadBadges();
 
     void                    parseMessage( const QJsonObject & jsonObj );
 
@@ -32,6 +35,9 @@ public slots:
     virtual void            connect();
     virtual void            disconnect();
     virtual void            reconnect();
+
+    void                    changeOriginalColors( bool originalColors );
+    void                    changeBadges( bool badges );
 
 private slots:
     void                    onWebSocketConnected();
@@ -41,26 +47,40 @@ private slots:
     void                    onSmilesLoaded();
     void                    onSmileLoadError();
 
+    void                    onStylesLoaded();
+    void                    onStylesLoadError();
+
     void                    onChannelInfoLoaded();
     void                    onChannelInfoLoadError();
 
+    void                    onBadgesLoaded();
+    void                    onBadgesLoadError();
+
 private:
     QNetworkAccessManager * nam_;
-    QWebSocket *            socket_;
+    QWebSocket *            socket_ = {nullptr};
     QString                 channelName_;
     QString                 channelId_;
-    int                     reconnectTimerId_;
-    int                     reconnectInterval_;
-    int                     saveConnectionTimerId_;
-    int                     saveConnectionInterval_;
-    int                     statisticTimerId_;
-    int                     statisticInterval_;
-    int                     lastMessageId_;
-    int                     requestId_;
-    int                     joinRequestId_;
-    int                     statisticRequestId_;
-    int                     historyRequestId_;
-    int                     historyLastMessageId_;
+    int                     reconnectTimerId_ = {-1};
+    int                     saveConnectionTimerId_ = {-1};
+    int                     statisticTimerId_ = {-1};
+    int                     lastMessageId_ = {0};
+    int                     requestId_ = {-1};
+    int                     joinRequestId_ = {-1};
+    int                     statisticRequestId_ = {-1};
+    int                     historyRequestId_ = {-1};
+    int                     historyLastMessageId_ = {0};
+    QMap<int, QString>      styles_;
+    bool                    originalColors_ = {false};
+    bool                    badges_ = {false};
+    QMap<int, QString>      badgesMap_;
+
+    static const QString    SERVICE_NAME;
+    static const QString    SERVICE_USER_NAME;
+
+    static const int        RECONNECT_INTERVAL;
+    static const int        SAVE_CONNECTION_INTERVAL;
+    static const int        STATISTIC_INTERVAL;
 };
 
 #endif // QFUNSTREAMCHAT_H

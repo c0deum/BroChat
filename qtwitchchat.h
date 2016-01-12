@@ -60,8 +60,10 @@ private slots:
     void                        onStatisticLoaded();
     void                        onStatisticLoadError();
 
+    void                        changeBadges( bool badges );
+
 private:
-    QTcpSocket *                socket_;
+    QTcpSocket *                socket_ = {nullptr};
     QNetworkAccessManager *     nam_;
     QString                     oauthString_;
     QString                     nickName_;
@@ -69,17 +71,20 @@ private:
     QString                     selfLink_;
     QString                     emotIconsLink_;
     QString                     badgesLink_;
+    int                         reconnectTimerId_ = {-1};
+    int                         statisticTimerId_ = {-1};
+    int                         saveConnectionTimerId_ = {-1};
+    bool                        originalColors_ = {false};
+    bool                        badges_ = {false};
+    QMap< QString, QString >    badgesMap_;
 
-    int                         reconnectTimerId_;
-    int                         reconnectInterval_;
 
-    int                         statisticTimerId_;
-    int                         statisticInterval_;
+    static const QString        SERVICE_NAME;
+    static const QString        SERVICE_USER_NAME;
 
-    int                         saveConnectionTimerId_;
-    int                         saveConnectionInterval_;
-
-    bool                        originalColors_;
+    static const int            RECONNECT_INTERVAL;
+    static const int            STATISTIC_INTERVAL;
+    static const int            SAVE_CONNECTION_INTERVAL;
 };
 
 #endif // QTWITCHCHAT_H

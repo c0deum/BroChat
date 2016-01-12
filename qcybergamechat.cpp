@@ -28,25 +28,16 @@ const QString DEFAULT_CYBERGAME_CHAT_LINK = "http://cybergame.tv/cgchat.htm";
 const QString DEFAULT_CYBERGAME_SMILE_PREFIX = "http://cybergame.tv/";
 const QString DEFAULT_CYBERGAME_STATISTIC_PREFIX = "http://api.cybergame.tv/w/streams2.php?channel=";
 
-const int DEFAULT_CYBERGAME_SAVE_CONNECTION_INTERVAL = 25000;
-const int DEFAULT_CYBERGAME_RECONNECT_INTERVAL = 10000;
-const int DEFAULT_CYBERGAME_STATISTIC_INTERVAL = 10000;
+const QString QCyberGameChat::SERVICE_NAME = "cybergame";
+const QString QCyberGameChat::SERVICE_USER_NAME = "CYBERGAME";
 
-const QString CYBERGAME_USER = "CYBERGAME";
-const QString CYBERGAME_SERVICE = "cybergame";
+const int QCyberGameChat::SAVE_CONNECTION_INTERVAL = 25000;
+const int QCyberGameChat::RECONNECT_INTERVAL = 10000;
+const int QCyberGameChat::STATISTIC_INTERVAL = 10000;
 
 QCyberGameChat::QCyberGameChat( QObject *parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
-, socket_( nullptr )
-, channelName_()
-, lastUpd_( 0 )
-, saveConnectionTimerId_( -1 )
-, reconnectTimerId_( -1 )
-, saveConnectionInterval_( DEFAULT_CYBERGAME_SAVE_CONNECTION_INTERVAL )
-, reconnectInterval_( DEFAULT_CYBERGAME_RECONNECT_INTERVAL )
-, statisticTimerId_( -1 )
-, statisticInterval_( DEFAULT_CYBERGAME_STATISTIC_INTERVAL )
 {
 }
 
@@ -61,7 +52,10 @@ void QCyberGameChat::connect()
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ) );
+    }
 
     socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
 
@@ -87,7 +81,7 @@ void QCyberGameChat::disconnect()
     }
     socket_ = nullptr;
 
-    emit newStatistic( new QChatStatistic( CYBERGAME_SERVICE, QString(), this ) );
+    emit newStatistic( new QChatStatistic( SERVICE_NAME, QString(), this ) );
 }
 
 void QCyberGameChat::reconnect()
@@ -96,7 +90,10 @@ void QCyberGameChat::reconnect()
     disconnect();
     loadSettings();
     if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
-        emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, tr( "Reconnecting..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ) );
+    }
     connect();
 }
 
@@ -109,9 +106,12 @@ void QCyberGameChat::onWebSocketConnected()
 void QCyberGameChat::onWebSocketError()
 {
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, tr( "Web socket error..." ) + socket_->errorString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Web socket error..." ) + socket_->errorString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Web socket error..." ) + socket_->errorString() );
+    }
 
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 }
 
 void QCyberGameChat::onTextMessageRecieved( const QString &message )
@@ -134,19 +134,22 @@ void QCyberGameChat::onTextMessageRecieved( const QString &message )
                 socket_->sendTextMessage( answer );
 
                 if( isShowSystemMessages() )
-                    emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+                {
+                    emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+                    emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+                }
 
                 loadSmiles();
 
                 loadStatistic();
-                startUniqueTimer( statisticTimerId_, statisticInterval_ );
+                startUniqueTimer( statisticTimerId_, STATISTIC_INTERVAL );
             }
             else if( "getHistory" == command  )
             {
                 if( lastUpd_ )
                 {
                 }               
-                startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
+                startUniqueTimer( saveConnectionTimerId_, SAVE_CONNECTION_INTERVAL );
             }
             else if( "chatMessage" == command )
             {
@@ -164,7 +167,7 @@ void QCyberGameChat::onTextMessageRecieved( const QString &message )
 
                         QString nickName = jsonDoc.object()[ "from" ].toString();
 
-                        emit newMessage( ChatMessage( CYBERGAME_SERVICE, nickName, message, "", this ) );
+                        emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, "", this ) );
 
                     }
                 }
@@ -219,7 +222,10 @@ void QCyberGameChat::onSmilesLoaded()
                 addSmile( smilesInfo[ 2 * i ].toString(), DEFAULT_CYBERGAME_SMILE_PREFIX + smilesInfo[ 2 * i + 1 ].toString() );
             }
             if( isShowSystemMessages() )
-                emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, tr( "Smiles loaded..." ), QString(), this ) );
+            {
+                emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ), QString(), this ) );
+                emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ) );
+            }
         }
     }
 
@@ -231,7 +237,10 @@ void QCyberGameChat::onSmilesLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( CYBERGAME_SERVICE, CYBERGAME_USER, tr( "Can not load smiles..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ) );
+    }
 
     reply->deleteLater();
 }
@@ -260,7 +269,7 @@ void QCyberGameChat::onStatisticLoaded()
 
             QString statistic = jsonObj[ "viewers" ].toString();
 
-            emit newStatistic( new QChatStatistic( CYBERGAME_SERVICE, statistic, this ) );
+            emit newStatistic( new QChatStatistic( SERVICE_NAME, statistic, this ) );
         }
     }
 

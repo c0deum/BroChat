@@ -40,10 +40,16 @@ private:
     QString                 channelLink_;
     QString                 lastMessageId_;
 
-    int                     updateMessagesTimerId_;
-    int                     updateMessagesInterval_;
-    int                     reconnectTimerId_;
-    int                     reconnectInterval_;
+    int                     updateMessagesTimerId_ = {-1};
+    int                     reconnectTimerId_ = {-1};
+
+
+    static const QString    SERVICE_NAME;
+    static const QString    SERVICE_USER_NAME;
+
+    static const int        UPDATE_INTERVAL;
+    static const int        RECONNECT_INTERVAL;
+
 };
 
 #endif // QGIPSYTEAMCHAT

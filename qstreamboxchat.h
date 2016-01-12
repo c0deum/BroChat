@@ -32,16 +32,24 @@ private slots:
     void                    onStatisticLoaded();
     void                    onStatisticLoadError();
 
+    void                    changeBadges( bool badges );
+
 private:
     QNetworkAccessManager * nam_;
-    QWebSocket *            socket_;
+    QWebSocket *            socket_ = {nullptr};
     QString                 channelName_;
-    int                     reconnectTimerId_;
-    int                     reconnectInterval_;
-    int                     statisticTimerId_;
-    int                     statisticInterval_;
-    int                     saveConnectionTimerId_;
-    int                     saveConnectionInterval_;
+    int                     reconnectTimerId_ = {-1};
+    int                     statisticTimerId_ = {-1};
+    int                     saveConnectionTimerId_ = {-1};
+    bool                    badges_ = {false};
+    QMap< int ,QString>     badgesMap_;
+
+    static const QString    SERVICE_NAME;
+    static const QString    SERVICE_USER_NAME;
+
+    static const int        RECONNECT_INTERVAL;
+    static const int        STATISTIC_INTERVAL;
+    static const int        SAVE_CONNECTION_INTERVAL;
 };
 
 #endif // QSTREAMBOXCHAT

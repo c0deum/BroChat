@@ -35,8 +35,8 @@ public slots:
     virtual void                disconnect();
     virtual void                reconnect();
 
-    void                        setUpdateMessagesInterval( int interval );
-    void                        setReconnectInterval( int interval );
+    //void                        setUpdateMessagesInterval( int interval );
+    //void                        setReconnectInterval( int interval );
 
     void                        changeOriginalColors( bool originalColors );
 
@@ -58,11 +58,15 @@ private:
     QString                     channelLink_;
     QString                     lastMessageId_;
     QMap< QString, QString >    styles_;
-    int                         updateMessagesTimerId_;
-    int                         reconnectTimerId_;
-    int                         updateMessagesInterval_;
-    int                         reconnectInterval_;
-    bool                        originalColors_;
+    int                         updateMessagesTimerId_ = {-1};
+    int                         reconnectTimerId_ = {-1};
+    bool                        originalColors_ = {false};
+
+    static const QString        SERVICE_NAME;
+    static const QString        SERVICE_USER_NAME;
+
+    static const int            UPDATE_INTERVAL;
+    static const int            RECONNECT_INTERVAL;
 };
 
 #endif // QSC2TVCHAT_H

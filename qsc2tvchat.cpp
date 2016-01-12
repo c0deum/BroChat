@@ -32,24 +32,21 @@ const QString DEFAULT_SC2TV_CHAT_CSS_LINK = "http://chat.sc2tv.ru/css/chat.css";
 const QString DEFAULT_SC2TV_CHANNEL_PREFIX = "http://sc2tv.ru/channel/";
 const QString DEFAULT_SC2TV_CHANNEL_PREFIX_LINK = "http://chat.sc2tv.ru/memfs/channel-";
 
-const QString SC2TV_USER = "SC2TV";
-const QString SC2TV_SERVICE = "sc2tv";
+const QString SERVICE_USER_NAME = "SC2TV";
+const QString SERVICE_NAME = "sc2tv";
 
 const int DEFAULT_SC2TV_UPDATE_MESSAGES_INTERVAL = 3000;
 const int DEFAULT_SC2TV_RECONNECT_INTERVAL = DEFAULT_SC2TV_UPDATE_MESSAGES_INTERVAL * 10;
 
+const QString QSc2tvChat::SERVICE_NAME = "sc2tv";
+const QString QSc2tvChat::SERVICE_USER_NAME = "SC2TV";
+
+const int QSc2tvChat::UPDATE_INTERVAL = 3000;
+const int QSc2tvChat::RECONNECT_INTERVAL = 3000;
+
 QSc2tvChat::QSc2tvChat( QObject *parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
-, channelName_()
-, channelLink_()
-, lastMessageId_()
-, styles_()
-, updateMessagesTimerId_( -1 )
-, reconnectTimerId_( -1 )
-, updateMessagesInterval_( DEFAULT_SC2TV_UPDATE_MESSAGES_INTERVAL )
-, reconnectInterval_( DEFAULT_SC2TV_RECONNECT_INTERVAL )
-, originalColors_( false )
 {
 }
 
@@ -68,7 +65,10 @@ void QSc2tvChat::connect()
     loadStyles();
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ) );
+    }
 
     loadChannelInfo();
 }
@@ -87,7 +87,10 @@ void QSc2tvChat::reconnect()
     disconnect();
     loadSettings();
     if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
-        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Reconnecting..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ) );
+    }
     connect();
 }
 
@@ -138,7 +141,10 @@ void QSc2tvChat::onSmilesLoaded()
     }
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, "Smiles loaded...", "", this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, "Smiles loaded...", "", this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, "Smiles loaded..." );
+    }
 
     reply->deleteLater();
 }
@@ -147,7 +153,10 @@ void QSc2tvChat::onSmilesLoadError()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Can not load smiles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString() );
+    }
     reply->deleteLater();
 }
 
@@ -202,7 +211,10 @@ void QSc2tvChat::onStylesLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Can not load styles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load styles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load styles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString() );
+    }
 
     reply->deleteLater();
 }
@@ -240,11 +252,15 @@ void QSc2tvChat::onChannelInfoLoaded()
             channelLink_ = DEFAULT_SC2TV_CHANNEL_PREFIX_LINK + channelInfo + ".json";
 
             if( isShowSystemMessages() )
-                emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+            {
+                emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+                emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+            }
 
             loadSmiles();
+            loadStyles();
 
-            startUniqueTimer( updateMessagesTimerId_, updateMessagesInterval_ );
+            startUniqueTimer( updateMessagesTimerId_, UPDATE_INTERVAL );
         }
         else
         {
@@ -258,7 +274,7 @@ void QSc2tvChat::onChannelInfoLoaded()
 
     if( channelLink_.isEmpty() )
     {        
-        startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+        startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
     }
 
     reply->deleteLater();
@@ -269,9 +285,12 @@ void QSc2tvChat::onChannelInfoLoadError()
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString() + "..." + QDateTime::currentDateTime().toString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString() + "..." + QDateTime::currentDateTime().toString() );
+    }
 
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 
     reply->deleteLater();
 }
@@ -335,9 +354,10 @@ void QSc2tvChat::onMessagesLoaded()
                         {                            
                             nickName = "<span style=\"" + styles_[ role ] + "\">" + nickName + "</span>";
                         }
+                        qDebug() << nickName;
                     }
 
-                    emit newMessage( ChatMessage( SC2TV_SERVICE, nickName, message, QString(), this ) );
+                    emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, QString(), this ) );
 
                     ++messageIndex;
                 }
@@ -360,7 +380,10 @@ void QSc2tvChat::onMessagesLoadError()
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( SC2TV_SERVICE, SC2TV_USER, tr( "Can not load messages..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load messages..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load messages..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString() );
+    }
 
     reply->deleteLater();
 }
@@ -396,6 +419,7 @@ void QSc2tvChat::loadSettings()
     setRemoveBlackListUsers( settings.value( SC2TV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
 }
 
+/*
 void QSc2tvChat::setUpdateMessagesInterval( int interval )
 {
     updateMessagesInterval_ = interval;
@@ -405,6 +429,7 @@ void QSc2tvChat::setReconnectInterval( int interval )
 {
     reconnectInterval_ = interval;
 }
+*/
 
 void QSc2tvChat::changeOriginalColors( bool originalColors )
 {

@@ -38,11 +38,17 @@ private:
     QNetworkAccessManager * nam_;
     QString                 channelName_;
     QString                 channelId_;
-    int                     lastMessageId_;
-    int                     updateChatInfoTimerId_;
-    int                     updateChatInfoInterval_;
-    int                     reconnectTimerId_;
-    int                     reconnectInterval_;
+    int                     lastMessageId_ = {-1};
+    int                     updateChatInfoTimerId_ = {-1};
+    //int                     updateChatInfoInterval_;
+    int                     reconnectTimerId_ = {-1};
+    //int                     reconnectInterval_;
+
+    static const QString    SERVICE_USER_NAME;
+    static const QString    SERVICE_NAME;
+
+    static const int        UPDATE_INTTERVAL;
+    static const int        RECONNECT_INTERVAL;
 };
 
 #endif // QACESCHAT_H

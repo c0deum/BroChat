@@ -30,25 +30,16 @@ const QString DEFAULT_YOUTUBE_MESSAGES_POSTFIX ="&format=json&comment_version=1"
 
 const QString DEFAULT_YOUTUBE_STATISTIC_PREFIX = "https://www.youtube.com/live_stats?v=";
 
-const int DEFAULT_YOUTUBE_UPDATE_MESSAGES_INTERVAL = 3000;
-const int DEFAULT_YOUTUBE_UPDATE_STATISTIC_INTERVAL = 10000;
-const int DEFAULT_YOUTUBE_RECONNECT_INTERVAL = 30000;
+const QString QYoutubeChat::SERVICE_NAME = "youtube";
+const QString QYoutubeChat::SERVICE_USER_NAME = "YOUTUBE";
 
-const QString YOUTUBE_USER = "YOUTUBE";
-const QString YOUTUBE_SERVICE = "youtube";
-
+const int QYoutubeChat::UPDATE_INTERVAL = 3000;
+const int QYoutubeChat::STATISTIC_INTERVAL = 10000;
+const int QYoutubeChat::RECONNECT_INTERVAL = 30000;
 
 QYoutubeChat::QYoutubeChat( QObject * parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
-, channelName_()
-, lastMessageTime_()
-, updateMessagesTimerId_( -1 )
-, updateMessagesInterval_( DEFAULT_YOUTUBE_UPDATE_MESSAGES_INTERVAL )
-, updateStatisticTimerId_( -1 )
-, updateStatisticInterval_( DEFAULT_YOUTUBE_UPDATE_STATISTIC_INTERVAL )
-, reconnectTimerId_( -1 )
-, reconnectInterval_( DEFAULT_YOUTUBE_RECONNECT_INTERVAL )
 {
 }
 
@@ -63,7 +54,10 @@ void QYoutubeChat::connect()
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( YOUTUBE_SERVICE, YOUTUBE_USER, "Connecting to " + channelName_ + "...", "", this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, "Connecting to " + channelName_ + "...", "", this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, "Connecting to " + channelName_ + "..." );
+    }
 
     loadChannelInfo();        
     //loadSmiles();
@@ -78,7 +72,7 @@ void QYoutubeChat::disconnect()
     resetTimer( updateStatisticTimerId_ );
     resetTimer( reconnectTimerId_ );
 
-    emit newStatistic( new QChatStatistic( YOUTUBE_SERVICE, "", this ) );
+    emit newStatistic( new QChatStatistic( SERVICE_NAME, "", this ) );
 }
 
 void QYoutubeChat::reconnect()
@@ -88,7 +82,10 @@ void QYoutubeChat::reconnect()
     loadSettings();
     if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() )
         if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( YOUTUBE_SERVICE, YOUTUBE_USER, "Reconnecting...", "", this ) );
+        {
+            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, "Reconnecting...", "", this ) );
+            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, "Reconnecting..." );
+        }
     connect();
 }
 
@@ -117,15 +114,18 @@ void QYoutubeChat::onChannelInfoLoaded()
     if( !lastMessageTime_.isEmpty() )
     {
         if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( YOUTUBE_SERVICE, YOUTUBE_USER, "Connected to " + channelName_ + "...", "", this ) );
+        {
+            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, "Connected to " + channelName_ + "...", "", this ) );
+            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, "Connected to " + channelName_ + "..." );
+        }
 
         loadSmiles();
 
-        startUniqueTimer( updateMessagesTimerId_, updateMessagesInterval_ );
+        startUniqueTimer( updateMessagesTimerId_, UPDATE_INTERVAL );
 
         loadStatistic();
 
-        startUniqueTimer( updateStatisticTimerId_, updateStatisticInterval_ );
+        startUniqueTimer( updateStatisticTimerId_, STATISTIC_INTERVAL );
     }
 
     reply->deleteLater();
@@ -274,7 +274,7 @@ void QYoutubeChat::onStatisticLoaded()
     if( !isOk )
         statistic = "0";
 
-    emit newStatistic( new QChatStatistic( YOUTUBE_SERVICE, statistic, this ) );
+    emit newStatistic( new QChatStatistic( SERVICE_NAME, statistic, this ) );
 
     reply->deleteLater();
 

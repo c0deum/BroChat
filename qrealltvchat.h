@@ -54,17 +54,24 @@ private slots:
     void                        onStatisticLoaded();
     void                        onStatisticLoadError();
 
+    void                        changeBadges( bool badges );
+
 private:
     QNetworkAccessManager *     nam_;
-    QXmppClient *               xmppClient_;
-    QXmppMucManager *           mucManager_;
+    QXmppClient *               xmppClient_ = {nullptr};
+    QXmppMucManager *           mucManager_ = {nullptr};
     QString                     channelName_;
     QString                     cid_;
     QDateTime                   connectionTime_;
-    int                         reconnectTimerId_;
-    int                         reconnectInterval_;
-    int                         statisticTimerId_;
-    int                         statisticInterval_;
+    int                         reconnectTimerId_ = {-1};
+    int                         statisticTimerId_ = {-1};
+    bool                        badges_ = {false};
+
+    static const QString        SERVICE_NAME;
+    static const QString        SERVICE_USER_NAME;
+
+    static const int            RECONNECT_INTERVAL;
+    static const int            STATISTIC_INTERVAL;
 };
 
 #endif // QREALLTVCHAT

@@ -57,17 +57,21 @@ private slots:
 
 private:
     QNetworkAccessManager * nam_;
-    QWebSocket *            socket_;
+    QWebSocket *            socket_ = {nullptr};
     QString                 channelName_;
     QList< QString >        servers_;
 
-    int                     reconnectTimerId_;
-    int                     reconnectInterval_;
-    int                     statisticTimerId_;
-    int                     statisticInterval_;
-    int                     saveConnectionTimerId_;
-    int                     saveConnectionInterval_;
-    bool                    originalColors_;
+    int                     reconnectTimerId_ = {-1};
+    int                     statisticTimerId_ = {-1};
+    int                     saveConnectionTimerId_ = {-1};
+    bool                    originalColors_ = {false};
+
+    static const QString    SERVICE_NAME;
+    static const QString    SERVICE_USER_NAME;
+
+    static const int        RECONNECT_INTERVAL;
+    static const int        STATISTIC_INTERVAL;
+    static const int        SAVE_CONNECTION_INTERVAL;
 };
 
 #endif // QHITBOXCHAT

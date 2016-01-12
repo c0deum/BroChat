@@ -29,26 +29,16 @@ const QString DEFAULT_HITBOX_SMILES_INFO_PEFIX = "https://api.hitbox.tv/chat/emo
 const QString DEFAULT_HITBOX_STATISTIC_PREFIX = "https://api.hitbox.tv/media/status/";
 const QString DEFAULT_HITBOX_SMILES_PREFIX = "http://edge.sf.hitbox.tv";
 
-const int DEFAULT_HITBOX_RECONNECT_INTERVAL = 10000;
-const int DEFAULT_HITBOX_STATISTIC_INTERVAL = 10000;
-const int DEFAULT_HITBOX_SAVE_CONNECTION_INTERVAL = 25000;
+const QString QHitBoxChat::SERVICE_NAME = "hitbox";
+const QString QHitBoxChat::SERVICE_USER_NAME = "HITBOX";
 
-const QString HITBOX_SERVICE = "hitbox";
-const QString HITBOX_USER = "HITBOX";
+const int QHitBoxChat::RECONNECT_INTERVAL = 10000;
+const int QHitBoxChat::STATISTIC_INTERVAL = 10000;
+const int QHitBoxChat::SAVE_CONNECTION_INTERVAL = 25000;
 
 QHitBoxChat::QHitBoxChat( QObject *parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
-, socket_( nullptr )
-, channelName_( DEFAULT_HITBOX_CHANNEL_NAME )
-, servers_()
-, reconnectTimerId_( -1 )
-, reconnectInterval_( DEFAULT_HITBOX_RECONNECT_INTERVAL )
-, statisticTimerId_( -1 )
-, statisticInterval_( DEFAULT_HITBOX_STATISTIC_INTERVAL )
-, saveConnectionTimerId_( -1 )
-, saveConnectionInterval_( DEFAULT_HITBOX_SAVE_CONNECTION_INTERVAL )
-, originalColors_( false )
 {
 }
 
@@ -63,7 +53,10 @@ void QHitBoxChat::connect()
         return;
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ) );
+    }
 
     servers_.clear();
     loadServersList();
@@ -82,7 +75,7 @@ void QHitBoxChat::disconnect()
     }
     socket_ = nullptr;
 
-    emit newStatistic( new QChatStatistic( HITBOX_SERVICE, QString(), this ) );
+    emit newStatistic( new QChatStatistic( SERVICE_NAME, QString(), this ) );
 }
 
 void QHitBoxChat::reconnect()
@@ -91,7 +84,10 @@ void QHitBoxChat::reconnect()
     disconnect();
     loadSettings();
     if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
-        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Reconnecting...", "", this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, "Reconnecting...", "", this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, "Reconnecting..." );
+    }
     connect();
 }
 
@@ -119,7 +115,7 @@ void QHitBoxChat::onServersListLoaded()
 
             if( jsonArray.isEmpty() )
             {                
-                startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+                startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
                 return;
             }
 
@@ -149,9 +145,12 @@ void QHitBoxChat::onServersListLoadError()
     QNetworkReply * reply = qobject_cast< QNetworkReply* >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, tr( "Can not load servers list..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load servers list..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load servers list..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString() );
+    }
 
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 
     reply->deleteLater();
 }
@@ -180,7 +179,7 @@ void QHitBoxChat::onSocketHashLoaded()
     QObject::connect( socket_, SIGNAL( textMessageReceived( const QString & ) ), this, SLOT( onTextMessageReceived( const QString & ) ) );
     QObject::connect( socket_, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( onWebSocketError() ) );
 
-    startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
+    startUniqueTimer( saveConnectionTimerId_, SAVE_CONNECTION_INTERVAL );
 
     reply->deleteLater();
 }
@@ -191,9 +190,12 @@ void QHitBoxChat::onSocketHashLoadError()
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, tr( "Can not load websocket hash..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load websocket hash..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load websocket hash..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString() );
+    }
 
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 
     reply->deleteLater();
 }
@@ -233,7 +235,10 @@ void QHitBoxChat::onSmilesLoaded()
     }
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Smiles loaded...", "", this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, "Smiles loaded...", "", this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, "Smiles loaded..." );
+    }
 
     reply->deleteLater();
 
@@ -244,7 +249,10 @@ void QHitBoxChat::onSmilesLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, tr( "Can not load styles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load styles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load styles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString() );
+    }
 
     reply->deleteLater();
 }
@@ -276,7 +284,7 @@ void QHitBoxChat::onStatisticLoaded()
             if( "0" == jsonObject[ "media_is_live" ].toString() )
                 statistic = "0";
 
-            emit newStatistic( new QChatStatistic( HITBOX_SERVICE, statistic ) );
+            emit newStatistic( new QChatStatistic( SERVICE_NAME, statistic ) );
         }
     }
 
@@ -352,18 +360,21 @@ void QHitBoxChat::onTextMessageReceived( const QString &message )
                                             nickName = "<span style=\"color:" + color + "\">" + nickName + "</span>";
                                         }
 
-                                        emit newMessage( ChatMessage( HITBOX_SERVICE, nickName, message, QString(), this ) );
+                                        emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, QString(), this ) );
 
                                     }
                                     else if( "loginMsg" == argsObj[ "method" ].toString() )
                                     {
                                         if( isShowSystemMessages() )
-                                            emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, "Connected to " + channelName_ + "...", "", this ) );
+                                        {
+                                            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, "Connected to " + channelName_ + "...", "", this ) );
+                                            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, "Connected to " + channelName_ + "..." );
+                                        }
 
                                         loadSmiles();
                                         loadStatistic();
 
-                                        startUniqueTimer( statisticTimerId_, statisticInterval_ );
+                                        startUniqueTimer( statisticTimerId_, STATISTIC_INTERVAL );
                                     }
                                 }
                             }
@@ -378,9 +389,12 @@ void QHitBoxChat::onTextMessageReceived( const QString &message )
 void QHitBoxChat::onWebSocketError()
 {
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( HITBOX_SERVICE, HITBOX_USER, tr( "Web Socket Error ..." ) + socket_->errorString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Web Socket Error ..." ) + socket_->errorString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Web Socket Error ..." ) + socket_->errorString() );
+    }
 
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 }
 
 void QHitBoxChat::changeOriginalColors( bool originalColors )

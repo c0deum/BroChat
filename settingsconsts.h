@@ -123,6 +123,8 @@ const QString FUNSTREAM_ALIASES_SETTING_PATH = "/Settings/Funstream/Aliases";
 const QString FUNSTREAM_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Funstream/Supporters";
 const QString FUNSTREAM_BLACK_LIST_SETTING_PATH = "/Settings/Funstream/BlackList";
 const QString FUNSTREAM_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Funstream/RemoveBlackListUsers";
+const QString FUNSTREAM_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Funstream/OriginalColors";
+const QString FUNSTREAM_BADGES_SETTING_PATH = "/Settings/Funstream/Badges";
 
 const QString GAMERSTV_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Gamerstv/Enable";
 const QString GAMERSTV_CHANNEL_SETTING_PATH = "/Settings/Gamerstv/Channel";
@@ -130,6 +132,7 @@ const QString GAMERSTV_ALIASES_SETTING_PATH = "/Settings/Gamerstv/Aliases";
 const QString GAMERSTV_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Gamerstv/Supporters";
 const QString GAMERSTV_BLACK_LIST_SETTING_PATH = "/Settings/Gamerstv/BlackList";
 const QString GAMERSTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Gamerstv/RemoveBlackListUsers";
+const QString GAMERSTV_BADGES_SETTING_PATH = "/Settings/Gamerstv/Badges";
 
 const QString GIPSYTEAM_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Gipsyteam/Enable";
 const QString GIPSYTEAM_CHANNEL_SETTING_PATH = "/Settings/Gipsyteam/Channel";
@@ -145,6 +148,7 @@ const QString GOODGAME_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Goodgame/Suppor
 const QString GOODGAME_BLACK_LIST_SETTING_PATH = "/Settings/Goodgame/BlackList";
 const QString GOODGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Goodgame/RemoveBlackListUsers";
 const QString GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH = "/Settings/Goodgame/UseAnimatedSmiles";
+const QString GOODGAME_BADGES_SETTING_PATH = "/Settings/Goodgame/Badges";
 
 const QString HITBOX_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Hitbox/Enable";
 const QString HITBOX_CHANNEL_SETTING_PATH = "/Settings/Hitbox/Channel";
@@ -160,6 +164,7 @@ const QString IGDC_ALIASES_SETTING_PATH = "/Settings/Igdc/Aliases";
 const QString IGDC_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Igdc/Supporters";
 const QString IGDC_BLACK_LIST_SETTING_PATH = "/Settings/Igdc/BlackList";
 const QString IGDC_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Igdc/RemoveBlackListUsers";
+const QString IGDC_BADGES_SETTING_PATH = "/Settings/Igdc/Badges";
 
 const QString LIVECODING_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Livecoding/Enable";
 const QString LIVECODING_CHANNEL_SETTING_PATH = "/Settings/Livecoding/Channel";
@@ -184,6 +189,7 @@ const QString REALLTV_ALIASES_SETTING_PATH = "/Settings/Realltv/Aliases";
 const QString REALLTV_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Realltv/Supporters";
 const QString REALLTV_BLACK_LIST_SETTING_PATH = "/Settings/Realltv/BlackList";
 const QString REALLTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Realltv/RemoveBlackListUsers";
+const QString REALLTV_BADGES_SETTING_PATH = "/Settings/Realltv/Badges";
 
 const QString STREAMBOX_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Streambox/Enable";
 const QString STREAMBOX_CHANNEL_SETTING_PATH = "/Settings/Streambox/Channel";
@@ -191,6 +197,7 @@ const QString STREAMBOX_ALIASES_SETTING_PATH = "/Settings/Streambox/Aliases";
 const QString STREAMBOX_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Streambox/Supporters";
 const QString STREAMBOX_BLACK_LIST_SETTING_PATH = "/Settings/Streambox/BlackList";
 const QString STREAMBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Streambox/RemoveBlackListUsers";
+const QString STREAMBOX_BADGES_SETTING_PATH = "/Settings/Streambox/Badges";
 
 const QString TWITCH_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Twitch/Enable";
 const QString TWITCH_CHANNEL_SETTING_PATH = "/Settings/Twitch/Channel";
@@ -199,6 +206,7 @@ const QString TWITCH_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Twitch/Supporters
 const QString TWITCH_BLACK_LIST_SETTING_PATH = "/Settings/Twitch/BlackList";
 const QString TWITCH_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Twitch/RemoveBlackListUsers";
 const QString TWITCH_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Twitch/OriginalColors";
+const QString TWITCH_BADGES_SETTING_PATH = "/Settings/Twitch/Badges";
 
 const QString YOUTUBE_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Youtube/Enable";
 const QString YOUTUBE_CHANNEL_SETTING_PATH = "/Settings/Youtube/Channel";

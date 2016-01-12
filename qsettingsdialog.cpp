@@ -149,6 +149,8 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , animationTypeCombo( new QComboBox( this ) )
 , animationDurationSpinBox( new QDoubleSpinBox( this ) )
 
+, exportDefaultTheme( new QPushButton( tr( "Export..." ), this ) )
+
 , acesChannelCheckBox( new QCheckBox( this ) )
 , acesChannelEdit( new QLineEdit( this ) )
 //, acesOriginalColorsCheckBox( new QCheckBox( this ) )
@@ -166,6 +168,8 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 , funstreamChannelCheckBox( new QCheckBox( this ) )
 , funstreamChannelEdit( new QLineEdit( this ) )
+, funstreamOriginalColorsCheckBox( new QCheckBox( this ) )
+, funstreamBadgesCheckBox( new QCheckBox( this ) )
 , funstreamAliasesEdit( new QLineEdit( this ) )
 , funstreamSupportersListEdit( new QTextEdit( this ) )
 , funstreamBlackListEdit( new QTextEdit( this ) )
@@ -173,6 +177,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 , gamerstvChannelCheckBox( new QCheckBox( this ) )
 , gamerstvChannelEdit( new QLineEdit( this ) )
+, gamerstvBadgesCheckBox( new QCheckBox( this ) )
 , gamerstvAliasesEdit( new QLineEdit( this ) )
 , gamerstvSupportersListEdit( new QTextEdit( this ) )
 , gamerstvBlackListEdit( new QTextEdit( this ) )
@@ -187,6 +192,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 , goodGameChannelCheckBox( new QCheckBox( this ) )
 , goodGameChannelEdit( new QLineEdit( this ) )
+, goodGameBadgesCheckBox( new QCheckBox( this ) )
 , goodGameUseAnimatedSmilesCheckBox( new QCheckBox( this ) )
 , goodGameAliasesEdit( new QLineEdit( this ) )
 , goodGameSupportersListEdit( new QTextEdit( this ) )
@@ -203,6 +209,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 , igdcChannelCheckBox( new QCheckBox( this ) )
 , igdcChannelEdit( new QLineEdit( this ) )
+, igdcBadgesCheckBox( new QCheckBox( this ) )
 , igdcAliasesEdit( new QLineEdit( this ) )
 , igdcSupportersListEdit( new QTextEdit( this ) )
 , igdcBlackListEdit( new QTextEdit( this ) )
@@ -219,6 +226,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 , realltvChannelCheckBox( new QCheckBox( this ) )
 , realltvChannelEdit( new QLineEdit( this ) )
+, realltvBadgesCheckBox( new QCheckBox( this ) )
 , realltvAliasesEdit( new QLineEdit( this ) )
 , realltvSupportersListEdit( new QTextEdit( this ) )
 , realltvBlackListEdit( new QTextEdit( this ) )
@@ -234,6 +242,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 , streamboxChannelCheckBox( new QCheckBox( this ) )
 , streamboxChannelEdit( new QLineEdit( this ) )
+, streamboxBadgesCheckBox( new QCheckBox( this ) )
 , streamboxAliasesEdit( new QLineEdit( this ) )
 , streamboxSupportersListEdit( new QTextEdit( this ) )
 , streamboxBlackListEdit( new QTextEdit( this ) )
@@ -242,6 +251,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , twitchChannelCheckBox( new QCheckBox( this ) )
 , twitchChannelEdit( new QLineEdit( this ) )
 , twitchOriginalColorsCheckBox( new QCheckBox( this ) )
+, twitchBadgesCheckBox( new QCheckBox( this ) )
 , twitchAliasesEdit( new QLineEdit( this ) )
 , twitchSupportersListEdit( new QTextEdit( this ) )
 , twitchBlackListEdit( new QTextEdit( this ) )
@@ -778,6 +788,10 @@ void QSettingsDialog::setupDefaultStyleTab()
 
     defaultStyleLayout->addStretch( 1 );
 
+
+    QObject::connect( exportDefaultTheme, SIGNAL( clicked() ), this, SLOT( onExportDefaultThemeClick() ) );
+    defaultStyleLayout->addWidget( exportDefaultTheme );
+
     QGroupBox * defaultStyleGroup = new QGroupBox;
 
     defaultStyleGroup->setLayout( defaultStyleLayout );
@@ -891,11 +905,17 @@ void QSettingsDialog::setupFunstreamTab()
     funstreamChannelCheckBox->setChecked( settings.value( FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     funstreamChannelEdit->setText( settings.value( FUNSTREAM_CHANNEL_SETTING_PATH, DEFAULT_FUNSTREAM_CHANNEL_NAME ).toString() );
-    funstreamChannelEdit->setEnabled( funstreamChannelCheckBox->isChecked() );
+    funstreamChannelEdit->setEnabled( funstreamChannelCheckBox->isChecked() );   
 
     QObject::connect( funstreamChannelCheckBox, SIGNAL( clicked( bool ) ), funstreamChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    addWidgets( funstreamLayout, { funstreamChannelCheckBox, funstreamChannelEdit } );
+    funstreamOriginalColorsCheckBox->setText( tr( "Original Colors" ) );
+    funstreamOriginalColorsCheckBox->setChecked( settings.value( FUNSTREAM_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
+
+    funstreamBadgesCheckBox->setText( tr( "Badges" ) );
+    funstreamBadgesCheckBox->setChecked( settings.value( FUNSTREAM_BADGES_SETTING_PATH, false ).toBool() );
+
+    addWidgets( funstreamLayout, { funstreamChannelCheckBox, funstreamChannelEdit, funstreamOriginalColorsCheckBox, funstreamBadgesCheckBox } );
 
     funstreamAliasesEdit->setText( settings.value( FUNSTREAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
@@ -932,11 +952,14 @@ void QSettingsDialog::setupGamerstvTab()
     gamerstvChannelCheckBox->setChecked( settings.value( GAMERSTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     gamerstvChannelEdit->setText( settings.value( GAMERSTV_CHANNEL_SETTING_PATH, DEFAULT_GAMERSTV_CHANNEL_NAME ).toString() );
-    gamerstvChannelEdit->setEnabled( gamerstvChannelCheckBox->isChecked() );
+    gamerstvChannelEdit->setEnabled( gamerstvChannelCheckBox->isChecked() );       
 
     QObject::connect( gamerstvChannelCheckBox, SIGNAL( clicked( bool ) ), gamerstvChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    addWidgets( gamerstvLayout, { gamerstvChannelCheckBox, gamerstvChannelEdit } );
+    gamerstvBadgesCheckBox->setText( tr( "Badges" ) );
+    gamerstvBadgesCheckBox->setChecked( settings.value( GAMERSTV_BADGES_SETTING_PATH, false ).toBool() );
+
+    addWidgets( gamerstvLayout, { gamerstvChannelCheckBox, gamerstvChannelEdit, gamerstvBadgesCheckBox } );
 
     gamerstvAliasesEdit->setText( settings.value( GAMERSTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
@@ -1018,10 +1041,13 @@ void QSettingsDialog::setupGoodgameTab()
 
     QObject::connect( goodGameChannelCheckBox, SIGNAL( clicked( bool ) ), goodGameChannelEdit, SLOT( setEnabled( bool ) ) );
 
+    goodGameBadgesCheckBox->setText( tr( "Badges" ) );
+    goodGameBadgesCheckBox->setChecked( settings.value( GOODGAME_BADGES_SETTING_PATH, false ).toBool() );
+
     goodGameUseAnimatedSmilesCheckBox->setText( tr( "Use Animated Smiles" ) );
     goodGameUseAnimatedSmilesCheckBox->setChecked( settings.value( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, false ).toBool() );
 
-    addWidgets( goodGameLayout, { goodGameChannelCheckBox, goodGameChannelEdit, goodGameUseAnimatedSmilesCheckBox  } );
+    addWidgets( goodGameLayout, { goodGameChannelCheckBox, goodGameChannelEdit, goodGameBadgesCheckBox, goodGameUseAnimatedSmilesCheckBox  } );
 
     goodGameAliasesEdit->setText( settings.value( GOODGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
@@ -1106,7 +1132,10 @@ void QSettingsDialog::setupIgdcTab()
 
     QObject::connect( igdcChannelCheckBox, SIGNAL( clicked( bool ) ), igdcChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    addWidgets( igdcLayout, { igdcChannelCheckBox, igdcChannelEdit } );
+    igdcBadgesCheckBox->setText( tr( "Badges" ) );
+    igdcBadgesCheckBox->setChecked( settings.value( IGDC_BADGES_SETTING_PATH, false ).toBool() );
+
+    addWidgets( igdcLayout, { igdcChannelCheckBox, igdcChannelEdit, igdcBadgesCheckBox } );
 
     igdcAliasesEdit->setText( settings.value( IGDC_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
@@ -1195,7 +1224,10 @@ void QSettingsDialog::setupRealltvTab()
 
     QObject::connect( realltvChannelCheckBox, SIGNAL( clicked( bool ) ), realltvChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    addWidgets( realltvLayout, { realltvChannelCheckBox, realltvChannelEdit } );
+    realltvBadgesCheckBox->setText( tr( "Badges" ) );
+    realltvBadgesCheckBox->setChecked( settings.value( REALLTV_BADGES_SETTING_PATH, false ).toBool() );
+
+    addWidgets( realltvLayout, { realltvChannelCheckBox, realltvChannelEdit, realltvBadgesCheckBox } );
 
     realltvAliasesEdit->setText( settings.value( REALLTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
@@ -1280,7 +1312,10 @@ void QSettingsDialog::setupStreamboxTab()
 
     QObject::connect( streamboxChannelCheckBox, SIGNAL( clicked( bool ) ), streamboxChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    addWidgets( streamboxLayout, { streamboxChannelCheckBox, streamboxChannelEdit } );
+    streamboxBadgesCheckBox->setText( tr( "Badges" ) );
+    streamboxBadgesCheckBox->setChecked( settings.value( STREAMBOX_BADGES_SETTING_PATH, false ).toBool() );
+
+    addWidgets( streamboxLayout, { streamboxChannelCheckBox, streamboxChannelEdit, streamboxBadgesCheckBox } );
 
     streamboxAliasesEdit->setText( settings.value( STREAMBOX_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
@@ -1324,7 +1359,10 @@ void QSettingsDialog::setupTwitchTab()
     twitchOriginalColorsCheckBox->setText( tr( "Original Colors" ) );
     twitchOriginalColorsCheckBox->setChecked( settings.value( TWITCH_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
 
-    addWidgets( twitchLayout, { twitchChannelCheckBox, twitchChannelEdit, twitchOriginalColorsCheckBox } );
+    twitchBadgesCheckBox->setText( tr( "Badges" ) );
+    twitchBadgesCheckBox->setChecked( settings.value( TWITCH_BADGES_SETTING_PATH, false ).toBool() );
+
+    addWidgets( twitchLayout, { twitchChannelCheckBox, twitchChannelEdit, twitchOriginalColorsCheckBox, twitchBadgesCheckBox } );
 
     twitchAliasesEdit->setText( settings.value( TWITCH_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
@@ -1758,6 +1796,20 @@ void QSettingsDialog::saveSettings()
         emit funstreamChannelChanged();
     }
 
+    oldBoolValue = settings.value( FUNSTREAM_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != funstreamOriginalColorsCheckBox->isChecked() )
+    {
+        settings.setValue( FUNSTREAM_ORIGINAL_COLORS_SETTING_PATH, funstreamOriginalColorsCheckBox->isChecked() );
+        emit funstreamOriginalColorsChanged( funstreamOriginalColorsCheckBox->isChecked() );
+    }
+
+    oldBoolValue = settings.value( FUNSTREAM_BADGES_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != funstreamBadgesCheckBox->isChecked() )
+    {
+        settings.setValue( FUNSTREAM_BADGES_SETTING_PATH, funstreamBadgesCheckBox->isChecked() );
+        emit funstreamBadgesChanged( funstreamBadgesCheckBox->isChecked() );
+    }
+
     oldStringValue = settings.value( FUNSTREAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != funstreamAliasesEdit->text() )
     {
@@ -1797,6 +1849,14 @@ void QSettingsDialog::saveSettings()
 
         emit gamerstvChannelChanged();
     }
+
+    oldBoolValue = settings.value( GAMERSTV_BADGES_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != gamerstvBadgesCheckBox->isChecked() )
+    {
+        settings.setValue( GAMERSTV_BADGES_SETTING_PATH, gamerstvBadgesCheckBox->isChecked() );
+        emit gamerstvBadgesChanged( gamerstvBadgesCheckBox->isChecked() );
+    }
+
 
     oldStringValue = settings.value( GAMERSTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != gamerstvAliasesEdit->text() )
@@ -1875,6 +1935,13 @@ void QSettingsDialog::saveSettings()
         settings.setValue( GOODGAME_CHANNEL_SETTING_PATH, goodGameChannelEdit->text() );
 
         emit goodGameChannelChanged();
+    }
+
+    oldBoolValue = settings.value( GOODGAME_BADGES_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != goodGameBadgesCheckBox->isChecked() )
+    {
+        settings.setValue( GOODGAME_BADGES_SETTING_PATH, goodGameBadgesCheckBox->isChecked() );
+        emit goodGameBadgesChanged( goodGameBadgesCheckBox->isChecked() );
     }
 
     oldBoolValue = settings.value( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, false ).toBool();
@@ -1969,6 +2036,13 @@ void QSettingsDialog::saveSettings()
         settings.setValue( IGDC_CHANNEL_SETTING_PATH, igdcChannelEdit->text() );
 
         emit igdcChannelChanged();
+    }
+
+    oldBoolValue = settings.value( IGDC_BADGES_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != igdcBadgesCheckBox->isChecked() )
+    {
+        settings.setValue( IGDC_BADGES_SETTING_PATH, igdcBadgesCheckBox->isChecked() );
+        emit igdcBadgesChanged( igdcBadgesCheckBox->isChecked() );
     }
 
     oldStringValue = settings.value( IGDC_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
@@ -2070,6 +2144,13 @@ void QSettingsDialog::saveSettings()
         emit realltvChannelChanged();
     }
 
+    oldBoolValue = settings.value( REALLTV_BADGES_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != realltvBadgesCheckBox->isChecked() )
+    {
+        settings.setValue( REALLTV_BADGES_SETTING_PATH, realltvBadgesCheckBox->isChecked() );
+        emit realltvBadgesChanged( realltvBadgesCheckBox->isChecked() );
+    }
+
     oldStringValue = settings.value( REALLTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != realltvAliasesEdit->text() )
     {
@@ -2157,6 +2238,13 @@ void QSettingsDialog::saveSettings()
         emit streamboxChannelChanged();
     }
 
+    oldBoolValue = settings.value( STREAMBOX_BADGES_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != streamboxBadgesCheckBox->isChecked() )
+    {
+        settings.setValue( STREAMBOX_BADGES_SETTING_PATH, streamboxBadgesCheckBox->isChecked() );
+        emit streamboxBadgesChanged( streamboxBadgesCheckBox->isChecked() );
+    }
+
     oldStringValue = settings.value( STREAMBOX_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != streamboxAliasesEdit->text() )
     {
@@ -2203,6 +2291,13 @@ void QSettingsDialog::saveSettings()
     {
         settings.setValue( TWITCH_ORIGINAL_COLORS_SETTING_PATH, twitchOriginalColorsCheckBox->isChecked() );
         emit twitchOriginalColorsChanged( twitchOriginalColorsCheckBox->isChecked() );
+    }
+
+    oldBoolValue = settings.value( TWITCH_BADGES_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != twitchBadgesCheckBox->isChecked() )
+    {
+        settings.setValue( TWITCH_BADGES_SETTING_PATH, twitchBadgesCheckBox->isChecked() );
+        emit twitchBadgesChanged( twitchBadgesCheckBox->isChecked() );
     }
 
     oldStringValue = settings.value( TWITCH_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
@@ -2508,5 +2603,11 @@ void QSettingsDialog::setupColorButton( QPushButton * button, QRgb & color, unsi
     color = settings.value( settingPath, defaultColor ).toUInt();
     setColorButtonStyle( button, color );
 }
+
+void QSettingsDialog::onExportDefaultThemeClick()
+{
+
+}
+
 //TODO: retranslate
 

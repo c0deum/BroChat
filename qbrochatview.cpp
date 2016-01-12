@@ -26,6 +26,8 @@
 
 #include <QDir>
 
+#include <QJsonDocument>
+
 #include "qaceschat.h"
 #include "qcybergamechat.h"
 #include "qfunstreamchat.h"
@@ -204,7 +206,8 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     addAction( exitAction );       
 
-    QObject::connect( acesChat_, SIGNAL( newMessage ( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
+    QObject::connect( acesChat_, SIGNAL( message( QJsonObject, const QChatService* ) ), this, SLOT( onNewMessage( QJsonObject, const QChatService * ) ) );
+    QObject::connect( acesChat_, SIGNAL( newMessage ( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );            
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), acesChat_, SLOT( reconnect() ) );
 
     QObject::connect( cybergameChat_, SIGNAL( newMessage ( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
@@ -755,9 +758,21 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( youtubeRemoveBlackListUsersChanged( bool ) ), youtubeChat_, SLOT( setRemoveBlackListUsers(bool ) ) );    
 
     //QObject::connect( settingsDialog, SIGNAL( acesOriginalColorsChanged( bool ) ), acesChat_, SLOT( changeOriginalColors( bool ) ) );
+    QObject::connect( settingsDialog, SIGNAL( funstreamOriginalColorsChanged( bool ) ), funstreamChat_, SLOT( changeOriginalColors( bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( hitboxOriginalColorsChanged( bool ) ), hitboxChat_, SLOT( changeOriginalColors( bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( sc2tvOriginalColorsChanged( bool ) ), sc2tvChat_, SLOT( changeOriginalColors( bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( twitchOriginalColorsChanged( bool ) ), twitchChat_, SLOT( changeOriginalColors( bool ) ) );
+
+    //badges
+    QObject::connect( settingsDialog, SIGNAL( funstreamBadgesChanged(bool) ), funstreamChat_, SLOT( changeBadges(bool) ) );
+    QObject::connect( settingsDialog, SIGNAL( gamerstvBadgesChanged(bool) ), gamerstvChat_, SLOT( changeBadges(bool) ) );
+    QObject::connect( settingsDialog, SIGNAL( goodGameBadgesChanged(bool) ), goodgameChat_, SLOT( changeBadges(bool) ) );
+    QObject::connect( settingsDialog, SIGNAL( igdcBadgesChanged(bool) ), igdcChat_, SLOT( changeBadges(bool) ) );
+    QObject::connect( settingsDialog, SIGNAL( realltvBadgesChanged(bool) ), realltvChat_, SLOT( changeBadges(bool) ) );
+    QObject::connect( settingsDialog, SIGNAL( streamboxBadgesChanged(bool) ), streamboxChat_, SLOT( changeBadges(bool) ) );
+    QObject::connect( settingsDialog, SIGNAL( twitchBadgesChanged(bool) ), twitchChat_, SLOT( changeBadges(bool) ) );
+
+
 
     QObject::connect( settingsDialog, SIGNAL( goodGameUseAnimatedSmilesChanged( bool ) ), goodgameChat_, SLOT( changeUseAnimatedSmiles( bool ) ) );
 
@@ -845,7 +860,15 @@ void QBroChatView::replaceColorString( QString & str, const QString & colorTempl
     str.replace( colorTemplate, colorString );
 }
 
+void QBroChatView::onNewMessage( QJsonObject json, const QChatService * )
+{
+    QJsonDocument jsonDoc( json );
 
+    QByteArray jsonData = jsonDoc.toJson();
+
+    qDebug() << "onNewmMessage:" << jsonData;
+
+}
 
 
 

@@ -31,31 +31,21 @@ const QString DEFAULT_FUNSTREAM_STATISTIC_LINK = "https://funstream.tv/api/user/
 const QString DEFAULT_FUNSTREAM_SMILES_REQUEST = "https://funstream.tv/api/smile";
 const QString DEFAULT_FUNSTREAM_CHANNEL_PREFIX = "http://funstream.tv/stream/";
 
-const int DEFAULT_FUNSTREAM_RECONNECT_INTERVAL = 10000;
-const int DEFAULT_FUNSTREAM_SAVE_CONNECTION_INTTERVAL = 25000;
-const int DEFAULT_FUNSTREAM_STATISTIC_INTERVAL = 10000;
+const QString DEFAULT_FUNSTREAM_USERS_COLORS_LINK = "http://funstream.tv/build/bundle.css";
 
-const QString FUNSTREAM_USER = "FUNSTREAM";
-const QString FUNSTREAM_SERVICE = "funstream";
+const QString DEFAULT_FUNSTREAM_BADGES_LINK = "https://funstream.tv/api/masterstreamer/icon/list";
+
+const QString QFunStreamChat::SERVICE_NAME = "funstream";
+const QString QFunStreamChat::SERVICE_USER_NAME = "FUNSTREAM";
+
+const int QFunStreamChat::SAVE_CONNECTION_INTERVAL = 25000;
+const int QFunStreamChat::RECONNECT_INTERVAL = 10000;
+const int QFunStreamChat::STATISTIC_INTERVAL = 10000;
+
 
 QFunStreamChat::QFunStreamChat( QObject *parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
-, socket_( nullptr )
-, channelName_()
-, channelId_()
-, reconnectTimerId_( -1 )
-, reconnectInterval_( DEFAULT_FUNSTREAM_RECONNECT_INTERVAL )
-, saveConnectionTimerId_( -1 )
-, saveConnectionInterval_( DEFAULT_FUNSTREAM_SAVE_CONNECTION_INTTERVAL )
-, statisticTimerId_( -1 )
-, statisticInterval_( DEFAULT_FUNSTREAM_STATISTIC_INTERVAL )
-, lastMessageId_( 0 )
-, requestId_( -1 )
-, joinRequestId_( -1 )
-, statisticRequestId_( -1 )
-, historyRequestId_( -1 )
-, historyLastMessageId_( 0 )
 {
 }
 
@@ -79,7 +69,10 @@ void QFunStreamChat::connect()
     historyRequestId_ = -1;
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ) );
+    }
 
     loadChannelInfo();
 }
@@ -97,7 +90,7 @@ void QFunStreamChat::disconnect()
     }
     socket_ = nullptr;
 
-    emit newStatistic( new QChatStatistic( FUNSTREAM_SERVICE, QString(), this ) );
+    emit newStatistic( new QChatStatistic( SERVICE_NAME, QString(), this ) );
 }
 
 void QFunStreamChat::reconnect()
@@ -112,7 +105,10 @@ void QFunStreamChat::reconnect()
             historyLastMessageId_ = 0;
         }
         if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, tr( "Reconnecting..." ), QString(), this ) );
+        {
+            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ), QString(), this ) );
+            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ) );
+        }
     }
     connect();
 }
@@ -167,9 +163,12 @@ void QFunStreamChat::onChannelInfoLoadError()
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString(), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString() );
+    }
 
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 
     reply->deleteLater();
 }
@@ -215,7 +214,10 @@ void QFunStreamChat::onSmilesLoaded()
             }                        
 
             if( isShowSystemMessages() )
-                emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, tr( "Smiles loaded..." ), QString(), this ) );
+            {
+                emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ), QString(), this ) );
+                emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ) );
+            }
         }
     }
 
@@ -227,7 +229,10 @@ void QFunStreamChat::onSmileLoadError()
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, tr( "Can not load smiles..." ), QString(), this ) );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ) );
+    }
 
     reply->deleteLater();
 }
@@ -278,14 +283,17 @@ void QFunStreamChat::connectToWebClient()
 
 void QFunStreamChat::onWebSocketConnected()
 {       
-    startUniqueTimer( saveConnectionTimerId_, saveConnectionInterval_ );
+    startUniqueTimer( saveConnectionTimerId_, SAVE_CONNECTION_INTERVAL );
 }
 
 void QFunStreamChat::onWebSocketError()
 {
     if( isShowSystemMessages() )
-        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, tr( "Web socket error..." ) + socket_->errorString(), QString(), this ) );
-    startUniqueTimer( reconnectTimerId_, reconnectInterval_ );
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Web socket error..." ) + socket_->errorString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Web socket error..." ) + socket_->errorString() );
+    }
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 }
 
 void QFunStreamChat::parseMessage( const QJsonObject & jsonObj )
@@ -300,6 +308,28 @@ void QFunStreamChat::parseMessage( const QJsonObject & jsonObj )
             return;
 
         QString nickName = jsonObj[ "from" ].toObject()[ "name" ].toString();
+
+        if( originalColors_ )
+        {
+            int colorIndex = jsonObj[ "from" ].toObject()[ "color" ].toInt();
+
+            if( styles_.contains( colorIndex ) )
+            {
+                nickName = "<span style=\"" + styles_[ colorIndex ] + "\">" + nickName + "</span>";
+            }
+            qDebug() << nickName;
+        }
+
+        //test badges
+        if( badges_ )
+        {
+            int userId = jsonObj[ "from" ].toObject()[ "id" ].toInt();
+            if( badgesMap_.contains( userId ) )
+            {
+                nickName = "<img class =\"badge\" src=\"" + badgesMap_[ userId ] + "\"></img>" + nickName;
+            }
+        }
+
         QString message = jsonObj[ "text" ].toString();
 
         message = ChatMessage::replaceEscapeCharecters( message );
@@ -312,7 +342,7 @@ void QFunStreamChat::parseMessage( const QJsonObject & jsonObj )
 
         message = insertSmiles( message );
 
-        emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, "", this ) );
+        emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, "", this ) );
     }
 }
 
@@ -336,6 +366,9 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
 
                 if( "stream/" + channelId_ == jsonObj[ "channel" ].toString() && jsonObj[ "id" ].toInt() > lastMessageId_ )
                 {
+
+                    qDebug() << jsonObj;
+
                     lastMessageId_ = jsonObj[ "id" ].toInt();                                       
 
                     QString type = jsonObj[ "type" ].toString();
@@ -344,6 +377,30 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
                         return;
 
                     QString nickName = jsonObj[ "from" ].toObject()[ "name" ].toString();
+
+                    if( originalColors_ )
+                    {
+                        int colorIndex = jsonObj[ "from" ].toObject()[ "color" ].toInt();
+
+                        if( styles_.contains( colorIndex ) )
+                        {
+                            nickName = "<span style=\"" + styles_[ colorIndex ] + "!important;\">" + nickName + "</span>";
+                        }
+                        qDebug() << nickName;
+                    }
+
+
+                    //test badges
+                    if( badges_ )
+                    {
+                        int userId = jsonObj[ "from" ].toObject()[ "id" ].toInt();
+                        if( badgesMap_.contains( userId ) )
+                        {
+                            nickName = "<img class =\"badge\" src=\"" + badgesMap_[ userId ] + "\"></img>" + nickName;
+                        }
+                    }
+
+
                     QString message = jsonObj[ "text" ].toString();
 
                     message = ChatMessage::replaceEscapeCharecters( message );
@@ -356,7 +413,7 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
 
                     message = insertSmiles( message );
 
-                    emit newMessage( ChatMessage( FUNSTREAM_SERVICE, nickName, message, QString(), this ) );
+                    emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, QString(), this ) );
                 }
 
             }
@@ -376,13 +433,19 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
     else if( "430" == message.left(3) )
     {
         if( isShowSystemMessages() )
-            emit newMessage( ChatMessage( FUNSTREAM_SERVICE, FUNSTREAM_USER, "Connected to " + channelName_ + "...", "", this ) );
+        {
+            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, "Connected to " + channelName_ + "...", "", this ) );
+            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, "Connected to " + channelName_ + "..." );
+        }
 
         loadSmiles();
+        loadStyles();
         loadHistory();
         loadStatistic();
 
-        startUniqueTimer( statisticTimerId_, statisticInterval_ );
+        loadBadges();
+
+        startUniqueTimer( statisticTimerId_, SAVE_CONNECTION_INTERVAL );
     }
     else
     {
@@ -413,7 +476,7 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
 
                     QString statistic = QString::number( users.size() ) + "+(" + QString::number( amount - users.size() )  + ")";
 
-                    emit newStatistic( new QChatStatistic( FUNSTREAM_SERVICE, statistic, this ) );
+                    emit newStatistic( new QChatStatistic( SERVICE_NAME, statistic, this ) );
 
                 }
 
@@ -494,9 +557,190 @@ void QFunStreamChat::loadSettings()
 
     enable( settings.value( FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
+    originalColors_ = settings.value( FUNSTREAM_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
+    badges_ = settings.value( FUNSTREAM_BADGES_SETTING_PATH, false ).toBool();
+
     setAliasesList( settings.value( FUNSTREAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
     setSupportersList( settings.value( FUNSTREAM_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
     setBlackList( settings.value( FUNSTREAM_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
     setRemoveBlackListUsers( settings.value( FUNSTREAM_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
 }
+
+void QFunStreamChat::loadStyles()
+{
+    styles_.clear();
+
+    QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_USERS_COLORS_LINK + "" ) );
+
+    QNetworkReply * reply = nam_->get( request );
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onStylesLoaded() ) );
+    QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onStylesLoadError() ) );
+
+}
+
+void QFunStreamChat::onStylesLoaded()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    QString stylesData = reply->readAll();
+
+    const QString USER_STYLE_PREFIX = ".chat_msg .user_name.user-name-color";
+
+    int startUserStylePrefixPos = stylesData.indexOf( USER_STYLE_PREFIX );
+
+    while( -1 != startUserStylePrefixPos  )
+    {
+        int startUserStyleIndexPos = startUserStylePrefixPos + USER_STYLE_PREFIX.length();
+
+        int endUserStyleIndexPos = stylesData.indexOf( "{", startUserStyleIndexPos ) - 1;
+
+        if( endUserStyleIndexPos - startUserStyleIndexPos + 1 > 0 )
+        {
+            int index = stylesData.mid( startUserStyleIndexPos, endUserStyleIndexPos - startUserStyleIndexPos + 1 ).toInt();
+
+            if( !styles_.contains( index ) )
+            {
+                int startUserStylePos = stylesData.indexOf( "{", endUserStyleIndexPos ) + 1;
+                int endUserStylePos = stylesData.indexOf( "}", startUserStylePos ) - 1;
+
+                if( endUserStylePos - startUserStylePos + 1 )
+                {
+                    styles_.insert( index, stylesData.mid( startUserStylePos, endUserStylePos - startUserStylePos + 1 ) );
+                }
+
+            }
+
+        }
+
+        startUserStylePrefixPos = stylesData.indexOf( USER_STYLE_PREFIX, startUserStyleIndexPos );
+    }
+
+    qDebug() << styles_;
+
+
+
+    reply->deleteLater();
+}
+
+void QFunStreamChat::onStylesLoadError()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    if( isShowSystemMessages() )
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load styles..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load styles..." ) );
+    }
+
+    reply->deleteLater();
+}
+
+void QFunStreamChat::changeOriginalColors( bool originalColors )
+{
+    originalColors_ = originalColors;
+}
+
+void QFunStreamChat::loadBadges()
+{
+    badgesMap_.clear();
+
+    QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_BADGES_LINK + "" ) );
+
+    QByteArray data;
+
+    data.append( "{}" );
+
+    QNetworkReply * reply = nam_->post( request, data );
+
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onBadgesLoaded() ) );
+    QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onBadgesLoadError() ) );
+}
+
+void QFunStreamChat::onBadgesLoaded()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    //qDebug() << reply->readAll();
+
+    QJsonParseError parseError;
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
+
+    if( QJsonParseError::NoError == parseError.error && jsonDoc.isArray() )
+    {
+
+
+        QJsonArray jsonArr = jsonDoc.array();
+
+        foreach( const QJsonValue & jsonVal, jsonArr )
+        {
+            QJsonObject jsonObj = jsonVal.toObject();
+
+            badgesMap_.insert( jsonObj[ "userId" ].toInt(), jsonObj[ "icon" ].toString() );
+        }
+
+        /*
+        QJsonObject jsonObj = jsonDoc.object();
+
+        QString nickName = jsonObj[ "name" ].toString();
+        QString badgeIcon;
+
+        if( jsonObj[ "icon" ].isString() )
+        {
+            badgeIcon = jsonObj[ "icon" ].isString();
+        }
+
+        if( !badgeIcon.isEmpty() )
+        {
+            badges_[ nickName ] = badgeIcon;
+        }
+        */
+
+
+
+
+        qDebug() << badgesMap_;
+    }
+
+    reply->deleteLater();
+}
+
+void QFunStreamChat::onBadgesLoadError()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+    reply->deleteLater();
+}
+
+void QFunStreamChat::changeBadges( bool badges )
+{
+    badges_ = badges;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
