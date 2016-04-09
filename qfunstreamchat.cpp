@@ -25,15 +25,19 @@
 
 #include "qfunstreamchat.h"
 
-const QString DEFAULT_FUNSTREAM_WEBSOCKET_LINK = "ws://funstream.tv:3811/socket.io/?EIO=3&transport=websocket";
+//const QString DEFAULT_FUNSTREAM_WEBSOCKET_LINK = "ws://funstream.tv:3811/socket.io/?EIO=3&transport=websocket";
+const QString DEFAULT_FUNSTREAM_WEBSOCKET_LINK = "ws://funstream.tv/socket.io/?EIO=3&transport=websocket";
+
 const QString DEFAULT_FUNSTREAM_SMILES_LINK = "http://funstream.tv/build/images/smiles/";
-const QString DEFAULT_FUNSTREAM_STATISTIC_LINK = "https://funstream.tv/api/user/list";
-const QString DEFAULT_FUNSTREAM_SMILES_REQUEST = "https://funstream.tv/api/smile";
+const QString DEFAULT_FUNSTREAM_STATISTIC_LINK = "http://funstream.tv/api/user/list";
+const QString DEFAULT_FUNSTREAM_SMILES_REQUEST = "http://funstream.tv/api/smile";
 const QString DEFAULT_FUNSTREAM_CHANNEL_PREFIX = "http://funstream.tv/stream/";
+
+const QString DEFAULT_FUNSTREAM_CHANNEL_INFO_PREFIX = "http://funstream.tv/api/user";
 
 const QString DEFAULT_FUNSTREAM_USERS_COLORS_LINK = "http://funstream.tv/build/bundle.css";
 
-const QString DEFAULT_FUNSTREAM_BADGES_LINK = "https://funstream.tv/api/masterstreamer/icon/list";
+const QString DEFAULT_FUNSTREAM_BADGES_LINK = "http://funstream.tv/api/masterstreamer/icon/list";
 
 const QString QFunStreamChat::SERVICE_NAME = "funstream";
 const QString QFunStreamChat::SERVICE_USER_NAME = "FUNSTREAM";
@@ -117,6 +121,20 @@ void QFunStreamChat::loadChannelInfo()
 {   
     QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_CHANNEL_PREFIX + channelName_ ) );
 
+    /*
+    QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_CHANNEL_INFO_PREFIX + "" ) );
+
+    QByteArray data;
+
+    QString dataString = "{name:" + channelName_ + "}";
+
+    data.append( dataString );
+
+    //request.setHeader( QNetworkRequest::ContentTypeHeader, QVariant( "application/x-www-form-urlencoded" ) );
+    //request.setRawHeader( "Content-Length", QString::number( data.size() ).toStdString().c_str() );
+    */
+
+
     QNetworkReply * reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChannelInfoLoaded() ) );
     QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onChannelInfoLoadError() ) );
@@ -126,6 +144,9 @@ void QFunStreamChat::loadChannelInfo()
 void QFunStreamChat::onChannelInfoLoaded()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    //qDebug() << reply->readAll();
+
 
     QString info = reply->readAll();
 
@@ -147,7 +168,7 @@ void QFunStreamChat::onChannelInfoLoaded()
             QJsonArray jsonStreamInfoArr = jsonArr[ 1 ].toArray();
 
             QJsonObject jsonStreamInfoObj = jsonStreamInfoArr[ 2 ].toObject();
-            QJsonObject jsonStreamerInfoObj = jsonStreamInfoObj[ "streamer" ].toObject();
+            QJsonObject jsonStreamerInfoObj = jsonStreamInfoObj[ "owner" ].toObject();
 
             channelId_ = QString::number( jsonStreamerInfoObj[ "id" ].toInt() );
 
@@ -155,7 +176,9 @@ void QFunStreamChat::onChannelInfoLoaded()
         }
     }
 
+
     reply->deleteLater();
+
 }
 
 void QFunStreamChat::onChannelInfoLoadError()
@@ -206,10 +229,14 @@ void QFunStreamChat::onSmilesLoaded()
             foreach( const QJsonValue &smileInfo, jsonSmilesInfoArr )
             {
 
-                QJsonObject smileInfoObj = smileInfo.toObject();
+                QJsonObject smileInfoObj = smileInfo.toObject();                
 
-                addSmile( ":" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString() );
-                addSmile( ":free-" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString() );
+
+                //addSmile( ":" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString()/*.replace( "https://", "http://" )*/ );
+                //addSmile( ":free-" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString() );
+
+                addSmile( ":" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString().replace( "https://", "http://" ) );
+                addSmile( ":free-" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString().replace( "https://", "http://" ) );
 
             }                        
 
@@ -350,6 +377,7 @@ void QFunStreamChat::parseMessage( const QJsonObject & jsonObj )
 
 void QFunStreamChat::onTextMessageRecieved( const QString &message )
 {
+    qDebug() << message;
     if( "42[\"/chat/message\"" == message.left( 18 ) )
     {
         QString messageContent = message.mid( 19 );
@@ -677,7 +705,7 @@ void QFunStreamChat::onBadgesLoaded()
         {
             QJsonObject jsonObj = jsonVal.toObject();
 
-            badgesMap_.insert( jsonObj[ "userId" ].toInt(), jsonObj[ "icon" ].toString() );
+            badgesMap_.insert( jsonObj[ "userId" ].toInt(), jsonObj[ "icon" ].toString().replace( "https://", "http://" ) );
         }
 
         /*

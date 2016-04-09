@@ -2,6 +2,12 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 
+#include <QWebSocket>
+
+#include <QJsonParseError>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include <QSettings>
 
 #include <QTimerEvent>
@@ -16,23 +22,15 @@
 
 #include "qaceschat.h"
 
-const QString DEFAULT_ACES_CHAT_REQUEST_LINK_PREFIX = "http://aces.gg/engine/ajax/tournament.php/?act=chat_messages&chat_message_fix_limit=";
-const QString DEFAULT_ACES_SMILES_SHORT = "/uploads/hdgstournament/smiley/";
-const QString DEFAULT_ACES_SMILES_LINK_PREFIX = "http://aces.gg/uploads/hdgstournament/smiley/";
 const QString DEFAULT_ACES_CHANNEL_INFO_PREFIX = "http://aces.gg/streams/stream/";
+
+const QString DEFAULT_ACES_WEBSOCKET_LINK = "ws://93.186.192.53:3000/echo/websocket";
 
 const QString QAcesChat::SERVICE_USER_NAME = "ACES";
 const QString QAcesChat::SERVICE_NAME = "aces";
 
-const int QAcesChat::UPDATE_INTTERVAL = 3000;
 const int QAcesChat::RECONNECT_INTERVAL = 10000;
-
-struct MessageData
-{
-    QString nickName;
-    QString message;
-    int messageId;
-};
+const int QAcesChat::SAVE_CONNECTION_INTERVAL = 10000;
 
 QAcesChat::QAcesChat( QObject * parent )
 : QChatService( parent )
@@ -64,10 +62,15 @@ void QAcesChat::disconnect()
     channelName_.clear();
     channelId_.clear();
 
-    lastMessageId_ = -1;
+    if( socket_ )
+    {
+        socket_->abort();
+        socket_->deleteLater();
+    }
+    socket_ = nullptr;
 
-    resetTimer( updateChatInfoTimerId_ );
     resetTimer( reconnectTimerId_ );
+    resetTimer( saveConnectionId_ );
 }
 
 void QAcesChat::reconnect()
@@ -108,7 +111,8 @@ void QAcesChat::onChannelInfoLoaded()
     if( idPosEnd - idPosStart + 1 > 0 )
     {
         channelId_ = channelInfo.mid( idPosStart, idPosEnd - idPosStart + 1 );
-        loadLastMessage();
+
+        connectToWebSocket();
     }
     else
     {
@@ -128,247 +132,13 @@ void QAcesChat::onChannelInfoLoadError()
     reply->deleteLater();
 }
 
-void QAcesChat::loadLastMessage()
-{
-    QNetworkRequest request( QUrl( DEFAULT_ACES_CHAT_REQUEST_LINK_PREFIX + "1&chat_message_f_chat=" + channelId_ ) );
-    QNetworkReply * reply = nam_->get( request );
-    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onLastMessageLoaded() ) );
-    QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onLastMessageLoadError() ) );
-}
-
-void QAcesChat::onLastMessageLoaded()
-{
-    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
-
-    QString response = reply->readAll();
-
-    const QString ID_PREFIX = "data-id=\"";
-    int startIdPos = response.indexOf( ID_PREFIX );
-
-    if( -1 == startIdPos )
-    {
-        if( isShowSystemMessages() )
-        {
-            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not read last message from " ) + channelName_ + tr( "..." ) + reply->errorString(), QString(), this ) );
-            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not read last message from " ) + channelName_ + tr( "..." ) + reply->errorString() );
-        }
-
-        startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
-
-        reply->deleteLater();        
-        return;
-    }
-
-    startIdPos += ID_PREFIX.length();
-    int endIdPos = response.indexOf( "\"", startIdPos  );
-
-    lastMessageId_ = ( response.mid( startIdPos, endIdPos - startIdPos ) ).toInt();
-
-    startUniqueTimer( updateChatInfoTimerId_, UPDATE_INTTERVAL );
-
-    if( isShowSystemMessages() )
-    {
-        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
-        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
-    }
-
-    loadSmiles();
-
-    reply->deleteLater();
-}
-
-void QAcesChat::onLastMessageLoadError()
-{
-    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
-
-    if( isShowSystemMessages() )
-    {
-        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString(), QString(), this ) );
-        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) + reply->errorString() );
-    }
-
-    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
-
-    reply->deleteLater();
-}
-
-bool cmpMessageDataStruct( const MessageData & lhs, const MessageData & rhs )
-{
-    return lhs.messageId < rhs.messageId;
-}
-
-void QAcesChat::onChatInfoLoaded()
-{
-
-    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
-
-    QString response = reply->readAll();
-
-    if( "no" == response )
-    {
-        reply->deleteLater();
-        return;
-    }
-
-    const QString ID_PREFIX = "data-id=\"";
-    int startIdPos = response.indexOf( ID_PREFIX );
-    int endIdPos = response.indexOf( "\"", startIdPos + ID_PREFIX.length() );
-
-    const QString NICKNAME_PREPREFIX = "<span class=\"chat_message_user";
-    const QString NICKNAME_PREFIX = "\">";
-
-    const QString NICKNAME_POSTFIX = "</span>:\n";
-
-    const QString MESSAGE_PREPREFIX = "<span class=\"chat_message_msg\">";
-    const QString MESSAGE_PREFIX = "     \n                            ";
-    const QString MESSAGE_POSTFIX = "                        </span>       \n";
-
-
-    QList< MessageData > messagesList;
-
-    while( ( startIdPos >= 0 ) && ( endIdPos - startIdPos > 0 ) )
-    {
-        startIdPos += ID_PREFIX.length();
-
-        int newLastMessageId = ( response.mid( startIdPos, endIdPos - startIdPos ) ).toInt();
-
-        int startNickNamePos = response.indexOf( NICKNAME_PREPREFIX, endIdPos );
-
-        if( -1 == startNickNamePos )
-        {
-            reply->deleteLater();
-            return;
-        }
-
-        startNickNamePos += NICKNAME_PREPREFIX.length();
-
-        startNickNamePos = response.indexOf( NICKNAME_PREFIX, startNickNamePos );
-
-        if( -1 == startNickNamePos )
-        {
-            reply->deleteLater();
-            return;
-        }
-
-        startNickNamePos += NICKNAME_PREFIX.length();
-
-
-        int endNickNamePos = response.indexOf( NICKNAME_POSTFIX, startNickNamePos );
-
-        if( -1 == endNickNamePos )
-        {
-            reply->deleteLater();
-            return;
-        }
-
-        QString nickName = response.mid( startNickNamePos, endNickNamePos - startNickNamePos );
-
-        int startMessagePos = response.indexOf( MESSAGE_PREPREFIX, endNickNamePos );
-
-        if( -1 == startMessagePos )
-        {
-            reply->deleteLater();
-            return;
-        }
-
-        startMessagePos += MESSAGE_PREPREFIX.length();
-
-        startMessagePos = response.indexOf( MESSAGE_PREFIX, startMessagePos );
-
-        if( -1 == startMessagePos )
-        {
-            reply->deleteLater();
-            return;
-        }
-
-        startMessagePos += MESSAGE_PREFIX.length();
-
-        int endMessagePos = response.indexOf( MESSAGE_POSTFIX, startMessagePos );
-
-        if( -1 == endMessagePos )
-        {
-            reply->deleteLater();
-            return;
-        }
-
-        if( newLastMessageId > lastMessageId_ )
-        {
-
-            QString message = response.mid( startMessagePos, endMessagePos - startMessagePos );
-
-            const QString SPAN = "<span style=";
-
-            if( SPAN == message.left( SPAN.length() ) )
-            {
-                message = message.right( message.length() - message.indexOf( "\">" ) - 2 );
-                message.replace( "</span>", "" );
-            }
-
-            message.replace( DEFAULT_ACES_SMILES_SHORT, DEFAULT_ACES_SMILES_LINK_PREFIX );
-            message.replace( "img src=", "img class = \"smile\" src=" );
-            message.replace( '\'', "\"" );
-
-            message.replace( "</a>", "" );
-            message.replace( QRegExp( "\\<a href=(.*)>" ), "" );
-
-            MessageData messageData;
-            messageData.nickName = nickName;
-            messageData.message = message;
-            messageData.messageId = newLastMessageId;
-
-            messagesList.append( messageData );
-        }
-
-        startIdPos = response.indexOf( ID_PREFIX, endMessagePos );
-        endIdPos = response.indexOf( "\"", startIdPos + ID_PREFIX.length() );
-    }
-
-    qSort( messagesList.begin(), messagesList.end(), cmpMessageDataStruct );
-
-    for( int i = 0; i < messagesList.size(); i++ )
-    {
-        QString nickName = messagesList[ i ].nickName;
-        QString message = messagesList[ i ].message;
-
-        message = insertSmiles( message );
-
-        emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, QString(), this ) );
-
-    }
-
-    if( messagesList.size() > 0 )
-        lastMessageId_ = messagesList.last().messageId;
-
-
-    reply->deleteLater();
-}
-
-void QAcesChat::onChatInfoLoadError()
-{
-    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
-
-    if( isShowSystemMessages() )
-    {
-        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not read channel messages..." ) + reply->errorString(), QString(), this ) );
-        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not read channel messages..." ) + reply->errorString() );
-    }
-
-    reply->deleteLater();
-}
-
 void QAcesChat::timerEvent( QTimerEvent * event )
 {
-    if( event->timerId() == updateChatInfoTimerId_ )
+    if( event->timerId() == saveConnectionId_ && socket_ && socket_->isValid() && QAbstractSocket::ConnectedState == socket_->state() )
     {
-        QString reqStr = DEFAULT_ACES_CHAT_REQUEST_LINK_PREFIX + "50&chat_message_f_chat=" + channelId_ + "&chat_message_f_msg_max_id=" + QString::number( lastMessageId_ );
-
-        QNetworkRequest request( QUrl( reqStr + "" ) );
-        QNetworkReply * reply = nam_->get( request );
-
-        QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChatInfoLoaded() ) );
-        QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onChatInfoLoadError() ) );
+        socket_->ping();
     }
-    else if( event->timerId() == reconnectTimerId_ )
+    if( event->timerId() == reconnectTimerId_ )
     {
         reconnect();
     }
@@ -385,7 +155,6 @@ void QAcesChat::loadSettings()
         channelName_ = channelName_.left( channelName_.length() - 1 );
     }
 
-
     enable( settings.value( ACES_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     setAliasesList( settings.value( ACES_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
@@ -393,4 +162,59 @@ void QAcesChat::loadSettings()
     setBlackList( settings.value( ACES_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
     setRemoveBlackListUsers( settings.value( ACES_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
+}
+
+void QAcesChat::connectToWebSocket()
+{
+    socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
+
+    QObject::connect( socket_, SIGNAL( connected() ), this, SLOT( onWebSocketConnected() ) );
+    QObject::connect( socket_, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( onWebSocketError() ) );
+    QObject::connect( socket_, SIGNAL( textMessageReceived( const QString & ) ), this, SLOT( onTextMessageReceived( const QString & ) ) );
+
+    socket_->open( QUrl( DEFAULT_ACES_WEBSOCKET_LINK ) );
+}
+
+void QAcesChat::onWebSocketConnected()
+{
+    socket_->sendTextMessage( "{\"room\":" + channelId_ + ",\"act\":\"joinserver\",\"user_id\":0,\"pass\":\"\",\"reconnected\":1}" );
+
+    emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+    emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+
+    startUniqueTimer( saveConnectionId_, SAVE_CONNECTION_INTERVAL );
+}
+
+void QAcesChat::onWebSocketError()
+{
+    emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "WebSocket Error..." ), QString(), this ) );
+    emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "WebSocket Error..." ) );
+
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
+}
+
+void QAcesChat::onTextMessageReceived( const QString & message )
+{
+//a["{\"room\":\"52\",\"act\":\"chat\",\"msTime\":\"2016-04-09T16:23:59.531Z\",\"person\":{\"name\":\"c0deum\",\"user_id\":35859,\"u_lvl\":3},\"msg\":\"123\"}"]
+
+    QJsonParseError parseError;
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( message.toUtf8(), & parseError );
+
+    if( QJsonParseError::NoError == parseError.error && jsonDoc.isObject() )
+    {
+        QJsonObject jsonObj = jsonDoc.object();
+
+        if( jsonObj[ "room" ].toString() == channelId_ && "chat" == jsonObj[ "act" ].toString() )
+        {
+            QJsonObject jsonPerson = jsonObj[ "person" ].toObject();
+
+            QString nickName = jsonPerson[ "name" ].toString();
+            QString textMessage = jsonObj[ "msg" ].toString();
+
+            textMessage.replace( "<img src=\"/uploads/hdgstournament/smiley/", "<img class = \"smile\" src=\"http://aces.gg/uploads/hdgstournament/smiley/" );
+
+            emit newMessage( ChatMessage( SERVICE_NAME, nickName, textMessage, QString(), this ) );
+        }
+    }
 }

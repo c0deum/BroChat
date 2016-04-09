@@ -202,6 +202,12 @@ body
 	height: 12px;
 }
 
+.vidi
+{
+	content: url(../resources/vidilogo.png);
+	height: 12px;
+}
+
 .youtube
 {
 	content: url(../resources/youtubelogo.png);

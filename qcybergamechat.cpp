@@ -1,37 +1,44 @@
+#include <QCoreApplication>
+#include <QSettings>
+#include <QUuid>
+
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QWebSocket>
 
 #include <QJsonDocument>
 #include <QJsonParseError>
-#include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonValue>
+#include <QJsonObject>
 
-#include <QSettings>
+#include <QXmppClient.h>
+#include <QXmppMessage.h>
+#include <QXmppPresence.h>
+#include <QXmppIq.h>
 
-#include <QTimerEvent>
+#include <QXmppMucManager.h>
 
 #include <QApplication>
 #include <QDir>
-#include <QFileInfo>
+#include <QStringList>
 
 #include "qchatmessage.h"
 
 #include "settingsconsts.h"
 
+
 #include "qcybergamechat.h"
 
-const QString DEFAULT_CYBERGAME_WEBSOCKET_LINK = "ws://cybergame.tv:9090/websocket";
-const QString DEFAULT_CYBERGAME_CHAT_LINK = "http://cybergame.tv/cgchat.htm";
-const QString DEFAULT_CYBERGAME_SMILE_PREFIX = "http://cybergame.tv/";
-const QString DEFAULT_CYBERGAME_STATISTIC_PREFIX = "http://api.cybergame.tv/w/streams2.php?channel=";
+const QString DEFAULT_CYBERGAME_CANDY_JS_LINK = "http://cybergame.tv/js/chatj/candycg2.min.js";
+const QString DEFAULT_CYBERGAME_SMILES_PREFIX = "http://cybergame.tv/styles/chatj/img/emoticons/";
+const QString DEFAULT_CYBERGAME_CONFERENCE_JID_POSTFIX = "@conference.cybergame.tv";
+const QString DEFAULT_CYBERGAME_CHANNEL_INFO_LINK = "http://cybergame.tv/c0deum/";
+const QString DEFAULT_CYBERGAME_STATICTIC_LINK_PREFIX = "http://api.cybergame.tv/w/streams2.php?channel=";
 
 const QString QCyberGameChat::SERVICE_NAME = "cybergame";
 const QString QCyberGameChat::SERVICE_USER_NAME = "CYBERGAME";
 
-const int QCyberGameChat::SAVE_CONNECTION_INTERVAL = 25000;
 const int QCyberGameChat::RECONNECT_INTERVAL = 10000;
 const int QCyberGameChat::STATISTIC_INTERVAL = 10000;
 
@@ -51,35 +58,41 @@ void QCyberGameChat::connect()
     if( !isEnabled() || channelName_.isEmpty() )
         return;
 
+    loadChannelInfo();
+
     if( isShowSystemMessages() )
     {
         emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
         emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ) );
     }
-
-    socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
-
-    QObject::connect( socket_, SIGNAL( textMessageReceived( const QString & ) ), this, SLOT( onTextMessageRecieved( const QString & ) ) );
-    QObject::connect( socket_, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( onWebSocketError() ) );
-    QObject::connect( socket_, SIGNAL( connected() ), this, SLOT( onWebSocketConnected() ) );
-
-    socket_->open( QUrl( DEFAULT_CYBERGAME_WEBSOCKET_LINK ) );
 }
 
 void QCyberGameChat::disconnect()
 {
-    resetTimer( saveConnectionTimerId_ );
+    roomId_.clear();
+
     resetTimer( reconnectTimerId_ );
     resetTimer( statisticTimerId_ );
 
-    lastUpd_ = 0;
-
-    if( socket_ )
+    if( mucManager_ )
     {
-        socket_->abort();
-        socket_->deleteLater();
+        if( !mucManager_->rooms().empty() )
+        {
+            mucManager_->rooms().first()->leave();
+            mucManager_->rooms().first()->deleteLater();
+        }
+
+        mucManager_->deleteLater();
+        mucManager_ = nullptr;
     }
-    socket_ = nullptr;
+
+    if( xmppClient_ )
+    {
+        xmppClient_->disconnectFromServer();
+        xmppClient_->deleteLater();
+
+        xmppClient_ = nullptr;
+    }
 
     emit newStatistic( new QChatStatistic( SERVICE_NAME, QString(), this ) );
 }
@@ -91,171 +104,146 @@ void QCyberGameChat::reconnect()
     loadSettings();
     if( isEnabled() && !channelName_.isEmpty() && !oldChannelName.isEmpty() && isShowSystemMessages() )
     {
-        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ), QString(), this ) );
-        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Reconnecting..." ) );
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, "Reconnecting...", "", this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, "Reconnecting..." );
     }
     connect();
 }
 
-void QCyberGameChat::onWebSocketConnected()
+void QCyberGameChat::connectToXmpp()
 {
-    QString message = "{\"command\":\"login\",\"message\":\"{\\\"login\\\":\\\"\\\",\\\"password\\\":\\\"\\\",\\\"channel\\\":\\\"#" + channelName_ + "\\\"}\"}";
-    socket_->sendTextMessage( message );
+
+    xmppClient_ = new QXmppClient( this );
+
+    QObject::connect( xmppClient_, SIGNAL( connected() ), this, SLOT( onConnected() ) );
+    QObject::connect( xmppClient_, SIGNAL( error( QXmppClient::Error ) ), this, SLOT( onError() ) );
+    QObject::connect( xmppClient_, SIGNAL( messageReceived( QXmppMessage ) ), this, SLOT( onMessageReceived( QXmppMessage ) ) );
+
+    mucManager_ = new QXmppMucManager();
+
+    xmppClient_->addExtension( mucManager_ );
+
+    qsrand( QDateTime::currentDateTime().toTime_t() );
+
+    QXmppConfiguration conf;
+
+    conf.setDomain( "cybergame.tv" );
+    conf.setIgnoreSslErrors( true );
+    conf.setSaslAuthMechanism( "ANONYMOUS" );
+
+    xmppClient_->connectToServer( conf );
 }
 
-void QCyberGameChat::onWebSocketError()
+void QCyberGameChat::onConnected()
+{
+    connectionTime_ = QDateTime::currentDateTimeUtc();    
+
+    QXmppMucRoom *room = mucManager_->addRoom( roomId_ + DEFAULT_CYBERGAME_CONFERENCE_JID_POSTFIX );
+
+    room->setNickName( "broadcasterchat" + QUuid::createUuid().toString() );
+    room->join();
+
+    if( isShowSystemMessages() )
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+    }
+
+    loadSmiles();
+}
+
+void QCyberGameChat::onError()
 {
     if( isShowSystemMessages() )
     {
-        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Web socket error..." ) + socket_->errorString(), QString(), this ) );
-        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Web socket error..." ) + socket_->errorString() );
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Unknown Error ..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Unknown Error ..." ) );
     }
 
     startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 }
 
-void QCyberGameChat::onTextMessageRecieved( const QString &message )
+void QCyberGameChat::onMessageReceived( const QXmppMessage &message )
 {
-    QJsonParseError parseError;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( message.toStdString().c_str() ), &parseError );
-
-    if( QJsonParseError::NoError  == parseError.error )
+    if( message.stamp().toTime_t() > connectionTime_.toTime_t() )
     {
-        if( jsonDoc.isObject() )
+        QString nickName = message.from();
+        nickName = nickName.right( nickName.length() - nickName.indexOf( '/' ) - 1 );
+
+        QString messageBody = message.body();
+
+        int dotPos = messageBody.indexOf( "·" );
+        if( -1 != dotPos )
         {
-            QJsonObject jsonObj = jsonDoc.object();
-
-            QString command = jsonObj[ "command" ].toString();
-            QString answer;
-
-            if( "changeWindow" == command )
-            {
-                answer = "{\"command\":\"getHistory\",\"message\":\"#" + channelName_ +"\"}";
-                socket_->sendTextMessage( answer );
-
-                if( isShowSystemMessages() )
-                {
-                    emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
-                    emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
-                }
-
-                loadSmiles();
-
-                loadStatistic();
-                startUniqueTimer( statisticTimerId_, STATISTIC_INTERVAL );
-            }
-            else if( "getHistory" == command  )
-            {
-                if( lastUpd_ )
-                {
-                }               
-                startUniqueTimer( saveConnectionTimerId_, SAVE_CONNECTION_INTERVAL );
-            }
-            else if( "chatMessage" == command )
-            {
-                QString chatMessage = jsonObj[ "message" ].toString();
-
-                jsonDoc = QJsonDocument::fromJson( QByteArray( chatMessage.toStdString().c_str() ), &parseError );
-                if( QJsonParseError::NoError == parseError.error  )
-                {
-
-                    if( jsonDoc.isObject() )
-                    {
-                        QString message = jsonDoc.object()[ "text" ].toString();
-
-                        message = insertSmiles( message );
-
-                        QString nickName = jsonDoc.object()[ "from" ].toString();
-
-                        emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, "", this ) );
-
-                    }
-                }
-            }
-            else
-            {
-            }
+            messageBody = messageBody.right( messageBody.length() - dotPos - 1 );
         }
+
+        messageBody = ChatMessage::replaceEscapeCharecters( messageBody );
+
+        messageBody = insertSmiles( messageBody );
+
+        emit newMessage( ChatMessage( SERVICE_NAME, nickName, messageBody, QString(), this ) );
     }
 }
 
-void QCyberGameChat::loadSmiles()
+void QCyberGameChat::loadChannelInfo()
 {
-    QChatService::loadSmiles();
+    QNetworkRequest request( QUrl(  DEFAULT_CYBERGAME_CHANNEL_INFO_LINK + "" ) );
 
-    QNetworkRequest request( QUrl( DEFAULT_CYBERGAME_CHAT_LINK + "" ) );
     QNetworkReply *reply = nam_->get( request );
-    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSmilesLoaded() ) );
-    QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onSmilesLoadError() ) );
+
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChannelInfoLoaded() ) );
+    QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onChannelInfoLoadError() ) );
 }
 
-void QCyberGameChat::onSmilesLoaded()
+void QCyberGameChat::onChannelInfoLoaded()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
-    QString smilesString = reply->readAll();
+    QByteArray data = reply->readAll();
 
-    int startSmilesPos = smilesString.indexOf( "smiles =" );
-    int leftSmilesBracketPos = smilesString.indexOf( "{", startSmilesPos );
-    int rightSmilesBracketPos = smilesString.indexOf( "}", startSmilesPos );
+    QString ROOM_ID_PREFIX = "http://cybergame.tv/cgchatjjj.html?v=h#";
 
-    smilesString = smilesString.mid( leftSmilesBracketPos, rightSmilesBracketPos - leftSmilesBracketPos + 1 );
+    int startIDPos = data.indexOf( ROOM_ID_PREFIX ) + ROOM_ID_PREFIX.length();
+    int endIDPos = data.indexOf( "\"", startIDPos ) - 1;
 
-    smilesString.replace( "{", "[" );
-    smilesString.replace( "}", "]" );
-    smilesString.replace( " ", "" );
-    smilesString.replace( "\r", "" );
-    smilesString.replace( "\n", "" );
-    smilesString.replace( "\":\"", "\",\"" );
-
-    QJsonParseError parseError;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( smilesString.toStdString().c_str() ), &parseError );
-
-    if( parseError.error == QJsonParseError::NoError )
+    if( endIDPos - startIDPos + 1 > 0 )
     {
-        if( jsonDoc.isArray() )
-        {
-            QJsonArray smilesInfo = jsonDoc.array();
+        roomId_ = data.mid( startIDPos, endIDPos - startIDPos + 1 );
+        connectToXmpp();
 
-            for( int i = 0; i < smilesInfo.size() / 2; ++i )
-            {
-                addSmile( smilesInfo[ 2 * i ].toString(), DEFAULT_CYBERGAME_SMILE_PREFIX + smilesInfo[ 2 * i + 1 ].toString() );
-            }
-            if( isShowSystemMessages() )
-            {
-                emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ), QString(), this ) );
-                emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ) );
-            }
-        }
+        loadStatistic();
+
+        startUniqueTimer( statisticTimerId_, STATISTIC_INTERVAL );
+    }
+    else
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to" ) + channelName_ + " ..." , QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to" ) + channelName_ + " ..."  );
     }
 
     reply->deleteLater();
 }
 
-void QCyberGameChat::onSmilesLoadError()
+void QCyberGameChat::onChannelInfoLoadError()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
-
-    if( isShowSystemMessages() )
-    {
-        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ), QString(), this ) );
-        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ) );
-    }
-
     reply->deleteLater();
 }
 
 void QCyberGameChat::loadStatistic()
 {
-    QNetworkRequest request( QUrl( DEFAULT_CYBERGAME_STATISTIC_PREFIX + channelName_ ) );
+    QNetworkRequest request( QUrl( DEFAULT_CYBERGAME_STATICTIC_LINK_PREFIX + channelName_ ) );
+
     QNetworkReply *reply = nam_->get( request );
+
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onStatisticLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onStatisticLoadError() ) );
 }
 
 void QCyberGameChat::onStatisticLoaded()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
+    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
     QJsonParseError parseError;
 
@@ -278,7 +266,86 @@ void QCyberGameChat::onStatisticLoaded()
 
 void QCyberGameChat::onStatisticLoadError()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply* >( sender() );
+    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
+    reply->deleteLater();
+}
+
+void QCyberGameChat::loadSmiles()
+{
+    QChatService::loadSmiles();
+
+    QNetworkRequest request( QUrl( DEFAULT_CYBERGAME_CANDY_JS_LINK + "" ) );
+    QNetworkReply *reply = nam_->get( request );
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSmilesLoaded() ) );
+    QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onSmilesLoadError() ) );
+}
+
+void QCyberGameChat::onSmilesLoaded()
+{
+    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
+
+    QString response = reply->readAll();
+
+    const QString EMOTICONS = "emoticons:";
+
+    int emotIconsPos = response.indexOf( EMOTICONS );
+
+    if( emotIconsPos )
+    {
+        int emotIconsArrayStart = emotIconsPos + EMOTICONS.length();
+
+        int emotIconsArrayEnd = response.indexOf( "//", emotIconsArrayStart );
+
+        response = response.mid( emotIconsArrayStart, emotIconsArrayEnd - emotIconsArrayStart );
+
+        response.append( ']' );
+
+        response.replace( "plain", "\"plain\"" );
+        response.replace( "regex:", "\"regex\":\"" );
+        response.replace( "/gim", "/gim\"" );
+        response.replace( "/gm", "/gm\"" );
+        response.replace( "image", "\"image\"" );        
+
+
+        QJsonParseError parseError;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( response.toStdString().c_str() ), &parseError );
+        if( QJsonParseError::NoError == parseError.error )
+        {
+            if( jsonDoc.isArray() )
+            {
+                QJsonArray smilesInfoArr = jsonDoc.array();
+
+                foreach( const QJsonValue &value, smilesInfoArr )
+                {
+                    QJsonObject smileInfo = value.toObject();
+
+                    addSmile( smileInfo[ "plain" ].toString(), DEFAULT_CYBERGAME_SMILES_PREFIX + smileInfo[ "image" ].toString() );
+
+                }
+            }
+        }
+    }
+
+    if( isShowSystemMessages() )
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ) );
+    }
+
+    reply->deleteLater();
+}
+
+
+void QCyberGameChat::onSmilesLoadError()
+{
+    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
+
+    if( isShowSystemMessages() )
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ) + reply->errorString() + tr( "..." ) + QDateTime::currentDateTime().toString() );
+    }
+
     reply->deleteLater();
 }
 
@@ -287,13 +354,6 @@ void QCyberGameChat::timerEvent( QTimerEvent *event )
     if( event->timerId() == statisticTimerId_ )
     {
         loadStatistic();
-    }
-    else if( event->timerId() == saveConnectionTimerId_ )
-    {
-        if( socket_ && socket_->isValid() && QAbstractSocket::ConnectedState == socket_->state() )
-        {
-            socket_->ping();
-        }
     }
     else if( event->timerId() == reconnectTimerId_ )
     {
@@ -304,19 +364,24 @@ void QCyberGameChat::timerEvent( QTimerEvent *event )
 void QCyberGameChat::loadSettings()
 {
     QSettings settings;
+
     channelName_ = settings.value( CYBERGAME_CHANNEL_SETTING_PATH, DEFAULT_CYBERGAME_CHANNEL_NAME ).toString();
 
     if( ChatMessage::isLink( channelName_ ) )
-    {
-        channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/", -2 ) - 1 );
-        channelName_ = channelName_.left( channelName_.length() - 1 );
-    }
+        channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
+
+    //badges_ = settings.value( CYBERGAME_BADGES_SETTING_PATH, false ).toBool();
 
     enable( settings.value( CYBERGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
     setAliasesList( settings.value( CYBERGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
     setSupportersList( settings.value( CYBERGAME_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
     setBlackList( settings.value( CYBERGAME_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
     setRemoveBlackListUsers( settings.value( CYBERGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
 }
+
+void QCyberGameChat::changeBadges( bool badges )
+{
+    badges_ = badges;
+}
+

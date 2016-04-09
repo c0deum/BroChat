@@ -45,6 +45,7 @@ private:
     void                setupSc2tvTab();
     void                setupStreamboxTab();
     void                setupTwitchTab();
+    void                setupVidiTab();
     void                setupYoutubetab();
 
     void                setColorButtonStyle( QPushButton * button, QRgb color, int fontSize = 16 );
@@ -213,6 +214,15 @@ signals:
     void                twitchRemoveBlackListUsersChanged( bool );
     void                twitchOriginalColorsChanged( bool );
     void                twitchBadgesChanged( bool );
+
+
+    void                vidiChannelChanged();
+    void                vidiChannelDisabled();
+    void                vidiAliasesChanged( const QString & );
+    void                vidiSupportersListChanged( const QString & );
+    void                vidiBlackListChanged( const QString & );
+    void                vidiRemoveBlackListUsersChanged( bool );
+
 
     void                youtubeChannelChanged();
     void                youtubeChannelDisabled();
@@ -440,6 +450,15 @@ private:
     QTextEdit *         twitchSupportersListEdit;
     QTextEdit *         twitchBlackListEdit;
     QCheckBox *         twitchRemoveBlackListUsersCheckBox;
+
+
+    QCheckBox *         vidiChannelCheckBox;
+    QLineEdit *         vidiChannelEdit;
+    QLineEdit *         vidiAliasesEdit;
+    QTextEdit *         vidiSupportersListEdit;
+    QTextEdit *         vidiBlackListEdit;
+    QCheckBox *         vidiRemoveBlackListUsersCheckBox;
+
 
     QCheckBox *         youtubeChannelCheckBox;
     QLineEdit *         youtubeChannelEdit;

@@ -177,6 +177,12 @@ body
 	height: 16px;
 }
 
+.vidi
+{
+	content: url(../resources/vidilogo.png);
+	height: 16px;
+}
+
 .youtube
 {
 	content: url(../resources/youtubelogo.png);
@@ -224,6 +230,12 @@ body
 	content: url(../resources/twitchlogo.png);
 	height:24px;
 }	
+
+.vidiViewers
+{
+	content: url(../resources/vidilogo.png);
+	height: 24px;
+}
 
 .youtubeViewers
 {

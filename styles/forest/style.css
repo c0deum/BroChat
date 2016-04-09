@@ -203,6 +203,11 @@ body {
     content: url(../resources/twitchlogo.png);
 }
 
+.vidi
+{
+    content: url(../resources/vidilogo.png);	
+}
+
 .youtube {
     content: url(../resources/youtubelogo.png);
 }

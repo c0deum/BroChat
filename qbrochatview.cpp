@@ -44,6 +44,8 @@
 
 #include "qigdcchat.h"
 
+#include "qvidichat.h"
+
 
 
 #include "qchatmessage.h"
@@ -89,6 +91,8 @@ QBroChatView::QBroChatView( QWidget *parent )
 , streamboxChat_( new QStreamBoxChat( this ) )
 , twitchChat_( new QTwitchChat( this ) )
 , youtubeChat_( new QYoutubeChat( this ) )
+
+, vidiChat_( new QVidiChat( this ) )
 
 , chatUpdateServer_( 0 )
 , settings_()
@@ -148,6 +152,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     QAction *reconnectSc2tvAction = new QAction( QIcon( ":/resources/sc2tvlogo.png" ), tr( "Reconnect Sc2tv Chat" ), this );
     QAction *reconnectStreamboxAction = new QAction( QIcon( ":/resources/streamboxlogo.png" ), tr( "Reconnect Streambox Chat" ), this );
     QAction *reconnectTwitchAction = new QAction( QIcon( ":/resources/twitchlogo.png" ), tr( "Reconnect Twitch Chat" ), this );
+    QAction *reconnectVidiAction = new QAction( QIcon( ":/resources/vidilogo.png" ), tr( "Reconnect Vidi Chat" ), this );
     QAction *reconnectYoutubeAction = new QAction( QIcon( ":/resources/youtubelogo.png" ), tr( "Reconnect Youtube Chat" ), this );
 
     QObject::connect( settingsAction, SIGNAL( triggered() ), this, SLOT( showSettings() ) );
@@ -168,6 +173,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), sc2tvChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), streamboxChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), twitchChat_, SLOT( reconnect() ) );
+    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), vidiChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), youtubeChat_, SLOT( reconnect() ) );
 
     QObject::connect( reconnectAcesAction, SIGNAL( triggered() ), acesChat_, SLOT( reconnect() ) );
@@ -183,6 +189,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( reconnectSc2tvAction, SIGNAL( triggered() ), sc2tvChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectStreamboxAction, SIGNAL( triggered() ), streamboxChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectTwitchAction, SIGNAL( triggered() ), twitchChat_, SLOT( reconnect() ) );
+    QObject::connect( reconnectVidiAction, SIGNAL( triggered() ), vidiChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectYoutubeAction, SIGNAL( triggered() ), youtubeChat_, SLOT( reconnect() ) );
 
     addAction( settingsAction );
@@ -202,6 +209,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     addAction( reconnectSc2tvAction );
     addAction( reconnectStreamboxAction );
     addAction( reconnectTwitchAction );
+    addAction( reconnectVidiAction );
     addAction( reconnectYoutubeAction );
 
     addAction( exitAction );       
@@ -264,6 +272,12 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( igdcChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( igdcChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), igdcChat_, SLOT( reconnect() ) );
+
+
+    //vidi
+    QObject::connect( vidiChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
+    QObject::connect( vidiChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
+    QObject::connect( this, SIGNAL( loadFinished( bool ) ), vidiChat_, SLOT( reconnect() ) );
 
 
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), this, SLOT( loadFlagsAndAttributes() ) );
@@ -555,6 +569,7 @@ void QBroChatView::changeShowSystemMessagesState()
     sc2tvChat_->setShowSystemMessages( showSystemMessages_ );
     streamboxChat_->setShowSystemMessages( showSystemMessages_ );
     twitchChat_->setShowSystemMessages( showSystemMessages_ );
+    vidiChat_->setShowSystemMessages( showSystemMessages_ );
     youtubeChat_->setShowSystemMessages( showSystemMessages_ );
 }
 
@@ -694,6 +709,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( sc2tvChannelChanged() ), sc2tvChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxChannelChanged() ), streamboxChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( twitchChannelChanged() ), twitchChat_, SLOT( reconnect() ) );
+    QObject::connect( settingsDialog, SIGNAL( vidiChannelChanged() ), vidiChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( youtubeChannelChanged() ), youtubeChat_, SLOT( reconnect() ) );
 
 
@@ -710,6 +726,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( sc2tvAliasesChanged( QString ) ), sc2tvChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxAliasesChanged( QString ) ), streamboxChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( twitchAliasesChanged( QString ) ), twitchChat_, SLOT( setAliasesList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( vidiAliasesChanged( QString ) ), vidiChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( youtubeAliasesChanged( QString ) ), youtubeChat_, SLOT( setAliasesList( QString ) ) );
 
     QObject::connect( settingsDialog, SIGNAL( acesSupportersListChanged( QString ) ), acesChat_, SLOT( setSupportersList( QString ) ) );
@@ -725,6 +742,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( sc2tvSupportersListChanged( QString ) ), sc2tvChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxSupportersListChanged( QString ) ), streamboxChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( twitchSupportersListChanged( QString ) ), twitchChat_, SLOT( setSupportersList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( vidiSupportersListChanged( QString ) ), vidiChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( youtubeSupportersListChanged( QString ) ), youtubeChat_, SLOT( setSupportersList( QString ) ) );
 
     QObject::connect( settingsDialog, SIGNAL( acesBlackListChanged( QString ) ), acesChat_, SLOT( setBlackList( QString ) ) );
@@ -740,6 +758,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( sc2tvBlackListChanged( QString ) ), sc2tvChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxBlackListChanged( QString ) ), streamboxChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( twitchBlackListChanged( QString ) ), twitchChat_, SLOT( setBlackList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( vidiBlackListChanged( QString ) ), vidiChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( youtubeBlackListChanged( QString ) ), youtubeChat_, SLOT( setBlackList( QString ) ) );
 
     QObject::connect( settingsDialog, SIGNAL( acesRemoveBlackListUsersChanged( bool ) ), acesChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
@@ -755,6 +774,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( sc2tvRemoveBlackListUsersChanged( bool ) ), sc2tvChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxRemoveBlackListUsersChanged( bool ) ), streamboxChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( twitchRemoveBlackListUsersChanged( bool ) ), twitchChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
+    QObject::connect( settingsDialog, SIGNAL( vidiRemoveBlackListUsersChanged( bool ) ), vidiChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( youtubeRemoveBlackListUsersChanged( bool ) ), youtubeChat_, SLOT( setRemoveBlackListUsers(bool ) ) );    
 
     //QObject::connect( settingsDialog, SIGNAL( acesOriginalColorsChanged( bool ) ), acesChat_, SLOT( changeOriginalColors( bool ) ) );

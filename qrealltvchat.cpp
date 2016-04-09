@@ -82,6 +82,7 @@ void QReallTvChat::connect()
     QXmppConfiguration conf;
 
     conf.setDomain( "reall.tv" );
+    conf.setIgnoreSslErrors( true );
     conf.setSaslAuthMechanism( "ANONYMOUS" );
 
     xmppClient_->connectToServer( conf );
@@ -149,7 +150,7 @@ void QReallTvChat::onConnected()
     loadChannelInfo();
 }
 
-void QReallTvChat::onError( QXmppClient::Error )
+void QReallTvChat::onError( QXmppClient::Error error )
 {
     if( isShowSystemMessages() )
     {
@@ -164,6 +165,8 @@ void QReallTvChat::onMessageReceived( const QXmppMessage &message )
 {
     if( message.stamp().toTime_t() > connectionTime_.toTime_t() )
     {
+        qDebug() << message.body();
+
         QString nickName = message.from();
         nickName = nickName.right( nickName.length() - nickName.indexOf( '/' ) - 1 );
 
@@ -171,14 +174,13 @@ void QReallTvChat::onMessageReceived( const QXmppMessage &message )
 
         int dotPos = messageBody.indexOf( "·" );
         if( -1 != dotPos )
-        {
-            messageBody = messageBody.right( messageBody.length() - dotPos - 1 );
-
+        {            
             //test badges
             if( badges_ )
             {
-                nickName = "<img class =\"badge\" src=\"http://reall.tv/images/avatars/" + messageBody.left( dotPos - 1 ) + "\"></img>" + nickName;
+                nickName = "<img class =\"badge\" src=\"http://reall.tv/img/avatars/" + messageBody.left( dotPos ) + "\"></img>" + nickName;
             }
+            messageBody = messageBody.right( messageBody.length() - dotPos - 1 );
         }                        
 
 

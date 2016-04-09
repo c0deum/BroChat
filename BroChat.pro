@@ -29,7 +29,8 @@ HEADERS += \
     qpoll.h \
     qpollview.h \
     qmessagesmanager.h \
-    qpollsettingsdialog.h
+    qpollsettingsdialog.h \
+    qvidichat.h
 
 SOURCES += \
     main.cpp \
@@ -56,7 +57,8 @@ SOURCES += \
     qmessagesmanager.cpp \
     qpoll.cpp \
     qpollsettingsdialog.cpp \
-    qpollview.cpp
+    qpollview.cpp \
+    qvidichat.cpp
 
 RESOURCES += \
     resources.rc

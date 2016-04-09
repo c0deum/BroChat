@@ -186,6 +186,11 @@ a .picture
 	height: 24px;
 }
 
+.vidi
+{
+	content: url(../resources/vidilogo.png);
+	height: 24px;
+}
 
 .youtube
 {

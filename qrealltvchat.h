@@ -40,7 +40,7 @@ public slots:
     virtual void                reconnect();
 private slots:
     void                        onConnected();
-    void                        onError( QXmppClient::Error );
+    void                        onError( QXmppClient::Error error );
 
     void                        onMessageReceived( const QXmppMessage & message );
 

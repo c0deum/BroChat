@@ -468,8 +468,8 @@ void QTwitchChat::onBadgesLoaded()
 
         if( isShowSystemMessages() )
         {
-            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Badges loaded..." ) + reply->errorString(), QString(), this ) );
-            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Badges loaded..." ) + reply->errorString() );
+            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Badges loaded..." ), QString(), this ) );
+            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Badges loaded..." ) );
         }
     }
 

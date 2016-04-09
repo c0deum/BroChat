@@ -4,6 +4,7 @@
 #include "qchatservice.h"
 
 class QNetworkAccessManager;
+class QWebSocket;
 
 class QAcesChat: public QChatService
 {
@@ -20,6 +21,8 @@ private:
     void                    loadChannelInfo();
     void                    loadLastMessage();
 
+    void                    connectToWebSocket();
+
 public slots:
     virtual void            connect();
     virtual void            disconnect();
@@ -29,26 +32,24 @@ private slots:
     void                    onChannelInfoLoaded();
     void                    onChannelInfoLoadError();
 
-    void                    onLastMessageLoaded();
-    void                    onLastMessageLoadError();
+    void                    onWebSocketConnected();
+    void                    onWebSocketError();
 
-    void                    onChatInfoLoaded();
-    void                    onChatInfoLoadError();
+    void                    onTextMessageReceived( const QString & message );
 private:
     QNetworkAccessManager * nam_;
+    QWebSocket            * socket_ = {nullptr};
     QString                 channelName_;
     QString                 channelId_;
-    int                     lastMessageId_ = {-1};
-    int                     updateChatInfoTimerId_ = {-1};
-    //int                     updateChatInfoInterval_;
+
     int                     reconnectTimerId_ = {-1};
-    //int                     reconnectInterval_;
+    int                     saveConnectionId_ = {-1};
 
     static const QString    SERVICE_USER_NAME;
     static const QString    SERVICE_NAME;
 
-    static const int        UPDATE_INTTERVAL;
-    static const int        RECONNECT_INTERVAL;
+    static const int        RECONNECT_INTERVAL;    
+    static const int        SAVE_CONNECTION_INTERVAL;
 };
 
 #endif // QACESCHAT_H

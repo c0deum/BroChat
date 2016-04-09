@@ -1,13 +1,23 @@
 #ifndef QCYBERGAMECHAT_H
 #define QCYBERGAMECHAT_H
 
-///#include <QAbstractSocket>
+#include <QDateTime>
 #include <QMap>
+
+#include <QXmppLogger.h>
+
+#include <QXmppClient.h>
 
 #include "qchatservice.h"
 
 class QNetworkAccessManager;
-class QWebSocket;
+
+class QXmppMessage;
+class QXmppPresence;
+class QXmppIq;
+
+class QXmppMucManager;
+
 
 class QCyberGameChat: public QChatService
 {
@@ -15,24 +25,32 @@ class QCyberGameChat: public QChatService
 public:
     explicit                    QCyberGameChat( QObject * parent = nullptr );
     virtual                     ~QCyberGameChat();
-
-protected:
-    virtual void                timerEvent( QTimerEvent * );
-
 private:
     void                        loadSettings();
+
+
+    void                        loadChannelInfo();
     virtual void                loadSmiles();
     void                        loadStatistic();
 
+    void                        connectToXmpp();
+
+
+
+protected:
+    void                        timerEvent( QTimerEvent * event );
 public slots:
     virtual void                connect();
     virtual void                disconnect();
     virtual void                reconnect();
-
 private slots:
-    void                        onWebSocketConnected();
-    void                        onWebSocketError();
-    void                        onTextMessageRecieved( const QString & message );
+    void                        onConnected();
+    void                        onError();
+
+    void                        onMessageReceived( const QXmppMessage & message );
+
+    void                        onChannelInfoLoaded();
+    void                        onChannelInfoLoadError();
 
     void                        onSmilesLoaded();
     void                        onSmilesLoadError();
@@ -40,22 +58,24 @@ private slots:
     void                        onStatisticLoaded();
     void                        onStatisticLoadError();
 
+    void                        changeBadges( bool badges );
+
 private:
     QNetworkAccessManager *     nam_;
-    QWebSocket *                socket_ = {nullptr};
+    QXmppClient *               xmppClient_ = {nullptr};
+    QXmppMucManager *           mucManager_ = {nullptr};
     QString                     channelName_;
-    int                         lastUpd_ = {0};
-    int                         saveConnectionTimerId_= {-1};
+    QString                     roomId_;
+    QDateTime                   connectionTime_;
     int                         reconnectTimerId_ = {-1};
     int                         statisticTimerId_ = {-1};
+    bool                        badges_ = {false};
 
     static const QString        SERVICE_NAME;
     static const QString        SERVICE_USER_NAME;
 
-    static const int            SAVE_CONNECTION_INTERVAL;
     static const int            RECONNECT_INTERVAL;
     static const int            STATISTIC_INTERVAL;
-
 };
 
 #endif // QCYBERGAMECHAT_H
