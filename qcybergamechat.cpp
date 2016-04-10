@@ -33,7 +33,7 @@
 const QString DEFAULT_CYBERGAME_CANDY_JS_LINK = "http://cybergame.tv/js/chatj/candycg2.min.js";
 const QString DEFAULT_CYBERGAME_SMILES_PREFIX = "http://cybergame.tv/styles/chatj/img/emoticons/";
 const QString DEFAULT_CYBERGAME_CONFERENCE_JID_POSTFIX = "@conference.cybergame.tv";
-const QString DEFAULT_CYBERGAME_CHANNEL_INFO_LINK = "http://cybergame.tv/c0deum/";
+const QString DEFAULT_CYBERGAME_CHANNEL_INFO_LINK = "http://cybergame.tv/";
 const QString DEFAULT_CYBERGAME_STATICTIC_LINK_PREFIX = "http://api.cybergame.tv/w/streams2.php?channel=";
 
 const QString QCyberGameChat::SERVICE_NAME = "cybergame";
@@ -188,7 +188,7 @@ void QCyberGameChat::onMessageReceived( const QXmppMessage &message )
 
 void QCyberGameChat::loadChannelInfo()
 {
-    QNetworkRequest request( QUrl(  DEFAULT_CYBERGAME_CHANNEL_INFO_LINK + "" ) );
+    QNetworkRequest request( QUrl(  DEFAULT_CYBERGAME_CHANNEL_INFO_LINK + channelName_ + "/" ) );
 
     QNetworkReply *reply = nam_->get( request );
 
@@ -216,7 +216,7 @@ void QCyberGameChat::onChannelInfoLoaded()
 
         startUniqueTimer( statisticTimerId_, STATISTIC_INTERVAL );
     }
-    else
+    else if( isShowSystemMessages() )
     {
         emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to" ) + channelName_ + " ..." , QString(), this ) );
         emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to" ) + channelName_ + " ..."  );

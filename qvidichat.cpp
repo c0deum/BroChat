@@ -132,8 +132,11 @@ void QVidiChat::onChannelInfoLoaded()
         }
         else
         {
-            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + "...", QString(), this ) );
-            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) );
+            if( isShowSystemMessages() )
+            {
+                emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + "...", QString(), this ) );
+                emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to " ) + channelName_ + tr( "..." ) );
+            }
 
             startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
         }
@@ -287,8 +290,11 @@ void QVidiChat::onSocketConnected()
 
 void QVidiChat::onSocketConnetError()
 {
-    emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "WebSocket Error... " ), QString(), this ) );
-    emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "WebSocket Error..." ));
+    if( isShowSystemMessages() )
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "WebSocket Error... " ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "WebSocket Error..." ));
+    }
 
     startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 }
@@ -329,8 +335,11 @@ void QVidiChat::onSocketMessageReceived( const QString & message )
         }
         else if( "success_join" == type )
         {
-            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + "...", QString(), this ) );
-            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+            if( isShowSystemMessages() )
+            {
+                emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + "...", QString(), this ) );
+                emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+            }
 
             loadStatistic();
             startUniqueTimer( statisticTimerId_, STATISTIC_INTERVAL );

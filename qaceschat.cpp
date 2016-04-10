@@ -179,16 +179,22 @@ void QAcesChat::onWebSocketConnected()
 {
     socket_->sendTextMessage( "{\"room\":" + channelId_ + ",\"act\":\"joinserver\",\"user_id\":0,\"pass\":\"\",\"reconnected\":1}" );
 
-    emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
-    emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+    if( isShowSystemMessages() )
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+    }
 
     startUniqueTimer( saveConnectionId_, SAVE_CONNECTION_INTERVAL );
 }
 
 void QAcesChat::onWebSocketError()
 {
-    emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "WebSocket Error..." ), QString(), this ) );
-    emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "WebSocket Error..." ) );
+    if( isShowSystemMessages() )
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "WebSocket Error..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "WebSocket Error..." ) );
+    }
 
     startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 }

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+		<link rel="stylesheet" href="igdc/style.css">
+		<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    </head>
+    <script>
+		var userScroll = false;
+		
+		var MESSAGE = "message";
+		var STATISTIC = "statistic";
+
+
+		var mainBox;		
+		
+		$( document ).ready(function() {
+			mainBox = $("#messagesList");
+		});
+
+		function onWheel(event) 
+		{
+			event = event || window.event;
+			var delta = -( event.deltaY || event.detail || event.wheelDelta );			
+			userScroll = document.body.scrollTop + window.innerHeight + delta < document.body.scrollHeight;
+			document.body.scrollTop = document.body.scrollTop + delta;
+			event.preventDefault ? event.preventDefault() : (event.returnValue = false);
+		}
+		
+		function scrollToBottom()
+		{
+			if( userScroll )
+				return;
+			
+			document.body.scrollTop = document.body.scrollHeight;
+		}
+
+		function onStatisticReceived( service, value )
+		{
+		}
+
+		function onNewMessage( service, nickName, message, type )
+		{	
+			var item = '<div class="messagebox' + ((type == "alias") ? ' type' : '') + '">';
+				item += '<table border="0" cellpadding="0" cellspacing="0">';
+					item += '<tr>';
+						item += '<td class="top_left">';
+							item += '<div class="service"><img class="' + service + '" /></div>';
+						item += '</td>';
+						item += '<td class="top"></td>';
+					item += '</tr>';
+					item += '<tr>';
+						item += '<td class="left"></td>';
+						item += '<td class="content">';
+							item += '<div class="message">';
+								item += '<div class="header">';
+									item += '<div class="nick">' + nickName + '<span class="separator">:&nbsp;</span></div>';
+								item += '</div>';
+								item += message;
+							item += '</div>';
+						item += '</td>';
+					item += '</tr>';
+					item += '<tr>';
+						item += '<td class="bottom_left"></td>';
+						item += '<td class="bottom"></td>';
+					item += '</tr>';			
+
+				item += '</table>';
+			item += '</div>';
+
+			mainBox.append(item);
+
+			scrollToBottom();
+		}
+
+		$( window ).resize(function() {
+  			scrollToBottom();
+		});
+    </script>
+    <body>
+        <div id="messagesList"></div>
+
+    </body>
+</html>

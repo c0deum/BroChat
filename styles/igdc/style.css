@@ -1,0 +1,242 @@
+@-webkit-keyframes messageAnim
+{
+	0%   {margin-left: 100%; margin-top: 0; margin-bottom: -18px;}
+    75%  {margin-left: 0; margin-top: 0; margin-bottom: -18px;}
+    100% {margin-left: 0; margin-top: -18px; margin-bottom: 0;}
+}
+
+html
+{
+	overflow: hidden;
+}
+
+body
+{
+	/*background-color: transparent;*/
+	background: #4A8;
+	padding: 0px; 
+	margin: 0px;
+}
+
+#messagesList
+{
+	padding: 18px 2px;
+}
+
+.alias .messagebox
+{
+
+}
+
+.ignore .messagebox
+{
+}
+
+.support .messagebox
+{
+}
+
+.messagebox
+{
+	font-family: 'Arial';
+	font-size: 14px;
+	text-shadow: 1px 1px rgba( 128,128,128, .5 );
+	width: 100%;
+	margin-top: -18px;	
+	margin-bottom: 0;
+	padding-bottom: 4px;
+	-webkit-animation: messageAnim .5s;
+	color: #CCC;
+/*
+	background: url("BackgroundMessage.png");
+	border-right: 1px solid #222;
+	border-bottom: 1px solid #222;
+	border-top: 1px solid #444;
+	border-left: 1px solid #444;*/
+}
+
+.messagebox.type
+{
+	color: #fd971f;
+}
+
+.messagebox table
+{
+	width: 100%;
+	table-layout: fixed;
+}
+
+.messagebox .top_left
+{
+	background: url("msg_top_left.png");
+	background-repeat: no-repeat;
+	height: 28px;
+	width: 27px;
+	position: relative;
+}
+
+.messagebox .top
+{
+	background: url("msg_top.png");
+	height: 28px;
+}
+
+.messagebox .left
+{
+	position: relative;
+	width: 27px;
+	height: 28px;
+	background: url("msg_left.png");
+}
+
+.messagebox .content
+{	
+	background: url("BackgroundMessage.png");
+	padding: 0 10px;
+}
+
+.messagebox .bottom_left
+{
+	background: url("msg_bottom_left.png");
+	background-repeat: no-repeat;
+	height: 26px;
+	width: 27px;
+}
+
+.messagebox .bottom
+{
+	background: url("msg_bottom.png");
+	height: 26px;
+}
+
+.message
+{
+	display: inline;
+	overflow-wrap: break-word;
+  	word-wrap: break-word;
+}
+
+.header
+{
+	display: inline-block;
+	font-weight: bold;
+}
+
+.service
+{
+	position: absolute;
+	background: url("hexes.png");
+	width: 37px;
+	height: 60px;
+	z-index: 99;
+	left: 0px;
+	top: 0px;
+}
+
+.service img
+{
+	position: absolute;
+	left: 8px;
+	top: 6px;
+}
+
+.nick
+{
+	display: inline-block;
+	color: #1895da;
+}
+
+.smile
+{
+	/*height: 16px;*/
+}
+
+.picture
+{	
+	max-height: 100px;
+	max-width: 100%;
+}
+
+.aces
+{
+	content: url(../resources/aceslogo.png);
+	height: 16px;
+}
+
+.cybergame
+{
+	content: url(../resources/cybergamelogo.png);
+	height: 16px;
+}
+
+.funstream
+{
+	content: url(../resources/funstreamlogo.png);
+	height: 16px;
+}
+
+.gamerstv
+{
+	content: url(../resources/gamerstvlogo.png);
+	height: 16px;
+}
+
+.gipsyteam
+{
+	content: url(../resources/gipsyteamlogo.png);
+	height: 16px;
+}
+
+.goodgame
+{
+	content: url(../resources/goodgamelogo.png);
+	height: 16px;
+}
+
+.hitbox
+{
+	content: url(../resources/hitboxlogo.png);
+	height: 16px;
+}
+
+.igdc
+{
+	content: url(../resources/igdclogo.png);
+	height: 16px;
+}
+
+.livecoding
+{
+	content: url(../resources/livecodinglogo.png);
+	height: 16px;
+}
+
+.realltv
+{
+	content: url(../resources/realltvlogo.png);
+	height: 16px;
+}
+
+.sc2tv
+{
+	content: url(../resources/sc2tvlogo.png);
+	height: 16px;
+}
+
+.streambox
+{
+	content: url(../resources/streamboxlogo.png);
+	height: 16px;
+}
+
+.twitch
+{
+	content: url(../resources/twitchlogo.png);
+	height: 16px;
+}
+
+.youtube
+{
+	content: url(../resources/youtubelogo.png);
+	height: 16px;
+}
