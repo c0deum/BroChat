@@ -181,6 +181,7 @@ signals:
     void                livecodingSupportersListChanged( const QString & );
     void                livecodingBlackListChanged( const QString & );
     void                livecodingRemoveBlackListUsersChanged( bool );
+    void                livecodingBadgesChanged( bool );
 
     void                realltvChannelChanged();
     void                realltvChannelDisabled();
@@ -411,6 +412,7 @@ private:
 
     QCheckBox *         livecodingChannelCheckBox;
     QLineEdit *         livecodingChannelEdit;
+    QCheckBox *         livecodingBadgesCheckBox;
     QLineEdit *         livecodingLoginEdit;
     QLineEdit *         livecodingPasswordEdit;
     QLineEdit *         livecodingAliasesEdit;

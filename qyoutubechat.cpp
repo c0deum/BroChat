@@ -91,7 +91,8 @@ void QYoutubeChat::reconnect()
 
 void QYoutubeChat::loadChannelInfo()
 {
-    QNetworkRequest request( QUrl( DEFAULT_YOUTUBE_CHANNEL_INFO_PREFIX + channelName_ + DEFAULT_YOUTUBE_CHANNEL_INFO_POSTFIX ) );
+    //QNetworkRequest request( QUrl( DEFAULT_YOUTUBE_CHANNEL_INFO_PREFIX + channelName_ + DEFAULT_YOUTUBE_CHANNEL_INFO_POSTFIX ) );
+    QNetworkRequest request( QUrl( "https://www.googleapis.com/youtube/v3/comments?part=id,snippet&id=" + channelName_ + "&maxResults=5&textFormat=plainText&key=AIzaSyDAp9c9ueG5c0isR-GmTaQU6DulVh_sAmQ" ) );
     QNetworkReply * reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChannelInfoLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onChannelInfoLoadError() ) );
@@ -99,6 +100,13 @@ void QYoutubeChat::loadChannelInfo()
 
 void QYoutubeChat::onChannelInfoLoaded()
 {
+    QNetworkReply * reply = qobject_cast< QNetworkReply *  >( sender() );
+
+    QByteArray test = reply->readAll();
+
+    reply->deleteLater();
+
+    /*
     QNetworkReply * reply = qobject_cast< QNetworkReply *  >( sender() );
 
     QString channelInfo = reply->readAll();
@@ -129,6 +137,7 @@ void QYoutubeChat::onChannelInfoLoaded()
     }
 
     reply->deleteLater();
+    */
 }
 
 void QYoutubeChat::onChannelInfoLoadError()

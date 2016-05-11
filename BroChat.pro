@@ -30,7 +30,8 @@ HEADERS += \
     qpollview.h \
     qmessagesmanager.h \
     qpollsettingsdialog.h \
-    qvidichat.h
+    qvidichat.h \
+    qazubuchat.h
 
 SOURCES += \
     main.cpp \
@@ -58,10 +59,11 @@ SOURCES += \
     qpoll.cpp \
     qpollsettingsdialog.cpp \
     qpollview.cpp \
-    qvidichat.cpp
+    qvidichat.cpp \
+    qazubuchat.cpp
 
 RESOURCES += \
-    resources.rc
+    resources.qrc
 
 win32:RC_FILE = ico.rc
 

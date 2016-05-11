@@ -217,6 +217,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 , livecodingChannelCheckBox( new QCheckBox( this ) )
 , livecodingChannelEdit( new QLineEdit( this ) )
+, livecodingBadgesCheckBox( new QCheckBox( this ) )
 , livecodingLoginEdit( new QLineEdit( this ) )
 , livecodingPasswordEdit( new QLineEdit( this ) )
 , livecodingAliasesEdit( new QLineEdit( this ) )
@@ -1186,7 +1187,10 @@ void QSettingsDialog::setupLivecodingTab()
 
     QObject::connect( livecodingChannelCheckBox, SIGNAL( clicked( bool ) ), livecodingChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    addWidgets( livecodingLayout, { livecodingChannelCheckBox, livecodingChannelEdit } );
+    livecodingBadgesCheckBox->setText( tr( "Badges" ) );
+    livecodingBadgesCheckBox->setChecked( settings.value( LIVECODING_BADGES_SETTING_PATH, false ).toBool() );
+
+    addWidgets( livecodingLayout, { livecodingChannelCheckBox, livecodingChannelEdit, livecodingBadgesCheckBox } );
 
     livecodingLoginEdit->setText( settings.value( LIVECODING_LOGIN_SETTING_PATH, BLANK_STRING ).toString() );
 
@@ -2140,6 +2144,13 @@ void QSettingsDialog::saveSettings()
         isLivecodingChannelChanged = true;
     }
 
+    oldBoolValue = settings.value( LIVECODING_BADGES_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != livecodingBadgesCheckBox->isChecked() )
+    {
+        settings.setValue( LIVECODING_BADGES_SETTING_PATH, livecodingBadgesCheckBox->isChecked() );
+        emit livecodingBadgesChanged( livecodingBadgesCheckBox->isChecked() );
+    }
+
     oldStringValue = settings.value( LIVECODING_LOGIN_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != livecodingLoginEdit->text() )
     {
@@ -2184,6 +2195,7 @@ void QSettingsDialog::saveSettings()
         settings.setValue( LIVECODING_REMOVE_BLACK_LIST_USERS_SETTING_PATH, livecodingRemoveBlackListUsersCheckBox->isChecked() );
         emit livecodingRemoveBlackListUsersChanged( livecodingRemoveBlackListUsersCheckBox->isChecked() );
     }
+
 
     //настройки realltv
 

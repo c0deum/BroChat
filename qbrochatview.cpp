@@ -621,25 +621,29 @@ void QBroChatView::slotNewMessage( ChatMessage message )
     bool supportersListUser = chatService->supportersList().contains( message.nickName() );
     bool containsAliases = chatService->isContainsAliases( message.message() );
 
-    if( !chatService->isRemoveBlackListUsers() || !blackListUser )
+    if( blackListUser && chatService->isRemoveBlackListUsers() )
+        return;
+
+
+    //if( !chatService->isRemoveBlackListUsers() || !blackListUser )
+    //{
+    if( blackListUser )
     {
-        if( blackListUser )
-        {
-            message.setType( "ignore" );
-        }
-        else if( supportersListUser )
-        {
-            message.setType( "supporter" );
-        }
-        else if( containsAliases )
-        {
-            message.setType( "alias" );
-        }
-        else
-        {
-            message.setType( "" );
-        }
+        message.setType( "ignore" );
     }
+    else if( supportersListUser )
+    {
+        message.setType( "supporter" );
+    }
+    else if( containsAliases )
+    {
+        message.setType( "alias" );
+    }
+    else
+    {
+        message.setType( "" );
+    }
+    //}
 
     messagesManager_.add( message );
 
@@ -788,6 +792,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( gamerstvBadgesChanged(bool) ), gamerstvChat_, SLOT( changeBadges(bool) ) );
     QObject::connect( settingsDialog, SIGNAL( goodGameBadgesChanged(bool) ), goodgameChat_, SLOT( changeBadges(bool) ) );
     QObject::connect( settingsDialog, SIGNAL( igdcBadgesChanged(bool) ), igdcChat_, SLOT( changeBadges(bool) ) );
+    QObject::connect( settingsDialog, SIGNAL( livecodingBadgesChanged(bool) ), livecodingChat_, SLOT( changeBadges(bool) ) );
     QObject::connect( settingsDialog, SIGNAL( realltvBadgesChanged(bool) ), realltvChat_, SLOT( changeBadges(bool) ) );
     QObject::connect( settingsDialog, SIGNAL( streamboxBadgesChanged(bool) ), streamboxChat_, SLOT( changeBadges(bool) ) );
     QObject::connect( settingsDialog, SIGNAL( twitchBadgesChanged(bool) ), twitchChat_, SLOT( changeBadges(bool) ) );

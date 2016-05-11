@@ -43,6 +43,8 @@ const QString DEFAULT_LIVECODING_WEBSOCKET_LINK = "wss://ws.www.livecoding.tv/li
 
 const QString DEFAULT_LIVECODING_STATISTIC_PREFIX = "https://www.livecoding.tv:443/api/livestreams/";
 
+const QString DEFAULT_LIVECODING_USER_INFO_PREFIX = "https://www.livecoding.tv:443/api/users/";
+
 const int DEFAULT_LIVECODING_STATISTIC_INTERVAL = 10000;
 
 const QString QLivecodingChat::SERVICE_NAME = "livecoding";
@@ -137,6 +139,8 @@ void QLivecodingChat::disconnect()
 
     disconnectFromWebSocket();
 
+    //badgesMap_.clear();
+
     emit newStatistic( new QChatStatistic( SERVICE_NAME, QString(), this ) );
 }
 
@@ -195,6 +199,17 @@ void QLivecodingChat::onMessageReceived( const QXmppMessage & message )
     {
         QString nickName = message.from();
         nickName = nickName.right( nickName.length() - nickName.indexOf( '/' ) - 1 );
+
+        if( badges_ )
+        {
+            LoadUserInfo( nickName );
+
+            if( badgesMap_.contains( nickName ) )
+            {
+                nickName = "<img class =\"badge\" src=\"" + badgesMap_[ nickName ] + "\"></img>" + nickName;
+            }
+
+        }
 
         QString messageBody = message.body();
 
@@ -487,8 +502,60 @@ void QLivecodingChat::loadSettings()
     setBlackList( settings.value( LIVECODING_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
     setRemoveBlackListUsers( settings.value( LIVECODING_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
 
+    badges_ = settings.value( LIVECODING_BADGES_SETTING_PATH, false ).toBool();
+
+
     login_ = settings.value( LIVECODING_LOGIN_SETTING_PATH, BLANK_STRING ).toString();
     password_ = settings.value( LIVECODING_PASSWORD_SETTING_PATH, BLANK_STRING ).toString();
+}
+
+void QLivecodingChat::LoadUserInfo( const QString & userName )
+{
+    //TODO: OAuth2
+
+    return;
+
+    QNetworkRequest request( QUrl( DEFAULT_LIVECODING_USER_INFO_PREFIX + userName + "/" ) );
+
+    QNetworkReply * reply = nam_->get( request );
+
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onUserInfoLoaded() ) );
+    QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onUserInfoLoadError() ) );
+}
+
+void QLivecodingChat::onUserInfoLoaded()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    QByteArray data =  reply->readAll();
+
+    QJsonParseError parseError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( data, &parseError );
+
+    if( QJsonParseError::NoError == parseError.error && jsonDoc.isObject() )
+    {
+        QJsonObject jsonObj = jsonDoc.object();
+
+        QString userName = jsonObj[ "username" ].toString();
+        QString avatar = jsonObj[ "avatar" ].toString();
+
+        badgesMap_.insert( jsonObj[ "username" ].toString(), jsonObj[ "avatar" ].toString() );
+
+        qDebug() << badgesMap_;
+    }
+
+    reply->deleteLater();
+}
+
+void QLivecodingChat::onUserInfoLoadError()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+    reply->deleteLater();
+}
+
+void QLivecodingChat::changeBadges( bool badges )
+{
+    badges_ = badges;
 }
 
 /*

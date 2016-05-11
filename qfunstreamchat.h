@@ -23,6 +23,9 @@ private:
     void                    loadStatistic();
     void                    loadHistory();    
     virtual void            loadSmiles();
+
+    void                    loadTwitchSmiles();
+
     void                    loadStyles();
 
     void                    loadBadges();
@@ -53,6 +56,9 @@ private slots:
 
     void                    onBadgesLoaded();
     void                    onBadgesLoadError();
+
+    void                    onTwitchSmilesLoaded();
+    void                    onTwitchSmilesLoadError();
 
 private:
     QNetworkAccessManager * nam_;

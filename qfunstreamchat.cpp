@@ -26,7 +26,8 @@
 #include "qfunstreamchat.h"
 
 //const QString DEFAULT_FUNSTREAM_WEBSOCKET_LINK = "ws://funstream.tv:3811/socket.io/?EIO=3&transport=websocket";
-const QString DEFAULT_FUNSTREAM_WEBSOCKET_LINK = "ws://funstream.tv/socket.io/?EIO=3&transport=websocket";
+//const QString DEFAULT_FUNSTREAM_WEBSOCKET_LINK = "ws://funstream.tv/socket.io/?EIO=3&transport=websocket";
+const QString DEFAULT_FUNSTREAM_WEBSOCKET_LINK = "ws://chat.funstream.tv/?EIO=3&transport=websocket";
 
 const QString DEFAULT_FUNSTREAM_SMILES_LINK = "http://funstream.tv/build/images/smiles/";
 const QString DEFAULT_FUNSTREAM_STATISTIC_LINK = "http://funstream.tv/api/user/list";
@@ -211,6 +212,8 @@ void QFunStreamChat::loadSmiles()
     QNetworkReply * reply = nam_->post( request, data );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSmilesLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onSmileLoadError() ) );
+
+    loadTwitchSmiles();
 }
 
 void QFunStreamChat::onSmilesLoaded()
@@ -390,6 +393,8 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
             if( jsonDoc.isObject() )
             {
                 //{"id":37969,"channel":"stream/109344","from":{"id":152083,"name":"c0deum"},"to":{"id":0,"name":""},"text":"буду фанстримс тут тестить:grumpy:","time":"2015-05-28 21:35:47"}
+
+                //42["/chat/message",{"id":208802523,"channel":"stream/125","from":{"id":191649,"name":"Red Old Fox","color":14},"to":null,"text":":uuu:","type":"message","time":1462272985}]
                 QJsonObject jsonObj = jsonDoc.object();
 
                 if( "stream/" + channelId_ == jsonObj[ "channel" ].toString() && jsonObj[ "id" ].toInt() > lastMessageId_ )
@@ -745,7 +750,63 @@ void QFunStreamChat::changeBadges( bool badges )
     badges_ = badges;
 }
 
+void QFunStreamChat::loadTwitchSmiles()
+{
+    QString smilesCodes[] = { ":)", ":(", ":D", ">(", ":|", "O_o", "B)", ":O", "&lt;3", ":/", ";)", ":P", ";P", "R)" };
 
+    for( int i = 0; i < 14; i++ )
+    {
+        //qDebug() << DEFAULT_TWITCH_SMILE_PREFIX + QString::number( i + 1 ) + "/1.0";
+        addSmile( ":tw-" + smilesCodes[ i ] + ":", "http://static-cdn.jtvnw.net/emoticons/v1/" + QString::number( i + 1 ) + "/1.0" );
+    }
+
+    QNetworkRequest request( QUrl( "https://api.twitch.tv/kraken/chat/emoticon_images" ) );
+
+    QNetworkReply *reply = nam_->get( request );
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onTwitchSmilesLoaded() ) );
+    QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onTwitchSmilesLoadError() ) );
+}
+
+void QFunStreamChat::onTwitchSmilesLoaded()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    QJsonParseError parseError;
+    QJsonDocument jsonDoc;
+
+    jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
+
+    if( QJsonParseError::NoError == parseError.error )
+    {
+        if( jsonDoc.isObject() )
+        {
+            QJsonArray jsonEmotIcons = jsonDoc.object()[ "emoticons" ].toArray();
+
+            foreach( const QJsonValue &value, jsonEmotIcons )
+            {
+                QJsonObject jsonEmotIcon = value.toObject();
+
+                //addSmile( jsonEmotIcon[ "regex" ].toString(), jsonEmotIcon[ "url" ].toString() );
+
+                addSmile( ":tw-" + jsonEmotIcon[ "code" ].toString() + ":", "http://static-cdn.jtvnw.net/emoticons/v1/" + QString::number( jsonEmotIcon[ "id" ].toInt() ) + "/1.0" );
+
+            }
+            if( isShowSystemMessages() )
+            {
+                emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ), QString(), this ) );
+                emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ) );
+            }
+        }
+    }
+
+    reply->deleteLater();
+}
+
+void QFunStreamChat::onTwitchSmilesLoadError()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+    reply->deleteLater();
+}
 
 
 

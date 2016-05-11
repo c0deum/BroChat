@@ -64,6 +64,13 @@ private slots:
 //    void                        onStatisticLoaded();
 //    void                        onStatisticLoadError();
 
+    void                        LoadUserInfo( const QString & userName );
+
+    void                        onUserInfoLoaded();
+    void                        onUserInfoLoadError();
+
+    void                        changeBadges( bool badges );
+
 private:
     QNetworkAccessManager *     nam_;
     QXmppClient *               xmppClient_ = {nullptr};
@@ -79,6 +86,8 @@ private:
     int                         saveWebSocketConnectionTimerId_ = {-1};
 //    int                         statisticTimerId_;
 //    int                         statisticInterval_;
+    bool                        badges_ = {false};
+    QMap<QString, QString>      badgesMap_;
 
     static const QString        SERVICE_NAME;
     static const QString        SERVICE_USER_NAME;
