@@ -249,6 +249,14 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , streamboxBlackListEdit( new QTextEdit( this ) )
 , streamboxRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
+
+, streamcubeChannelCheckBox( new QCheckBox( this ) )
+, streamcubeChannelEdit( new QLineEdit( this ) )
+, streamcubeAliasesEdit( new QLineEdit( this ) )
+, streamcubeSupportersListEdit( new QTextEdit( this ) )
+, streamcubeBlackListEdit( new QTextEdit( this ) )
+, streamcubeRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
+
 , twitchChannelCheckBox( new QCheckBox( this ) )
 , twitchChannelEdit( new QLineEdit( this ) )
 , twitchOriginalColorsCheckBox( new QCheckBox( this ) )
@@ -343,6 +351,7 @@ void QSettingsDialog::setupWidgets()
     setupRealltvTab();
     setupSc2tvTab();
     setupStreamboxTab();
+    setupStreamcubeTab();
     setupTwitchTab();
     setupVidiTab();
     setupYoutubetab();
@@ -1356,6 +1365,47 @@ void QSettingsDialog::setupStreamboxTab()
     tabSettings->addTab( streamboxGroup, QIcon( ":/resources/streamboxlogo.png" ), tr( "Streambox" ) );
 }
 
+void QSettingsDialog::setupStreamcubeTab()
+{
+    QSettings settings;
+
+    QVBoxLayout * streamcubeLayout = new QVBoxLayout();
+
+    streamcubeChannelCheckBox->setText( CHANNEL_TEXT );
+    streamcubeChannelCheckBox->setChecked( settings.value( STREAMCUBE_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
+
+    streamcubeChannelEdit->setText( settings.value( STREAMCUBE_CHANNEL_SETTING_PATH, DEFAULT_STREAMCUBE_CHANNEL_NAME ).toString() );
+    streamcubeChannelEdit->setEnabled( streamcubeChannelCheckBox->isChecked() );
+
+    QObject::connect( streamcubeChannelCheckBox, SIGNAL( clicked( bool ) ), streamcubeChannelEdit, SLOT( setEnabled( bool ) ) );
+
+    addWidgets( streamcubeLayout, { streamcubeChannelCheckBox, streamcubeChannelEdit } );
+
+    streamcubeAliasesEdit->setText( settings.value( STREAMCUBE_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
+
+    addWidgets( streamcubeLayout, { new QLabel( ALIASES_TEXT, this ), streamcubeAliasesEdit } );
+
+    streamcubeSupportersListEdit->setText( settings.value( STREAMCUBE_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
+
+    addWidgets( streamcubeLayout, { new QLabel( SUPPORTERS_TEXT, this ), streamcubeSupportersListEdit } );
+
+    streamcubeBlackListEdit->setText( settings.value( STREAMCUBE_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
+
+    addWidgets( streamcubeLayout, { new QLabel( BLACKLIST_TEXT, this ), streamcubeBlackListEdit } );
+
+    streamcubeRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
+    streamcubeRemoveBlackListUsersCheckBox->setChecked( settings.value( STREAMCUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
+
+    streamcubeLayout->addWidget( streamcubeRemoveBlackListUsersCheckBox );
+
+    streamcubeLayout->addStretch( 1 );
+
+    QGroupBox * streamcubeGroup = new QGroupBox( tabSettings );
+    streamcubeGroup->setLayout( streamcubeLayout );
+
+    tabSettings->addTab( streamcubeGroup, QIcon( ":/resources/streamcubelogo.png" ), tr( "Streamcube" ) );
+}
+
 void QSettingsDialog::setupTwitchTab()
 {
     QSettings settings;
@@ -2336,6 +2386,46 @@ void QSettingsDialog::saveSettings()
     {
         settings.setValue( STREAMBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH, streamboxRemoveBlackListUsersCheckBox->isChecked() );
         emit streamboxRemoveBlackListUsersChanged( streamboxRemoveBlackListUsersCheckBox->isChecked() );
+    }
+
+    //настройки streamcube
+
+    oldBoolValue = settings.value( STREAMCUBE_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( STREAMCUBE_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != streamcubeChannelCheckBox->isChecked() || oldStringValue != streamcubeChannelEdit->text() )
+    {
+        settings.setValue( STREAMCUBE_CHANNEL_ENABLE_SETTING_PATH, streamcubeChannelCheckBox->isChecked() );
+        settings.setValue( STREAMCUBE_CHANNEL_SETTING_PATH, streamcubeChannelEdit->text() );
+
+        emit streamcubeChannelChanged();
+    }
+
+    oldStringValue = settings.value( STREAMCUBE_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != streamcubeAliasesEdit->text() )
+    {
+        settings.setValue( STREAMCUBE_ALIASES_SETTING_PATH, streamcubeAliasesEdit->text() );
+        emit streamcubeAliasesChanged( streamcubeAliasesEdit->text() );
+    }
+
+    oldStringValue = settings.value( STREAMCUBE_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != streamcubeSupportersListEdit->toPlainText() )
+    {
+        settings.setValue( STREAMCUBE_SUPPORTERS_LIST_SETTING_PATH, streamcubeSupportersListEdit->toPlainText() );
+        emit streamcubeSupportersListChanged( streamcubeSupportersListEdit->toPlainText() );
+    }
+
+    oldStringValue = settings.value( STREAMCUBE_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != streamcubeBlackListEdit->toPlainText() )
+    {
+        settings.setValue( STREAMCUBE_BLACK_LIST_SETTING_PATH, streamcubeBlackListEdit->toPlainText() );
+        emit streamcubeBlackListChanged( streamcubeBlackListEdit->toPlainText() );
+    }
+
+    oldBoolValue = settings.value( STREAMCUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != streamcubeRemoveBlackListUsersCheckBox->isChecked() )
+    {
+        settings.setValue( STREAMCUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH, streamcubeRemoveBlackListUsersCheckBox->isChecked() );
+        emit streamcubeRemoveBlackListUsersChanged( streamcubeRemoveBlackListUsersCheckBox->isChecked() );
     }
 
     //настройки twitch

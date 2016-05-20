@@ -200,6 +200,15 @@ const QString STREAMBOX_BLACK_LIST_SETTING_PATH = "/Settings/Streambox/BlackList
 const QString STREAMBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Streambox/RemoveBlackListUsers";
 const QString STREAMBOX_BADGES_SETTING_PATH = "/Settings/Streambox/Badges";
 
+
+const QString STREAMCUBE_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Streamcube/Enable";
+const QString STREAMCUBE_CHANNEL_SETTING_PATH = "/Settings/Streamcube/Channel";
+const QString STREAMCUBE_ALIASES_SETTING_PATH = "/Settings/Streamcube/Aliases";
+const QString STREAMCUBE_SUPPORTERS_LIST_SETTING_PATH = "/Streamcube/Streambox/Supporters";
+const QString STREAMCUBE_BLACK_LIST_SETTING_PATH = "/Settings/Streamcube/BlackList";
+const QString STREAMCUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Streamcube/RemoveBlackListUsers";
+
+
 const QString TWITCH_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Twitch/Enable";
 const QString TWITCH_CHANNEL_SETTING_PATH = "/Settings/Twitch/Channel";
 const QString TWITCH_ALIASES_SETTING_PATH = "/Settings/Twitch/Aliases";
@@ -245,6 +254,7 @@ const QString DEFAULT_LIVECODING_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_REALLTV_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_SC2TV_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_STREAMBOX_CHANNEL_NAME = BLANK_STRING;
+const QString DEFAULT_STREAMCUBE_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_TWITCH_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_VIDI_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_YOUTUBE_CHANNEL_NAME = BLANK_STRING;

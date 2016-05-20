@@ -180,6 +180,12 @@ a .picture
 	height: 24px;
 }
 
+.streamcube
+{
+	content: url(../resources/streamcubelogo.png);
+	height: 24px;
+}
+
 .twitch
 {
 	content: url(../resources/twitchlogo.png);

@@ -44,6 +44,7 @@ private:
     void                setupRealltvTab();
     void                setupSc2tvTab();
     void                setupStreamboxTab();
+    void                setupStreamcubeTab();
     void                setupTwitchTab();
     void                setupVidiTab();
     void                setupYoutubetab();
@@ -206,6 +207,15 @@ signals:
     void                streamboxBlackListChanged( const QString & );
     void                streamboxRemoveBlackListUsersChanged( bool );
     void                streamboxBadgesChanged( bool );
+
+
+    void                streamcubeChannelChanged();
+    void                streamcubeChannelDisabled();
+    void                streamcubeAliasesChanged( const QString & );
+    void                streamcubeSupportersListChanged( const QString & );
+    void                streamcubeBlackListChanged( const QString & );
+    void                streamcubeRemoveBlackListUsersChanged( bool );
+
 
     void                twitchChannelChanged();
     void                twitchChannelDisabled();
@@ -443,6 +453,15 @@ private:
     QTextEdit *         streamboxSupportersListEdit;
     QTextEdit *         streamboxBlackListEdit;
     QCheckBox *         streamboxRemoveBlackListUsersCheckBox;
+
+
+    QCheckBox *         streamcubeChannelCheckBox;
+    QLineEdit *         streamcubeChannelEdit;
+    QLineEdit *         streamcubeAliasesEdit;
+    QTextEdit *         streamcubeSupportersListEdit;
+    QTextEdit *         streamcubeBlackListEdit;
+    QCheckBox *         streamcubeRemoveBlackListUsersCheckBox;
+
 
     QCheckBox *         twitchChannelCheckBox;
     QLineEdit *         twitchChannelEdit;    

@@ -171,6 +171,12 @@ body
 	height: 16px;
 }
 
+.streamcube
+{
+	content: url(../resources/streamcubelogo.png);
+	height: 16px;
+}
+
 .twitch
 {
 	content: url(../resources/twitchlogo.png);

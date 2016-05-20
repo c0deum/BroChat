@@ -199,6 +199,10 @@ body {
     content: url(../resources/streamboxlogo.png);
 }
 
+.streamcube{
+    content: url(../resources/streamcubelogo.png);	
+}
+
 .twitch {
     content: url(../resources/twitchlogo.png);
 }
