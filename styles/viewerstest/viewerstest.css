@@ -104,6 +104,12 @@ body
 	height: 16px;
 }
 
+.azubu
+{
+	content: url(../resources/azubulogo.png);
+	height: 16px;
+}
+
 .cybergame
 {
 	content: url(../resources/cybergamelogo.png);
@@ -193,6 +199,13 @@ body
 {
 	content: url(../resources/youtubelogo.png);
 	height: 16px;
+}
+
+
+.azubuViewers
+{
+	content: url(../resources/azubulogo.png);
+	height:24px;
 }
 
 .cybergameViewers

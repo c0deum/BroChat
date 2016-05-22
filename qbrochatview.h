@@ -33,6 +33,8 @@ class QVidiChat;
 
 class QStreamCubeChat;
 
+class QAzubuChat;
+
 class QBroChatView: public QWebView
 {
     Q_OBJECT
@@ -104,6 +106,8 @@ private:
     QVidiChat *         vidiChat_;
 
     QStreamCubeChat *   streamcubeChat_;
+
+    QAzubuChat *        azubuChat_;
 
     QChatUpdateServer * chatUpdateServer_;
 

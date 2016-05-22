@@ -1,6 +1,7 @@
  <!DOCTYPE RCC><RCC version="1.0">
  <qresource>
 	<file>resources/aceslogo.png</file>
+        <file>resources/azubulogo.png</file>
 	<file>resources/cybergamelogo.png</file>
 	<file>resources/funstreamlogo.png</file>
 	<file>resources/gamerstvlogo.png</file>	

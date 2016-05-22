@@ -33,6 +33,7 @@ private:
     void                setupGeneralTab();
     void                setupDefaultStyleTab();
     void                setupAcesTab();
+    void                setupAzubuTab();
     void                setupCybergameTab();
     void                setupFunstreamTab();
     void                setupGamerstvTab();
@@ -119,6 +120,14 @@ signals:
     void                acesBlackListChanged( const QString & );
     //void              acesOriginalColorsChanged( bool originalColors );
     void                acesRemoveBlackListUsersChanged( bool );
+
+
+    void                azubuChannelChanged();
+    void                azubuChannelDisabled();
+    void                azubuAliasesChanged( const QString & );
+    void                azubuSupportersListChanged( const QString & );
+    void                azubuBlackListChanged( const QString & );
+    void                azubuRemoveBlackListUsersChanged( bool );
 
     void                cyberGameChannelChanged();
     void                cyberGameChannelDisabled();
@@ -362,6 +371,14 @@ private:
     QTextEdit *         acesSupportersListEdit;
     QTextEdit *         acesBlackListEdit;
     QCheckBox *         acesRemoveBlackListUsersCheckBox;
+
+
+    QCheckBox *         azubuChannelCheckBox;
+    QLineEdit *         azubuChannelEdit;
+    QLineEdit *         azubuAliasesEdit;
+    QTextEdit *         azubuSupportersListEdit;
+    QTextEdit *         azubuBlackListEdit;
+    QCheckBox *         azubuRemoveBlackListUsersCheckBox;
 
     QCheckBox *         cyberGameChannelCheckBox;
     QLineEdit *         cyberGameChannelEdit;

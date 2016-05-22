@@ -136,6 +136,12 @@ body
 	height: 24px;
 }
 
+.azubu
+{
+	content: url(../resources/azubulogo.png);
+	height: 24px;
+}
+
 .cybergame
 {
 	content: url(../resources/cybergamelogo.png);

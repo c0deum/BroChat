@@ -110,6 +110,16 @@ const QString ACES_BLACK_LIST_SETTING_PATH = "/Settings/Aces/BlackList";
 //const QString ACES_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Aces/OriginalColors";
 const QString ACES_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Aces/RemoveBlackListUsers";
 
+const QString AZUBU_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Azubu/Enable";
+const QString AZUBU_CHANNEL_SETTING_PATH = "/Settings/Azubu/Channel";
+const QString AZUBU_ALIASES_SETTING_PATH = "/Settings/Azubu/Aliases";
+const QString AZUBU_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Azubu/Supporters";
+const QString AZUBU_BLACK_LIST_SETTING_PATH = "/Settings/Azubu/BlackList";
+const QString AZUBU_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Azubu/RemoveBlackListUsers";
+//const QString AZUBU_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Azubu/OriginalColors";
+//const QString AZUBU_BADGES_SETTING_PATH = "/Settings/Azubu/Badges";
+
+
 const QString CYBERGAME_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Cybergame/Enable";
 const QString CYBERGAME_CHANNEL_SETTING_PATH = "/Settings/Cybergame/Channel";
 const QString CYBERGAME_ALIASES_SETTING_PATH = "/Settings/Cybergame/Aliases";
@@ -243,6 +253,7 @@ const QString LAST_POLL_ENTRIES_VOTES_SETTING_PATH = "/Settings/Poll/EntriesVote
 const QString BLANK_STRING = "";
 
 const QString DEFAULT_ACES_CHANNEL_NAME = BLANK_STRING;
+const QString DEFAULT_AZUBU_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_CYBERGAME_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_FUNSTREAM_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_GAMERSTV_CHANNEL_NAME = BLANK_STRING;

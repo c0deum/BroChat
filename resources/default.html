@@ -424,6 +424,12 @@ a
 	height:%SERVICE_ICONS_SIZE%;
 }
 
+.azubu
+{
+	content: url(azubulogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
 .cybergame
 {
 	content: url(cybergamelogo.png);
@@ -525,6 +531,13 @@ a
         display: none;
 }
 
+.azubuViewers
+{
+        padding-top:4px;
+	content: url(azubulogo.png);
+	height:%SERVICE_ICONS_SIZE%;
+}
+
 .cybergameViewers
 {
         padding-top:4px;
@@ -619,7 +632,7 @@ a
                 var VIEWERS_INFO_SHOW = "viewersInfoShow";
                 var VIEWERS_INFO_HIDE = "viewersInfoHide";
                 
-                var servicesArray = [ "cybergame", "goodgame", "hitbox", "livecoding", "realltv", "twitch", "vidi", "youtube", "funstream", "gamerstv", "igdc", "streambox" ];
+                var servicesArray = [ "azubu", "cybergame", "goodgame", "hitbox", "livecoding", "realltv", "twitch", "vidi", "youtube", "funstream", "gamerstv", "igdc", "streambox" ];
                 
                 var MESSAGE = "message";
                 var STATISTIC = "statistic";
@@ -732,6 +745,7 @@ a
         <body>
                 <div id="messagesList"></div>		
                 <div id="viewersHeader">
+                        <span id="azubuViewersInfo" class = "viewersInfoShow"><span class = "azubuViewers"></span><span class = "statistic" id="azubu"></span></span>
                         <span id="cybergameViewersInfo" class = "viewersInfoShow"><span class = "cybergameViewers"></span><span class = "statistic" id="cybergame"></span></span>
                         <span id="goodgameViewersInfo" class = "viewersInfoShow"><span class = "goodgameViewers"></span><span class = "statistic" id="goodgame"></span></span>
                         <span id="hitboxViewersInfo" class = "viewersInfoShow"><span class = "hitboxViewers"></span><span class = "statistic" id="hitbox"></span></span>

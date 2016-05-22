@@ -150,7 +150,7 @@ void QReallTvChat::onConnected()
     loadChannelInfo();
 }
 
-void QReallTvChat::onError( QXmppClient::Error error )
+void QReallTvChat::onError( QXmppClient::Error )
 {
     if( isShowSystemMessages() )
     {

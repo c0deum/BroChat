@@ -154,6 +154,10 @@ body {
     content: url(../resources/aceslogo.png);
 }
 
+.azubu {
+    content: url(../resources/azubulogo.png);
+}
+
 .cybergame {
     content: url(../resources/cybergamelogo.png);
 }
