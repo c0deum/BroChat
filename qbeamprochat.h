@@ -1,0 +1,4 @@
+#ifndef QBEAMPROCHAT_H
+#define QBEAMPROCHAT_H
+
+#endif // QBEAMPROCHAT_H
