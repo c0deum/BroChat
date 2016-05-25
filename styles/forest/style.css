@@ -158,6 +158,11 @@ body {
     content: url(../resources/azubulogo.png);
 }
 
+.beampro
+{
+	content: url(../resources/beamprologo.png);	
+}
+
 .cybergame {
     content: url(../resources/cybergamelogo.png);
 }

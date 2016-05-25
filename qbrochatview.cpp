@@ -50,6 +50,7 @@
 
 #include "qazubuchat.h"
 
+#include "qbeamprochat.h"
 
 
 #include "qchatmessage.h"
@@ -102,6 +103,9 @@ QBroChatView::QBroChatView( QWidget *parent )
 
 , azubuChat_( new QAzubuChat( this ) )
 
+
+, beamproChat_( new QBeamProChat( this ) )
+
 , chatUpdateServer_( 0 )
 , settings_()
 , moveState_( false )
@@ -149,6 +153,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     QAction *reconnectAllAction = new QAction( tr( "Reconnect All Chats" ), this );
     QAction *reconnectAcesAction = new QAction( QIcon( ":/resources/aceslogo.png" ), tr( "Reconnect Aces Chat" ), this );
     QAction *reconnectAzubuAction = new QAction( QIcon( ":/resources/azubulogo.png" ), tr( "Reconnect Azubu Chat" ), this );
+    QAction *reconnectBeamproAction = new QAction( QIcon( ":/resources/beamprologo.png" ), tr( "Reconnect Beampro Chat" ), this );
     QAction *reconnectCybergameAction = new QAction( QIcon( ":/resources/cybergamelogo.png" ), tr( "Reconnect Cybergame Chat" ), this );
     QAction *reconnectFunstreamAction = new QAction( QIcon( ":/resources/funstreamlogo.png" ), tr( "Reconnect Funstream Chat" ), this );
     QAction *reconnectGamersTvAction = new QAction( QIcon( ":/resources/gamerstvlogo.png" ), tr( "Reconnect Gamerstv Chat" ), this );
@@ -172,6 +177,7 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), acesChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), azubuChat_, SLOT( reconnect() ) );
+    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), beamproChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), cybergameChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), funstreamChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), gamerstvChat_, SLOT( reconnect() ) );
@@ -190,6 +196,7 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     QObject::connect( reconnectAcesAction, SIGNAL( triggered() ), acesChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAzubuAction, SIGNAL( triggered() ), azubuChat_, SLOT( reconnect() ) );
+    QObject::connect( reconnectAzubuAction, SIGNAL( triggered() ), beamproChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectCybergameAction, SIGNAL( triggered() ), cybergameChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectFunstreamAction, SIGNAL( triggered() ), funstreamChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectGamersTvAction, SIGNAL( triggered() ), gamerstvChat_, SLOT( reconnect() ) );
@@ -212,6 +219,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     addAction( reconnectAllAction );
     addAction( reconnectAcesAction );
     addAction( reconnectAzubuAction );
+    addAction( reconnectBeamproAction );
     addAction( reconnectCybergameAction );
     addAction( reconnectFunstreamAction );
     addAction( reconnectGamersTvAction );
@@ -305,6 +313,12 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( azubuChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( azubuChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), azubuChat_, SLOT( reconnect() ) );
+
+
+    //beampro
+    QObject::connect( beamproChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
+    QObject::connect( beamproChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
+    QObject::connect( this, SIGNAL( loadFinished( bool ) ), beamproChat_, SLOT( reconnect() ) );
 
 
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), this, SLOT( loadFlagsAndAttributes() ) );
@@ -585,6 +599,7 @@ void QBroChatView::changeShowSystemMessagesState()
 
     acesChat_->setShowSystemMessages( showSystemMessages_ );
     azubuChat_->setShowSystemMessages( showSystemMessages_ );
+    beamproChat_->setShowSystemMessages( showSystemMessages_ );
     cybergameChat_->setShowSystemMessages( showSystemMessages_ );
     funstreamChat_->setShowSystemMessages( showSystemMessages_ );
     gamerstvChat_->setShowSystemMessages( showSystemMessages_ );
@@ -731,6 +746,7 @@ void QBroChatView::showSettings()
 
     QObject::connect( settingsDialog, SIGNAL( acesChannelChanged() ), acesChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( azubuChannelChanged() ), azubuChat_, SLOT( reconnect() ) );
+    QObject::connect( settingsDialog, SIGNAL( beamproChannelChanged() ), beamproChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( cyberGameChannelChanged() ), cybergameChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( funstreamChannelChanged() ), funstreamChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( gamerstvChannelChanged() ), gamerstvChat_, SLOT( reconnect() ) );
@@ -749,7 +765,8 @@ void QBroChatView::showSettings()
 
 
     QObject::connect( settingsDialog, SIGNAL( acesAliasesChanged( QString ) ), acesChat_, SLOT( setAliasesList( QString ) ) );
-    QObject::connect( settingsDialog, SIGNAL( azubuAliasesChanged( QString ) ), acesChat_, SLOT( setAliasesList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( azubuAliasesChanged( QString ) ), azubuChat_, SLOT( setAliasesList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( beamproAliasesChanged( QString ) ), beamproChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( cyberGameAliasesChanged( QString ) ), cybergameChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( funstreamAliasesChanged( QString ) ), funstreamChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( gamerstvAliasesChanged(QString) ), gamerstvChat_, SLOT( setAliasesList(QString) ) );
@@ -767,7 +784,8 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( youtubeAliasesChanged( QString ) ), youtubeChat_, SLOT( setAliasesList( QString ) ) );
 
     QObject::connect( settingsDialog, SIGNAL( acesSupportersListChanged( QString ) ), acesChat_, SLOT( setSupportersList( QString ) ) );
-    QObject::connect( settingsDialog, SIGNAL( acesSupportersListChanged( QString ) ), azubuChat_, SLOT( setSupportersList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( azubuSupportersListChanged( QString ) ), azubuChat_, SLOT( setSupportersList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( beamproSupportersListChanged( QString ) ), beamproChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( cyberGameSupportersListChanged( QString ) ), cybergameChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( funstreamSupportersListChanged( QString ) ), funstreamChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( gamerstvSupportersListChanged(QString) ), gamerstvChat_, SLOT( setSupportersList(QString) ) );
@@ -786,6 +804,7 @@ void QBroChatView::showSettings()
 
     QObject::connect( settingsDialog, SIGNAL( acesBlackListChanged( QString ) ), acesChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( azubuBlackListChanged( QString ) ), azubuChat_, SLOT( setBlackList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( beamproBlackListChanged( QString ) ), beamproChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( cyberGameBlackListChanged( QString ) ), cybergameChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( funstreamBlackListChanged( QString ) ), funstreamChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( gamerstvBlackListChanged(QString) ), gamerstvChat_, SLOT( setBlackList(QString) ) );
@@ -804,6 +823,7 @@ void QBroChatView::showSettings()
 
     QObject::connect( settingsDialog, SIGNAL( acesRemoveBlackListUsersChanged( bool ) ), acesChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( azubuRemoveBlackListUsersChanged( bool ) ), azubuChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
+    QObject::connect( settingsDialog, SIGNAL( beamproRemoveBlackListUsersChanged( bool ) ), beamproChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( cyberGameRemoveBlackListUsersChanged( bool ) ), cybergameChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( funstreamRemoveBlackListUsersChanged( bool ) ), funstreamChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( gamerstvRemoveBlackListUsersChanged(bool) ), gamerstvChat_, SLOT( setRemoveBlackListUsers(bool) ) );

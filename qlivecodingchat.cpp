@@ -360,8 +360,9 @@ void QLivecodingChat::onWebSocketMessageReceived( const QString & message )
 
                 const QString VIEWS_LIVE = "views_live";
 
-                if( jsonObj.contains( VIEWS_LIVE ) )
-                    emit newStatistic ( new QChatStatistic( SERVICE_NAME, QString::number( jsonObj[ VIEWS_LIVE ].toInt() ), this ) );
+                QString statistic = jsonObj.contains( VIEWS_LIVE )? QString::number( jsonObj[ VIEWS_LIVE ].toInt() ) : "0";
+
+                emit newStatistic ( new QChatStatistic( SERVICE_NAME, statistic, this ) );
             }
 
         }

@@ -371,7 +371,7 @@ void QAzubuChat::onStatisticLoaded()
 
         QJsonObject dataObj = jsonObj[ "data" ].toObject();
 
-        QString statistic = dataObj[ "is_live" ].toBool()? QString::number( dataObj[ "view_count" ].toInt() ) : "";
+        QString statistic = dataObj[ "is_live" ].toBool()? QString::number( dataObj[ "view_count" ].toInt() ) : "0";
 
         emit newStatistic( new QChatStatistic( SERVICE_NAME, statistic, this ) );
     }

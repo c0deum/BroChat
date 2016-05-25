@@ -110,6 +110,12 @@ body
 	height: 16px;
 }
 
+.beampro
+{
+	content: url(../resources/beamprologo.png);
+	height: 16px;
+}
+
 .cybergame
 {
 	content: url(../resources/cybergamelogo.png);
@@ -205,6 +211,13 @@ body
 .azubuViewers
 {
 	content: url(../resources/azubulogo.png);
+	height:24px;
+}
+
+
+.beamproViewers
+{
+	content: url(../resources/beamprologo.png);
 	height:24px;
 }
 

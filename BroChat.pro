@@ -32,7 +32,8 @@ HEADERS += \
     qpollsettingsdialog.h \
     qvidichat.h \
     qazubuchat.h \
-    qstreamcubechat.h
+    qstreamcubechat.h \
+    qbeamprochat.h
 
 SOURCES += \
     main.cpp \
@@ -62,7 +63,8 @@ SOURCES += \
     qpollview.cpp \
     qvidichat.cpp \
     qazubuchat.cpp \
-    qstreamcubechat.cpp
+    qstreamcubechat.cpp \
+    qbeamprochat.cpp
 
 RESOURCES += \
     resources.qrc

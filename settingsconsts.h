@@ -119,6 +119,12 @@ const QString AZUBU_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Azubu/Remo
 //const QString AZUBU_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Azubu/OriginalColors";
 //const QString AZUBU_BADGES_SETTING_PATH = "/Settings/Azubu/Badges";
 
+const QString BEAMPRO_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Beampro/Enable";
+const QString BEAMPRO_CHANNEL_SETTING_PATH = "/Settings/Beampro/Channel";
+const QString BEAMPRO_ALIASES_SETTING_PATH = "/Settings/Beampro/Aliases";
+const QString BEAMPRO_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Beampro/Supporters";
+const QString BEAMPRO_BLACK_LIST_SETTING_PATH = "/Settings/Beampro/BlackList";
+const QString BEAMPRO_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Beampro/RemoveBlackListUsers";
 
 const QString CYBERGAME_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Cybergame/Enable";
 const QString CYBERGAME_CHANNEL_SETTING_PATH = "/Settings/Cybergame/Channel";
@@ -254,6 +260,7 @@ const QString BLANK_STRING = "";
 
 const QString DEFAULT_ACES_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_AZUBU_CHANNEL_NAME = BLANK_STRING;
+const QString DEFAULT_BEAMPRO_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_CYBERGAME_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_FUNSTREAM_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_GAMERSTV_CHANNEL_NAME = BLANK_STRING;

@@ -135,6 +135,12 @@ body
 	height: 12px;
 }
 
+.beampro
+{
+	content: url(../resources/beamprologo.png);
+	height: 12px;
+}
+
 .cybergame
 {
 	content: url(../resources/cybergamelogo.png);

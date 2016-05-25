@@ -34,6 +34,7 @@ private:
     void                setupDefaultStyleTab();
     void                setupAcesTab();
     void                setupAzubuTab();
+    void                setupBeamproTab();
     void                setupCybergameTab();
     void                setupFunstreamTab();
     void                setupGamerstvTab();
@@ -128,6 +129,15 @@ signals:
     void                azubuSupportersListChanged( const QString & );
     void                azubuBlackListChanged( const QString & );
     void                azubuRemoveBlackListUsersChanged( bool );
+
+
+    void                beamproChannelChanged();
+    void                beamproChannelDisabled();
+    void                beamproAliasesChanged( const QString & );
+    void                beamproSupportersListChanged( const QString & );
+    void                beamproBlackListChanged( const QString & );
+    void                beamproRemoveBlackListUsersChanged( bool );
+
 
     void                cyberGameChannelChanged();
     void                cyberGameChannelDisabled();
@@ -379,6 +389,14 @@ private:
     QTextEdit *         azubuSupportersListEdit;
     QTextEdit *         azubuBlackListEdit;
     QCheckBox *         azubuRemoveBlackListUsersCheckBox;
+
+    QCheckBox *         beamproChannelCheckBox;
+    QLineEdit *         beamproChannelEdit;
+    QLineEdit *         beamproAliasesEdit;
+    QTextEdit *         beamproSupportersListEdit;
+    QTextEdit *         beamproBlackListEdit;
+    QCheckBox *         beamproRemoveBlackListUsersCheckBox;
+
 
     QCheckBox *         cyberGameChannelCheckBox;
     QLineEdit *         cyberGameChannelEdit;
