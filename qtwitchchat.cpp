@@ -184,7 +184,7 @@ void QTwitchChat::parseMessage()
                 message = insertSmiles( message );
                 */
 
-                const QString COLOR = "@color=";
+                const QString COLOR = "color=";
                 QString color;
 
                 int startColorPos = line.indexOf( COLOR ) + COLOR.length();
