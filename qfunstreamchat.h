@@ -18,6 +18,7 @@ protected:
     virtual void            timerEvent( QTimerEvent * );
 private:
     void                    loadSettings();
+
     void                    loadChannelInfo();
     void                    connectToWebClient();
     void                    loadStatistic();

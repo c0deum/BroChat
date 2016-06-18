@@ -35,6 +35,8 @@ const QString DEFAULT_FUNSTREAM_SMILES_REQUEST = "http://funstream.tv/api/smile"
 const QString DEFAULT_FUNSTREAM_CHANNEL_PREFIX = "http://funstream.tv/stream/";
 
 const QString DEFAULT_FUNSTREAM_CHANNEL_INFO_PREFIX = "http://funstream.tv/api/user";
+const QString DEFAULT_FUNSTREAM_STREAM_INFO_REQUEST = "http://funstream.tv/api/stream";
+
 
 const QString DEFAULT_FUNSTREAM_USERS_COLORS_LINK = "http://funstream.tv/build/bundle.css";
 
@@ -80,6 +82,7 @@ void QFunStreamChat::connect()
     }
 
     loadChannelInfo();
+
 }
 
 void QFunStreamChat::disconnect()
@@ -118,25 +121,19 @@ void QFunStreamChat::reconnect()
     connect();
 }
 
-void QFunStreamChat::loadChannelInfo()
-{   
-    QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_CHANNEL_PREFIX + channelName_ ) );
 
-    /*
-    QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_CHANNEL_INFO_PREFIX + "" ) );
+void QFunStreamChat::loadChannelInfo()
+{
+    QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_STREAM_INFO_REQUEST + "" ) );
+
+    request.setRawHeader( "Accept", "application/json" );
+    request.setHeader( QNetworkRequest::ContentTypeHeader, "application/json" );
 
     QByteArray data;
 
-    QString dataString = "{name:" + channelName_ + "}";
+    data.append( "{id:null,options:null,owner:\"" + channelName_ + "\"}" );
 
-    data.append( dataString );
-
-    //request.setHeader( QNetworkRequest::ContentTypeHeader, QVariant( "application/x-www-form-urlencoded" ) );
-    //request.setRawHeader( "Content-Length", QString::number( data.size() ).toStdString().c_str() );
-    */
-
-
-    QNetworkReply * reply = nam_->get( request );
+    QNetworkReply * reply = nam_->post( request, data );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChannelInfoLoaded() ) );
     QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onChannelInfoLoadError() ) );
 
@@ -146,45 +143,27 @@ void QFunStreamChat::onChannelInfoLoaded()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
-    //qDebug() << reply->readAll();
-
-
-    QString info = reply->readAll();
-
-    int startInfoPos = info.indexOf( "[[" );
-    int endInfoPos = info.indexOf( ";</script>" );
-
-    info = info.mid( startInfoPos, endInfoPos - startInfoPos );
-
     QJsonParseError parseError;
 
-    QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( info.toStdString().c_str() ), &parseError );
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
-    if( QJsonParseError::NoError == parseError.error )
+    if( QJsonParseError::NoError == parseError.error && jsonDoc.isObject() )
     {
-        if( jsonDoc.isArray() )
-        {
-            QJsonArray jsonArr = jsonDoc.array();
+        QJsonObject jsonObj = jsonDoc.object();
 
-            QJsonArray jsonStreamInfoArr = jsonArr[ 1 ].toArray();
+        QJsonObject jsonOwner = jsonObj[ "owner" ].toObject();
 
-            QJsonObject jsonStreamInfoObj = jsonStreamInfoArr[ 2 ].toObject();
-            QJsonObject jsonStreamerInfoObj = jsonStreamInfoObj[ "owner" ].toObject();
+        channelId_ = QString::number( jsonOwner[ "id" ].toInt() );
 
-            channelId_ = QString::number( jsonStreamerInfoObj[ "id" ].toInt() );
-
-            connectToWebClient();
-        }
+        connectToWebClient();
     }
 
-
     reply->deleteLater();
-
 }
 
 void QFunStreamChat::onChannelInfoLoadError()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     if( isShowSystemMessages() )
     {
@@ -234,14 +213,12 @@ void QFunStreamChat::onSmilesLoaded()
 
                 QJsonObject smileInfoObj = smileInfo.toObject();                
 
-
                 //addSmile( ":" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString()/*.replace( "https://", "http://" )*/ );
                 //addSmile( ":free-" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString() );
 
                 addSmile( ":" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString().replace( "https://", "http://" ) );
                 addSmile( ":free-" + smileInfoObj[ "code" ].toString() + ":", smileInfoObj[ "url" ].toString().replace( "https://", "http://" ) );
-
-            }                        
+            }            
 
             if( isShowSystemMessages() )
             {
