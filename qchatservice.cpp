@@ -180,8 +180,8 @@ QString QChatService::insertSmiles( const QString & message ) const
     for( int i = 0; i < tokens.size(); ++i )
     {
         if( smiles_.contains( tokens.at( i ) ) )
-        {
-            convertedTokens[ i ].replace( tokens.at( i ) , "<img class = \"smile\" src=\"" + smiles_[ tokens.at( i ) ] + "\"></img>" );
+        {                        
+            convertedTokens[ i ].replace( tokens.at( i ) , "<img class = \"smile\" alt=\"" + tokens.at( i ) + "\"" + " src=\"" + smiles_[ tokens.at( i ) ] + "\"></img>" );
         }
     }
 
