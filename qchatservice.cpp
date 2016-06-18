@@ -175,6 +175,8 @@ QString QChatService::insertSmiles( const QString & message ) const
 
     QStringList tokens = convertedMessage.split( QRegExp( "\\s" ) );
 
+    tokens = tokens.toSet().toList();
+
     QStringList convertedTokens = tokens;
 
     for( int i = 0; i < tokens.size(); ++i )
