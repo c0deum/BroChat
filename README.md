@@ -17,3 +17,7 @@ Supported chats:
 -twitch.tv
 -gaming.youtube.com
 
+
+##Addons
+
+> [Chat2Speech](https://github.com/megweg/chat2speech) (Windows only)
