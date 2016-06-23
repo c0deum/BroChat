@@ -37,7 +37,8 @@ const QString DEFAULT_LIVECODING_JID = DEFAULT_LIVECODING_LOGIN + DEFAULT_LIVECO
 const QString DEFAULT_LIVECODING_PASSWORD = "8e4820297b36ec893f1242bc36ffc1e38";
 const QString DEFAULT_LIVECODING_CONFERENCE_JID_POSTFIX = "@chat.livecoding.tv";
 const QString DEFAULT_LIVECODING_CANDY_JS_LINK = "https://www.livecoding.tv/static/candy-chat/candy.bundle.js";
-const QString DEFAULT_LIVECODING_SMILES_LINK_PREFIX = "https://www.livecoding.tv/static/candy-chat/img/emoticons_hd/";
+//const QString DEFAULT_LIVECODING_SMILES_LINK_PREFIX = "https://www.livecoding.tv/static/candy-chat/img/emoticons_hd/";
+const QString DEFAULT_LIVECODING_SMILES_LINK_PREFIX = "https://www.livecoding.tv/static/candy-chat/img/emoticons-dark/";
 const QString DEFAULT_LIVECODING_SID_INFO_REQUEST_PREFIX = "https://ws.www.livecoding.tv/live.eio/?EIO=3&transport=polling";
 const QString DEFAULT_LIVECODING_WEBSOCKET_LINK = "wss://ws.www.livecoding.tv/live.eio/?EIO=3&transport=websocket";
 
@@ -408,6 +409,7 @@ void QLivecodingChat::onSmilesLoaded()
     QString info = reply->readAll();
 
     //говно говно код
+    /*
     const QString EMOTICONS = "emoticons: [";
 
     int smilesInfoStart = info.indexOf( EMOTICONS ) + EMOTICONS.length() - 1;
@@ -424,6 +426,75 @@ void QLivecodingChat::onSmilesLoaded()
     info.replace( "/gim", "/gim\"" );
     info.replace( "/gm", "/gm\"" );
     info.replace( "image", "\"image\"" );
+    */
+
+    const QString EMOTICONS = "emoticons: {";
+
+    int smilesInfoStart = info.indexOf( EMOTICONS );
+
+    QStringList smilesLists;
+    smilesLists << "free: [" << "pro: [" << "kappaFree: [" << "kappaPro: [";
+
+    QStringList smilesPrefixList;
+
+    smilesPrefixList    << "https://www.livecoding.tv/static/candy-chat/img/emoticons-dark/" \
+                        << "https://www.livecoding.tv/static/candy-chat/img/emoticons-dark/" \
+                        << "https://www.livecoding.tv/static/candy-chat/img/emoticons-kappa/" \
+                        << "https://www.livecoding.tv/static/candy-chat/img/emoticons-kappa/" ;
+
+    if( smilesInfoStart != -1 )
+    {
+
+        for( int i = 0; i < smilesLists.size(); ++i )
+        {
+            smilesInfoStart = info.indexOf( smilesLists[ i ], smilesInfoStart ) + smilesLists[ i ].length() - 1;
+            int smilesInfoEnd = info.indexOf( ']', smilesInfoStart );
+
+
+
+            QString smilesInfo = info.mid( smilesInfoStart, smilesInfoEnd - smilesInfoStart + 1 );
+
+            smilesInfo.replace( '\n', "" );
+            smilesInfo.replace( '\t', "" );
+            smilesInfo.replace( ' ', ""  );
+
+            smilesInfo.replace( "plain", "\"plain\"" );
+            smilesInfo.replace( "regex:", "\"regex\":\"" );
+            smilesInfo.replace( "/gim", "/gim\"" );
+            smilesInfo.replace( "/gm", "/gm\"" );
+            smilesInfo.replace( "image", "\"image\"" );
+            smilesInfo.replace( "sprite", "\"sprite\"" );
+
+            QJsonParseError parseError;
+
+            QJsonDocument jsonDoc = QJsonDocument::fromJson( smilesInfo.toStdString().c_str(), &parseError );
+
+            if( QJsonParseError::NoError == parseError.error )
+            {
+                if( jsonDoc.isArray() )
+                {
+                    QJsonArray smilesArr = jsonDoc.array();
+
+                    foreach( const QJsonValue &value, smilesArr )
+                    {
+                        QJsonObject smileInfo = value.toObject();
+
+                        addSmile( smileInfo[ "plain" ].toString(), smilesPrefixList[ i ] + smileInfo[ "image" ].toString() );
+                    }
+                }
+            }
+
+
+        }
+    }
+
+
+
+
+
+
+
+    /*
 
     QJsonParseError parseError;
 
@@ -443,6 +514,8 @@ void QLivecodingChat::onSmilesLoaded()
             }
         }
     }
+
+    */
 
     if( isShowSystemMessages() )
     {
