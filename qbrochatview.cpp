@@ -2,19 +2,17 @@
 #include<windows.h>
 #endif
 
-#include <QWebFrame>
-#include <QWheelEvent>
-#include <QDesktopServices>
 #include <QApplication>
+#include <QMessageBox>
+#include <QDesktopServices>
+#include <QDesktopWidget>
+
+
+#include <QWheelEvent>
 #include <QPalette>
 #include <QFileInfo>
 #include <QScrollBar>
 
-#include <QMessageBox>
-
-#include <QWebFrame>
-#include <QApplication>
-#include <QDesktopWidget>
 #include <QMouseEvent>
 #include <QAction>
 #include <QPushButton>
@@ -27,6 +25,8 @@
 #include <QDir>
 
 #include <QJsonDocument>
+
+#include <QWebEngineSettings>
 
 #include "qaceschat.h"
 #include "qcybergamechat.h"
@@ -65,7 +65,7 @@
 #include "settingsconsts.h"
 
 
-
+#include "qbrochatwebpage.h"
 #include "qbrochatview.h"
 
 #ifdef Q_CC_MSVC
@@ -81,7 +81,7 @@ const int DEFAULT_WINDOW_HEIGHT = 512;
 const int DEFAULT_SCROLL_SPEED = 32;
 
 QBroChatView::QBroChatView( QWidget *parent )
-: QWebView( parent )
+: QWebEngineView( parent )
 , acesChat_( new QAcesChat( this ) )
 , cybergameChat_( new QCyberGameChat( this ) )
 , funstreamChat_( new QFunStreamChat( this ) )
@@ -121,9 +121,36 @@ QBroChatView::QBroChatView( QWidget *parent )
     //setAttribute( Qt::WA_TransparentForMouseEvents, true );
     //setAttribute( Qt::WA_KeyboardFocusChange );
 
-    page()->settings()->setAttribute( QWebSettings::AcceleratedCompositingEnabled, true );
-    page()->settings()->setAttribute( QWebSettings::Accelerated2dCanvasEnabled, true );
-    page()->settings()->setAttribute( QWebSettings::WebGLEnabled, true );
+
+
+
+
+    settings()->setAttribute( QWebEngineSettings::AutoLoadImages, true );
+    settings()->setAttribute( QWebEngineSettings::JavascriptEnabled, true );
+    settings()->setAttribute( QWebEngineSettings::JavascriptCanOpenWindows, false );
+    settings()->setAttribute( QWebEngineSettings::JavascriptCanAccessClipboard, false );
+    settings()->setAttribute( QWebEngineSettings::LinksIncludedInFocusChain, false );
+    settings()->setAttribute( QWebEngineSettings::LocalStorageEnabled, false );
+    settings()->setAttribute( QWebEngineSettings::LocalContentCanAccessRemoteUrls, true );
+    settings()->setAttribute( QWebEngineSettings::XSSAuditingEnabled, false );
+    settings()->setAttribute( QWebEngineSettings::SpatialNavigationEnabled, false );
+    settings()->setAttribute( QWebEngineSettings::LocalContentCanAccessFileUrls, true );
+    settings()->setAttribute( QWebEngineSettings::HyperlinkAuditingEnabled, false );
+    settings()->setAttribute( QWebEngineSettings::ScrollAnimatorEnabled, false );
+    settings()->setAttribute( QWebEngineSettings::ErrorPageEnabled, false );
+    settings()->setAttribute( QWebEngineSettings::PluginsEnabled, false );
+    settings()->setAttribute( QWebEngineSettings::FullScreenSupportEnabled, false );
+    settings()->setAttribute( QWebEngineSettings::ScreenCaptureEnabled, false );
+    settings()->setAttribute( QWebEngineSettings::WebGLEnabled, true );
+    settings()->setAttribute( QWebEngineSettings::Accelerated2dCanvasEnabled, true );
+    settings()->setAttribute( QWebEngineSettings::AutoLoadIconsForPage, false );
+    settings()->setAttribute( QWebEngineSettings::TouchIconsEnabled, false );
+
+    setPage( new QBroChatWebPage( this ) );
+
+
+    page()->setBackgroundColor( QColor( 0, 0, 0, 255 ) );
+
 
     setMinimumSize( MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT );
 
@@ -131,9 +158,13 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     setStyleSheet("QWebView { background: transparent }");
 
-    QObject::connect( this, SIGNAL( linkClicked( const QUrl & ) ), this, SLOT( onLinkClicked( const QUrl & ) ) );
+    //TODO: туду
+    //QObject::connect( this, SIGNAL( linkClicked( const QUrl & ) ), this, SLOT( onLinkClicked( const QUrl & ) ) );
 
-    page()->setLinkDelegationPolicy( QWebPage::DelegateAllLinks );
+    //TODO: туду
+    //page()->setLinkDelegationPolicy( QWebPage::DelegateAllLinks );
+
+
 
     changeShowSystemMessagesState();
     changeShowImagesState();
@@ -323,6 +354,8 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     QObject::connect( this, SIGNAL( loadFinished( bool ) ), this, SLOT( loadFlagsAndAttributes() ) );
 
+    QObject::connect( this, SIGNAL( loadFinished( bool ) ), this, SLOT( testLoadFinished(bool) ) );
+
     //setMouseTracking( true );
 }
 
@@ -338,9 +371,6 @@ QBroChatView::~QBroChatView()
             QMessageBox::warning( this, "Error", "Can not save messages log"  );
         }
     }
-
-    page()->settings()->clearMemoryCaches();
-
 }
 
 void QBroChatView::mousePressEvent( QMouseEvent *event )
@@ -352,7 +382,7 @@ void QBroChatView::mousePressEvent( QMouseEvent *event )
     }
     else
     {
-        QWebView::mousePressEvent( event );
+        QWebEngineView::mousePressEvent( event );
     }
     event->accept();
 }
@@ -366,7 +396,7 @@ void QBroChatView::mouseMoveEvent( QMouseEvent *event )
     }
     else
     {
-        QWebView::mouseMoveEvent( event );
+        QWebEngineView::mouseMoveEvent( event );
     }
     event->accept();
 }
@@ -377,7 +407,7 @@ void QBroChatView::mouseReleaseEvent( QMouseEvent *event )
         moveState_ = false;
     else
     {
-        QWebView::mouseReleaseEvent( event );
+        QWebEngineView::mouseReleaseEvent( event );
     }
     event->accept();
 }
@@ -417,15 +447,11 @@ void QBroChatView::timerEvent( QTimerEvent *event )
 {
     if( event->timerId() == updatePictureId_ && saveToFile_ )
     {
-        QImage image( page()->viewportSize(), QImage::Format_ARGB32 );
+        QImage image( page()->view()->size(), QImage::Format_ARGB32 );
         image.fill( Qt::transparent );
-
         QPainter painter( &image );
-
-        page()->mainFrame()->render( &painter );
-
+        page()->view()->render( &painter );
         painter.end();
-
         image.save( QApplication::applicationDirPath() + "/output.png", "PNG" );
     }
 }
@@ -449,7 +475,8 @@ void QBroChatView::addMessage( const QString & service, const QString & nickName
     formattedMessage.replace( "\"", "\\\"" );
 
     QString js = "onNewMessage( \"" + service + "\", \"" + formattedNickName + "\", \"" + formattedMessage + "\", \"" + type +"\");";
-    page()->mainFrame()->evaluateJavaScript( js );
+    //page()->mainFrame()->evaluateJavaScript( js );
+    page()->runJavaScript( js );
 
     if( chatUpdateServer_ )
     {
@@ -698,7 +725,8 @@ void QBroChatView::onNewStatistic( QChatStatistic *statistic )
 {
     QString js = "onStatisticReceived( \"" + statistic->service() + "\", \"" + statistic->statistic() + "\");";
 
-    page()->mainFrame()->evaluateJavaScript( js );
+    //page()->mainFrame()->evaluateJavaScript( js );
+    page()->runJavaScript( js );
 
     if( chatUpdateServer_ )
     {
@@ -955,6 +983,10 @@ void QBroChatView::onNewMessage( QJsonObject json, const QChatService * )
 }
 
 
+void QBroChatView::testLoadFinished( bool test )
+{
+    qDebug() << "testLoadFinished:" << test;
+}
 
 
 

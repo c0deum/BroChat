@@ -1,4 +1,4 @@
-QT += core network xml widgets webkitwidgets websockets svg
+QT += core network widgets webenginewidgets websockets svg
 
 CONFIG += c++14
 
@@ -33,7 +33,8 @@ HEADERS += \
     qvidichat.h \
     qazubuchat.h \
     qstreamcubechat.h \
-    qbeamprochat.h
+    qbeamprochat.h \
+    qbrochatwebpage.h
 
 SOURCES += \
     main.cpp \
@@ -64,7 +65,8 @@ SOURCES += \
     qvidichat.cpp \
     qazubuchat.cpp \
     qstreamcubechat.cpp \
-    qbeamprochat.cpp
+    qbeamprochat.cpp \
+    qbrochatwebpage.cpp
 
 RESOURCES += \
     resources.qrc

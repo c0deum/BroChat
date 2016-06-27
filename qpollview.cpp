@@ -3,7 +3,7 @@
 #include "qpollview.h"
 
 QPollView::QPollView( QWidget * parent )
-: QWebView( parent )
+: QWebEngineView( parent )
 {
 }
 

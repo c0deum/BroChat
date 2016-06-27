@@ -3,7 +3,7 @@
 
 #include <QSettings>
 
-#include <QWebView>
+#include <QWebEngineView>
 
 #include <QJsonObject>
 
@@ -37,7 +37,7 @@ class QAzubuChat;
 
 class QBeamProChat;
 
-class QBroChatView: public QWebView
+class QBroChatView: public QWebEngineView
 {
     Q_OBJECT
 public:
@@ -58,6 +58,7 @@ protected:
     virtual void        closeEvent( QCloseEvent * event );
 
     virtual void        timerEvent( QTimerEvent * event );
+
 private:
     void                loadSettings();
     bool                isLink( const QString & str );
@@ -87,6 +88,8 @@ private slots:
     void                onLinkClicked( const QUrl & url );
 
     void                showPollSettings();
+
+    void                testLoadFinished( bool test );
 signals:
     void                closeWindow();
 private:

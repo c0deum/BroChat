@@ -1,9 +1,9 @@
 #ifndef QPOLLVIEW
 #define QPOLLVIEW
 
-#include <QWebView>
+#include <QWebEngineView>
 
-class QPollView: public QWebView
+class QPollView: public QWebEngineView
 {
     Q_OBJECT
 public:
