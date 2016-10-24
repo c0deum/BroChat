@@ -258,14 +258,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , sc2tvBlackListEdit( new QTextEdit( this ) )
 , sc2tvRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-, streamboxChannelCheckBox( new QCheckBox( this ) )
-, streamboxChannelEdit( new QLineEdit( this ) )
-, streamboxBadgesCheckBox( new QCheckBox( this ) )
-, streamboxAliasesEdit( new QLineEdit( this ) )
-, streamboxSupportersListEdit( new QTextEdit( this ) )
-, streamboxBlackListEdit( new QTextEdit( this ) )
-, streamboxRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
 
 , streamcubeChannelCheckBox( new QCheckBox( this ) )
 , streamcubeChannelEdit( new QLineEdit( this ) )
@@ -291,13 +283,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , vidiBlackListEdit( new QTextEdit( this ) )
 , vidiRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-
-, youtubeChannelCheckBox( new QCheckBox( this ) )
-, youtubeChannelEdit( new QLineEdit( this ) )
-, youtubeAliasesEdit( new QLineEdit( this ) )
-, youtubeSupportersListEdit( new QTextEdit( this ) )
-, youtubeBlackListEdit( new QTextEdit( this ) )
-, youtubeRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
 {
     setWindowTitle( tr( "BroChat Settings" ) );
@@ -368,12 +353,11 @@ void QSettingsDialog::setupWidgets()
     setupIgdcTab();
     setupLivecodingTab();
     setupRealltvTab();
-    setupSc2tvTab();
-    setupStreamboxTab();
+    setupSc2tvTab();    
     setupStreamcubeTab();
     setupTwitchTab();
     setupVidiTab();
-    setupYoutubetab();
+
 }
 
 void QSettingsDialog::setupGeneralTab()
@@ -1428,50 +1412,6 @@ void QSettingsDialog::setupSc2tvTab()
     tabSettings->addTab( sc2tvGroup, QIcon( ":/resources/sc2tvlogo.png" ), tr( "Sc2tv" ) );
 }
 
-void QSettingsDialog::setupStreamboxTab()
-{
-    QSettings settings;
-
-    QVBoxLayout * streamboxLayout = new QVBoxLayout();
-
-    streamboxChannelCheckBox->setText( CHANNEL_TEXT );
-    streamboxChannelCheckBox->setChecked( settings.value( STREAMBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    streamboxChannelEdit->setText( settings.value( STREAMBOX_CHANNEL_SETTING_PATH, DEFAULT_STREAMBOX_CHANNEL_NAME ).toString() );
-    streamboxChannelEdit->setEnabled( streamboxChannelCheckBox->isChecked() );
-
-    QObject::connect( streamboxChannelCheckBox, SIGNAL( clicked( bool ) ), streamboxChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    streamboxBadgesCheckBox->setText( tr( "Badges" ) );
-    streamboxBadgesCheckBox->setChecked( settings.value( STREAMBOX_BADGES_SETTING_PATH, false ).toBool() );
-
-    addWidgets( streamboxLayout, { streamboxChannelCheckBox, streamboxChannelEdit, streamboxBadgesCheckBox } );
-
-    streamboxAliasesEdit->setText( settings.value( STREAMBOX_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( streamboxLayout, { new QLabel( ALIASES_TEXT, this ), streamboxAliasesEdit } );
-
-    streamboxSupportersListEdit->setText( settings.value( STREAMBOX_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( streamboxLayout, { new QLabel( SUPPORTERS_TEXT, this ), streamboxSupportersListEdit } );
-
-    streamboxBlackListEdit->setText( settings.value( STREAMBOX_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( streamboxLayout, { new QLabel( BLACKLIST_TEXT, this ), streamboxBlackListEdit } );
-
-    streamboxRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    streamboxRemoveBlackListUsersCheckBox->setChecked( settings.value( STREAMBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    streamboxLayout->addWidget( streamboxRemoveBlackListUsersCheckBox );
-
-    streamboxLayout->addStretch( 1 );
-
-    QGroupBox * streamboxGroup = new QGroupBox( tabSettings );
-    streamboxGroup->setLayout( streamboxLayout );
-
-    tabSettings->addTab( streamboxGroup, QIcon( ":/resources/streamboxlogo.png" ), tr( "Streambox" ) );
-}
-
 void QSettingsDialog::setupStreamcubeTab()
 {
     QSettings settings;
@@ -1600,48 +1540,6 @@ void QSettingsDialog::setupVidiTab()
     vidiGroup->setLayout( vidiLayout );
 
     tabSettings->addTab( vidiGroup, QIcon( ":/resources/vidilogo.png" ), tr( "Vidi" ) );
-}
-
-
-void QSettingsDialog::setupYoutubetab()
-{
-    QSettings settings;
-
-    QVBoxLayout * youtubeLayout = new QVBoxLayout();
-
-    youtubeChannelCheckBox->setText( CHANNEL_TEXT );
-    youtubeChannelCheckBox->setChecked( settings.value( YOUTUBE_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    youtubeChannelEdit->setText( settings.value( YOUTUBE_CHANNEL_SETTING_PATH, DEFAULT_YOUTUBE_CHANNEL_NAME ).toString() );
-    youtubeChannelEdit->setEnabled( youtubeChannelCheckBox->isChecked() );
-
-    QObject::connect( youtubeChannelCheckBox, SIGNAL( clicked( bool ) ), youtubeChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    addWidgets( youtubeLayout, { youtubeChannelCheckBox, youtubeChannelEdit } );
-
-    youtubeAliasesEdit->setText( settings.value( YOUTUBE_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( youtubeLayout, { new QLabel( ALIASES_TEXT, this ), youtubeAliasesEdit } );
-
-    youtubeSupportersListEdit->setText( settings.value( YOUTUBE_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( youtubeLayout, { new QLabel( SUPPORTERS_TEXT, this ), youtubeSupportersListEdit } );
-
-    youtubeBlackListEdit->setText( settings.value( YOUTUBE_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( youtubeLayout, { new QLabel( BLACKLIST_TEXT, this ), youtubeBlackListEdit } );
-
-    youtubeRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    youtubeRemoveBlackListUsersCheckBox->setChecked( settings.value( YOUTUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    youtubeLayout->addWidget( youtubeRemoveBlackListUsersCheckBox );
-
-    youtubeLayout->addStretch( 1 );
-
-    QGroupBox * youtubeGroup = new QGroupBox( tabSettings );
-    youtubeGroup->setLayout( youtubeLayout );
-
-    tabSettings->addTab( youtubeGroup, QIcon( ":/resources/youtubelogo.png" ), tr( "Youtube" ) );
 }
 
 
@@ -2530,52 +2428,6 @@ void QSettingsDialog::saveSettings()
         emit sc2tvRemoveBlackListUsersChanged( sc2tvRemoveBlackListUsersCheckBox->isChecked() );
     }
 
-    //настройки streambox
-
-    oldBoolValue = settings.value( STREAMBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( STREAMBOX_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != streamboxChannelCheckBox->isChecked() || oldStringValue != streamboxChannelEdit->text() )
-    {
-        settings.setValue( STREAMBOX_CHANNEL_ENABLE_SETTING_PATH, streamboxChannelCheckBox->isChecked() );
-        settings.setValue( STREAMBOX_CHANNEL_SETTING_PATH, streamboxChannelEdit->text() );
-
-        emit streamboxChannelChanged();
-    }
-
-    oldBoolValue = settings.value( STREAMBOX_BADGES_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != streamboxBadgesCheckBox->isChecked() )
-    {
-        settings.setValue( STREAMBOX_BADGES_SETTING_PATH, streamboxBadgesCheckBox->isChecked() );
-        emit streamboxBadgesChanged( streamboxBadgesCheckBox->isChecked() );
-    }
-
-    oldStringValue = settings.value( STREAMBOX_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != streamboxAliasesEdit->text() )
-    {
-        settings.setValue( STREAMBOX_ALIASES_SETTING_PATH, streamboxAliasesEdit->text() );
-        emit streamboxAliasesChanged( streamboxAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( STREAMBOX_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != streamboxSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( STREAMBOX_SUPPORTERS_LIST_SETTING_PATH, streamboxSupportersListEdit->toPlainText() );
-        emit streamboxSupportersListChanged( streamboxSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( STREAMBOX_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != streamboxBlackListEdit->toPlainText() )
-    {
-        settings.setValue( STREAMBOX_BLACK_LIST_SETTING_PATH, streamboxBlackListEdit->toPlainText() );
-        emit streamboxBlackListChanged( streamboxBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( STREAMBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != streamboxRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( STREAMBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH, streamboxRemoveBlackListUsersCheckBox->isChecked() );
-        emit streamboxRemoveBlackListUsersChanged( streamboxRemoveBlackListUsersCheckBox->isChecked() );
-    }
 
     //настройки streamcube
 
@@ -2711,46 +2563,6 @@ void QSettingsDialog::saveSettings()
     {
         settings.setValue( VIDI_REMOVE_BLACK_LIST_USERS_SETTING_PATH, vidiRemoveBlackListUsersCheckBox->isChecked() );
         emit vidiRemoveBlackListUsersChanged( vidiRemoveBlackListUsersCheckBox->isChecked() );
-    }
-
-    //настройки youtube
-
-    oldBoolValue = settings.value( YOUTUBE_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( YOUTUBE_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != youtubeChannelCheckBox->isChecked() || oldStringValue != youtubeChannelEdit->text() )
-    {
-        settings.setValue( YOUTUBE_CHANNEL_ENABLE_SETTING_PATH, youtubeChannelCheckBox->isChecked() );
-        settings.setValue( YOUTUBE_CHANNEL_SETTING_PATH, youtubeChannelEdit->text() );
-
-        emit youtubeChannelChanged();
-    }
-
-    oldStringValue = settings.value( YOUTUBE_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != youtubeAliasesEdit->text() )
-    {
-        settings.setValue( YOUTUBE_ALIASES_SETTING_PATH, youtubeAliasesEdit->text() );
-        emit youtubeAliasesChanged( youtubeAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( YOUTUBE_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != youtubeSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( YOUTUBE_SUPPORTERS_LIST_SETTING_PATH, youtubeSupportersListEdit->toPlainText() );
-        emit youtubeSupportersListChanged( youtubeSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( YOUTUBE_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != youtubeBlackListEdit->toPlainText() )
-    {
-        settings.setValue( YOUTUBE_BLACK_LIST_SETTING_PATH, youtubeBlackListEdit->toPlainText() );
-        emit youtubeBlackListChanged( youtubeBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( YOUTUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != youtubeRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( YOUTUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH, youtubeRemoveBlackListUsersCheckBox->isChecked() );
-        emit youtubeRemoveBlackListUsersChanged( youtubeRemoveBlackListUsersCheckBox->isChecked() );
     }
 
 }

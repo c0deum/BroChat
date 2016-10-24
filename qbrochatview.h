@@ -25,9 +25,7 @@ class QIgdcChat;
 class QLivecodingChat;
 class QReallTvChat;
 class QSc2tvChat;
-class QStreamBoxChat;
 class QTwitchChat;
-class QYoutubeChat;
 
 class QVidiChat;
 
@@ -103,10 +101,8 @@ private:
     QIgdcChat *         igdcChat_;
     QLivecodingChat *   livecodingChat_;
     QReallTvChat *      realltvChat_;
-    QSc2tvChat *        sc2tvChat_;
-    QStreamBoxChat *    streamboxChat_;
-    QTwitchChat *       twitchChat_;
-    QYoutubeChat *      youtubeChat_;
+    QSc2tvChat *        sc2tvChat_;   
+    QTwitchChat *       twitchChat_;    
 
     QVidiChat *         vidiChat_;
 

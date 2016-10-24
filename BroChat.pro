@@ -18,12 +18,10 @@ HEADERS += \
     qbrochatview.h \    
     qfunstreamchat.h \
     qchatupdateserver.h \
-    qstreamboxchat.h \
     qchatstatistic.h \
     qhitboxchat.h \
     qgipsyteamchat.h \
     qrealltvchat.h \
-    qyoutubechat.h \
     qlivecodingchat.h \
     qigdcchat.h \
     qpoll.h \
@@ -50,12 +48,10 @@ SOURCES += \
     qbrochatview.cpp \
     qfunstreamchat.cpp \
     qchatupdateserver.cpp \
-    qstreamboxchat.cpp \
     qchatstatistic.cpp \
     qhitboxchat.cpp \
     qgipsyteamchat.cpp \
     qrealltvchat.cpp \
-    qyoutubechat.cpp \
     qlivecodingchat.cpp \
     qigdcchat.cpp \
     qmessagesmanager.cpp \

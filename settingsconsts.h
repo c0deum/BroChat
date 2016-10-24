@@ -208,15 +208,6 @@ const QString REALLTV_BLACK_LIST_SETTING_PATH = "/Settings/Realltv/BlackList";
 const QString REALLTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Realltv/RemoveBlackListUsers";
 const QString REALLTV_BADGES_SETTING_PATH = "/Settings/Realltv/Badges";
 
-const QString STREAMBOX_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Streambox/Enable";
-const QString STREAMBOX_CHANNEL_SETTING_PATH = "/Settings/Streambox/Channel";
-const QString STREAMBOX_ALIASES_SETTING_PATH = "/Settings/Streambox/Aliases";
-const QString STREAMBOX_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Streambox/Supporters";
-const QString STREAMBOX_BLACK_LIST_SETTING_PATH = "/Settings/Streambox/BlackList";
-const QString STREAMBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Streambox/RemoveBlackListUsers";
-const QString STREAMBOX_BADGES_SETTING_PATH = "/Settings/Streambox/Badges";
-
-
 const QString STREAMCUBE_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Streamcube/Enable";
 const QString STREAMCUBE_CHANNEL_SETTING_PATH = "/Settings/Streamcube/Channel";
 const QString STREAMCUBE_ALIASES_SETTING_PATH = "/Settings/Streamcube/Aliases";
@@ -233,13 +224,6 @@ const QString TWITCH_BLACK_LIST_SETTING_PATH = "/Settings/Twitch/BlackList";
 const QString TWITCH_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Twitch/RemoveBlackListUsers";
 const QString TWITCH_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Twitch/OriginalColors";
 const QString TWITCH_BADGES_SETTING_PATH = "/Settings/Twitch/Badges";
-
-const QString YOUTUBE_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Youtube/Enable";
-const QString YOUTUBE_CHANNEL_SETTING_PATH = "/Settings/Youtube/Channel";
-const QString YOUTUBE_ALIASES_SETTING_PATH = "/Settings/Youtube/Aliases";
-const QString YOUTUBE_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Youtube/Supporters";
-const QString YOUTUBE_BLACK_LIST_SETTING_PATH = "/Settings/Youtube/BlackList";
-const QString YOUTUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Youtube/RemoveBlackListUsers";
 
 
 const QString VIDI_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Vidi/Enable";

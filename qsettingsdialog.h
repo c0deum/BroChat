@@ -219,14 +219,6 @@ signals:
     void                sc2tvRemoveBlackListUsersChanged( bool );
     void                sc2tvOriginalColorsChanged( bool );
 
-    void                streamboxChannelChanged();
-    void                streamboxChannelDisabled();
-    void                streamboxAliasesChanged( const QString & );
-    void                streamboxSupportersListChanged( const QString & );
-    void                streamboxBlackListChanged( const QString & );
-    void                streamboxRemoveBlackListUsersChanged( bool );
-    void                streamboxBadgesChanged( bool );
-
 
     void                streamcubeChannelChanged();
     void                streamcubeChannelDisabled();
@@ -253,13 +245,6 @@ signals:
     void                vidiBlackListChanged( const QString & );
     void                vidiRemoveBlackListUsersChanged( bool );
 
-
-    void                youtubeChannelChanged();
-    void                youtubeChannelDisabled();
-    void                youtubeAliasesChanged( const QString & );
-    void                youtubeSupportersListChanged( const QString & );
-    void                youtubeBlackListChanged( const QString & );
-    void                youtubeRemoveBlackListUsersChanged( bool );
 private:
     QRgb                bodyBackgroundColor;
 
@@ -481,14 +466,6 @@ private:
     QTextEdit *         sc2tvBlackListEdit;
     QCheckBox *         sc2tvRemoveBlackListUsersCheckBox;
 
-    QCheckBox *         streamboxChannelCheckBox;
-    QLineEdit *         streamboxChannelEdit;
-    QCheckBox *         streamboxBadgesCheckBox;
-    QLineEdit *         streamboxAliasesEdit;
-    QTextEdit *         streamboxSupportersListEdit;
-    QTextEdit *         streamboxBlackListEdit;
-    QCheckBox *         streamboxRemoveBlackListUsersCheckBox;
-
 
     QCheckBox *         streamcubeChannelCheckBox;
     QLineEdit *         streamcubeChannelEdit;
@@ -515,13 +492,6 @@ private:
     QTextEdit *         vidiBlackListEdit;
     QCheckBox *         vidiRemoveBlackListUsersCheckBox;
 
-
-    QCheckBox *         youtubeChannelCheckBox;
-    QLineEdit *         youtubeChannelEdit;
-    QLineEdit *         youtubeAliasesEdit;
-    QTextEdit *         youtubeSupportersListEdit;
-    QTextEdit *         youtubeBlackListEdit;
-    QCheckBox *         youtubeRemoveBlackListUsersCheckBox;
 };
 
 #endif // QSETTINGSDIALOG_H
