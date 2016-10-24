@@ -177,12 +177,6 @@ body
 	height: 16px;
 }
 
-.streambox
-{
-	content: url(../resources/streamboxlogo.png);
-	height: 16px;
-}
-
 .streamcube
 {
 	content: url(../resources/streamcubelogo.png);
@@ -200,13 +194,6 @@ body
 	content: url(../resources/vidilogo.png);
 	height: 16px;
 }
-
-.youtube
-{
-	content: url(../resources/youtubelogo.png);
-	height: 16px;
-}
-
 
 .azubuViewers
 {
@@ -269,20 +256,9 @@ body
 	height: 24px;
 }
 
-.youtubeViewers
-{
-        content: url(../resources/youtubelogo.png);
-        height:24px;
-}
-
 .gamerstvViewers
 {
 	content: url(../resources/gamerstvlogo.png);
 	height:24px;
 }
 
-.streamboxViewers
-{        
-	content: url(../resources/streamboxlogo.png);
-	height:24px;
-}

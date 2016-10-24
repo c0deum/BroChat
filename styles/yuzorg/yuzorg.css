@@ -187,12 +187,6 @@ a .picture
 	height: 24px;
 }
 
-.streambox
-{
-	content: url(../resources/streamboxlogo.png);
-	height: 24px;
-}
-
 .streamcube
 {
 	content: url(../resources/streamcubelogo.png);
@@ -208,12 +202,6 @@ a .picture
 .vidi
 {
 	content: url(../resources/vidilogo.png);
-	height: 24px;
-}
-
-.youtube
-{
-	content: url(../resources/youtubelogo.png);
 	height: 24px;
 }
 

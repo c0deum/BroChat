@@ -496,12 +496,6 @@ a
 	height:%SERVICE_ICONS_SIZE%;
 }
 
-.streambox
-{
-	content: url(streamboxlogo.png);
-	height:%SERVICE_ICONS_SIZE%;
-}
-
 .streamcube
 {
 	content: url(streamcubelogo.png);
@@ -519,13 +513,6 @@ a
 	content: url(vidilogo.png);
 	height:%SERVICE_ICONS_SIZE%;
 }		
-
-
-.youtube
-{
-	content: url(youtubelogo.png);
-	height:%SERVICE_ICONS_SIZE%;
-}
 
 .viewersInfoShow
 {        
@@ -601,14 +588,6 @@ a
 	height:%SERVICE_ICONS_SIZE%;
 }	
 
-
-.youtubeViewers
-{
-        padding-top:4px;
-        content: url(youtubelogo.png);
-        height:%SERVICE_ICONS_SIZE%;
-}
-
 .funstreamViewers
 {
         padding-top:4px;
@@ -630,13 +609,6 @@ a
 	height:%SERVICE_ICONS_SIZE%;
 }
 
-.streamboxViewers
-{
-        padding-top:4px;
-	content: url(streamboxlogo.png);
-	height:%SERVICE_ICONS_SIZE%;
-}
-
 
                 </style>
         </head>
@@ -645,7 +617,7 @@ a
                 var VIEWERS_INFO_SHOW = "viewersInfoShow";
                 var VIEWERS_INFO_HIDE = "viewersInfoHide";
                 
-                var servicesArray = [ "azubu", "beampro", "cybergame", "goodgame", "hitbox", "livecoding", "realltv", "twitch", "vidi", "youtube", "funstream", "gamerstv", "igdc", "streambox" ];
+                var servicesArray = [ "azubu", "beampro", "cybergame", "goodgame", "hitbox", "livecoding", "realltv", "twitch", "vidi", "funstream", "gamerstv", "igdc" ];
                 
                 var MESSAGE = "message";
                 var STATISTIC = "statistic";
@@ -766,12 +738,10 @@ a
                         <span id="livecodingViewersInfo" class = "viewersInfoShow"><span class = "livecodingViewers"></span><span class = "statistic" id="livecoding"></span></span>
                         <span id="realltvViewersInfo" class = "viewersInfoShow"><span class = "realltvViewers"></span><span class = "statistic" id="realltv"></span></span>
                         <span id="twitchViewersInfo" class = "viewersInfoShow"><span class = "twitchViewers"></span><span class = "statistic" id="twitch"></span></span>
-                        <span id="vidiViewersInfo" class = "viewersInfoShow"><span class = "vidiViewers"></span><span class = "statistic" id="vidi"></span></span>
-                        <span id="youtubeViewersInfo" class = "viewersInfoShow"><span class = "youtubeViewers"></span><span class = "statistic" id="youtube"></span></span>
+                        <span id="vidiViewersInfo" class = "viewersInfoShow"><span class = "vidiViewers"></span><span class = "statistic" id="vidi"></span></span>                        
                         <span id="funstreamViewersInfo" class = "viewersInfoShow"><span class = "funstreamViewers"></span><span class = "statistic" id="funstream"></span></span>
                         <span id="gamerstvViewersInfo" class = "viewersInfoShow"><span class = "gamerstvViewers"></span><span class = "statistic" id="gamerstv"></span></span>
                         <span id="igdcViewersInfo" class = "viewersInfoShow"><span class = "igdcViewers"></span><span class = "statistic" id="igdc"></span></span>
-                        <span id="streamboxViewersInfo" class = "viewersInfoShow"><span class = "streamboxViewers"></span><span class = "statistic" id="streambox"></span></span>
                 </div>
 		
                 <script>

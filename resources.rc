@@ -10,11 +10,9 @@
 	<file>resources/igdclogo.png</file>
 	<file>resources/livecodinglogo.png</file>
 	<file>resources/realltvlogo.png</file>
-	<file>resources/sc2tvlogo.png</file>
-	<file>resources/streamboxlogo.png</file>
+	<file>resources/sc2tvlogo.png</file>	
 	<file>resources/twitchlogo.png</file>
-        <file>resources/vidilogo.png</file>
-	<file>resources/youtubelogo.png</file>
+    <file>resources/vidilogo.png</file>	
 	<file>resources/broico.ico</file>
 	<file>resources/default.html</file>
  </qresource>

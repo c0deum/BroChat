@@ -169,12 +169,6 @@ background-color: #5F7497;
 	height: 16px;
 }
 
-.streambox
-{
-	content: url(../resources/streamboxlogo.png);
-	height: 16px;
-}
-
 .streamcube
 {
 	content: url(../resources/streamcubelogo.png);
@@ -190,11 +184,5 @@ background-color: #5F7497;
 .vidi
 {
 	content: url(../resources/vidilogo.png);
-	height: 16px;
-}
-
-.youtube
-{
-	content: url(../resources/youtubelogo.png);
 	height: 16px;
 }
