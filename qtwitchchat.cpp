@@ -33,6 +33,9 @@ const QString DEFAULT_TWITCH_STATISTIC_PREFIX = "https://api.twitch.tv/kraken/st
 
 const QString DEFAULT_TWITCH_SMILE_PREFIX = "http://static-cdn.jtvnw.net/emoticons/v1/";
 
+const QByteArray DEFAULT_TWITCH_CLIENT_ID_HEADER = "Client-ID";
+const QByteArray DEFAULT_TWITCH_CLIENT_ID = "denz8k30rax9uys3nwb5cs129ry3b4d";
+
 const QString QTwitchChat::SERVICE_NAME = "twitch";
 const QString QTwitchChat::SERVICE_USER_NAME = "TWITCH";
 
@@ -309,6 +312,7 @@ void QTwitchChat::safeDeleteSocket()
 void QTwitchChat::loadSelf()
 {
     QNetworkRequest request( QUrl( DEFAULT_TWITCH_SELF_PREFIX + channelName_ ) );
+    request.setRawHeader( DEFAULT_TWITCH_CLIENT_ID_HEADER, DEFAULT_TWITCH_CLIENT_ID );
     QNetworkReply * reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSelfLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onSelfLoadError() ) );
@@ -372,6 +376,8 @@ void QTwitchChat::loadSmiles()
 
     QNetworkRequest request( QUrl( "https://api.twitch.tv/kraken/chat/emoticon_images" ) );
 
+    request.setRawHeader( DEFAULT_TWITCH_CLIENT_ID_HEADER, DEFAULT_TWITCH_CLIENT_ID );
+
     QNetworkReply *reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSmilesLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onSmilesLoadError() ) );
@@ -429,6 +435,8 @@ void QTwitchChat::loadBadges()
     badgesMap_.clear();
 
     QNetworkRequest request( QUrl( badgesLink_ + "" ) );
+
+    request.setRawHeader( DEFAULT_TWITCH_CLIENT_ID_HEADER, DEFAULT_TWITCH_CLIENT_ID );
 
     QNetworkReply * reply = nam_->get( request );
 
@@ -490,6 +498,9 @@ void QTwitchChat::onBadgesLoadError()
 void QTwitchChat::loadStatistic()
 {
     QNetworkRequest request( QUrl( DEFAULT_TWITCH_STATISTIC_PREFIX + channelName_ ) );
+
+    request.setRawHeader( DEFAULT_TWITCH_CLIENT_ID_HEADER, DEFAULT_TWITCH_CLIENT_ID );
+
     QNetworkReply * reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onStatisticLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onStatisticLoadError() ) );
