@@ -242,14 +242,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , livecodingBlackListEdit( new QTextEdit( this ) )
 , livecodingRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-, realltvChannelCheckBox( new QCheckBox( this ) )
-, realltvChannelEdit( new QLineEdit( this ) )
-, realltvBadgesCheckBox( new QCheckBox( this ) )
-, realltvAliasesEdit( new QLineEdit( this ) )
-, realltvSupportersListEdit( new QTextEdit( this ) )
-, realltvBlackListEdit( new QTextEdit( this ) )
-, realltvRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
 , sc2tvChannelCheckBox( new QCheckBox( this ) )
 , sc2tvChannelEdit( new QLineEdit( this ) )
 , sc2tvOriginalColorsCheckBox( new QCheckBox( this ) )
@@ -351,8 +343,7 @@ void QSettingsDialog::setupWidgets()
     setupGoodgameTab();
     setupHitboxTab();
     setupIgdcTab();
-    setupLivecodingTab();
-    setupRealltvTab();
+    setupLivecodingTab();    
     setupSc2tvTab();    
     setupStreamcubeTab();
     setupTwitchTab();
@@ -1324,50 +1315,6 @@ void QSettingsDialog::setupLivecodingTab()
     tabSettings->addTab( livecodingGroup, QIcon( ":/resources/livecodinglogo.png" ), tr( "Livecoding" ) );
 }
 
-void QSettingsDialog::setupRealltvTab()
-{
-    QSettings settings;
-
-    QVBoxLayout * realltvLayout = new QVBoxLayout();
-
-    realltvChannelCheckBox->setText( CHANNEL_TEXT );
-    realltvChannelCheckBox->setChecked( settings.value( REALLTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    realltvChannelEdit->setText( settings.value( REALLTV_CHANNEL_SETTING_PATH, DEFAULT_REALLTV_CHANNEL_NAME ).toString() );
-    realltvChannelEdit->setEnabled( realltvChannelCheckBox->isChecked() );
-
-    QObject::connect( realltvChannelCheckBox, SIGNAL( clicked( bool ) ), realltvChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    realltvBadgesCheckBox->setText( tr( "Badges" ) );
-    realltvBadgesCheckBox->setChecked( settings.value( REALLTV_BADGES_SETTING_PATH, false ).toBool() );
-
-    addWidgets( realltvLayout, { realltvChannelCheckBox, realltvChannelEdit, realltvBadgesCheckBox } );
-
-    realltvAliasesEdit->setText( settings.value( REALLTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( realltvLayout, { new QLabel( ALIASES_TEXT, this ), realltvAliasesEdit } );
-
-    realltvSupportersListEdit->setText( settings.value( REALLTV_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( realltvLayout, { new QLabel( SUPPORTERS_TEXT, this ), realltvSupportersListEdit } );
-
-    realltvBlackListEdit->setText( settings.value( REALLTV_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( realltvLayout, { new QLabel( BLACKLIST_TEXT, this ), realltvBlackListEdit } );
-
-    realltvRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    realltvRemoveBlackListUsersCheckBox->setChecked( settings.value( REALLTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    realltvLayout->addWidget( realltvRemoveBlackListUsersCheckBox );
-
-    realltvLayout->addStretch( 1 );
-
-    QGroupBox * realltvGroup = new QGroupBox( tabSettings );
-    realltvGroup->setLayout( realltvLayout );
-
-    tabSettings->addTab( realltvGroup, QIcon( ":/resources/realltvlogo.png" ), tr( "Realltv" ) );
-}
-
 void QSettingsDialog::setupSc2tvTab()
 {
     QSettings settings;
@@ -2333,53 +2280,6 @@ void QSettingsDialog::saveSettings()
         emit livecodingRemoveBlackListUsersChanged( livecodingRemoveBlackListUsersCheckBox->isChecked() );
     }
 
-
-    //настройки realltv
-
-    oldBoolValue = settings.value( REALLTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( REALLTV_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != realltvChannelCheckBox->isChecked() || oldStringValue != realltvChannelEdit->text() )
-    {
-        settings.setValue( REALLTV_CHANNEL_ENABLE_SETTING_PATH, realltvChannelCheckBox->isChecked() );
-        settings.setValue( REALLTV_CHANNEL_SETTING_PATH, realltvChannelEdit->text() );
-
-        emit realltvChannelChanged();
-    }
-
-    oldBoolValue = settings.value( REALLTV_BADGES_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != realltvBadgesCheckBox->isChecked() )
-    {
-        settings.setValue( REALLTV_BADGES_SETTING_PATH, realltvBadgesCheckBox->isChecked() );
-        emit realltvBadgesChanged( realltvBadgesCheckBox->isChecked() );
-    }
-
-    oldStringValue = settings.value( REALLTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != realltvAliasesEdit->text() )
-    {
-        settings.setValue( REALLTV_ALIASES_SETTING_PATH, realltvAliasesEdit->text() );
-        emit realltvAliasesChanged( realltvAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( REALLTV_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != realltvSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( REALLTV_SUPPORTERS_LIST_SETTING_PATH, realltvSupportersListEdit->toPlainText() );
-        emit realltvSupportersListChanged( realltvSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( REALLTV_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != realltvBlackListEdit->toPlainText() )
-    {
-        settings.setValue( REALLTV_BLACK_LIST_SETTING_PATH, realltvBlackListEdit->toPlainText() );
-        emit realltvBlackListChanged( realltvBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( REALLTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != realltvRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( REALLTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, realltvRemoveBlackListUsersCheckBox->isChecked() );
-        emit realltvRemoveBlackListUsersChanged( realltvRemoveBlackListUsersCheckBox->isChecked() );
-    }
 
     //настройки sc2tv
 

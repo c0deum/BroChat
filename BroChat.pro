@@ -20,8 +20,7 @@ HEADERS += \
     qchatupdateserver.h \
     qchatstatistic.h \
     qhitboxchat.h \
-    qgipsyteamchat.h \
-    qrealltvchat.h \
+    qgipsyteamchat.h \    
     qlivecodingchat.h \
     qigdcchat.h \
     qpoll.h \
@@ -50,8 +49,7 @@ SOURCES += \
     qchatupdateserver.cpp \
     qchatstatistic.cpp \
     qhitboxchat.cpp \
-    qgipsyteamchat.cpp \
-    qrealltvchat.cpp \
+    qgipsyteamchat.cpp \    
     qlivecodingchat.cpp \
     qigdcchat.cpp \
     qmessagesmanager.cpp \

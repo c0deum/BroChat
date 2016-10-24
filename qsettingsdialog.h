@@ -43,13 +43,10 @@ private:
     void                setupHitboxTab();
     void                setupIgdcTab();
     void                setupLivecodingTab();
-    void                setupRealltvTab();
     void                setupSc2tvTab();
-    void                setupStreamboxTab();
     void                setupStreamcubeTab();
     void                setupTwitchTab();
-    void                setupVidiTab();
-    void                setupYoutubetab();
+    void                setupVidiTab();    
 
     void                setColorButtonStyle( QPushButton * button, QRgb color, int fontSize = 16 );
     void                buttonColorSelection( QPushButton * button, QRgb & color );
@@ -202,14 +199,6 @@ signals:
     void                livecodingBlackListChanged( const QString & );
     void                livecodingRemoveBlackListUsersChanged( bool );
     void                livecodingBadgesChanged( bool );
-
-    void                realltvChannelChanged();
-    void                realltvChannelDisabled();
-    void                realltvAliasesChanged( const QString & );
-    void                realltvSupportersListChanged( const QString & );
-    void                realltvBlackListChanged( const QString & );
-    void                realltvRemoveBlackListUsersChanged( bool );
-    void                realltvBadgesChanged( bool );
 
     void                sc2tvChannelChanged();
     void                sc2tvChannelDisabled();
@@ -449,14 +438,6 @@ private:
     QTextEdit *         livecodingSupportersListEdit;
     QTextEdit *         livecodingBlackListEdit;
     QCheckBox *         livecodingRemoveBlackListUsersCheckBox;
-
-    QCheckBox *         realltvChannelCheckBox;
-    QLineEdit *         realltvChannelEdit;
-    QCheckBox *         realltvBadgesCheckBox;
-    QLineEdit *         realltvAliasesEdit;
-    QTextEdit *         realltvSupportersListEdit;
-    QTextEdit *         realltvBlackListEdit;
-    QCheckBox *         realltvRemoveBlackListUsersCheckBox;
 
     QCheckBox *         sc2tvChannelCheckBox;
     QLineEdit *         sc2tvChannelEdit;

@@ -200,14 +200,6 @@ const QString SC2TV_BLACK_LIST_SETTING_PATH = "/Settings/Sc2tv/BlackList";
 const QString SC2TV_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Sc2tv/RemoveBlackListUsers";
 const QString SC2TV_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Sc2tv/OriginalColors";
 
-const QString REALLTV_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Realltv/Enable";
-const QString REALLTV_CHANNEL_SETTING_PATH = "/Settings/Realltv/Channel";
-const QString REALLTV_ALIASES_SETTING_PATH = "/Settings/Realltv/Aliases";
-const QString REALLTV_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Realltv/Supporters";
-const QString REALLTV_BLACK_LIST_SETTING_PATH = "/Settings/Realltv/BlackList";
-const QString REALLTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Realltv/RemoveBlackListUsers";
-const QString REALLTV_BADGES_SETTING_PATH = "/Settings/Realltv/Badges";
-
 const QString STREAMCUBE_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Streamcube/Enable";
 const QString STREAMCUBE_CHANNEL_SETTING_PATH = "/Settings/Streamcube/Channel";
 const QString STREAMCUBE_ALIASES_SETTING_PATH = "/Settings/Streamcube/Aliases";
@@ -253,13 +245,11 @@ const QString DEFAULT_GOODGAME_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_HITBOX_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_IGDC_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_LIVECODING_CHANNEL_NAME = BLANK_STRING;
-const QString DEFAULT_REALLTV_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_SC2TV_CHANNEL_NAME = BLANK_STRING;
-const QString DEFAULT_STREAMBOX_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_STREAMCUBE_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_TWITCH_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_VIDI_CHANNEL_NAME = BLANK_STRING;
-const QString DEFAULT_YOUTUBE_CHANNEL_NAME = BLANK_STRING;
+
 
 //const QString DEFAULT_STYLE = "default.html";
 const int DEFAULT_OPACITY_VALUE = 100;

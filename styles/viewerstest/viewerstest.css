@@ -165,12 +165,6 @@ body
 	height: 16px;
 }
 
-.realltv
-{
-	content: url(../resources/realltvlogo.png);
-	height: 16px;
-}
-
 .sc2tv
 {
 	content: url(../resources/sc2tvlogo.png);
@@ -237,12 +231,6 @@ body
 	content: url(../resources/livecodinglogo.png);
 	height:24px;
 }
-
-.realltvViewers
-{
-	content: url(../resources/realltvlogo.png);
-	height:24px;
-}	
 
 .twitchViewers
 {

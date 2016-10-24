@@ -23,7 +23,6 @@ class QGoodGameChat;
 class QHitBoxChat;
 class QIgdcChat;
 class QLivecodingChat;
-class QReallTvChat;
 class QSc2tvChat;
 class QTwitchChat;
 
@@ -99,8 +98,7 @@ private:
     QGoodGameChat *     goodgameChat_;
     QHitBoxChat *       hitboxChat_;
     QIgdcChat *         igdcChat_;
-    QLivecodingChat *   livecodingChat_;
-    QReallTvChat *      realltvChat_;
+    QLivecodingChat *   livecodingChat_;    
     QSc2tvChat *        sc2tvChat_;   
     QTwitchChat *       twitchChat_;    
 
