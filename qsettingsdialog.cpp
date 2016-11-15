@@ -242,15 +242,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , livecodingBlackListEdit( new QTextEdit( this ) )
 , livecodingRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-, sc2tvChannelCheckBox( new QCheckBox( this ) )
-, sc2tvChannelEdit( new QLineEdit( this ) )
-, sc2tvOriginalColorsCheckBox( new QCheckBox( this ) )
-, sc2tvAliasesEdit( new QLineEdit( this ) )
-, sc2tvSupportersListEdit( new QTextEdit( this ) )
-, sc2tvBlackListEdit( new QTextEdit( this ) )
-, sc2tvRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
-
 , streamcubeChannelCheckBox( new QCheckBox( this ) )
 , streamcubeChannelEdit( new QLineEdit( this ) )
 , streamcubeAliasesEdit( new QLineEdit( this ) )
@@ -343,8 +334,7 @@ void QSettingsDialog::setupWidgets()
     setupGoodgameTab();
     setupHitboxTab();
     setupIgdcTab();
-    setupLivecodingTab();    
-    setupSc2tvTab();    
+    setupLivecodingTab();        
     setupStreamcubeTab();
     setupTwitchTab();
     setupVidiTab();
@@ -1315,50 +1305,6 @@ void QSettingsDialog::setupLivecodingTab()
     tabSettings->addTab( livecodingGroup, QIcon( ":/resources/livecodinglogo.png" ), tr( "Livecoding" ) );
 }
 
-void QSettingsDialog::setupSc2tvTab()
-{
-    QSettings settings;
-
-    QVBoxLayout * sc2tvLayout = new QVBoxLayout();
-
-    sc2tvChannelCheckBox->setText( CHANNEL_TEXT );
-    sc2tvChannelCheckBox->setChecked( settings.value( SC2TV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    sc2tvChannelEdit->setText( settings.value( SC2TV_CHANNEL_SETTING_PATH, DEFAULT_SC2TV_CHANNEL_NAME ).toString() );
-    sc2tvChannelEdit->setEnabled( sc2tvChannelCheckBox->isChecked() );
-
-    QObject::connect( sc2tvChannelCheckBox, SIGNAL( clicked( bool ) ), sc2tvChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    sc2tvOriginalColorsCheckBox->setText( tr( "Original Colors" ) );
-    sc2tvOriginalColorsCheckBox->setChecked( settings.value( SC2TV_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
-
-    addWidgets( sc2tvLayout, { sc2tvChannelCheckBox, sc2tvChannelEdit, sc2tvOriginalColorsCheckBox  } );
-
-    sc2tvAliasesEdit->setText( settings.value( SC2TV_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( sc2tvLayout, { new QLabel( ALIASES_TEXT, this ), sc2tvAliasesEdit } );
-
-    sc2tvSupportersListEdit->setText( settings.value( SC2TV_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( sc2tvLayout, { new QLabel( SUPPORTERS_TEXT, this ), sc2tvSupportersListEdit } );
-
-    sc2tvBlackListEdit->setText( settings.value( SC2TV_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( sc2tvLayout, { new QLabel( BLACKLIST_TEXT, this ), sc2tvBlackListEdit } );
-
-    sc2tvRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    sc2tvRemoveBlackListUsersCheckBox->setChecked( settings.value( SC2TV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    sc2tvLayout->addWidget( sc2tvRemoveBlackListUsersCheckBox );
-
-    sc2tvLayout->addStretch( 1 );
-
-    QGroupBox * sc2tvGroup = new QGroupBox( tabSettings );
-    sc2tvGroup->setLayout( sc2tvLayout );
-
-    tabSettings->addTab( sc2tvGroup, QIcon( ":/resources/sc2tvlogo.png" ), tr( "Sc2tv" ) );
-}
-
 void QSettingsDialog::setupStreamcubeTab()
 {
     QSettings settings;
@@ -2278,54 +2224,6 @@ void QSettingsDialog::saveSettings()
     {
         settings.setValue( LIVECODING_REMOVE_BLACK_LIST_USERS_SETTING_PATH, livecodingRemoveBlackListUsersCheckBox->isChecked() );
         emit livecodingRemoveBlackListUsersChanged( livecodingRemoveBlackListUsersCheckBox->isChecked() );
-    }
-
-
-    //настройки sc2tv
-
-    oldBoolValue = settings.value( SC2TV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( SC2TV_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != sc2tvChannelCheckBox->isChecked() || oldStringValue != sc2tvChannelEdit->text() )
-    {
-        settings.setValue( SC2TV_CHANNEL_ENABLE_SETTING_PATH, sc2tvChannelCheckBox->isChecked() );
-        settings.setValue( SC2TV_CHANNEL_SETTING_PATH, sc2tvChannelEdit->text() );
-
-        emit sc2tvChannelChanged();
-    }
-
-    oldBoolValue = settings.value( SC2TV_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != sc2tvOriginalColorsCheckBox->isChecked() )
-    {
-        settings.setValue( SC2TV_ORIGINAL_COLORS_SETTING_PATH, sc2tvOriginalColorsCheckBox->isChecked() );
-        emit sc2tvOriginalColorsChanged( sc2tvOriginalColorsCheckBox->isChecked() );
-    }
-
-    oldStringValue = settings.value( SC2TV_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != sc2tvAliasesEdit->text() )
-    {
-        settings.setValue( SC2TV_ALIASES_SETTING_PATH, sc2tvAliasesEdit->text() );
-        emit sc2tvAliasesChanged( sc2tvAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( SC2TV_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != sc2tvSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( SC2TV_SUPPORTERS_LIST_SETTING_PATH, sc2tvSupportersListEdit->toPlainText() );
-        emit sc2tvSupportersListChanged( sc2tvSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( SC2TV_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != sc2tvBlackListEdit->toPlainText() )
-    {
-        settings.setValue( SC2TV_BLACK_LIST_SETTING_PATH, sc2tvBlackListEdit->toPlainText() );
-        emit sc2tvBlackListChanged( sc2tvBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( SC2TV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != sc2tvRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( SC2TV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, sc2tvRemoveBlackListUsersCheckBox->isChecked() );
-        emit sc2tvRemoveBlackListUsersChanged( sc2tvRemoveBlackListUsersCheckBox->isChecked() );
     }
 
 

@@ -192,14 +192,6 @@ const QString LIVECODING_BLACK_LIST_SETTING_PATH = "/Settings/Livecoding/BlackLi
 const QString LIVECODING_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Livecoding/RemoveBlackListUsers";
 const QString LIVECODING_BADGES_SETTING_PATH = "/Settings/Livecoding/Badges";
 
-const QString SC2TV_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Sc2tv/Enable";
-const QString SC2TV_CHANNEL_SETTING_PATH = "/Settings/Sc2tv/Channel";
-const QString SC2TV_ALIASES_SETTING_PATH = "/Settings/Sc2tv/Aliases";
-const QString SC2TV_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Sc2tv/Supporters";
-const QString SC2TV_BLACK_LIST_SETTING_PATH = "/Settings/Sc2tv/BlackList";
-const QString SC2TV_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Sc2tv/RemoveBlackListUsers";
-const QString SC2TV_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Sc2tv/OriginalColors";
-
 const QString STREAMCUBE_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Streamcube/Enable";
 const QString STREAMCUBE_CHANNEL_SETTING_PATH = "/Settings/Streamcube/Channel";
 const QString STREAMCUBE_ALIASES_SETTING_PATH = "/Settings/Streamcube/Aliases";

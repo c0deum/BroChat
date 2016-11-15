@@ -8,8 +8,7 @@ HEADERS += \
     qtwitchchat.h \
     qchatservice.h \
     qchatmessage.h \
-    qsettingsdialog.h \
-    qsc2tvchat.h \
+    qsettingsdialog.h \    
     settingsconsts.h \
     qgoodgamechat.h \
     qcybergamechat.h \
@@ -38,8 +37,7 @@ SOURCES += \
     qtwitchchat.cpp \
     qchatservice.cpp \
     qchatmessage.cpp \
-    qsettingsdialog.cpp \
-    qsc2tvchat.cpp \
+    qsettingsdialog.cpp \    
     qgoodgamechat.cpp \
     qcybergamechat.cpp \
     qaceschat.cpp \

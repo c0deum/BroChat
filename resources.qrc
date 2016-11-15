@@ -10,8 +10,7 @@
 	<file>resources/goodgamelogo.png</file>
 	<file>resources/hitboxlogo.png</file>
 	<file>resources/igdclogo.png</file>
-	<file>resources/livecodinglogo.png</file>	
-	<file>resources/sc2tvlogo.png</file>	
+    <file>resources/livecodinglogo.png</file>
     <file>resources/streamcubelogo.png</file>
 	<file>resources/twitchlogo.png</file>
     <file>resources/vidilogo.png</file>

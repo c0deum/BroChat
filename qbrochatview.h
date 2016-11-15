@@ -98,8 +98,7 @@ private:
     QGoodGameChat *     goodgameChat_;
     QHitBoxChat *       hitboxChat_;
     QIgdcChat *         igdcChat_;
-    QLivecodingChat *   livecodingChat_;    
-    QSc2tvChat *        sc2tvChat_;   
+    QLivecodingChat *   livecodingChat_;        
     QTwitchChat *       twitchChat_;    
 
     QVidiChat *         vidiChat_;

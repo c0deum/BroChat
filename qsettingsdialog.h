@@ -42,8 +42,7 @@ private:
     void                setupGoodgameTab();
     void                setupHitboxTab();
     void                setupIgdcTab();
-    void                setupLivecodingTab();
-    void                setupSc2tvTab();
+    void                setupLivecodingTab();    
     void                setupStreamcubeTab();
     void                setupTwitchTab();
     void                setupVidiTab();    
@@ -199,15 +198,6 @@ signals:
     void                livecodingBlackListChanged( const QString & );
     void                livecodingRemoveBlackListUsersChanged( bool );
     void                livecodingBadgesChanged( bool );
-
-    void                sc2tvChannelChanged();
-    void                sc2tvChannelDisabled();
-    void                sc2tvAliasesChanged( const QString & );
-    void                sc2tvSupportersListChanged( const QString & );
-    void                sc2tvBlackListChanged( const QString & );
-    void                sc2tvRemoveBlackListUsersChanged( bool );
-    void                sc2tvOriginalColorsChanged( bool );
-
 
     void                streamcubeChannelChanged();
     void                streamcubeChannelDisabled();
@@ -438,15 +428,6 @@ private:
     QTextEdit *         livecodingSupportersListEdit;
     QTextEdit *         livecodingBlackListEdit;
     QCheckBox *         livecodingRemoveBlackListUsersCheckBox;
-
-    QCheckBox *         sc2tvChannelCheckBox;
-    QLineEdit *         sc2tvChannelEdit;
-    QCheckBox *         sc2tvOriginalColorsCheckBox;
-    QLineEdit *         sc2tvAliasesEdit;
-    QTextEdit *         sc2tvSupportersListEdit;
-    QTextEdit *         sc2tvBlackListEdit;
-    QCheckBox *         sc2tvRemoveBlackListUsersCheckBox;
-
 
     QCheckBox *         streamcubeChannelCheckBox;
     QLineEdit *         streamcubeChannelEdit;
