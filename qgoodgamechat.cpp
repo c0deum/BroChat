@@ -24,6 +24,7 @@
 
 #include "qgoodgamechat.h"
 
+const QString DEFAULT_GOODGAME_LINK = "http://goodgame.ru";
 const QString DEFAULT_GOODGAME_WEBSOCKET_LINK = "ws://chat.goodgame.ru:8081/chat/websocket";
 const QString DEFAULT_GOODGAME_COMMON_SMILES_INFO_LINK = "http://goodgame.ru/css/compiled/common_smiles.css";
 const QString DEFAULT_GOODGAME_CHANNELS_SMILES_INFO_LINK = "http://goodgame.ru/css/compiled/channels_smiles.css";
@@ -32,6 +33,7 @@ const QString DEFAULT_GOODGAME_CHANNEL_STATUS_PREFIX = "http://goodgame.ru/api/g
 const QString DEFAULT_GOODGAME_CHANNEL_STATUS_POSTFIX = "&fmt=json";
 const QString DEFAULT_GOOD_GAME_STATISTIC_PREFIX = "http://goodgame.ru/api/getggchannelstatus?id=";
 const QString DEFAULT_GOOD_GAME_STATISTIC_POSTFIX = "&fmt=json";
+
 
 const QString QGoodGameChat::SERVICE_USER_NAME = "GOODGAME";
 const QString QGoodGameChat::SERVICE_NAME = "goodgame";
@@ -122,7 +124,7 @@ void QGoodGameChat::onSmilesLoaded()
 
     smilesInfo.replace( "\n", "" );
 
-    const QString SMILE_INFO_PREFIX = ".big-smiles .smiles";
+    const QString SMILE_INFO_PREFIX = ".big-smiles .smile";
     const int SMILE_INFO_PREFIX_LENGTH = SMILE_INFO_PREFIX.length();
 
     int smileInfoStartPos = smilesInfo.indexOf( SMILE_INFO_PREFIX );
@@ -141,7 +143,7 @@ void QGoodGameChat::onSmilesLoaded()
             int imageLinkStartPos = smilesInfo.indexOf( "\'", smileNameEndPos ) + 1;
             int imageLinkEndPos = smilesInfo.indexOf( "?", imageLinkStartPos ) - 1;
 
-            QString imageLink = smilesInfo.mid( imageLinkStartPos, imageLinkEndPos - imageLinkStartPos + 1 );
+            QString imageLink = DEFAULT_GOODGAME_LINK + smilesInfo.mid( imageLinkStartPos, imageLinkEndPos - imageLinkStartPos + 1 );
 
             smiles_.insert( smileName, imageLink );
         }
@@ -149,7 +151,7 @@ void QGoodGameChat::onSmilesLoaded()
         smileInfoStartPos = smilesInfo.indexOf( SMILE_INFO_PREFIX, smileNameEndPos );
     }
 
-    const QString ANIMATED_SMILE_INFO_PREFIX = ".animated-smiles .smiles";
+    const QString ANIMATED_SMILE_INFO_PREFIX = ".animated-smiles .smile";
     const int ANIMATED_SMILE_INFO_PREFIX_LENGTH = ANIMATED_SMILE_INFO_PREFIX.length();
 
     smileInfoStartPos = smilesInfo.indexOf( ANIMATED_SMILE_INFO_PREFIX );
@@ -168,7 +170,7 @@ void QGoodGameChat::onSmilesLoaded()
             int imageLinkStartPos = smilesInfo.indexOf( "\'", smileNameEndPos ) + 1;
             int imageLinkEndPos = smilesInfo.indexOf( "?", imageLinkStartPos ) - 1;
 
-            QString imageLink = smilesInfo.mid( imageLinkStartPos, imageLinkEndPos - imageLinkStartPos + 1 );
+            QString imageLink = DEFAULT_GOODGAME_LINK + smilesInfo.mid( imageLinkStartPos, imageLinkEndPos - imageLinkStartPos + 1 );
 
             animatedSmiles_.insert( smileName, imageLink );
         }
