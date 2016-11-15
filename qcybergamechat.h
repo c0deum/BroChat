@@ -1,23 +1,11 @@
 #ifndef QCYBERGAMECHAT_H
 #define QCYBERGAMECHAT_H
 
-#include <QDateTime>
-#include <QMap>
-
-#include <QXmppLogger.h>
-
-#include <QXmppClient.h>
-
 #include "qchatservice.h"
 
 class QNetworkAccessManager;
 
-class QXmppMessage;
-class QXmppPresence;
-class QXmppIq;
-
-class QXmppMucManager;
-
+class QWebSocket;
 
 class QCyberGameChat: public QChatService
 {
@@ -33,7 +21,7 @@ private:
     virtual void                loadSmiles();
     void                        loadStatistic();
 
-    void                        connectToXmpp();
+    void                        connectToWebSocket();
 
 
 
@@ -44,10 +32,10 @@ public slots:
     virtual void                disconnect();
     virtual void                reconnect();
 private slots:
-    void                        onConnected();
-    void                        onError();
+    void                        onWebSocketConnected();
+    void                        onWebSocketError();
 
-    void                        onMessageReceived( const QXmppMessage & message );
+    void                        onTextMessageReceived( const QString & message );
 
     void                        onChannelInfoLoaded();
     void                        onChannelInfoLoadError();
@@ -61,14 +49,15 @@ private slots:
     void                        changeBadges( bool badges );
 
 private:
-    QNetworkAccessManager *     nam_;
-    QXmppClient *               xmppClient_ = {nullptr};
-    QXmppMucManager *           mucManager_ = {nullptr};
+    QNetworkAccessManager *     nam_ = {nullptr};
+    QWebSocket *                socket_ = {nullptr};
+
     QString                     channelName_;
-    QString                     roomId_;
-    QDateTime                   connectionTime_;
+    QString                     channelId_;
+
     int                         reconnectTimerId_ = {-1};
-    int                         statisticTimerId_ = {-1};
+    int                         statisticTimerId_ = {-1};    
+
     bool                        badges_ = {false};
 
     static const QString        SERVICE_NAME;

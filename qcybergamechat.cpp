@@ -1,23 +1,17 @@
 #include <QCoreApplication>
 #include <QSettings>
-#include <QUuid>
 
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+
+#include <QWebSocket>
 
 #include <QJsonDocument>
 #include <QJsonParseError>
 #include <QJsonArray>
 #include <QJsonValue>
 #include <QJsonObject>
-
-#include <QXmppClient.h>
-#include <QXmppMessage.h>
-#include <QXmppPresence.h>
-#include <QXmppIq.h>
-
-#include <QXmppMucManager.h>
 
 #include <QApplication>
 #include <QDir>
@@ -30,11 +24,13 @@
 
 #include "qcybergamechat.h"
 
-const QString DEFAULT_CYBERGAME_CANDY_JS_LINK = "http://cybergame.tv/js/chatj/candycg2.min.js";
-const QString DEFAULT_CYBERGAME_SMILES_PREFIX = "http://cybergame.tv/styles/chatj/img/emoticons/";
-const QString DEFAULT_CYBERGAME_CONFERENCE_JID_POSTFIX = "@conference.cybergame.tv";
 const QString DEFAULT_CYBERGAME_CHANNEL_INFO_LINK = "http://cybergame.tv/";
+const QString DEFAULT_CYBERGAME_SMILES_INFO_LINK = "http://cybergame.tv/chats/emotes/emotes.json";
+const QString DEFAULT_CYBERGAME_SMILES_PREFIX = "http://cybergame.tv/chats/emotes/";
+
 const QString DEFAULT_CYBERGAME_STATICTIC_LINK_PREFIX = "http://api.cybergame.tv/w/streams2.php?channel=";
+
+const QString DEFAULT_CYBERGAME_WEBSOCKET_LINK = "ws://newchat.cybergame.tv:9002/";
 
 const QString QCyberGameChat::SERVICE_NAME = "cybergame";
 const QString QCyberGameChat::SERVICE_USER_NAME = "CYBERGAME";
@@ -58,41 +54,26 @@ void QCyberGameChat::connect()
     if( !isEnabled() || channelName_.isEmpty() )
         return;
 
-    loadChannelInfo();
-
     if( isShowSystemMessages() )
     {
         emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ), QString(), this ) );
         emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ) );
     }
+
+    loadChannelInfo();
 }
 
 void QCyberGameChat::disconnect()
-{
-    roomId_.clear();
-
+{    
     resetTimer( reconnectTimerId_ );
     resetTimer( statisticTimerId_ );
 
-    if( mucManager_ )
+    if( socket_ )
     {
-        if( !mucManager_->rooms().empty() )
-        {
-            mucManager_->rooms().first()->leave();
-            mucManager_->rooms().first()->deleteLater();
-        }
-
-        mucManager_->deleteLater();
-        mucManager_ = nullptr;
+        socket_->abort();
+        socket_->deleteLater();
     }
-
-    if( xmppClient_ )
-    {
-        xmppClient_->disconnectFromServer();
-        xmppClient_->deleteLater();
-
-        xmppClient_ = nullptr;
-    }
+    socket_ = nullptr;
 
     emit newStatistic( new QChatStatistic( SERVICE_NAME, QString(), this ) );
 }
@@ -110,49 +91,24 @@ void QCyberGameChat::reconnect()
     connect();
 }
 
-void QCyberGameChat::connectToXmpp()
+void QCyberGameChat::connectToWebSocket()
 {
+    socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
+    socket_->open( QUrl( DEFAULT_CYBERGAME_WEBSOCKET_LINK ) );
 
-    xmppClient_ = new QXmppClient( this );
-
-    QObject::connect( xmppClient_, SIGNAL( connected() ), this, SLOT( onConnected() ) );
-    QObject::connect( xmppClient_, SIGNAL( error( QXmppClient::Error ) ), this, SLOT( onError() ) );
-    QObject::connect( xmppClient_, SIGNAL( messageReceived( QXmppMessage ) ), this, SLOT( onMessageReceived( QXmppMessage ) ) );
-
-    mucManager_ = new QXmppMucManager();
-
-    xmppClient_->addExtension( mucManager_ );
-
-    qsrand( QDateTime::currentDateTime().toTime_t() );
-
-    QXmppConfiguration conf;
-
-    conf.setDomain( "cybergame.tv" );
-    conf.setIgnoreSslErrors( true );
-    conf.setSaslAuthMechanism( "ANONYMOUS" );
-
-    xmppClient_->connectToServer( conf );
+    QObject::connect( socket_, SIGNAL( textMessageReceived( const QString & ) ), this, SLOT( onTextMessageReceived( const QString & ) ) );
+    QObject::connect( socket_, SIGNAL( connected() ), this, SLOT( onWebSocketConnected() ) );
+    QObject::connect( socket_, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( onWebSocketError() ) );
 }
 
-void QCyberGameChat::onConnected()
-{
-    connectionTime_ = QDateTime::currentDateTimeUtc();    
-
-    QXmppMucRoom *room = mucManager_->addRoom( roomId_ + DEFAULT_CYBERGAME_CONFERENCE_JID_POSTFIX );
-
-    room->setNickName( "broadcasterchat" + QUuid::createUuid().toString() );
-    room->join();
-
-    if( isShowSystemMessages() )
-    {
-        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
-        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
-    }
+void QCyberGameChat::onWebSocketConnected()
+{   
+    socket_->sendTextMessage( "{\"type\":\"join\",\"data\":{\"cid\":\"" + channelId_ +"\"}}" );
 
     loadSmiles();
 }
 
-void QCyberGameChat::onError()
+void QCyberGameChat::onWebSocketError()
 {
     if( isShowSystemMessages() )
     {
@@ -163,27 +119,72 @@ void QCyberGameChat::onError()
     startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 }
 
-void QCyberGameChat::onMessageReceived( const QXmppMessage &message )
+void QCyberGameChat::onTextMessageReceived( const QString & message )
 {
-    if( message.stamp().toTime_t() > connectionTime_.toTime_t() )
+    QByteArray messageData = message.toUtf8();
+
+    QJsonParseError parseError;
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( messageData, &parseError );
+
+    if( QJsonParseError::NoError == parseError.error )
     {
-        QString nickName = message.from();
-        nickName = nickName.right( nickName.length() - nickName.indexOf( '/' ) - 1 );
-
-        QString messageBody = message.body();
-
-        int dotPos = messageBody.indexOf( "·" );
-        if( -1 != dotPos )
+        if( jsonDoc.isObject() )
         {
-            messageBody = messageBody.right( messageBody.length() - dotPos - 1 );
+            QJsonObject jsonObj = jsonDoc.object();
+
+            QString messageType = jsonObj[ "type" ].toString();
+
+            if( "state" == messageType )
+            {
+                QJsonObject dataObj = jsonObj[ "data" ].toObject();
+
+                if( 2 == dataObj[ "state" ].toInt() )
+                {
+                    if( isShowSystemMessages() )
+                    {
+                        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
+                        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
+                    }
+                }
+            }
+            else if ( "msg" == messageType )
+            {
+                QJsonObject dataObj = jsonObj[ "data" ].toObject();
+
+                QString nickName = dataObj[ "nickname" ].toString();
+
+                QString messageText;
+
+                QJsonArray messagePartsArr = dataObj[ "message" ].toArray();
+
+                foreach( const QJsonValue & messagePart, messagePartsArr )
+                {
+                    QJsonObject messagePartObj = messagePart.toObject();
+
+                    QString messagePartType = messagePartObj[ "type" ].toString();
+
+                    if( messagePartType == "text" )
+                    {
+                        messageText += messagePartObj[ "text" ].toString();
+                    }
+                    else if ( messagePartType == "emote" )
+                    {
+                        messageText += messagePartObj[ "image" ].toString();
+                    }
+                    else if ( messagePartType == "link" )
+                    {
+                        messageText += messagePartObj[ "text" ].toString();
+                    }
+                }
+
+                messageText = insertSmiles( messageText );
+
+                emit newMessage( ChatMessage( SERVICE_NAME, nickName, messageText, QString(), this ) );
+            }
         }
-
-        messageBody = ChatMessage::replaceEscapeCharecters( messageBody );
-
-        messageBody = insertSmiles( messageBody );
-
-        emit newMessage( ChatMessage( SERVICE_NAME, nickName, messageBody, QString(), this ) );
     }
+
 }
 
 void QCyberGameChat::loadChannelInfo()
@@ -202,15 +203,16 @@ void QCyberGameChat::onChannelInfoLoaded()
 
     QByteArray data = reply->readAll();
 
-    QString ROOM_ID_PREFIX = "http://cybergame.tv/cgchatjjj.html?v=h#";
+    QString CHANNEL_ID_PREFIX = "index.html#";
 
-    int startIDPos = data.indexOf( ROOM_ID_PREFIX ) + ROOM_ID_PREFIX.length();
+    int startIDPos = data.indexOf( CHANNEL_ID_PREFIX ) + CHANNEL_ID_PREFIX.length();
     int endIDPos = data.indexOf( "\"", startIDPos ) - 1;
 
     if( endIDPos - startIDPos + 1 > 0 )
-    {
-        roomId_ = data.mid( startIDPos, endIDPos - startIDPos + 1 );
-        connectToXmpp();
+    {        
+        channelId_ = data.mid( startIDPos, endIDPos - startIDPos + 1 );
+
+        connectToWebSocket();
 
         loadStatistic();
 
@@ -228,6 +230,15 @@ void QCyberGameChat::onChannelInfoLoaded()
 void QCyberGameChat::onChannelInfoLoadError()
 {
     QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
+
+    if( isShowSystemMessages() )
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to" ) + channelName_ + " ..." , QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not connect to" ) + channelName_ + " ..."  );    
+    }
+
+    startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL);
+
     reply->deleteLater();
 }
 
@@ -274,7 +285,7 @@ void QCyberGameChat::loadSmiles()
 {
     QChatService::loadSmiles();
 
-    QNetworkRequest request( QUrl( DEFAULT_CYBERGAME_CANDY_JS_LINK + "" ) );
+    QNetworkRequest request( QUrl( DEFAULT_CYBERGAME_SMILES_INFO_LINK + "" ) );
     QNetworkReply *reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSmilesLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onSmilesLoadError() ) );
@@ -282,54 +293,44 @@ void QCyberGameChat::loadSmiles()
 
 void QCyberGameChat::onSmilesLoaded()
 {
-    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
+    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );    
 
-    QString response = reply->readAll();
+    QJsonParseError parseError;
 
-    const QString EMOTICONS = "emoticons:";
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
 
-    int emotIconsPos = response.indexOf( EMOTICONS );
-
-    if( emotIconsPos )
+    if( QJsonParseError::NoError == parseError.error )
     {
-        int emotIconsArrayStart = emotIconsPos + EMOTICONS.length();
+        QJsonObject jsonObj = jsonDoc.object();
 
-        int emotIconsArrayEnd = response.indexOf( "//", emotIconsArrayStart );
+        //сика
 
-        response = response.mid( emotIconsArrayStart, emotIconsArrayEnd - emotIconsArrayStart );
+        QStringList smilesCatList;
 
-        response.append( ']' );
+        smilesCatList << "global" << "premium";
 
-        response.replace( "plain", "\"plain\"" );
-        response.replace( "regex:", "\"regex\":\"" );
-        response.replace( "/gim", "/gim\"" );
-        response.replace( "/gm", "/gm\"" );
-        response.replace( "image", "\"image\"" );        
-
-
-        QJsonParseError parseError;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson( QByteArray( response.toStdString().c_str() ), &parseError );
-        if( QJsonParseError::NoError == parseError.error )
+        foreach( const QString & smilesCat, smilesCatList )
         {
-            if( jsonDoc.isArray() )
+            QJsonArray jsonSmilesArray = jsonObj[ smilesCat ].toArray();
+
+            foreach( const QJsonValue & smileInfoValue, jsonSmilesArray )
             {
-                QJsonArray smilesInfoArr = jsonDoc.array();
+                QJsonObject smileInfo = smileInfoValue.toObject();
 
-                foreach( const QJsonValue &value, smilesInfoArr )
-                {
-                    QJsonObject smileInfo = value.toObject();
-
-                    addSmile( smileInfo[ "plain" ].toString(), DEFAULT_CYBERGAME_SMILES_PREFIX + smileInfo[ "image" ].toString() );
-
-                }
+                addSmile( smileInfo[ "image" ].toString(), DEFAULT_CYBERGAME_SMILES_PREFIX + smileInfo[ "image" ].toString() );
             }
         }
-    }
 
-    if( isShowSystemMessages() )
+        if( isShowSystemMessages() )
+        {
+            emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ), QString(), this ) );
+            emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ) );
+        }
+    }
+    else if( isShowSystemMessages() )
     {
-        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ), QString(), this ) );
-        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ) );
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load smiles..." ) );
     }
 
     reply->deleteLater();
