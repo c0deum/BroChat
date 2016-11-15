@@ -1,5 +1,5 @@
-#ifndef QFUNSTREAMCHAT_H
-#define QFUNSTREAMCHAT_H
+#ifndef QPEKA2CHAT_H
+#define QPEKA2CHAT_H
 
 #include <QMap>
 
@@ -8,12 +8,12 @@
 class QNetworkAccessManager;
 class QWebSocket;
 
-class QFunStreamChat: public QChatService
+class QPeka2Chat: public QChatService
 {
     Q_OBJECT
 public:
-    explicit                QFunStreamChat( QObject * parent = nullptr );
-    virtual                 ~QFunStreamChat();
+    explicit                QPeka2Chat( QObject * parent = nullptr );
+    virtual                 ~QPeka2Chat();
 protected:
     virtual void            timerEvent( QTimerEvent * );
 private:
@@ -88,5 +88,5 @@ private:
     static const int        STATISTIC_INTERVAL;
 };
 
-#endif // QFUNSTREAMCHAT_H
+#endif // QPEKA2CHAT_H
 

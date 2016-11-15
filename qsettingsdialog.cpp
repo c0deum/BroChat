@@ -183,15 +183,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , cyberGameBlackListEdit( new QTextEdit( this ) )
 , cyberGameRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-, funstreamChannelCheckBox( new QCheckBox( this ) )
-, funstreamChannelEdit( new QLineEdit( this ) )
-, funstreamOriginalColorsCheckBox( new QCheckBox( this ) )
-, funstreamBadgesCheckBox( new QCheckBox( this ) )
-, funstreamAliasesEdit( new QLineEdit( this ) )
-, funstreamSupportersListEdit( new QTextEdit( this ) )
-, funstreamBlackListEdit( new QTextEdit( this ) )
-, funstreamRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
 , gamerstvChannelCheckBox( new QCheckBox( this ) )
 , gamerstvChannelEdit( new QLineEdit( this ) )
 , gamerstvBadgesCheckBox( new QCheckBox( this ) )
@@ -241,6 +232,15 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , livecodingSupportersListEdit( new QTextEdit( this ) )
 , livecodingBlackListEdit( new QTextEdit( this ) )
 , livecodingRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
+
+, peka2ChannelCheckBox( new QCheckBox( this ) )
+, peka2ChannelEdit( new QLineEdit( this ) )
+, peka2OriginalColorsCheckBox( new QCheckBox( this ) )
+, peka2BadgesCheckBox( new QCheckBox( this ) )
+, peka2AliasesEdit( new QLineEdit( this ) )
+, peka2SupportersListEdit( new QTextEdit( this ) )
+, peka2BlackListEdit( new QTextEdit( this ) )
+, peka2RemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
 , streamcubeChannelCheckBox( new QCheckBox( this ) )
 , streamcubeChannelEdit( new QLineEdit( this ) )
@@ -327,14 +327,14 @@ void QSettingsDialog::setupWidgets()
     setupAcesTab();
     setupAzubuTab();
     setupBeamproTab();
-    setupCybergameTab();
-    setupFunstreamTab();
+    setupCybergameTab();    
     setupGamerstvTab();
     setupGipsyteamTab();
     setupGoodgameTab();
     setupHitboxTab();
     setupIgdcTab();
     setupLivecodingTab();        
+    setupPeka2Tab();
     setupStreamcubeTab();
     setupTwitchTab();
     setupVidiTab();
@@ -987,51 +987,51 @@ void QSettingsDialog::setupCybergameTab()
     tabSettings->addTab( cyberGameGroup, QIcon( ":/resources/cybergamelogo.png" ), tr( "Cybergame" ) );
 }
 
-void QSettingsDialog::setupFunstreamTab()
+void QSettingsDialog::setupPeka2Tab()
 {
     QSettings settings;
 
-    QVBoxLayout * funstreamLayout = new QVBoxLayout;
+    QVBoxLayout * peka2Layout = new QVBoxLayout;
 
-    funstreamChannelCheckBox->setText( CHANNEL_TEXT );
-    funstreamChannelCheckBox->setChecked( settings.value( FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
+    peka2ChannelCheckBox->setText( CHANNEL_TEXT );
+    peka2ChannelCheckBox->setChecked( settings.value( PEKA2_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
-    funstreamChannelEdit->setText( settings.value( FUNSTREAM_CHANNEL_SETTING_PATH, DEFAULT_FUNSTREAM_CHANNEL_NAME ).toString() );
-    funstreamChannelEdit->setEnabled( funstreamChannelCheckBox->isChecked() );   
+    peka2ChannelEdit->setText( settings.value( PEKA2_CHANNEL_SETTING_PATH, DEFAULT_PEKA2_CHANNEL_NAME ).toString() );
+    peka2ChannelEdit->setEnabled( peka2ChannelCheckBox->isChecked() );   
 
-    QObject::connect( funstreamChannelCheckBox, SIGNAL( clicked( bool ) ), funstreamChannelEdit, SLOT( setEnabled( bool ) ) );
+    QObject::connect( peka2ChannelCheckBox, SIGNAL( clicked( bool ) ), peka2ChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    funstreamOriginalColorsCheckBox->setText( tr( "Original Colors" ) );
-    funstreamOriginalColorsCheckBox->setChecked( settings.value( FUNSTREAM_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
+    peka2OriginalColorsCheckBox->setText( tr( "Original Colors" ) );
+    peka2OriginalColorsCheckBox->setChecked( settings.value( PEKA2_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
 
-    funstreamBadgesCheckBox->setText( tr( "Badges" ) );
-    funstreamBadgesCheckBox->setChecked( settings.value( FUNSTREAM_BADGES_SETTING_PATH, false ).toBool() );
+    peka2BadgesCheckBox->setText( tr( "Badges" ) );
+    peka2BadgesCheckBox->setChecked( settings.value( PEKA2_BADGES_SETTING_PATH, false ).toBool() );
 
-    addWidgets( funstreamLayout, { funstreamChannelCheckBox, funstreamChannelEdit, funstreamOriginalColorsCheckBox, funstreamBadgesCheckBox } );
+    addWidgets( peka2Layout, { peka2ChannelCheckBox, peka2ChannelEdit, peka2OriginalColorsCheckBox, peka2BadgesCheckBox } );
 
-    funstreamAliasesEdit->setText( settings.value( FUNSTREAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
+    peka2AliasesEdit->setText( settings.value( PEKA2_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    addWidgets( funstreamLayout, { new QLabel( ALIASES_TEXT, this ), funstreamAliasesEdit } );
+    addWidgets( peka2Layout, { new QLabel( ALIASES_TEXT, this ), peka2AliasesEdit } );
 
-    funstreamSupportersListEdit->setText( settings.value( FUNSTREAM_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
+    peka2SupportersListEdit->setText( settings.value( PEKA2_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    addWidgets( funstreamLayout, { new QLabel( SUPPORTERS_TEXT, this ), funstreamSupportersListEdit } );
+    addWidgets( peka2Layout, { new QLabel( SUPPORTERS_TEXT, this ), peka2SupportersListEdit } );
 
-    funstreamBlackListEdit->setText( settings.value( FUNSTREAM_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
+    peka2BlackListEdit->setText( settings.value( PEKA2_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    addWidgets( funstreamLayout, { new QLabel( BLACKLIST_TEXT, this ), funstreamBlackListEdit } );
+    addWidgets( peka2Layout, { new QLabel( BLACKLIST_TEXT, this ), peka2BlackListEdit } );
 
-    funstreamRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    funstreamRemoveBlackListUsersCheckBox->setChecked( settings.value( FUNSTREAM_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
+    peka2RemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
+    peka2RemoveBlackListUsersCheckBox->setChecked( settings.value( PEKA2_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
 
-    funstreamLayout->addWidget( funstreamRemoveBlackListUsersCheckBox );
+    peka2Layout->addWidget( peka2RemoveBlackListUsersCheckBox );
 
-    funstreamLayout->addStretch( 1 );
+    peka2Layout->addStretch( 1 );
 
-    QGroupBox * funstreamGroup = new QGroupBox( tabSettings );
-    funstreamGroup->setLayout( funstreamLayout );
+    QGroupBox * peka2Group = new QGroupBox( tabSettings );
+    peka2Group->setLayout( peka2Layout );
 
-    tabSettings->addTab( funstreamGroup, QIcon( ":/resources/funstreamlogo.png" ), tr( "Funstream" ) );
+    tabSettings->addTab( peka2Group, QIcon( ":/resources/peka2logo.png" ), tr( "Peka2" ) );
 }
 
 void QSettingsDialog::setupGamerstvTab()
@@ -1871,60 +1871,6 @@ void QSettingsDialog::saveSettings()
         emit cyberGameRemoveBlackListUsersChanged( cyberGameRemoveBlackListUsersCheckBox->isChecked() );
     }
 
-    //настройки funstream
-
-    oldBoolValue = settings.value( FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( FUNSTREAM_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != funstreamChannelCheckBox->isChecked() || oldStringValue != funstreamChannelEdit->text() )
-    {
-        settings.setValue( FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH, funstreamChannelCheckBox->isChecked() );
-        settings.setValue( FUNSTREAM_CHANNEL_SETTING_PATH, funstreamChannelEdit->text() );
-
-        emit funstreamChannelChanged();
-    }
-
-    oldBoolValue = settings.value( FUNSTREAM_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != funstreamOriginalColorsCheckBox->isChecked() )
-    {
-        settings.setValue( FUNSTREAM_ORIGINAL_COLORS_SETTING_PATH, funstreamOriginalColorsCheckBox->isChecked() );
-        emit funstreamOriginalColorsChanged( funstreamOriginalColorsCheckBox->isChecked() );
-    }
-
-    oldBoolValue = settings.value( FUNSTREAM_BADGES_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != funstreamBadgesCheckBox->isChecked() )
-    {
-        settings.setValue( FUNSTREAM_BADGES_SETTING_PATH, funstreamBadgesCheckBox->isChecked() );
-        emit funstreamBadgesChanged( funstreamBadgesCheckBox->isChecked() );
-    }
-
-    oldStringValue = settings.value( FUNSTREAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != funstreamAliasesEdit->text() )
-    {
-        settings.setValue( FUNSTREAM_ALIASES_SETTING_PATH, funstreamAliasesEdit->text() );
-        emit funstreamAliasesChanged( funstreamAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( FUNSTREAM_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != funstreamSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( FUNSTREAM_SUPPORTERS_LIST_SETTING_PATH, funstreamSupportersListEdit->toPlainText() );
-        emit funstreamSupportersListChanged( funstreamSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( FUNSTREAM_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != funstreamBlackListEdit->toPlainText() )
-    {
-        settings.setValue( FUNSTREAM_BLACK_LIST_SETTING_PATH, funstreamBlackListEdit->toPlainText() );
-        emit funstreamBlackListChanged( funstreamBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( FUNSTREAM_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != funstreamRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( FUNSTREAM_REMOVE_BLACK_LIST_USERS_SETTING_PATH, funstreamRemoveBlackListUsersCheckBox->isChecked() );
-        emit funstreamRemoveBlackListUsersChanged( funstreamRemoveBlackListUsersCheckBox->isChecked() );
-    }
-
     //настройки gamerstv
 
     oldBoolValue = settings.value( GAMERSTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
@@ -2224,6 +2170,61 @@ void QSettingsDialog::saveSettings()
     {
         settings.setValue( LIVECODING_REMOVE_BLACK_LIST_USERS_SETTING_PATH, livecodingRemoveBlackListUsersCheckBox->isChecked() );
         emit livecodingRemoveBlackListUsersChanged( livecodingRemoveBlackListUsersCheckBox->isChecked() );
+    }
+
+
+    //настройки peka2
+
+    oldBoolValue = settings.value( PEKA2_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    oldStringValue = settings.value( PEKA2_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != peka2ChannelCheckBox->isChecked() || oldStringValue != peka2ChannelEdit->text() )
+    {
+        settings.setValue( PEKA2_CHANNEL_ENABLE_SETTING_PATH, peka2ChannelCheckBox->isChecked() );
+        settings.setValue( PEKA2_CHANNEL_SETTING_PATH, peka2ChannelEdit->text() );
+
+        emit peka2ChannelChanged();
+    }
+
+    oldBoolValue = settings.value( PEKA2_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != peka2OriginalColorsCheckBox->isChecked() )
+    {
+        settings.setValue( PEKA2_ORIGINAL_COLORS_SETTING_PATH, peka2OriginalColorsCheckBox->isChecked() );
+        emit peka2OriginalColorsChanged( peka2OriginalColorsCheckBox->isChecked() );
+    }
+
+    oldBoolValue = settings.value( PEKA2_BADGES_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != peka2BadgesCheckBox->isChecked() )
+    {
+        settings.setValue( PEKA2_BADGES_SETTING_PATH, peka2BadgesCheckBox->isChecked() );
+        emit peka2BadgesChanged( peka2BadgesCheckBox->isChecked() );
+    }
+
+    oldStringValue = settings.value( PEKA2_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != peka2AliasesEdit->text() )
+    {
+        settings.setValue( PEKA2_ALIASES_SETTING_PATH, peka2AliasesEdit->text() );
+        emit peka2AliasesChanged( peka2AliasesEdit->text() );
+    }
+
+    oldStringValue = settings.value( PEKA2_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != peka2SupportersListEdit->toPlainText() )
+    {
+        settings.setValue( PEKA2_SUPPORTERS_LIST_SETTING_PATH, peka2SupportersListEdit->toPlainText() );
+        emit peka2SupportersListChanged( peka2SupportersListEdit->toPlainText() );
+    }
+
+    oldStringValue = settings.value( PEKA2_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldStringValue != peka2BlackListEdit->toPlainText() )
+    {
+        settings.setValue( PEKA2_BLACK_LIST_SETTING_PATH, peka2BlackListEdit->toPlainText() );
+        emit peka2BlackListChanged( peka2BlackListEdit->toPlainText() );
+    }
+
+    oldBoolValue = settings.value( PEKA2_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != peka2RemoveBlackListUsersCheckBox->isChecked() )
+    {
+        settings.setValue( PEKA2_REMOVE_BLACK_LIST_USERS_SETTING_PATH, peka2RemoveBlackListUsersCheckBox->isChecked() );
+        emit peka2RemoveBlackListUsersChanged( peka2RemoveBlackListUsersCheckBox->isChecked() );
     }
 
 

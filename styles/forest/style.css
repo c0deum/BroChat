@@ -167,11 +167,6 @@ body {
     content: url(../resources/cybergamelogo.png);
 }
 
-.funstream {
-    content: url(../resources/funstreamlogo.png);
-    background: #3E3E3E !important;
-}
-
 .gamerstv {
     content: url(../resources/gamerstvlogo.png);
 }
@@ -194,6 +189,10 @@ body {
 
 .livecoding {
     content: url(../resources/livecodinglogo.png);
+}
+
+.peka2{
+	content: url(../resources/peka2logo.png);	
 }
 
 .streamcube{

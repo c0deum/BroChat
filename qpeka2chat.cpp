@@ -23,45 +23,43 @@
 
 #include "settingsconsts.h"
 
-#include "qfunstreamchat.h"
+#include "qpeka2chat.h"
 
-//const QString DEFAULT_FUNSTREAM_WEBSOCKET_LINK = "ws://funstream.tv:3811/socket.io/?EIO=3&transport=websocket";
-//const QString DEFAULT_FUNSTREAM_WEBSOCKET_LINK = "ws://funstream.tv/socket.io/?EIO=3&transport=websocket";
-const QString DEFAULT_FUNSTREAM_WEBSOCKET_LINK = "ws://chat.funstream.tv/?EIO=3&transport=websocket";
+const QString DEFAULT_PEKA2_WEBSOCKET_LINK = "ws://chat.funstream.tv/?EIO=3&transport=websocket";
 
-const QString DEFAULT_FUNSTREAM_SMILES_LINK = "http://funstream.tv/build/images/smiles/";
-const QString DEFAULT_FUNSTREAM_STATISTIC_LINK = "http://funstream.tv/api/user/list";
-const QString DEFAULT_FUNSTREAM_SMILES_REQUEST = "http://funstream.tv/api/smile";
-const QString DEFAULT_FUNSTREAM_CHANNEL_PREFIX = "http://funstream.tv/stream/";
+const QString DEFAULT_PEKA2_SMILES_LINK = "http://funstream.tv/build/images/smiles/";
+const QString DEFAULT_PEKA2_STATISTIC_LINK = "http://funstream.tv/api/user/list";
+const QString DEFAULT_PEKA2_SMILES_REQUEST = "http://funstream.tv/api/smile";
+const QString DEFAULT_PEKA2_CHANNEL_PREFIX = "http://funstream.tv/stream/";
 
-const QString DEFAULT_FUNSTREAM_CHANNEL_INFO_PREFIX = "http://funstream.tv/api/user";
-const QString DEFAULT_FUNSTREAM_STREAM_INFO_REQUEST = "http://funstream.tv/api/stream";
+const QString DEFAULT_PEKA2_CHANNEL_INFO_PREFIX = "http://funstream.tv/api/user";
+const QString DEFAULT_PEKA2_STREAM_INFO_REQUEST = "http://funstream.tv/api/stream";
 
 
-const QString DEFAULT_FUNSTREAM_USERS_COLORS_LINK = "http://funstream.tv/build/bundle.css";
+const QString DEFAULT_PEKA2_USERS_COLORS_LINK = "http://funstream.tv/build/bundle.css";
 
-const QString DEFAULT_FUNSTREAM_BADGES_LINK = "http://funstream.tv/api/masterstreamer/icon/list";
+const QString DEFAULT_PEKA2_BADGES_LINK = "http://funstream.tv/api/masterstreamer/icon/list";
 
-const QString QFunStreamChat::SERVICE_NAME = "funstream";
-const QString QFunStreamChat::SERVICE_USER_NAME = "FUNSTREAM";
+const QString QPeka2Chat::SERVICE_NAME = "peka2";
+const QString QPeka2Chat::SERVICE_USER_NAME = "PEKA2";
 
-const int QFunStreamChat::SAVE_CONNECTION_INTERVAL = 25000;
-const int QFunStreamChat::RECONNECT_INTERVAL = 10000;
-const int QFunStreamChat::STATISTIC_INTERVAL = 10000;
+const int QPeka2Chat::SAVE_CONNECTION_INTERVAL = 25000;
+const int QPeka2Chat::RECONNECT_INTERVAL = 10000;
+const int QPeka2Chat::STATISTIC_INTERVAL = 10000;
 
 
-QFunStreamChat::QFunStreamChat( QObject *parent )
+QPeka2Chat::QPeka2Chat( QObject *parent )
 : QChatService( parent )
 , nam_( new QNetworkAccessManager( this ) )
 {
 }
 
-QFunStreamChat::~QFunStreamChat()
+QPeka2Chat::~QPeka2Chat()
 {
     disconnect();
 }
 
-void QFunStreamChat::connect()
+void QPeka2Chat::connect()
 {
     if( !isEnabled() || channelName_.isEmpty() )
         return;
@@ -85,7 +83,7 @@ void QFunStreamChat::connect()
 
 }
 
-void QFunStreamChat::disconnect()
+void QPeka2Chat::disconnect()
 {
     resetTimer( reconnectTimerId_ );
     resetTimer( saveConnectionTimerId_ );
@@ -101,7 +99,7 @@ void QFunStreamChat::disconnect()
     emit newStatistic( new QChatStatistic( SERVICE_NAME, QString(), this ) );
 }
 
-void QFunStreamChat::reconnect()
+void QPeka2Chat::reconnect()
 {
     QString oldChannelName = channelName_;
     disconnect();
@@ -122,9 +120,9 @@ void QFunStreamChat::reconnect()
 }
 
 
-void QFunStreamChat::loadChannelInfo()
+void QPeka2Chat::loadChannelInfo()
 {
-    QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_STREAM_INFO_REQUEST + "" ) );
+    QNetworkRequest request( QUrl( DEFAULT_PEKA2_STREAM_INFO_REQUEST + "" ) );
 
     request.setRawHeader( "Accept", "application/json" );
     request.setHeader( QNetworkRequest::ContentTypeHeader, "application/json" );
@@ -139,7 +137,7 @@ void QFunStreamChat::loadChannelInfo()
 
 }
 
-void QFunStreamChat::onChannelInfoLoaded()
+void QPeka2Chat::onChannelInfoLoaded()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
@@ -161,7 +159,7 @@ void QFunStreamChat::onChannelInfoLoaded()
     reply->deleteLater();
 }
 
-void QFunStreamChat::onChannelInfoLoadError()
+void QPeka2Chat::onChannelInfoLoadError()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
@@ -176,11 +174,11 @@ void QFunStreamChat::onChannelInfoLoadError()
     reply->deleteLater();
 }
 
-void QFunStreamChat::loadSmiles()
+void QPeka2Chat::loadSmiles()
 {
     QChatService::loadSmiles();
 
-    QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_SMILES_REQUEST + "" ) );
+    QNetworkRequest request( QUrl( DEFAULT_PEKA2_SMILES_REQUEST + "" ) );
 
     request.setRawHeader( "Accept", "application/json" );
     request.setHeader( QNetworkRequest::ContentTypeHeader, "application/json" );
@@ -195,7 +193,7 @@ void QFunStreamChat::loadSmiles()
     loadTwitchSmiles();
 }
 
-void QFunStreamChat::onSmilesLoaded()
+void QPeka2Chat::onSmilesLoaded()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
@@ -231,7 +229,7 @@ void QFunStreamChat::onSmilesLoaded()
     reply->deleteLater();
 }
 
-void QFunStreamChat::onSmileLoadError()
+void QPeka2Chat::onSmileLoadError()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
@@ -244,7 +242,7 @@ void QFunStreamChat::onSmileLoadError()
     reply->deleteLater();
 }
 
-void QFunStreamChat::loadStatistic()
+void QPeka2Chat::loadStatistic()
 {
     if( channelId_.isEmpty() )
         return;
@@ -258,7 +256,7 @@ void QFunStreamChat::loadStatistic()
     }
 }
 
-void QFunStreamChat::loadHistory()
+void QPeka2Chat::loadHistory()
 {
     if( channelId_.isEmpty() )
         return;
@@ -277,7 +275,7 @@ void QFunStreamChat::loadHistory()
     }
 }
 
-void QFunStreamChat::connectToWebClient()
+void QPeka2Chat::connectToWebClient()
 {
     socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
 
@@ -285,15 +283,15 @@ void QFunStreamChat::connectToWebClient()
     QObject::connect( socket_, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( onWebSocketError() ) );
     QObject::connect( socket_, SIGNAL( connected() ), this, SLOT( onWebSocketConnected() ) );
 
-    socket_->open( QUrl( DEFAULT_FUNSTREAM_WEBSOCKET_LINK ) );
+    socket_->open( QUrl( DEFAULT_PEKA2_WEBSOCKET_LINK ) );
 }
 
-void QFunStreamChat::onWebSocketConnected()
+void QPeka2Chat::onWebSocketConnected()
 {       
     startUniqueTimer( saveConnectionTimerId_, SAVE_CONNECTION_INTERVAL );
 }
 
-void QFunStreamChat::onWebSocketError()
+void QPeka2Chat::onWebSocketError()
 {
     if( isShowSystemMessages() )
     {
@@ -303,7 +301,7 @@ void QFunStreamChat::onWebSocketError()
     startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 }
 
-void QFunStreamChat::parseMessage( const QJsonObject & jsonObj )
+void QPeka2Chat::parseMessage( const QJsonObject & jsonObj )
 {
     if( "stream/" + channelId_ == jsonObj[ "channel" ].toString() && jsonObj[ "id" ].toInt() > historyLastMessageId_ )
     {
@@ -355,7 +353,7 @@ void QFunStreamChat::parseMessage( const QJsonObject & jsonObj )
 
 
 
-void QFunStreamChat::onTextMessageRecieved( const QString &message )
+void QPeka2Chat::onTextMessageRecieved( const QString &message )
 {
     qDebug() << message;
     if( "42[\"/chat/message\"" == message.left( 18 ) )
@@ -537,7 +535,7 @@ void QFunStreamChat::onTextMessageRecieved( const QString &message )
     }
 }
 
-void QFunStreamChat::timerEvent( QTimerEvent *event )
+void QPeka2Chat::timerEvent( QTimerEvent *event )
 {
     if( event->timerId() == statisticTimerId_ )
     {
@@ -557,31 +555,31 @@ void QFunStreamChat::timerEvent( QTimerEvent *event )
     }
 }
 
-void QFunStreamChat::loadSettings()
+void QPeka2Chat::loadSettings()
 {
     QSettings settings;
-    channelName_ = settings.value( FUNSTREAM_CHANNEL_SETTING_PATH, DEFAULT_FUNSTREAM_CHANNEL_NAME ).toString();
+    channelName_ = settings.value( PEKA2_CHANNEL_SETTING_PATH, DEFAULT_PEKA2_CHANNEL_NAME ).toString();
 
     if( ChatMessage::isLink( channelName_ ) )
         channelName_ = channelName_.right( channelName_.length() - channelName_.lastIndexOf( "/" ) - 1 );
 
-    enable( settings.value( FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
+    enable( settings.value( PEKA2_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
 
-    originalColors_ = settings.value( FUNSTREAM_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
-    badges_ = settings.value( FUNSTREAM_BADGES_SETTING_PATH, false ).toBool();
+    originalColors_ = settings.value( PEKA2_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
+    badges_ = settings.value( PEKA2_BADGES_SETTING_PATH, false ).toBool();
 
-    setAliasesList( settings.value( FUNSTREAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-    setSupportersList( settings.value( FUNSTREAM_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-    setBlackList( settings.value( FUNSTREAM_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
+    setAliasesList( settings.value( PEKA2_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
+    setSupportersList( settings.value( PEKA2_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
+    setBlackList( settings.value( PEKA2_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    setRemoveBlackListUsers( settings.value( FUNSTREAM_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
+    setRemoveBlackListUsers( settings.value( PEKA2_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
 }
 
-void QFunStreamChat::loadStyles()
+void QPeka2Chat::loadStyles()
 {
     styles_.clear();
 
-    QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_USERS_COLORS_LINK + "" ) );
+    QNetworkRequest request( QUrl( DEFAULT_PEKA2_USERS_COLORS_LINK + "" ) );
 
     QNetworkReply * reply = nam_->get( request );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onStylesLoaded() ) );
@@ -589,7 +587,7 @@ void QFunStreamChat::loadStyles()
 
 }
 
-void QFunStreamChat::onStylesLoaded()
+void QPeka2Chat::onStylesLoaded()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
@@ -633,7 +631,7 @@ void QFunStreamChat::onStylesLoaded()
     reply->deleteLater();
 }
 
-void QFunStreamChat::onStylesLoadError()
+void QPeka2Chat::onStylesLoadError()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
@@ -646,16 +644,16 @@ void QFunStreamChat::onStylesLoadError()
     reply->deleteLater();
 }
 
-void QFunStreamChat::changeOriginalColors( bool originalColors )
+void QPeka2Chat::changeOriginalColors( bool originalColors )
 {
     originalColors_ = originalColors;
 }
 
-void QFunStreamChat::loadBadges()
+void QPeka2Chat::loadBadges()
 {
     badgesMap_.clear();
 
-    QNetworkRequest request( QUrl( DEFAULT_FUNSTREAM_BADGES_LINK + "" ) );
+    QNetworkRequest request( QUrl( DEFAULT_PEKA2_BADGES_LINK + "" ) );
 
     QByteArray data;
 
@@ -667,7 +665,7 @@ void QFunStreamChat::loadBadges()
     QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onBadgesLoadError() ) );
 }
 
-void QFunStreamChat::onBadgesLoaded()
+void QPeka2Chat::onBadgesLoaded()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
@@ -716,18 +714,18 @@ void QFunStreamChat::onBadgesLoaded()
     reply->deleteLater();
 }
 
-void QFunStreamChat::onBadgesLoadError()
+void QPeka2Chat::onBadgesLoadError()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
     reply->deleteLater();
 }
 
-void QFunStreamChat::changeBadges( bool badges )
+void QPeka2Chat::changeBadges( bool badges )
 {
     badges_ = badges;
 }
 
-void QFunStreamChat::loadTwitchSmiles()
+void QPeka2Chat::loadTwitchSmiles()
 {
     QString smilesCodes[] = { ":)", ":(", ":D", ">(", ":|", "O_o", "B)", ":O", "&lt;3", ":/", ";)", ":P", ";P", "R)" };
 
@@ -744,7 +742,7 @@ void QFunStreamChat::loadTwitchSmiles()
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onTwitchSmilesLoadError() ) );
 }
 
-void QFunStreamChat::onTwitchSmilesLoaded()
+void QPeka2Chat::onTwitchSmilesLoaded()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
@@ -779,7 +777,7 @@ void QFunStreamChat::onTwitchSmilesLoaded()
     reply->deleteLater();
 }
 
-void QFunStreamChat::onTwitchSmilesLoadError()
+void QPeka2Chat::onTwitchSmilesLoadError()
 {
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
     reply->deleteLater();

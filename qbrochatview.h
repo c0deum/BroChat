@@ -15,24 +15,19 @@ class QChatStatistic;
 class QChatUpdateServer;
 
 class QAcesChat;
+class QAzubuChat;
+class QBeamProChat;
 class QCyberGameChat;
-class QFunStreamChat;
 class QGamersTvChat;
 class QGipsyTeamChat;
 class QGoodGameChat;
 class QHitBoxChat;
 class QIgdcChat;
 class QLivecodingChat;
-class QSc2tvChat;
-class QTwitchChat;
-
-class QVidiChat;
-
+class QPeka2Chat;
 class QStreamCubeChat;
-
-class QAzubuChat;
-
-class QBeamProChat;
+class QTwitchChat;
+class QVidiChat;
 
 class QBroChatView: public QWebEngineView
 {
@@ -91,24 +86,19 @@ signals:
     void                closeWindow();
 private:
     QAcesChat *         acesChat_;
+    QAzubuChat *        azubuChat_;
+    QBeamProChat *      beamproChat_;
     QCyberGameChat *    cybergameChat_;
-    QFunStreamChat *    funstreamChat_;
     QGamersTvChat *     gamerstvChat_;
     QGipsyTeamChat *    gipsyteamChat_;
     QGoodGameChat *     goodgameChat_;
     QHitBoxChat *       hitboxChat_;
     QIgdcChat *         igdcChat_;
     QLivecodingChat *   livecodingChat_;        
-    QTwitchChat *       twitchChat_;    
-
-    QVidiChat *         vidiChat_;
-
+    QPeka2Chat *        peka2Chat_;
     QStreamCubeChat *   streamcubeChat_;
-
-    QAzubuChat *        azubuChat_;
-
-    QBeamProChat *      beamproChat_;
-
+    QTwitchChat *       twitchChat_;    
+    QVidiChat *         vidiChat_;
 
     QChatUpdateServer * chatUpdateServer_;
 

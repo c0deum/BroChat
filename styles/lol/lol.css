@@ -147,12 +147,6 @@ body
 	height: 12px;
 }
 
-.funstream
-{
-	content: url(../resources/funstreamlogo.png);
-	height: 12px;
-}
-
 .gamerstv
 {
 	content: url(../resources/gamerstvlogo.png);
@@ -187,6 +181,12 @@ body
 .livecoding
 {
 	content: url(../resources/livecodinglogo.png);
+	height: 12px;
+}
+
+.peka2
+{
+	content: url(../resources/peka2logo.png);
 	height: 12px;
 }
 

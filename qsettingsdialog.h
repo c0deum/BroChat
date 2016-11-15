@@ -35,14 +35,14 @@ private:
     void                setupAcesTab();
     void                setupAzubuTab();
     void                setupBeamproTab();
-    void                setupCybergameTab();
-    void                setupFunstreamTab();
+    void                setupCybergameTab();    
     void                setupGamerstvTab();
     void                setupGipsyteamTab();
     void                setupGoodgameTab();
     void                setupHitboxTab();
     void                setupIgdcTab();
     void                setupLivecodingTab();    
+    void                setupPeka2Tab();
     void                setupStreamcubeTab();
     void                setupTwitchTab();
     void                setupVidiTab();    
@@ -142,15 +142,6 @@ signals:
     void                cyberGameBlackListChanged( const QString & );
     void                cyberGameRemoveBlackListUsersChanged( bool );
 
-    void                funstreamChannelChanged();
-    void                funstreamChannelDisabled();
-    void                funstreamAliasesChanged( const QString & );
-    void                funstreamSupportersListChanged( const QString & );
-    void                funstreamBlackListChanged( const QString & );
-    void                funstreamRemoveBlackListUsersChanged( bool );
-    void                funstreamOriginalColorsChanged( bool );
-    void                funstreamBadgesChanged( bool );
-
     void                gamerstvChannelChanged();
     void                gamerstvChannelDisabled();
     void                gamerstvAliasesChanged( const QString & );
@@ -198,6 +189,17 @@ signals:
     void                livecodingBlackListChanged( const QString & );
     void                livecodingRemoveBlackListUsersChanged( bool );
     void                livecodingBadgesChanged( bool );
+
+
+    void                peka2ChannelChanged();
+    void                peka2ChannelDisabled();
+    void                peka2AliasesChanged( const QString & );
+    void                peka2SupportersListChanged( const QString & );
+    void                peka2BlackListChanged( const QString & );
+    void                peka2RemoveBlackListUsersChanged( bool );
+    void                peka2OriginalColorsChanged( bool );
+    void                peka2BadgesChanged( bool );
+
 
     void                streamcubeChannelChanged();
     void                streamcubeChannelDisabled();
@@ -369,15 +371,6 @@ private:
     QTextEdit *         cyberGameBlackListEdit;
     QCheckBox *         cyberGameRemoveBlackListUsersCheckBox;
 
-    QCheckBox *         funstreamChannelCheckBox;
-    QLineEdit *         funstreamChannelEdit;
-    QCheckBox *         funstreamOriginalColorsCheckBox;
-    QCheckBox *         funstreamBadgesCheckBox;
-    QLineEdit *         funstreamAliasesEdit;
-    QTextEdit *         funstreamSupportersListEdit;
-    QTextEdit *         funstreamBlackListEdit;
-    QCheckBox *         funstreamRemoveBlackListUsersCheckBox;
-
 
     QCheckBox *         gamerstvChannelCheckBox;
     QLineEdit *         gamerstvChannelEdit;
@@ -428,6 +421,17 @@ private:
     QTextEdit *         livecodingSupportersListEdit;
     QTextEdit *         livecodingBlackListEdit;
     QCheckBox *         livecodingRemoveBlackListUsersCheckBox;
+
+
+    QCheckBox *         peka2ChannelCheckBox;
+    QLineEdit *         peka2ChannelEdit;
+    QCheckBox *         peka2OriginalColorsCheckBox;
+    QCheckBox *         peka2BadgesCheckBox;
+    QLineEdit *         peka2AliasesEdit;
+    QTextEdit *         peka2SupportersListEdit;
+    QTextEdit *         peka2BlackListEdit;
+    QCheckBox *         peka2RemoveBlackListUsersCheckBox;
+
 
     QCheckBox *         streamcubeChannelCheckBox;
     QLineEdit *         streamcubeChannelEdit;

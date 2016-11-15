@@ -133,15 +133,6 @@ const QString CYBERGAME_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Cybergame/Supp
 const QString CYBERGAME_BLACK_LIST_SETTING_PATH = "/Settings/Cybergame/BlackList";
 const QString CYBERGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH  = "/Settings/Cybergame/RemoveBlackListUsers";
 
-const QString FUNSTREAM_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Funstream/Enable";
-const QString FUNSTREAM_CHANNEL_SETTING_PATH = "/Settings/Funstream/Channel";
-const QString FUNSTREAM_ALIASES_SETTING_PATH = "/Settings/Funstream/Aliases";
-const QString FUNSTREAM_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Funstream/Supporters";
-const QString FUNSTREAM_BLACK_LIST_SETTING_PATH = "/Settings/Funstream/BlackList";
-const QString FUNSTREAM_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Funstream/RemoveBlackListUsers";
-const QString FUNSTREAM_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Funstream/OriginalColors";
-const QString FUNSTREAM_BADGES_SETTING_PATH = "/Settings/Funstream/Badges";
-
 const QString GAMERSTV_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Gamerstv/Enable";
 const QString GAMERSTV_CHANNEL_SETTING_PATH = "/Settings/Gamerstv/Channel";
 const QString GAMERSTV_ALIASES_SETTING_PATH = "/Settings/Gamerstv/Aliases";
@@ -192,6 +183,17 @@ const QString LIVECODING_BLACK_LIST_SETTING_PATH = "/Settings/Livecoding/BlackLi
 const QString LIVECODING_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Livecoding/RemoveBlackListUsers";
 const QString LIVECODING_BADGES_SETTING_PATH = "/Settings/Livecoding/Badges";
 
+
+const QString PEKA2_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Peka2/Enable";
+const QString PEKA2_CHANNEL_SETTING_PATH = "/Settings/Peka2/Channel";
+const QString PEKA2_ALIASES_SETTING_PATH = "/Settings/Peka2/Aliases";
+const QString PEKA2_SUPPORTERS_LIST_SETTING_PATH = "/Settings/Peka2/Supporters";
+const QString PEKA2_BLACK_LIST_SETTING_PATH = "/Settings/Peka2/BlackList";
+const QString PEKA2_REMOVE_BLACK_LIST_USERS_SETTING_PATH = "/Settings/Peka2/RemoveBlackListUsers";
+const QString PEKA2_ORIGINAL_COLORS_SETTING_PATH = "/Settings/Peka2/OriginalColors";
+const QString PEKA2_BADGES_SETTING_PATH = "/Settings/Peka2/Badges";
+
+
 const QString STREAMCUBE_CHANNEL_ENABLE_SETTING_PATH = "/Settings/Streamcube/Enable";
 const QString STREAMCUBE_CHANNEL_SETTING_PATH = "/Settings/Streamcube/Channel";
 const QString STREAMCUBE_ALIASES_SETTING_PATH = "/Settings/Streamcube/Aliases";
@@ -230,14 +232,13 @@ const QString DEFAULT_ACES_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_AZUBU_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_BEAMPRO_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_CYBERGAME_CHANNEL_NAME = BLANK_STRING;
-const QString DEFAULT_FUNSTREAM_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_GAMERSTV_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_GIPSYTEAM_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_GOODGAME_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_HITBOX_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_IGDC_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_LIVECODING_CHANNEL_NAME = BLANK_STRING;
-const QString DEFAULT_SC2TV_CHANNEL_NAME = BLANK_STRING;
+const QString DEFAULT_PEKA2_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_STREAMCUBE_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_TWITCH_CHANNEL_NAME = BLANK_STRING;
 const QString DEFAULT_VIDI_CHANNEL_NAME = BLANK_STRING;

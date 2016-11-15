@@ -14,14 +14,14 @@ HEADERS += \
     qcybergamechat.h \
     qaceschat.h \
     qgamerstvchat.h \
-    qbrochatview.h \    
-    qfunstreamchat.h \
+    qbrochatview.h \        
     qchatupdateserver.h \
     qchatstatistic.h \
     qhitboxchat.h \
     qgipsyteamchat.h \    
     qlivecodingchat.h \
     qigdcchat.h \
+    qpeka2chat.h \
     qpoll.h \
     qpollview.h \
     qmessagesmanager.h \
@@ -42,8 +42,7 @@ SOURCES += \
     qcybergamechat.cpp \
     qaceschat.cpp \
     qgamerstvchat.cpp \
-    qbrochatview.cpp \
-    qfunstreamchat.cpp \
+    qbrochatview.cpp \    
     qchatupdateserver.cpp \
     qchatstatistic.cpp \
     qhitboxchat.cpp \
@@ -51,6 +50,7 @@ SOURCES += \
     qlivecodingchat.cpp \
     qigdcchat.cpp \
     qmessagesmanager.cpp \
+    qpeka2chat.cpp \
     qpoll.cpp \
     qpollsettingsdialog.cpp \
     qpollview.cpp \
