@@ -37,6 +37,7 @@ const QString QCyberGameChat::SERVICE_USER_NAME = "CYBERGAME";
 
 const int QCyberGameChat::RECONNECT_INTERVAL = 10000;
 const int QCyberGameChat::STATISTIC_INTERVAL = 10000;
+const int QCyberGameChat::SAVE_CONNECTION_INTERVAL = 25000;
 
 QCyberGameChat::QCyberGameChat( QObject *parent )
 : QChatService( parent )
@@ -67,6 +68,7 @@ void QCyberGameChat::disconnect()
 {    
     resetTimer( reconnectTimerId_ );
     resetTimer( statisticTimerId_ );
+    resetTimer( saveConnectionTimerId_ );
 
     if( socket_ )
     {
@@ -146,6 +148,8 @@ void QCyberGameChat::onTextMessageReceived( const QString & message )
                         emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
                         emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
                     }
+
+                    startUniqueTimer( saveConnectionTimerId_, SAVE_CONNECTION_INTERVAL );
                 }
             }
             else if ( "msg" == messageType )
@@ -352,7 +356,11 @@ void QCyberGameChat::onSmilesLoadError()
 
 void QCyberGameChat::timerEvent( QTimerEvent *event )
 {
-    if( event->timerId() == statisticTimerId_ )
+    if( event->timerId() == saveConnectionTimerId_ && socket_ && socket_->isValid() && QAbstractSocket::ConnectedState == socket_->state() )
+    {
+        socket_->ping();
+    }
+    else if( event->timerId() == statisticTimerId_ )
     {
         loadStatistic();
     }

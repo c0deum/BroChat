@@ -56,7 +56,8 @@ private:
     QString                     channelId_;
 
     int                         reconnectTimerId_ = {-1};
-    int                         statisticTimerId_ = {-1};    
+    int                         statisticTimerId_ = {-1};
+    int                         saveConnectionTimerId_ = {-1};
 
     bool                        badges_ = {false};
 
@@ -65,6 +66,7 @@ private:
 
     static const int            RECONNECT_INTERVAL;
     static const int            STATISTIC_INTERVAL;
+    static const int            SAVE_CONNECTION_INTERVAL;
 };
 
 #endif // QCYBERGAMECHAT_H
