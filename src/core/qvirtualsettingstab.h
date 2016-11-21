@@ -3,9 +3,12 @@
 
 #include <QIcon>
 #include <QString>
+#include <QVBoxLayout>
+#include <QWidget>
 
 class QSettings;
 class QWidget;
+
 
 class VirtualSettingsTab
 {
@@ -17,6 +20,14 @@ public:
     virtual QWidget* createLayout(QWidget * parent,QSettings& settings) = 0;
     virtual void saveSettings(QSettings& settings) = 0;
     virtual void loadSettings(QSettings& settings) = 0;
+
+    void addWidgets( QVBoxLayout * layout, std::initializer_list< QWidget * > widgets )
+    {
+        for( auto widget : widgets )
+        {
+            layout->addWidget( widget );
+        }
+    }
 
 
     //tab properties, icon and name and

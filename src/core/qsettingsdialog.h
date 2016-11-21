@@ -40,7 +40,6 @@ private:
     void                setupCybergameTab();    
     void                setupGamerstvTab();
     void                setupGipsyteamTab();
-    void                setupGoodgameTab();
     void                setupHitboxTab();
     void                setupIgdcTab();
     void                setupLivecodingTab();    
@@ -164,15 +163,6 @@ signals:
     void                gipsyteamSupportersListChanged( const QString & );
     void                gipsyteamBlackListChanged( const QString & );
     void                gipsyteamRemoveBlackListUsersChanged( bool );
-
-    void                goodGameChannelChanged();
-    void                goodGameChannelDisabled();
-    void                goodGameUseAnimatedSmilesChanged( bool );
-    void                goodGameAliasesChanged( const QString & );
-    void                goodGameSupportersListChanged( const QString & );
-    void                goodGameBlackListChanged( const QString & );
-    void                goodGameRemoveBlackListUsersChanged( bool );
-    void                goodGameBadgesChanged( bool );
 
     void                hitboxChannelChanged();
     void                hitboxChannelDisabled();
@@ -403,15 +393,6 @@ private:
     QTextEdit *         gipsyteamSupportersListEdit;
     QTextEdit *         gipsyteamBlackListEdit;
     QCheckBox *         gipsyteamRemoveBlackListUsersCheckBox;
-
-    QCheckBox *         goodGameChannelCheckBox;
-    QLineEdit *         goodGameChannelEdit;
-    QCheckBox *         goodGameBadgesCheckBox;
-    QCheckBox *         goodGameUseAnimatedSmilesCheckBox;
-    QLineEdit *         goodGameAliasesEdit;
-    QTextEdit *         goodGameSupportersListEdit;
-    QTextEdit *         goodGameBlackListEdit;
-    QCheckBox *         goodGameRemoveBlackListUsersCheckBox;
 
     QCheckBox *         hitboxChannelCheckBox;
     QLineEdit *         hitboxChannelEdit;

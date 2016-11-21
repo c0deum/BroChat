@@ -195,15 +195,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , gipsyteamBlackListEdit( new QTextEdit( this ) )
 , gipsyteamRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-, goodGameChannelCheckBox( new QCheckBox( this ) )
-, goodGameChannelEdit( new QLineEdit( this ) )
-, goodGameBadgesCheckBox( new QCheckBox( this ) )
-, goodGameUseAnimatedSmilesCheckBox( new QCheckBox( this ) )
-, goodGameAliasesEdit( new QLineEdit( this ) )
-, goodGameSupportersListEdit( new QTextEdit( this ) )
-, goodGameBlackListEdit( new QTextEdit( this ) )
-, goodGameRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
 , hitboxChannelCheckBox( new QCheckBox( this ) )
 , hitboxChannelEdit( new QLineEdit( this ) )
 , hitboxOriginalColorsCheckBox( new QCheckBox( this ) )
@@ -327,7 +318,6 @@ void QSettingsDialog::setupWidgets()
     setupCybergameTab();    
     setupGamerstvTab();
     setupGipsyteamTab();
-    setupGoodgameTab();
     setupHitboxTab();
     setupIgdcTab();
     setupLivecodingTab();        
@@ -1157,53 +1147,6 @@ void QSettingsDialog::setupGipsyteamTab()
     tabSettings->addTab( gipsyteamGroup, QIcon( ":/resources/gipsyteamlogo.png" ), tr( "Gipsyteam" ) );
 }
 
-void QSettingsDialog::setupGoodgameTab()
-{
-    QSettings settings;
-
-    QVBoxLayout * goodGameLayout = new QVBoxLayout();
-
-    goodGameChannelCheckBox->setText( CHANNEL_TEXT );
-    goodGameChannelCheckBox->setChecked( settings.value( GOODGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    goodGameChannelEdit->setText( settings.value( GOODGAME_CHANNEL_SETTING_PATH, DEFAULT_GOODGAME_CHANNEL_NAME ).toString() );
-    goodGameChannelEdit->setEnabled( goodGameChannelCheckBox->isChecked() );
-
-    QObject::connect( goodGameChannelCheckBox, SIGNAL( clicked( bool ) ), goodGameChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    goodGameBadgesCheckBox->setText( tr( "Badges" ) );
-    goodGameBadgesCheckBox->setChecked( settings.value( GOODGAME_BADGES_SETTING_PATH, false ).toBool() );
-
-    goodGameUseAnimatedSmilesCheckBox->setText( tr( "Use Animated Smiles" ) );
-    goodGameUseAnimatedSmilesCheckBox->setChecked( settings.value( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, false ).toBool() );
-
-    addWidgets( goodGameLayout, { goodGameChannelCheckBox, goodGameChannelEdit, goodGameBadgesCheckBox, goodGameUseAnimatedSmilesCheckBox  } );
-
-    goodGameAliasesEdit->setText( settings.value( GOODGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( goodGameLayout, { new QLabel( ALIASES_TEXT, this ), goodGameAliasesEdit } );
-
-    goodGameSupportersListEdit->setText( settings.value( GOODGAME_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( goodGameLayout, { new QLabel( SUPPORTERS_TEXT, this ), goodGameSupportersListEdit } );
-
-    goodGameBlackListEdit->setText( settings.value( GOODGAME_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( goodGameLayout, { new QLabel( BLACKLIST_TEXT, this ), goodGameBlackListEdit } );
-
-    goodGameRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    goodGameRemoveBlackListUsersCheckBox->setChecked( settings.value( GOODGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    goodGameLayout->addWidget( goodGameRemoveBlackListUsersCheckBox );
-
-    goodGameLayout->addStretch( 1 );
-
-    QGroupBox * goodGameGroup = new QGroupBox( tabSettings );
-    goodGameGroup->setLayout( goodGameLayout );
-
-    tabSettings->addTab( goodGameGroup, QIcon( ":/resources/goodgamelogo.png" ), tr( "Goodgame" ) );
-}
-
 void QSettingsDialog::setupHitboxTab()
 {
     QSettings settings;
@@ -1996,59 +1939,6 @@ void QSettingsDialog::saveSettings()
         emit gipsyteamRemoveBlackListUsersChanged( gipsyteamRemoveBlackListUsersCheckBox->isChecked() );
     }
 
-    //настройки gg
-
-    oldBoolValue = settings.value( GOODGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( GOODGAME_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != goodGameChannelCheckBox->isChecked() || oldStringValue != goodGameChannelEdit->text() )
-    {
-        settings.setValue( GOODGAME_CHANNEL_ENABLE_SETTING_PATH, goodGameChannelCheckBox->isChecked() );
-        settings.setValue( GOODGAME_CHANNEL_SETTING_PATH, goodGameChannelEdit->text() );
-
-        emit goodGameChannelChanged();
-    }
-
-    oldBoolValue = settings.value( GOODGAME_BADGES_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != goodGameBadgesCheckBox->isChecked() )
-    {
-        settings.setValue( GOODGAME_BADGES_SETTING_PATH, goodGameBadgesCheckBox->isChecked() );
-        emit goodGameBadgesChanged( goodGameBadgesCheckBox->isChecked() );
-    }
-
-    oldBoolValue = settings.value( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != goodGameUseAnimatedSmilesCheckBox->isChecked() )
-    {
-        settings.setValue( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, goodGameUseAnimatedSmilesCheckBox->isChecked() );
-        emit goodGameUseAnimatedSmilesChanged( goodGameUseAnimatedSmilesCheckBox->isChecked() );
-    }
-
-    oldStringValue = settings.value( GOODGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != goodGameAliasesEdit->text() )
-    {
-        settings.setValue( GOODGAME_ALIASES_SETTING_PATH, goodGameAliasesEdit->text() );
-        emit goodGameAliasesChanged( goodGameAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( GOODGAME_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != goodGameSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( GOODGAME_SUPPORTERS_LIST_SETTING_PATH, goodGameSupportersListEdit->toPlainText() );
-        emit goodGameSupportersListChanged( goodGameSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( GOODGAME_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != goodGameBlackListEdit->toPlainText() )
-    {
-        settings.setValue( GOODGAME_BLACK_LIST_SETTING_PATH, goodGameBlackListEdit->toPlainText() );
-        emit goodGameBlackListChanged( goodGameBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( GOODGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != goodGameRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( GOODGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH, goodGameRemoveBlackListUsersCheckBox->isChecked() );
-        emit goodGameRemoveBlackListUsersChanged( goodGameRemoveBlackListUsersCheckBox->isChecked() );
-    }
 
     //настройки hitbox
 

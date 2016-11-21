@@ -10,7 +10,15 @@
 #include "qgoodgamesettingsdialog.h"
 #include "../core/settingsconsts.h"
 
-QGoodGameSettingsDialog::QGoodGameSettingsDialog(QObject *parent):QObject(parent)
+QGoodGameSettingsDialog::QGoodGameSettingsDialog(QWidget *parent):QWidget(parent)
+  , goodGameChannelCheckBox( new QCheckBox( this ) )
+  , goodGameChannelEdit( new QLineEdit( this ) )
+  , goodGameBadgesCheckBox( new QCheckBox( this ) )
+  , goodGameUseAnimatedSmilesCheckBox( new QCheckBox( this ) )
+  , goodGameAliasesEdit( new QLineEdit( this ) )
+  , goodGameSupportersListEdit( new QTextEdit( this ) )
+  , goodGameBlackListEdit( new QTextEdit( this ) )
+  , goodGameRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 {
 
 }
@@ -18,19 +26,8 @@ QGoodGameSettingsDialog::QGoodGameSettingsDialog(QObject *parent):QObject(parent
 
 QWidget *QGoodGameSettingsDialog::createLayout(QWidget *parent,QSettings& settings)
 {
-    QGroupBox *goodgameGroup = new QGroupBox( parent );
 
-    //настройки youtube
-    QVBoxLayout *goodGameLayout = new QVBoxLayout;
-    goodgameGroup->setLayout( goodGameLayout );
-
-    goodGameChannelCheckBox = new QCheckBox( parent );
-    goodGameChannelEdit = new QLineEdit( parent );
-    goodGameUseAnimatedSmilesCheckBox = new QCheckBox( parent );
-    goodGameAliasesEdit = new QLineEdit( parent );
-    goodGameSupportersListEdit = new QTextEdit( parent );
-    goodGameBlackListEdit = new QTextEdit( parent );
-    goodGameRemoveBlackListUsersCheckBox = new QCheckBox( parent );
+    QVBoxLayout * goodGameLayout = new QVBoxLayout();
 
     goodGameChannelCheckBox->setText( CHANNEL_TEXT );
     goodGameChannelCheckBox->setChecked( settings.value( GOODGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
@@ -40,34 +37,25 @@ QWidget *QGoodGameSettingsDialog::createLayout(QWidget *parent,QSettings& settin
 
     QObject::connect( goodGameChannelCheckBox, SIGNAL( clicked( bool ) ), goodGameChannelEdit, SLOT( setEnabled( bool ) ) );
 
-    //goodGameLayout->addWidget( goodGameChannelLabel );
-    goodGameLayout->addWidget( goodGameChannelCheckBox );
-    goodGameLayout->addWidget( goodGameChannelEdit );
+    goodGameBadgesCheckBox->setText( tr( "Badges" ) );
+    goodGameBadgesCheckBox->setChecked( settings.value( GOODGAME_BADGES_SETTING_PATH, false ).toBool() );
 
     goodGameUseAnimatedSmilesCheckBox->setText( tr( "Use Animated Smiles" ) );
     goodGameUseAnimatedSmilesCheckBox->setChecked( settings.value( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, false ).toBool() );
 
-    goodGameLayout->addWidget( goodGameUseAnimatedSmilesCheckBox );
+    addWidgets( goodGameLayout, { goodGameChannelCheckBox, goodGameChannelEdit, goodGameBadgesCheckBox, goodGameUseAnimatedSmilesCheckBox  } );
 
-    QLabel *goodGameAliasesLabel = new QLabel( ALIASES_TEXT );
     goodGameAliasesEdit->setText( settings.value( GOODGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
 
-    goodGameLayout->addWidget( goodGameAliasesLabel );
-    goodGameLayout->addWidget( goodGameAliasesEdit );
-
-    QLabel *goodGameSupportersListLabel = new QLabel( SUPPORTERS_TEXT );
+    addWidgets( goodGameLayout, { new QLabel( ALIASES_TEXT, this ), goodGameAliasesEdit } );
 
     goodGameSupportersListEdit->setText( settings.value( GOODGAME_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    goodGameLayout->addWidget( goodGameSupportersListLabel );
-    goodGameLayout->addWidget( goodGameSupportersListEdit );
-
-    QLabel *goodGameBlackListLabel = new QLabel( BLACKLIST_TEXT );
+    addWidgets( goodGameLayout, { new QLabel( SUPPORTERS_TEXT, this ), goodGameSupportersListEdit } );
 
     goodGameBlackListEdit->setText( settings.value( GOODGAME_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
 
-    goodGameLayout->addWidget( goodGameBlackListLabel );
-    goodGameLayout->addWidget( goodGameBlackListEdit );
+    addWidgets( goodGameLayout, { new QLabel( BLACKLIST_TEXT, this ), goodGameBlackListEdit } );
 
     goodGameRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
     goodGameRemoveBlackListUsersCheckBox->setChecked( settings.value( GOODGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
@@ -76,27 +64,37 @@ QWidget *QGoodGameSettingsDialog::createLayout(QWidget *parent,QSettings& settin
 
     goodGameLayout->addStretch( 1 );
 
-    return goodgameGroup;
+    QGroupBox * goodGameGroup = new QGroupBox( parent );
+    goodGameGroup->setLayout( goodGameLayout );
+
+    return goodGameGroup;
 }
 
 void QGoodGameSettingsDialog::saveSettings(QSettings &settings)
 {
-    //настройки gg
-    QString oldStringValue = settings.value( GOODGAME_CHANNEL_SETTING_PATH, DEFAULT_GOODGAME_CHANNEL_NAME ).toString();
-    if( oldStringValue != goodGameChannelEdit->text() )
+    bool oldBoolValue = settings.value( GOODGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
+    QString oldStringValue = settings.value( GOODGAME_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
+    if( oldBoolValue != goodGameChannelCheckBox->isChecked() || oldStringValue != goodGameChannelEdit->text() )
     {
+        settings.setValue( GOODGAME_CHANNEL_ENABLE_SETTING_PATH, goodGameChannelCheckBox->isChecked() );
         settings.setValue( GOODGAME_CHANNEL_SETTING_PATH, goodGameChannelEdit->text() );
+
         emit goodGameChannelChanged();
     }
-    //emit goodGameChannelChanged();
 
-    bool oldBoolValue = settings.value( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, false ).toBool();
+    oldBoolValue = settings.value( GOODGAME_BADGES_SETTING_PATH, false ).toBool();
+    if( oldBoolValue != goodGameBadgesCheckBox->isChecked() )
+    {
+        settings.setValue( GOODGAME_BADGES_SETTING_PATH, goodGameBadgesCheckBox->isChecked() );
+        emit goodGameBadgesChanged( goodGameBadgesCheckBox->isChecked() );
+    }
+
+    oldBoolValue = settings.value( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, false ).toBool();
     if( oldBoolValue != goodGameUseAnimatedSmilesCheckBox->isChecked() )
     {
         settings.setValue( GOODGAME_USE_ANIMATED_SMILES_SETTING_PATH, goodGameUseAnimatedSmilesCheckBox->isChecked() );
         emit goodGameUseAnimatedSmilesChanged( goodGameUseAnimatedSmilesCheckBox->isChecked() );
     }
-
 
     oldStringValue = settings.value( GOODGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
     if( oldStringValue != goodGameAliasesEdit->text() )
@@ -125,6 +123,7 @@ void QGoodGameSettingsDialog::saveSettings(QSettings &settings)
         settings.setValue( GOODGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH, goodGameRemoveBlackListUsersCheckBox->isChecked() );
         emit goodGameRemoveBlackListUsersChanged( goodGameRemoveBlackListUsersCheckBox->isChecked() );
     }
+
 
 
 }

@@ -13,11 +13,11 @@ class QTextEdit;
 class QGroupBox;
 class QWidget;
 
-class QGoodGameSettingsDialog:public QObject,public VirtualSettingsTab
+class QGoodGameSettingsDialog:public QWidget,public VirtualSettingsTab
 {
     Q_OBJECT
 public:
-    QGoodGameSettingsDialog(QObject *parent = nullptr);
+    QGoodGameSettingsDialog(QWidget *parent = nullptr);
     virtual ~QGoodGameSettingsDialog(){}
 
     // QVirtualSettingsTab interface
@@ -39,6 +39,7 @@ private:
     QTextEdit *goodGameSupportersListEdit;
     QTextEdit *goodGameBlackListEdit;
     QCheckBox *goodGameRemoveBlackListUsersCheckBox;
+    QCheckBox *goodGameBadgesCheckBox;
 
 
 signals:
@@ -49,6 +50,7 @@ signals:
     void goodGameSupportersListChanged( const QString & );
     void goodGameBlackListChanged( const QString & );
     void goodGameRemoveBlackListUsersChanged( bool );
+    void goodGameBadgesChanged( bool );
 
 };
 
