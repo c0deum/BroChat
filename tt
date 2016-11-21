@@ -1,0 +1,448 @@
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+Changes to be committed:
+  (use "git reset HEAD <file>..." to unstage)
+
+	modified:   BroChat.pro
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeCache.txt
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/3.6.2/CMakeCCompiler.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/3.6.2/CMakeCXXCompiler.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/3.6.2/CMakeDetermineCompilerABI_C.bin
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/3.6.2/CMakeDetermineCompilerABI_CXX.bin
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/3.6.2/CMakeRCCompiler.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/3.6.2/CMakeSystem.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/3.6.2/CompilerIdC/CMakeCCompilerId.c
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/3.6.2/CompilerIdC/CMakeCCompilerId.exe
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/3.6.2/CompilerIdC/CMakeCCompilerId.obj
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/3.6.2/CompilerIdCXX/CMakeCXXCompilerId.cpp
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/3.6.2/CompilerIdCXX/CMakeCXXCompilerId.exe
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/3.6.2/CompilerIdCXX/CMakeCXXCompilerId.obj
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/CMakeDirectoryInformation.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/CMakeOutput.log
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/CMakeRuleHashes.txt
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/TargetDirectories.txt
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/cmake.check_cache
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/feature_tests.bin
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/feature_tests.cxx
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/CMakeFiles/progress.marks
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/cmake_install.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/o2.cbp
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/o2.pc
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/CMakeDirectoryInformation.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/CXX.includecache
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/DependInfo.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/build.make
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/cmake_clean.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/cmake_clean_target.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/depend.internal
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/depend.make
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/flags.make
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/o0baseauth.cpp.obj
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/o0settingsstore.cpp.obj
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/o2.cpp.obj
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/o2_automoc.cpp.obj
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/o2reply.cpp.obj
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/o2replyserver.cpp.obj
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/o2requestor.cpp.obj
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/o2simplecrypt.cpp.obj
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/objects1.rsp
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/progress.make
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2.dir/vc140.pdb
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2_automoc.dir/AutogenInfo.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2_automoc.dir/AutomocOldMocDefinitions.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2_automoc.dir/DependInfo.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2_automoc.dir/build.make
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2_automoc.dir/cmake_clean.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2_automoc.dir/depend.internal
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2_automoc.dir/depend.make
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/o2_automoc.dir/progress.make
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/CMakeFiles/progress.marks
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/cmake_install.cmake
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/o2.lib
+	new file:   external/build-o2-Desktop_Qt_5_7_0_MSVC2015_32bit-Default/src/o2_automoc.cpp
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_0_connected/debug/example_0_connected.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_0_connected/debug/example_0_connected.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_0_connected/debug/example_0_connected.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_0_connected/debug/example_0_connected.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_1_echoClient/debug/example_1_echoClient.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_1_echoClient/debug/example_1_echoClient.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_1_echoClient/debug/example_1_echoClient.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_1_echoClient/debug/example_1_echoClient.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_1_echoClient/debug/moc_example_1_echoClient.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_2_rosterHandling/debug/example_2_rosterHandling.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_2_rosterHandling/debug/example_2_rosterHandling.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_2_rosterHandling/debug/example_2_rosterHandling.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_2_rosterHandling/debug/example_2_rosterHandling.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_2_rosterHandling/debug/moc_example_2_rosterHandling.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_3_transferHandling/debug/example_3_transferHandling.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_3_transferHandling/debug/example_3_transferHandling.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_3_transferHandling/debug/example_3_transferHandling.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_3_transferHandling/debug/example_3_transferHandling.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_3_transferHandling/debug/moc_example_3_transferHandling.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_3_transferHandling/debug/qrc_example_3_transferHandling.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_5_rpcInterface/debug/example_5_rpcInterface.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_5_rpcInterface/debug/example_5_rpcInterface.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_5_rpcInterface/debug/example_5_rpcInterface.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_5_rpcInterface/debug/main.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_5_rpcInterface/debug/moc_remoteinterface.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_5_rpcInterface/debug/remoteinterface.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_6_rpcClient/debug/example_6_rpcClient.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_6_rpcClient/debug/example_6_rpcClient.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_6_rpcClient/debug/example_6_rpcClient.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_6_rpcClient/debug/main.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_6_rpcClient/debug/moc_rpcClient.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_6_rpcClient/debug/rpcClient.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_7_archiveHandling/debug/example_7_archiveHandling.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_7_archiveHandling/debug/example_7_archiveHandling.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_7_archiveHandling/debug/example_7_archiveHandling.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_7_archiveHandling/debug/example_7_archiveHandling.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_7_archiveHandling/debug/moc_example_7_archiveHandling.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_8_server/debug/example_8_server.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_8_server/debug/example_8_server.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_8_server/debug/example_8_server.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_8_server/debug/main.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_9_vCard/debug/example_9_vCard.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_9_vCard/debug/example_9_vCard.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_9_vCard/debug/example_9_vCard.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_9_vCard/debug/example_9_vCard.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/examples/example_9_vCard/debug/moc_example_9_vCard.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppArchiveIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppArchiveManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppBindIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppBookmarkManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppBookmarkSet.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppByteStreamIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppCallManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppClient.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppClientExtension.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppCodec.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppConfiguration.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppConstants.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppDataForm.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppDialback.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppDiscoveryIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppDiscoveryManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppElement.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppEntityTimeIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppEntityTimeManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppGlobal.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppIbbIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppIncomingClient.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppIncomingServer.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppInvokable.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppJingleIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppLogger.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppMessage.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppMessageReceiptManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppMucIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppMucManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppNonSASLAuth.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppOutgoingClient.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppOutgoingServer.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppPasswordChecker.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppPingIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppPresence.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppPubSubIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppRegisterIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppRemoteMethod.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppResultSet.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppRosterIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppRosterManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppRpcIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppRpcManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppRtcpPacket.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppRtpChannel.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppRtpPacket.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppSasl.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppServer.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppServerExtension.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppSessionIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppSocks.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppStanza.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppStream.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppStreamFeatures.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppStreamInitiationIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppStun.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppTransferManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppUtils.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppVCardIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppVCardManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppVersionIq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/QXmppVersionManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppArchiveManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppBookmarkManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppCallManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppClient.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppClientExtension.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppDiscoveryManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppEntityTimeManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppIncomingClient.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppIncomingServer.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppInvokable.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppLogger.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppMessageReceiptManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppMucManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppOutgoingClient.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppOutgoingServer.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppPasswordChecker.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppRemoteMethod.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppRosterManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppRpcManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppRtpChannel.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppServer.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppServerExtension.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppServerPlugin.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppSocks.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppStream.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppStun.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppStun_p.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppTransferManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppTransferManager_p.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppVCardManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/moc_QXmppVersionManager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/debug/qxmpp_d_resource.res
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/qxmpp.prl
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/qxmpp_d.prl
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/qxmpp_d0.exp
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/qxmpp_d0.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/qxmpp_d0.lib
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/qxmpp_d0.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/qxmpp_d_resource.rc
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/qxmpp_resource.rc
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/src/qxmppd.lib
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpparchiveiq/debug/tst_qxmpparchiveiq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpparchiveiq/debug/tst_qxmpparchiveiq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpparchiveiq/debug/tst_qxmpparchiveiq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpparchiveiq/debug/tst_qxmpparchiveiq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpparchiveiq/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppbindiq/debug/tst_qxmppbindiq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppbindiq/debug/tst_qxmppbindiq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppbindiq/debug/tst_qxmppbindiq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppbindiq/debug/tst_qxmppbindiq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppbindiq/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppcallmanager/debug/tst_qxmppcallmanager.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppcallmanager/debug/tst_qxmppcallmanager.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppcallmanager/debug/tst_qxmppcallmanager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppcallmanager/debug/tst_qxmppcallmanager.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppcallmanager/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppdataform/debug/tst_qxmppdataform.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppdataform/debug/tst_qxmppdataform.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppdataform/debug/tst_qxmppdataform.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppdataform/debug/tst_qxmppdataform.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppdataform/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppdiscoveryiq/debug/tst_qxmppdiscoveryiq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppdiscoveryiq/debug/tst_qxmppdiscoveryiq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppdiscoveryiq/debug/tst_qxmppdiscoveryiq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppdiscoveryiq/debug/tst_qxmppdiscoveryiq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppdiscoveryiq/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppentitytimeiq/debug/tst_qxmppentitytimeiq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppentitytimeiq/debug/tst_qxmppentitytimeiq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppentitytimeiq/debug/tst_qxmppentitytimeiq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppentitytimeiq/debug/tst_qxmppentitytimeiq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppentitytimeiq/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppiceconnection/debug/tst_qxmppiceconnection.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppiceconnection/debug/tst_qxmppiceconnection.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppiceconnection/debug/tst_qxmppiceconnection.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppiceconnection/debug/tst_qxmppiceconnection.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppiceconnection/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppiq/debug/tst_qxmppiq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppiq/debug/tst_qxmppiq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppiq/debug/tst_qxmppiq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppiq/debug/tst_qxmppiq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppiq/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppjingleiq/debug/tst_qxmppjingleiq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppjingleiq/debug/tst_qxmppjingleiq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppjingleiq/debug/tst_qxmppjingleiq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppjingleiq/debug/tst_qxmppjingleiq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppjingleiq/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppmessage/debug/tst_qxmppmessage.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppmessage/debug/tst_qxmppmessage.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppmessage/debug/tst_qxmppmessage.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppmessage/debug/tst_qxmppmessage.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppmessage/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppnonsaslauthiq/debug/tst_qxmppnonsaslauthiq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppnonsaslauthiq/debug/tst_qxmppnonsaslauthiq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppnonsaslauthiq/debug/tst_qxmppnonsaslauthiq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppnonsaslauthiq/debug/tst_qxmppnonsaslauthiq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppnonsaslauthiq/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpppresence/debug/tst_qxmpppresence.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpppresence/debug/tst_qxmpppresence.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpppresence/debug/tst_qxmpppresence.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpppresence/debug/tst_qxmpppresence.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpppresence/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpppubsubiq/debug/tst_qxmpppubsubiq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpppubsubiq/debug/tst_qxmpppubsubiq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpppubsubiq/debug/tst_qxmpppubsubiq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpppubsubiq/debug/tst_qxmpppubsubiq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpppubsubiq/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppregisteriq/debug/tst_qxmppregisteriq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppregisteriq/debug/tst_qxmppregisteriq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppregisteriq/debug/tst_qxmppregisteriq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppregisteriq/debug/tst_qxmppregisteriq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppregisteriq/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppresultset/debug/tst_qxmppresultset.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppresultset/debug/tst_qxmppresultset.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppresultset/debug/tst_qxmppresultset.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppresultset/debug/tst_qxmppresultset.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppresultset/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprosteriq/debug/tst_qxmpprosteriq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprosteriq/debug/tst_qxmpprosteriq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprosteriq/debug/tst_qxmpprosteriq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprosteriq/debug/tst_qxmpprosteriq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprosteriq/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprpciq/debug/tst_qxmpprpciq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprpciq/debug/tst_qxmpprpciq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprpciq/debug/tst_qxmpprpciq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprpciq/debug/tst_qxmpprpciq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprpciq/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprtcppacket/debug/tst_qxmpprtcppacket.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprtcppacket/debug/tst_qxmpprtcppacket.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprtcppacket/debug/tst_qxmpprtcppacket.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprtcppacket/debug/tst_qxmpprtcppacket.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprtcppacket/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprtppacket/debug/tst_qxmpprtppacket.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprtppacket/debug/tst_qxmpprtppacket.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprtppacket/debug/tst_qxmpprtppacket.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprtppacket/debug/tst_qxmpprtppacket.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpprtppacket/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppserver/debug/tst_qxmppserver.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppserver/debug/tst_qxmppserver.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppserver/debug/tst_qxmppserver.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppserver/debug/tst_qxmppserver.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppserver/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppsessioniq/debug/tst_qxmppsessioniq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppsessioniq/debug/tst_qxmppsessioniq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppsessioniq/debug/tst_qxmppsessioniq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppsessioniq/debug/tst_qxmppsessioniq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppsessioniq/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppsocks/debug/tst_qxmppsocks.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppsocks/debug/tst_qxmppsocks.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppsocks/debug/tst_qxmppsocks.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppsocks/debug/tst_qxmppsocks.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppsocks/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstanza/debug/tst_qxmppstanza.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstanza/debug/tst_qxmppstanza.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstanza/debug/tst_qxmppstanza.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstanza/debug/tst_qxmppstanza.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstanza/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstreamfeatures/debug/tst_qxmppstreamfeatures.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstreamfeatures/debug/tst_qxmppstreamfeatures.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstreamfeatures/debug/tst_qxmppstreamfeatures.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstreamfeatures/debug/tst_qxmppstreamfeatures.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstreamfeatures/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstunmessage/debug/tst_qxmppstunmessage.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstunmessage/debug/tst_qxmppstunmessage.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstunmessage/debug/tst_qxmppstunmessage.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstunmessage/debug/tst_qxmppstunmessage.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppstunmessage/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpptransfermanager/debug/qrc_tst_qxmpptransfermanager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpptransfermanager/debug/tst_qxmpptransfermanager.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpptransfermanager/debug/tst_qxmpptransfermanager.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpptransfermanager/debug/tst_qxmpptransfermanager.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpptransfermanager/debug/tst_qxmpptransfermanager.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpptransfermanager/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpputils/debug/qrc_tst_qxmpputils.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpputils/debug/tst_qxmpputils.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpputils/debug/tst_qxmpputils.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpputils/debug/tst_qxmpputils.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpputils/debug/tst_qxmpputils.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmpputils/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppvcardiq/debug/tst_qxmppvcardiq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppvcardiq/debug/tst_qxmppvcardiq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppvcardiq/debug/tst_qxmppvcardiq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppvcardiq/debug/tst_qxmppvcardiq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppvcardiq/target_wrapper.bat
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppversioniq/debug/tst_qxmppversioniq.exe
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppversioniq/debug/tst_qxmppversioniq.ilk
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppversioniq/debug/tst_qxmppversioniq.obj
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppversioniq/debug/tst_qxmppversioniq.pdb
+	new file:   external/build-qxmpp-Desktop_Qt_5_7_0_MSVC2015_32bit-Debug/tests/qxmppversioniq/target_wrapper.bat
+	modified:   resources.qrc
+	new file:   resources/youtubelogo.png
+	renamed:    qaceschat.cpp -> src/aces/qaceschat.cpp
+	renamed:    qaceschat.h -> src/aces/qaceschat.h
+	renamed:    qazubuchat.cpp -> src/azubu/qazubuchat.cpp
+	renamed:    qazubuchat.h -> src/azubu/qazubuchat.h
+	renamed:    qbeamprochat.cpp -> src/beampro/qbeamprochat.cpp
+	renamed:    qbeamprochat.h -> src/beampro/qbeamprochat.h
+	renamed:    main.cpp -> src/core/main.cpp
+	new file:   src/core/notimplementedexception.h
+	renamed:    qbrochatview.cpp -> src/core/qbrochatview.cpp
+	renamed:    qbrochatview.h -> src/core/qbrochatview.h
+	renamed:    qbrochatwebpage.cpp -> src/core/qbrochatwebpage.cpp
+	renamed:    qbrochatwebpage.h -> src/core/qbrochatwebpage.h
+	renamed:    qchatmessage.cpp -> src/core/qchatmessage.cpp
+	renamed:    qchatmessage.h -> src/core/qchatmessage.h
+	renamed:    qchatserver.h -> src/core/qchatserver.h
+	renamed:    qchatservice.cpp -> src/core/qchatservice.cpp
+	renamed:    qchatservice.h -> src/core/qchatservice.h
+	renamed:    qchatstatistic.cpp -> src/core/qchatstatistic.cpp
+	renamed:    qchatstatistic.h -> src/core/qchatstatistic.h
+	renamed:    qchatupdateserver.cpp -> src/core/qchatupdateserver.cpp
+	renamed:    qchatupdateserver.h -> src/core/qchatupdateserver.h
+	renamed:    qmessagesmanager.cpp -> src/core/qmessagesmanager.cpp
+	renamed:    qmessagesmanager.h -> src/core/qmessagesmanager.h
+	renamed:    qpoll.cpp -> src/core/qpoll.cpp
+	renamed:    qpoll.h -> src/core/qpoll.h
+	renamed:    qpollsettingsdialog.cpp -> src/core/qpollsettingsdialog.cpp
+	renamed:    qpollsettingsdialog.h -> src/core/qpollsettingsdialog.h
+	renamed:    qpollview.cpp -> src/core/qpollview.cpp
+	renamed:    qpollview.h -> src/core/qpollview.h
+	renamed:    qsettingsdialog.cpp -> src/core/qsettingsdialog.cpp
+	renamed:    qsettingsdialog.h -> src/core/qsettingsdialog.h
+	new file:   src/core/qvirtualsettingstab.h
+	renamed:    settingsconsts.h -> src/core/settingsconsts.h
+	renamed:    qcybergamechat.cpp -> src/cybergame/qcybergamechat.cpp
+	renamed:    qcybergamechat.h -> src/cybergame/qcybergamechat.h
+	renamed:    qgamerstvchat.cpp -> src/gamerstv/qgamerstvchat.cpp
+	renamed:    qgamerstvchat.h -> src/gamerstv/qgamerstvchat.h
+	renamed:    qgipsyteamchat.cpp -> src/gipsyteam/qgipsyteamchat.cpp
+	renamed:    qgipsyteamchat.h -> src/gipsyteam/qgipsyteamchat.h
+	renamed:    qgoodgamechat.cpp -> src/goodgame/qgoodgamechat.cpp
+	renamed:    qgoodgamechat.h -> src/goodgame/qgoodgamechat.h
+	new file:   src/goodgame/qgoodgamesettingsdialog.cpp
+	new file:   src/goodgame/qgoodgamesettingsdialog.h
+	renamed:    qhitboxchat.cpp -> src/hitbox/qhitboxchat.cpp
+	renamed:    qhitboxchat.h -> src/hitbox/qhitboxchat.h
+	renamed:    qigdcchat.cpp -> src/igdc/qigdcchat.cpp
+	renamed:    qigdcchat.h -> src/igdc/qigdcchat.h
+	renamed:    qlivecodingchat.cpp -> src/livecoding/qlivecodingchat.cpp
+	renamed:    qlivecodingchat.h -> src/livecoding/qlivecodingchat.h
+	renamed:    qpeka2chat.cpp -> src/peka2tv/qpeka2chat.cpp
+	renamed:    qpeka2chat.h -> src/peka2tv/qpeka2chat.h
+	renamed:    qstreamcubechat.cpp -> src/streamcube/qstreamcubechat.cpp
+	renamed:    qstreamcubechat.h -> src/streamcube/qstreamcubechat.h
+	renamed:    qtwitchchat.cpp -> src/twitch/qtwitchchat.cpp
+	renamed:    qtwitchchat.h -> src/twitch/qtwitchchat.h
+	renamed:    qvidichat.cpp -> src/vidi/qvidichat.cpp
+	renamed:    qvidichat.h -> src/vidi/qvidichat.h
+	new file:   src/youtube/commentmodel.cpp
+	new file:   src/youtube/commentmodel.h
+	new file:   src/youtube/livebroadcastmodel.cpp
+	new file:   src/youtube/livebroadcastmodel.h
+	new file:   src/youtube/o2youtube.cpp
+	new file:   src/youtube/o2youtube.h
+	new file:   src/youtube/qyoutubechatEx.cpp
+	new file:   src/youtube/qyoutubechatEx.h
+	new file:   src/youtube/qyoutubesettingsdialog.cpp
+	new file:   src/youtube/qyoutubesettingsdialog.h
+	new file:   src/youtube/youtubeapi.cpp
+	new file:   src/youtube/youtubeapi.h
+	new file:   src/youtube/youtubecontroller.cpp
+	new file:   src/youtube/youtubecontroller.h
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+  (commit or discard the untracked or modified content in submodules)
+
+	modified:   external/o2 (modified content, untracked content)
+	modified:   external/qxmpp-master (untracked content)
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	tt
+
