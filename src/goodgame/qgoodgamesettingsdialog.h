@@ -25,6 +25,7 @@ public:
     virtual QWidget *createLayout(QWidget *parent,QSettings& settings);
     virtual void saveSettings(QSettings&settings);
     virtual void loadSettings(QSettings&settings);
+    virtual void connectDialogToChat(QObject* chat);
     virtual QIcon getIcon();
     virtual QString getName();
     virtual QObject *getAdditionalInfo();

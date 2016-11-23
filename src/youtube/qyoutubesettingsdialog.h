@@ -28,6 +28,10 @@ public:
     virtual QWidget *createLayout(QWidget *parent,QSettings& settings);
     virtual void saveSettings(QSettings&settings);
     virtual void loadSettings(QSettings&settings);
+
+    //connect signals from chat' dialog to chat class' slots
+    virtual void connectDialogToChat(QObject* chat);
+
     virtual QIcon getIcon();
     virtual QString getName();
     virtual QObject *getAdditionalInfo();
@@ -44,10 +48,7 @@ private:
     QTextEdit *supportersListEdit;
     QTextEdit *blackListEdit;
     QCheckBox *removeBlackListUsersCheckBox;
-    QGroupBox *groupBox;
-
-
-    void retrieveO2Token();
+    QGroupBox *groupBox;   
 private slots:
     void loginWebsiteButtonClicked();
     void deloginWebsiteButtonClicked();    

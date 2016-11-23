@@ -336,15 +336,16 @@ void QSettingsDialog::setupWidgets()
 void QSettingsDialog::populateTabs(QTabWidget* tabHost,QSettings& settings)
 {
     auto goodgameTab = new QGoodGameSettingsDialog(this);
-    tabs_.append(goodgameTab);
+    tabs_[ChatTypeEnum::Goodgame] = goodgameTab;
     tabHost->addTab( goodgameTab->createLayout(tabHost,settings),goodgameTab->getIcon(),
                      goodgameTab->getName() );
 
 
     auto youtTubeTab = new QYoutubeSettingsDialog(this);
-    tabs_.append(youtTubeTab);
+    tabs_[ChatTypeEnum::Youtube] = youtTubeTab;
     tabHost->addTab( youtTubeTab->createLayout(tabHost,settings),youtTubeTab->getIcon(),
                      youtTubeTab->getName() );
+
     connect(youtTubeTab,SIGNAL(loginClicked()),this,SLOT(youtubeLoginClicked()));
     connect(youtTubeTab,SIGNAL(deloginClicked()),this,SLOT(youtubeDeloginClicked()));
 }
@@ -365,6 +366,18 @@ void QSettingsDialog::saveTabsSettings(QSettings &settings)
     for(auto& tab:tabs_) {
         tab->saveSettings(settings);
     }
+}
+
+void QSettingsDialog::connectDialogToChat(ChatTypeEnum chatType, QObject *chat)
+{
+    if (!tabs_.contains(chatType))
+    {
+        //todo: create helper enum 2 str
+        //throw std::invalid_argument(tr("No chat with type "+ chatType + "registered"));
+        throw std::invalid_argument("No chat with selected type registered");
+    }
+    auto& chatDialogTab = tabs_[chatType];
+    chatDialogTab->connectDialogToChat(chat);;
 }
 
 

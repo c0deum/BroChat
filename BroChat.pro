@@ -39,7 +39,8 @@ HEADERS += \
     src\youtube\livebroadcastmodel.h \
     src\youtube\qyoutubesettingsdialog.h \
     src\youtube\youtubecontroller.h \
-    src\youtube\qyoutubechatEx.h
+    src\youtube\qyoutubechatEx.h \
+    src/core/chattypeenum.h
 
 
 SOURCES += \

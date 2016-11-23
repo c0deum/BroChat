@@ -8,11 +8,13 @@
 #include <QJsonObject>
 
 #include "qmessagesmanager.h"
+#include "chattypeenum.h"
 
 class ChatMessage;
 class QChatStatistic;
 
 class QChatUpdateServer;
+class QSettingsDialog;
 
 class QAcesChat;
 class QAzubuChat;
@@ -57,6 +59,15 @@ private:
     bool                isLink( const QString & str );
 
     void                replaceColorString( QString & str, const QString & colorTemplate, unsigned int defaultColor, const QString & settingPath );
+    void                connectChatsToReconnectAllSignal(QAction *reconnectAllAction);
+
+    //connect chat signals to this view's slots
+    //not that only common slots are connected here.
+    //(slotNewMessage,onNewStatistic,reconnect)
+    void                connectChatsToLocalSlots();
+
+    //connecting setting dialog tabs to their chats
+    void                connectDialogsToChats(QSettingsDialog* dialog);
 
 public slots:
     void                onNewMessage( QJsonObject json, const QChatService * service );
@@ -81,6 +92,7 @@ private slots:
     void                onLinkClicked( const QUrl & url );
 
     void                showPollSettings();
+    void                signalLoadFinishedCatched();
 
     void                testLoadFinished( bool test );
 signals:
@@ -105,6 +117,9 @@ private:
     QChatUpdateServer * chatUpdateServer_;
 
     QSettings           settings_;
+
+    QList<QMetaObject::Connection> loadFinishedConnections_;
+    QMap<ChatTypeEnum,QChatService*> chats_;
 
     bool                moveState_;
     QPoint              mouseStartPos_;

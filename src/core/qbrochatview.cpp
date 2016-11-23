@@ -106,7 +106,8 @@ QBroChatView::QBroChatView( QWidget *parent )
     //setAttribute( Qt::WA_TransparentForMouseEvents, true );
     //setAttribute( Qt::WA_KeyboardFocusChange );
 
-
+    chats_[ChatTypeEnum::Goodgame] = goodgameChat_;
+    chats_[ChatTypeEnum::Youtube] = youtubeChat_;
 
 
 
@@ -192,15 +193,14 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), beamproChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), cybergameChat_, SLOT( reconnect() ) );    
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), gamerstvChat_, SLOT( reconnect() ) );
-    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), gipsyteamChat_, SLOT( reconnect() ) );
-    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), goodgameChat_, SLOT( reconnect() ) );
+    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), gipsyteamChat_, SLOT( reconnect() ) );    
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), hitboxChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), igdcChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), livecodingChat_, SLOT( reconnect() ) );        
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), peka2Chat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), streamcubeChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), twitchChat_, SLOT( reconnect() ) );
-    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), vidiChat_, SLOT( reconnect() ) );
+    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), vidiChat_, SLOT( reconnect() ) );   
 
 
     QObject::connect( reconnectAcesAction, SIGNAL( triggered() ), acesChat_, SLOT( reconnect() ) );
@@ -219,6 +219,8 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( reconnectVidiAction, SIGNAL( triggered() ), vidiChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectYoutubeAction, SIGNAL( triggered() ), youtubeChat_, SLOT( reconnect() ) );
 
+
+    connectChatsToReconnectAllSignal(reconnectAllAction);
 
     addAction( settingsAction );
     addAction( pollSettingsAction );
@@ -245,66 +247,69 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     QObject::connect( acesChat_, SIGNAL( message( QJsonObject, const QChatService* ) ), this, SLOT( onNewMessage( QJsonObject, const QChatService * ) ) );
     QObject::connect( acesChat_, SIGNAL( newMessage ( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );            
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), acesChat_, SLOT( reconnect() ) );    
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), acesChat_, SLOT( reconnect() ) );
 
     QObject::connect( azubuChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( azubuChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), azubuChat_, SLOT( reconnect() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), azubuChat_, SLOT( reconnect() ) );
 
     QObject::connect( beamproChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( beamproChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), beamproChat_, SLOT( reconnect() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), beamproChat_, SLOT( reconnect() ) );
 
     QObject::connect( cybergameChat_, SIGNAL( newMessage ( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( cybergameChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), cybergameChat_, SLOT( reconnect() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), cybergameChat_, SLOT( reconnect() ) );
 
     QObject::connect( gamerstvChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( gamerstvChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), gamerstvChat_, SLOT( reconnect() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), gamerstvChat_, SLOT( reconnect() ) );
 
     QObject::connect( gipsyteamChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), gipsyteamChat_, SLOT( reconnect() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), gipsyteamChat_, SLOT( reconnect() ) );
 
-    QObject::connect( goodgameChat_, SIGNAL( newMessage ( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
-    QObject::connect( goodgameChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), goodgameChat_, SLOT( reconnect() ) );       
 
     QObject::connect( hitboxChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( hitboxChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), hitboxChat_, SLOT( reconnect() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), hitboxChat_, SLOT( reconnect() ) );
 
     QObject::connect( igdcChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( igdcChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), igdcChat_, SLOT( reconnect() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), igdcChat_, SLOT( reconnect() ) );
 
     QObject::connect( livecodingChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( livecodingChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), livecodingChat_, SLOT( reconnect() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), livecodingChat_, SLOT( reconnect() ) );
 
     QObject::connect( peka2Chat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( peka2Chat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), peka2Chat_, SLOT( reconnect() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), peka2Chat_, SLOT( reconnect() ) );
 
     QObject::connect( streamcubeChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), streamcubeChat_, SLOT( reconnect() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), streamcubeChat_, SLOT( reconnect() ) );
 
     QObject::connect( twitchChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( twitchChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), twitchChat_, SLOT( reconnect() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), twitchChat_, SLOT( reconnect() ) );
 
     QObject::connect( vidiChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( vidiChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), vidiChat_, SLOT( reconnect() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), vidiChat_, SLOT( reconnect() ) );
 
-    //youtube
-    QObject::connect( youtubeChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), youtubeChat_, SLOT( connect() ) );
+    connectChatsToLocalSlots();
 
 
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), this, SLOT( loadFlagsAndAttributes() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), this, SLOT( loadFlagsAndAttributes() ) );
 
-    QObject::connect( this, SIGNAL( loadFinished( bool ) ), this, SLOT( testLoadFinished(bool) ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), this, SLOT( testLoadFinished(bool) ) );
+
+
+    //this string should be last! as it will call unsubscribe for each each attached subscriber to loadFinished event!
+    //It should work because docs says:
+    //http://doc.qt.io/qt-4.8/signalsandslots.html#signals
+    //"If several slots are connected to one signal, the slots will be executed one after the other, in the order they have been connected, when the signal is emitted."
+    QObject::connect(this, SIGNAL( loadFinished( bool ) ), this, SLOT( signalLoadFinishedCatched()));
+
 
     //setMouseTracking( true );
 }
@@ -322,6 +327,16 @@ QBroChatView::~QBroChatView()
         }
     }
 }
+
+void QBroChatView::signalLoadFinishedCatched()
+{
+    for (auto& conn: loadFinishedConnections_)
+    {
+        QObject::disconnect(conn);
+    }
+    loadFinishedConnections_.clear();
+}
+
 
 void QBroChatView::mousePressEvent( QMouseEvent *event )
 {
@@ -720,13 +735,15 @@ void QBroChatView::showSettings()
 {
     QSettingsDialog *settingsDialog = new QSettingsDialog( this );
 
+    connectDialogsToChats(settingsDialog);
+
+
     QObject::connect( settingsDialog, SIGNAL( acesChannelChanged() ), acesChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( azubuChannelChanged() ), azubuChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( beamproChannelChanged() ), beamproChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( cyberGameChannelChanged() ), cybergameChat_, SLOT( reconnect() ) );    
     QObject::connect( settingsDialog, SIGNAL( gamerstvChannelChanged() ), gamerstvChat_, SLOT( reconnect() ) );
-    QObject::connect( settingsDialog, SIGNAL( gipsyteamChannelChanged() ), gipsyteamChat_, SLOT( reconnect() ) );
-    QObject::connect( settingsDialog, SIGNAL( goodGameChannelChanged() ), goodgameChat_, SLOT( reconnect() ) );
+    QObject::connect( settingsDialog, SIGNAL( gipsyteamChannelChanged() ), gipsyteamChat_, SLOT( reconnect() ) );    
     QObject::connect( settingsDialog, SIGNAL( hitboxChannelChanged() ), hitboxChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( igdcChannelChanged() ), igdcChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( livecodingChannelChanged() ), livecodingChat_, SLOT( reconnect() ) );        
@@ -741,8 +758,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( beamproAliasesChanged( QString ) ), beamproChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( cyberGameAliasesChanged( QString ) ), cybergameChat_, SLOT( setAliasesList( QString ) ) );    
     QObject::connect( settingsDialog, SIGNAL( gamerstvAliasesChanged(QString) ), gamerstvChat_, SLOT( setAliasesList(QString) ) );
-    QObject::connect( settingsDialog, SIGNAL( gipsyteamAliasesChanged(QString) ), gipsyteamChat_, SLOT( setAliasesList(QString) ) );
-    QObject::connect( settingsDialog, SIGNAL( goodGameAliasesChanged( QString ) ), goodgameChat_, SLOT( setAliasesList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( gipsyteamAliasesChanged(QString) ), gipsyteamChat_, SLOT( setAliasesList(QString) ) );    
     QObject::connect( settingsDialog, SIGNAL( hitboxAliasesChanged( QString ) ), hitboxChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( igdcAliasesChanged(QString) ), igdcChat_, SLOT( setAliasesList(QString) ) );
     QObject::connect( settingsDialog, SIGNAL( livecodingAliasesChanged( QString ) ), livecodingChat_, SLOT( setAliasesList( QString ) ) );    
@@ -756,8 +772,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( beamproSupportersListChanged( QString ) ), beamproChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( cyberGameSupportersListChanged( QString ) ), cybergameChat_, SLOT( setSupportersList( QString ) ) );    
     QObject::connect( settingsDialog, SIGNAL( gamerstvSupportersListChanged(QString) ), gamerstvChat_, SLOT( setSupportersList(QString) ) );
-    QObject::connect( settingsDialog, SIGNAL( gipsyteamSupportersListChanged(QString) ), gipsyteamChat_, SLOT( setSupportersList(QString) ) );
-    QObject::connect( settingsDialog, SIGNAL( goodGameSupportersListChanged( QString ) ), goodgameChat_, SLOT( setSupportersList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( gipsyteamSupportersListChanged(QString) ), gipsyteamChat_, SLOT( setSupportersList(QString) ) );   
     QObject::connect( settingsDialog, SIGNAL( hitboxSupportersListChanged( QString ) ), hitboxChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( igdcSupportersListChanged(QString) ), igdcChat_, SLOT( setSupportersList(QString) ) );
     QObject::connect( settingsDialog, SIGNAL( livecodingSupportersListChanged( QString ) ), livecodingChat_, SLOT( setSupportersList( QString ) ) );        
@@ -773,7 +788,6 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( cyberGameBlackListChanged( QString ) ), cybergameChat_, SLOT( setBlackList( QString ) ) );    
     QObject::connect( settingsDialog, SIGNAL( gamerstvBlackListChanged(QString) ), gamerstvChat_, SLOT( setBlackList(QString) ) );
     QObject::connect( settingsDialog, SIGNAL( gipsyteamBlackListChanged(QString) ), gipsyteamChat_, SLOT( setBlackList(QString) ) );
-    QObject::connect( settingsDialog, SIGNAL( goodGameBlackListChanged( QString ) ), goodgameChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( hitboxBlackListChanged( QString ) ), hitboxChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( igdcBlackListChanged(QString) ), igdcChat_, SLOT( setBlackList(QString) ) );
     QObject::connect( settingsDialog, SIGNAL( livecodingBlackListChanged( QString ) ), livecodingChat_, SLOT( setBlackList( QString ) ) );        
@@ -789,7 +803,6 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( cyberGameRemoveBlackListUsersChanged( bool ) ), cybergameChat_, SLOT( setRemoveBlackListUsers(bool ) ) );    
     QObject::connect( settingsDialog, SIGNAL( gamerstvRemoveBlackListUsersChanged(bool) ), gamerstvChat_, SLOT( setRemoveBlackListUsers(bool) ) );
     QObject::connect( settingsDialog, SIGNAL( gipsyteamRemoveBlackListUsersChanged(bool) ), gipsyteamChat_, SLOT( setRemoveBlackListUsers(bool) ) );
-    QObject::connect( settingsDialog, SIGNAL( goodGameRemoveBlackListUsersChanged( bool ) ), goodgameChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( hitboxRemoveBlackListUsersChanged( bool ) ), hitboxChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( igdcRemoveBlackListUsersChanged(bool) ), igdcChat_, SLOT( setRemoveBlackListUsers(bool) ) );
     QObject::connect( settingsDialog, SIGNAL( livecodingRemoveBlackListUsersChanged( bool ) ), livecodingChat_, SLOT( setRemoveBlackListUsers(bool ) ) );        
@@ -805,14 +818,12 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( twitchOriginalColorsChanged( bool ) ), twitchChat_, SLOT( changeOriginalColors( bool ) ) );
 
     //badges    
-    QObject::connect( settingsDialog, SIGNAL( gamerstvBadgesChanged(bool) ), gamerstvChat_, SLOT( changeBadges(bool) ) );
-    QObject::connect( settingsDialog, SIGNAL( goodGameBadgesChanged(bool) ), goodgameChat_, SLOT( changeBadges(bool) ) );
+    QObject::connect( settingsDialog, SIGNAL( gamerstvBadgesChanged(bool) ), gamerstvChat_, SLOT( changeBadges(bool) ) );    
     QObject::connect( settingsDialog, SIGNAL( igdcBadgesChanged(bool) ), igdcChat_, SLOT( changeBadges(bool) ) );
     QObject::connect( settingsDialog, SIGNAL( livecodingBadgesChanged(bool) ), livecodingChat_, SLOT( changeBadges(bool) ) );    
     QObject::connect( settingsDialog, SIGNAL( peka2BadgesChanged(bool) ), peka2Chat_, SLOT( changeBadges(bool) ) );
     QObject::connect( settingsDialog, SIGNAL( twitchBadgesChanged(bool) ), twitchChat_, SLOT( changeBadges(bool) ) );
 
-    QObject::connect( settingsDialog, SIGNAL( goodGameUseAnimatedSmilesChanged( bool ) ), goodgameChat_, SLOT( changeUseAnimatedSmiles( bool ) ) );
 
     QObject::connect( settingsDialog, SIGNAL( styleChanged() ), this, SLOT( changeStyle() ) );
     QObject::connect( settingsDialog, SIGNAL( opacityChanged() ), this, SLOT( changeOpacity() ) );
@@ -823,11 +834,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( showImagesChanged() ), this, SLOT( changeShowImagesState() ) );
     QObject::connect( settingsDialog, SIGNAL( useServerStateChanged() ), this, SLOT( changeUseServerState() ) );
     QObject::connect( settingsDialog, SIGNAL( saveToFileStateChanged() ), this, SLOT( changeSaveToFileState() ) );
-    QObject::connect( settingsDialog, SIGNAL( saveMessagesToLogChanged() ), this, SLOT( changeSaveMessagesToLogState() ) );
-
-    QObject::connect( settingsDialog, SIGNAL( youtubeLoginClickedSignal() ), youtubeChat_, SLOT( doFreshLogin() ) );
-    QObject::connect( settingsDialog, SIGNAL( youtubeDeloginClickedSignal() ), youtubeChat_, SLOT( doDelogin() ) );
-
+    QObject::connect( settingsDialog, SIGNAL( saveMessagesToLogChanged() ), this, SLOT( changeSaveMessagesToLogState() ) );   
 
     settingsDialog->exec();
 
@@ -900,6 +907,32 @@ void QBroChatView::replaceColorString( QString & str, const QString & colorTempl
     QColor color = QColor::fromRgba( settings_.value( settingPath, defaultColor ).toUInt() );
     QString colorString = "rgba(" + QString::number( color.red() ) + "," + QString::number( color.green() ) + "," + QString::number( color.blue() ) + "," + QString::number( color.alpha() / ALPHA_DIVIDER, 'f' ) + ")";
     str.replace( colorTemplate, colorString );
+}
+
+void QBroChatView::connectChatsToReconnectAllSignal(QAction *reconnectAllAction)
+{
+   for(auto& chat:chats_.values())
+   {
+        QObject::connect( reconnectAllAction, SIGNAL( triggered() ), chat, SLOT( reconnect() ) );
+   }
+}
+
+void QBroChatView::connectChatsToLocalSlots()
+{
+    for(auto& chat:chats_.values())
+    {
+        QObject::connect( chat, SIGNAL( newMessage ( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
+        QObject::connect( chat, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
+        loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), chat, SLOT( reconnect() ) );
+    }
+}
+
+void QBroChatView::connectDialogsToChats(QSettingsDialog *dialog)
+{
+    for(auto& chatKey:chats_.keys())
+    {
+      dialog->connectDialogToChat(chatKey,chats_[chatKey]);
+    }
 }
 
 void QBroChatView::onNewMessage( QJsonObject json, const QChatService * )

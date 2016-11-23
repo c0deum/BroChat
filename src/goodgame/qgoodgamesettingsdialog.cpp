@@ -128,6 +128,19 @@ void QGoodGameSettingsDialog::saveSettings(QSettings &settings)
 
 }
 
+void QGoodGameSettingsDialog::connectDialogToChat(QObject* chat)
+{
+    QObject::connect( this, SIGNAL( goodGameChannelChanged() ), chat, SLOT( reconnect() ) );
+    QObject::connect( this, SIGNAL( goodGameAliasesChanged( QString ) ), chat, SLOT( setAliasesList( QString ) ) );
+    QObject::connect( this, SIGNAL( goodGameSupportersListChanged( QString ) ), chat, SLOT( setSupportersList( QString ) ) );
+    QObject::connect( this, SIGNAL( goodGameBlackListChanged( QString ) ), chat, SLOT( setBlackList( QString ) ) );
+    QObject::connect( this, SIGNAL( goodGameRemoveBlackListUsersChanged( bool ) ), chat, SLOT( setRemoveBlackListUsers(bool ) ) );
+    QObject::connect( this, SIGNAL( goodGameBadgesChanged(bool) ), chat, SLOT( changeBadges(bool) ) );
+    QObject::connect( this, SIGNAL( goodGameUseAnimatedSmilesChanged( bool ) ), chat, SLOT( changeUseAnimatedSmiles( bool ) ) );
+
+}
+
+
 void QGoodGameSettingsDialog::loadSettings(QSettings &settings)
 {
     (void)settings;

@@ -120,17 +120,16 @@ void QYoutubeSettingsDialog::saveSettings(QSettings &settings)
     }
 }
 
-void QYoutubeSettingsDialog::retrieveO2Token()
+void QYoutubeSettingsDialog::connectDialogToChat(QObject* chat)
 {
+    QObject::connect( this, SIGNAL( youtubeLoginClickedSignal() ), chat, SLOT( doFreshLogin() ) );
+    QObject::connect( this, SIGNAL( youtubeDeloginClickedSignal() ), chat, SLOT( doDelogin() ) );
 
-    //youtubeController_->doAuth();
-
-    //youtubeAuth_->getComments();
 }
 
 void QYoutubeSettingsDialog::loginWebsiteButtonClicked()
 {
-   //retrieveO2Token();
+
     emit loginClicked();
 }
 

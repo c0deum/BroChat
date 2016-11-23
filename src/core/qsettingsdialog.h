@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QSettings>
+#include "chattypeenum.h"
 class QLineEdit;
 class QTextEdit;
 class QComboBox;
@@ -29,6 +30,9 @@ class QSettingsDialog: public QDialog
 public:
     explicit            QSettingsDialog( QWidget * parent = nullptr );
     virtual             ~QSettingsDialog();
+
+    //link tab dialog to its chat
+    void                connectDialogToChat(ChatTypeEnum chatType,QObject* chat);
 private:
     void                loadDialogSettings();
     void                setupWidgets();
@@ -63,6 +67,7 @@ private:
     void                populateTabs(QTabWidget* tabHost, QSettings &settings);
     //save each tab's settings
     void                saveTabsSettings(QSettings &settings);
+
 
 
 
@@ -232,7 +237,7 @@ private slots:
     void youtubeLoginClicked();
     void youtubeDeloginClicked();
 private:
-    QList<VirtualSettingsTab*> tabs_;
+    QMap<ChatTypeEnum,VirtualSettingsTab*> tabs_;
 
     QRgb                bodyBackgroundColor;
 
