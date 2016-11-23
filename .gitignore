@@ -10,16 +10,6 @@
 *.dll
 *.dylib
 
-#external dirs
-![Ee]xternal/
-[Ee]xternal/*
-![Ee]xternal/qxmpp-master/
-[Ee]xternal/qxmpp-master/*
-!Ee]xternal/o2/
-[Ee]xternal/o2/*
-
-
-
 # Qt-es
 
 /.qmake.cache
