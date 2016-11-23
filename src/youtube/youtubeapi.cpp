@@ -7,7 +7,7 @@
 #include "o2youtube.h"
 #include "youtubeapi.h"
 #include "commentmodel.h"
-#include "LiveBroadcastModel.h"
+#include "livebroadcastmodel.h"
 
 namespace youtube
 {

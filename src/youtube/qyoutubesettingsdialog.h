@@ -2,7 +2,7 @@
 #define QYOTUBESETTINGSDIALOG_H
 
 
-#include "..\core\QVirtualSettingsTab.h"
+#include "..\core\qvirtualsettingstab.h"
 #include "youtubecontroller.h"
 
 class QIcon;

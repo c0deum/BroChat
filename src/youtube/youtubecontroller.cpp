@@ -1,9 +1,11 @@
+#include <QDesktopServices>
+#include <QApplication>
+
 #include "youtubecontroller.h"
 #include "o2youtube.h"
-#include <QDesktopServices>
 #include "youtubeapi.h"
 #include "o2youtube.h"
-#include <QApplication>
+
 
 namespace youtube
 {
