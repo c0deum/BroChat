@@ -1,3 +1,6 @@
 [submodule "external/qxmpp-master"]
 	path = external/qxmpp-master
 	url = https://github.com/qxmpp-project/qxmpp.git
+[submodule "external/o2"]
+	path = external/o2
+	url = https://github.com/pipacs/o2.git
