@@ -4,6 +4,10 @@ CONFIG += c++14
 
 QMAKE_CXXFLAGS += -DQXMPP_STATIC
 
+# Core O2
+include(external/o2/src/src.pri)
+
+
 HEADERS += \
     src\twitch\qtwitchchat.h \
     src\core\qchatservice.h \
@@ -44,40 +48,40 @@ HEADERS += \
 
 
 SOURCES += \
-    src\core\main.cpp \
-    src\twitch\qtwitchchat.cpp \
-    src\core\qchatservice.cpp \
-    src\core\qchatmessage.cpp \
-    src\core\qsettingsdialog.cpp \
-    src\goodgame\qgoodgamechat.cpp \
-    src\goodgame\qgoodgamesettingsdialog.cpp \
-    src\cybergame\qcybergamechat.cpp \
-    src\aces\qaceschat.cpp \
-    src\gamerstv\qgamerstvchat.cpp \
-    src\core\qbrochatview.cpp \
-    src\core\qchatupdateserver.cpp \
-    src\core\qchatstatistic.cpp \
-    src\hitbox\qhitboxchat.cpp \
-    src\gipsyteam\qgipsyteamchat.cpp \
-    src\livecoding\qlivecodingchat.cpp \
-    src\igdc\qigdcchat.cpp \
-    src\core\qmessagesmanager.cpp \
-    src\peka2tv\qpeka2chat.cpp \
-    src\core\qpoll.cpp \
-    src\core\qpollsettingsdialog.cpp \
-    src\core\qpollview.cpp \
-    src\vidi\qvidichat.cpp \
-    src\azubu\qazubuchat.cpp \
-    src\streamcube\qstreamcubechat.cpp \
-    src\beampro\qbeamprochat.cpp \
-    src\core\qbrochatwebpage.cpp \
-    src\youtube\o2youtube.cpp \
-    src\youtube\commentmodel.cpp \
-    src\youtube\youtubeapi.cpp \
-    src\youtube\livebroadcastmodel.cpp \
-    src\youtube\qyoutubesettingsdialog.cpp \
-    src\youtube\youtubecontroller.cpp \
-    src\youtube\qyoutubechatEx.cpp \
+    src/core/main.cpp \
+    src/twitch/qtwitchchat.cpp \
+    src/core/qchatservice.cpp \
+    src/core/qchatmessage.cpp \
+    src/core/qsettingsdialog.cpp \
+    src/goodgame/qgoodgamechat.cpp \
+    src/goodgame/qgoodgamesettingsdialog.cpp \
+    src/cybergame/qcybergamechat.cpp \
+    src/aces/qaceschat.cpp \
+    src/gamerstv/qgamerstvchat.cpp \
+    src/core/qbrochatview.cpp \
+    src/core/qchatupdateserver.cpp \
+    src/core/qchatstatistic.cpp \
+    src/hitbox/qhitboxchat.cpp \
+    src/gipsyteam/qgipsyteamchat.cpp \
+    src/livecoding/qlivecodingchat.cpp \
+    src/igdc/qigdcchat.cpp \
+    src/core/qmessagesmanager.cpp \
+    src/peka2tv/qpeka2chat.cpp \
+    src/core/qpoll.cpp \
+    src/core/qpollsettingsdialog.cpp \
+    src/core/qpollview.cpp \
+    src/vidi/qvidichat.cpp \
+    src/azubu/qazubuchat.cpp \
+    src/streamcube/qstreamcubechat.cpp \
+    src/beampro/qbeamprochat.cpp \
+    src/core/qbrochatwebpage.cpp \
+    src/youtube/o2youtube.cpp \
+    src/youtube/commentmodel.cpp \
+    src/youtube/youtubeapi.cpp \
+    src/youtube/livebroadcastmodel.cpp \
+    src/youtube/qyoutubesettingsdialog.cpp \
+    src/youtube/youtubecontroller.cpp \
+    src/youtube/qyoutubechatEx.cpp \
 
 
 RESOURCES += \
@@ -106,17 +110,5 @@ else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/exte
 
 unix:!macx: PRE_TARGETDEPS += $$PWD/external/qxmpp-master/src/libqxmpp.a
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/external/o2/src/ -lo2
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/external/o2/src/ -lo2d
-else:unix: LIBS += -L$$PWD/external/o2/src/ -lo2
-
-INCLUDEPATH += $$PWD/external/o2/src
-DEPENDPATH += $$PWD/external/o2/src
-
-win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/external/o2/src/libo2.a
-else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/external/o2/src/libo2d.a
-else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/external/o2/src/o2.lib
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/external/o2/src/o2d.lib
-else:unix: PRE_TARGETDEPS += $$PWD/external/o2/src/libo2.a
 
 
