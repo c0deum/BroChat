@@ -13,7 +13,7 @@
 
 #include <QSettings>
 
-#include "..\core\settingsconsts.h"
+#include "../core/settingsconsts.h"
 
 #include "qvidichat.h"
 

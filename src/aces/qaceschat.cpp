@@ -16,9 +16,9 @@
 
 #include <QPair>
 
-#include "..\core\qchatmessage.h"
+#include "../core/qchatmessage.h"
 
-#include "..\core\settingsconsts.h"
+#include "../core/settingsconsts.h"
 
 #include "qaceschat.h"
 

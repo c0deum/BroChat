@@ -29,8 +29,8 @@
 #include "settingsconsts.h"
 
 #include "qsettingsdialog.h"
-#include "..\youtube\qyoutubeSettingsDialog.h"
-#include "..\goodgame\qgoodgamesettingsdialog.h"
+#include "../youtube/qyoutubesettingsdialog.h"
+#include "../goodgame/qgoodgamesettingsdialog.h"
 
 
 QSettingsDialog::QSettingsDialog( QWidget *parent )

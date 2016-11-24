@@ -1,6 +1,6 @@
 #ifndef QGOODGAMESETTINGSDIALOG_H
 #define QGOODGAMESETTINGSDIALOG_H
-#include "..\core\qvirtualsettingsTab.h"
+#include "../core/qvirtualsettingstab.h"
 
 
 class QIcon;

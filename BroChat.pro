@@ -9,41 +9,41 @@ include(external/o2/src/src.pri)
 
 
 HEADERS += \
-    src\twitch\qtwitchchat.h \
-    src\core\qchatservice.h \
-    src\core\qchatmessage.h \
-    src\core\qsettingsdialog.h \
-    src\core\settingsconsts.h \
-    src\goodgame\qgoodgamechat.h \
-    src\goodgame\qgoodgamesettingsdialog.h \
-    src\cybergame\qcybergamechat.h \
-    src\aces\qaceschat.h \
-    src\gamerstv\qgamerstvchat.h \
-    src\core\qbrochatview.h \
-    src\core\qchatupdateserver.h \
-    src\core\qchatstatistic.h \
-    src\hitbox\qhitboxchat.h \
-    src\gipsyteam\qgipsyteamchat.h \
-    src\livecoding\qlivecodingchat.h \
-    src\igdc\qigdcchat.h \
-    src\peka2tv\qpeka2chat.h \
-    src\core\qpoll.h \
-    src\core\qpollview.h \
-    src\core\qmessagesmanager.h \
-    src\core\qpollsettingsdialog.h \
-    src\vidi\qvidichat.h \
-    src\azubu\qazubuchat.h \
-    src\streamcube\qstreamcubechat.h \
-    src\beampro\qbeamprochat.h \
-    src\core\qbrochatwebpage.h \
-    src\core\notimplementedexception.h \
-    src\youtube\o2youtube.h \
-    src\youtube\commentmodel.h \
-    src\youtube\youtubeapi.h \
-    src\youtube\livebroadcastmodel.h \
-    src\youtube\qyoutubesettingsdialog.h \
-    src\youtube\youtubecontroller.h \
-    src\youtube\qyoutubechatEx.h \
+    src/twitch/qtwitchchat.h \
+    src/core/qchatservice.h \
+    src/core/qchatmessage.h \
+    src/core/qsettingsdialog.h \
+    src/core/settingsconsts.h \
+    src/goodgame/qgoodgamechat.h \
+    src/goodgame/qgoodgamesettingsdialog.h \
+    src/cybergame/qcybergamechat.h \
+    src/aces/qaceschat.h \
+    src/gamerstv/qgamerstvchat.h \
+    src/core/qbrochatview.h \
+    src/core/qchatupdateserver.h \
+    src/core/qchatstatistic.h \
+    src/hitbox/qhitboxchat.h \
+    src/gipsyteam/qgipsyteamchat.h \
+    src/livecoding/qlivecodingchat.h \
+    src/igdc/qigdcchat.h \
+    src/peka2tv/qpeka2chat.h \
+    src/core/qpoll.h \
+    src/core/qpollview.h \
+    src/core/qmessagesmanager.h \
+    src/core/qpollsettingsdialog.h \
+    src/vidi/qvidichat.h \
+    src/azubu/qazubuchat.h \
+    src/streamcube/qstreamcubechat.h \
+    src/beampro/qbeamprochat.h \
+    src/core/qbrochatwebpage.h \
+    src/core/notimplementedexception.h \
+    src/youtube/o2youtube.h \
+    src/youtube/commentmodel.h \
+    src/youtube/youtubeapi.h \
+    src/youtube/livebroadcastmodel.h \
+    src/youtube/qyoutubesettingsdialog.h \
+    src/youtube/youtubecontroller.h \
+    src/youtube/qyoutubechatex.h \
     src/core/chattypeenum.h
 
 
@@ -81,7 +81,7 @@ SOURCES += \
     src/youtube/livebroadcastmodel.cpp \
     src/youtube/qyoutubesettingsdialog.cpp \
     src/youtube/youtubecontroller.cpp \
-    src/youtube/qyoutubechatEx.cpp \
+    src/youtube/qyoutubechatex.cpp \
 
 
 RESOURCES += \

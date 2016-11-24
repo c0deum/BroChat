@@ -4,7 +4,7 @@
 //#include <QList>
 #include <QMap>
 
-#include "..\core\qchatservice.h"
+#include "../core/qchatservice.h"
 
 class QTcpSocket;
 class QNetworkAccessManager;

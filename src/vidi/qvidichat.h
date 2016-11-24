@@ -1,7 +1,7 @@
 #ifndef QVIDICHAT_H
 #define QVIDICHAT_H
 
-#include "..\core\qchatservice.h"
+#include "../core/qchatservice.h"
 
 class QNetworkAccessManager;
 class QWebSocket;

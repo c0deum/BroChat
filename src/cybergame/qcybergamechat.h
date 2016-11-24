@@ -1,7 +1,7 @@
 #ifndef QCYBERGAMECHAT_H
 #define QCYBERGAMECHAT_H
 
-#include "..\core\qchatservice.h"
+#include "../core/qchatservice.h"
 
 class QNetworkAccessManager;
 

@@ -18,9 +18,9 @@
 #include <QDir>
 #include <QStringList>
 
-#include "..\core\qchatmessage.h"
+#include "../core/qchatmessage.h"
 
-#include "..\core\settingsconsts.h"
+#include "../core/settingsconsts.h"
 
 #include "qhitboxchat.h"
 

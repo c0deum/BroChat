@@ -1,7 +1,7 @@
 #ifndef QYOUTUBECHATEX_H
 #define QYOUTUBECHATEX_H
 
-#include "..\core\qchatservice.h"
+#include "../core/qchatservice.h"
 #include "youtubecontroller.h"
 
 class QNetworkAccessManager;

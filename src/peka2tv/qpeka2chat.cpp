@@ -19,9 +19,9 @@
 #include <QDir>
 #include <QStringList>
 
-#include "..\core\qchatmessage.h"
+#include "../core/qchatmessage.h"
 
-#include "..\core\settingsconsts.h"
+#include "../core/settingsconsts.h"
 
 #include "qpeka2chat.h"
 
@@ -129,7 +129,8 @@ void QPeka2Chat::loadChannelInfo()
 
     QByteArray data;
 
-    data.append( "{id:null,options:null,owner:\"" + channelName_ + "\"}" );
+    //data.append( "{id:null,options:null,owner:\"" + channelName_ + "\"}" );
+    data.append( "{slug:\"" + channelName_ + "\"}" );
 
     QNetworkReply * reply = nam_->post( request, data );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChannelInfoLoaded() ) );

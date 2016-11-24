@@ -7,7 +7,7 @@
 #include <QSettings>
 #include <QLabel>
 #include "qyoutubesettingsdialog.h"
-#include "YoutubeController.h"
+#include "youtubecontroller.h"
 #include "../core/settingsconsts.h"
 
 

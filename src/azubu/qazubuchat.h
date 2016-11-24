@@ -1,7 +1,7 @@
 #ifndef QAZUBUCHAT_H
 #define QAZUBUCHAT_H
 
-#include "..\core\qchatservice.h"
+#include "../core/qchatservice.h"
 
 class QNetworkAccessManager;
 class QTcpSocket;

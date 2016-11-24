@@ -1,7 +1,7 @@
 #ifndef QBEAMPROCHAT_H
 #define QBEAMPROCHAT_H
 
-#include "..\core\qchatservice.h"
+#include "../core/qchatservice.h"
 
 class QNetworkAccessManager;
 class QWebSocket;

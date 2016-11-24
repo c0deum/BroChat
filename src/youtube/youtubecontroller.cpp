@@ -116,8 +116,8 @@ void YoutubeController::commentModelChanged()
     int commentsCount = commentModel->rowCount();
     for(int k = 0; k!=commentModel->rowCount();k++)
     {
-        auto& rawMessage =  commentModel->data(commentModel->index(k,0),CommentModel::Roles::RoleCommentMessage).toMap();
-        auto& rawAuthor = commentModel->data(commentModel->index(k,0),CommentModel::Roles::RoleCommentAuthor).toMap();
+        const auto& rawMessage =  commentModel->data(commentModel->index(k,0),CommentModel::Roles::RoleCommentMessage).toMap();
+        const auto& rawAuthor = commentModel->data(commentModel->index(k,0),CommentModel::Roles::RoleCommentAuthor).toMap();
         CommentMessage msg = getCommentMessageFromRawData(rawMessage);
         CommentAuthor author = getCommentAuthorFromRawData(rawAuthor);
         switch (msg.messageType)

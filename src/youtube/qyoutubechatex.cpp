@@ -2,7 +2,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QSettings>
-#include "qyoutubechatEx.h"
+#include "qyoutubechatex.h"
 #include "../core/notimplementedexception.h"
 #include "../core/settingsconsts.h"
 #include "../core/qchatmessage.h"

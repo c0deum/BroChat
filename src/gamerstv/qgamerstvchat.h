@@ -3,7 +3,7 @@
 
 #include <QList>
 
-#include "..\core\qchatservice.h"
+#include "../core/qchatservice.h"
 
 class QNetworkAccessManager;
 

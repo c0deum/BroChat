@@ -5,7 +5,7 @@
 #include <QDateTime>
 #include <QXmppClient.h>
 
-#include "..\core\qchatservice.h"
+#include "../core/qchatservice.h"
 
 class QNetworkAccessManager;
 

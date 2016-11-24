@@ -18,9 +18,9 @@
 #include <QDir>
 #include <QFileInfo>
 
-#include "..\core\settingsconsts.h"
+#include "../core/settingsconsts.h"
 
-#include "..\core\qchatmessage.h"
+#include "../core/qchatmessage.h"
 
 #include "qtwitchchat.h"
 

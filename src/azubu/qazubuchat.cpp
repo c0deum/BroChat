@@ -14,7 +14,7 @@
 #include <QUuid>
 
 
-#include "..\core\settingsconsts.h"
+#include "../core/settingsconsts.h"
 
 #include "qazubuchat.h"
 

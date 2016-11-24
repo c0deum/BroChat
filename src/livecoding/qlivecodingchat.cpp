@@ -24,9 +24,9 @@
 
 #include <QUuid>
 
-#include "..\core\qchatmessage.h"
+#include "../core/qchatmessage.h"
 
-#include "..\core\settingsconsts.h"
+#include "../core/settingsconsts.h"
 
 #include "qlivecodingchat.h"
 

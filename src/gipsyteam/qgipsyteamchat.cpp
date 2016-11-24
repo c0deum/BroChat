@@ -11,9 +11,9 @@
 
 #include <QTimerEvent>
 
-#include "..\core\qchatmessage.h"
+#include "../core/qchatmessage.h"
 
-#include "..\core\settingsconsts.h"
+#include "../core/settingsconsts.h"
 #include "qgipsyteamchat.h"
 
 const QString DEFAULT_GIPSYTEAM_CHANNEL_INFO_PREFIX = "http://www.gipsyteam.ru/live/stream?streamer=";
