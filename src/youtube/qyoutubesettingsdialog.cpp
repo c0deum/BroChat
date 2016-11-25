@@ -38,9 +38,7 @@ QWidget *QYoutubeSettingsDialog::createLayout(QWidget *parent,QSettings& setting
 
 
     QObject::connect( channelCheckBox, SIGNAL( clicked( bool ) ), youtubeLoginWebsitePushButton, SLOT( setEnabled( bool ) ) );
-    QObject::connect( channelCheckBox, SIGNAL( clicked( bool ) ), this, SLOT( changeChannelAvailability(bool) ) );
-    QObject::connect( youtubeLoginWebsitePushButton, SIGNAL( clicked( bool ) ), this, SLOT( loginWebsiteButtonClicked() ) );
-    QObject::connect( youtubeDeloginWebsitePushButton, SIGNAL( clicked( bool ) ), this, SLOT( deloginWebsiteButtonClicked() ) );
+    QObject::connect( channelCheckBox, SIGNAL( clicked( bool ) ), this, SLOT( changeChannelAvailability(bool) ) );   
 
     youtubeLayout->addWidget( channelCheckBox );
 

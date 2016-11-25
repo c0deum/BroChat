@@ -44,7 +44,8 @@ HEADERS += \
     src/youtube/qyoutubesettingsdialog.h \
     src/youtube/youtubecontroller.h \
     src/youtube/qyoutubechatex.h \
-    src/core/chattypeenum.h
+    src/core/chattypeenum.h \
+    src/twitch/qtwitchsettingsdialog.h
 
 
 SOURCES += \
@@ -82,6 +83,7 @@ SOURCES += \
     src/youtube/qyoutubesettingsdialog.cpp \
     src/youtube/youtubecontroller.cpp \
     src/youtube/qyoutubechatex.cpp \
+    src/twitch/qtwitchsettingsdialog.cpp
 
 
 RESOURCES += \

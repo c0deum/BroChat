@@ -108,6 +108,7 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     chats_[ChatTypeEnum::Goodgame] = goodgameChat_;
     chats_[ChatTypeEnum::Youtube] = youtubeChat_;
+    chats_[ChatTypeEnum::Twitch] = twitchChat_;
 
 
 
@@ -199,7 +200,6 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), livecodingChat_, SLOT( reconnect() ) );        
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), peka2Chat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), streamcubeChat_, SLOT( reconnect() ) );
-    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), twitchChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), vidiChat_, SLOT( reconnect() ) );   
 
 
@@ -286,11 +286,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), peka2Chat_, SLOT( reconnect() ) );
 
     QObject::connect( streamcubeChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
-    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), streamcubeChat_, SLOT( reconnect() ) );
-
-    QObject::connect( twitchChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
-    QObject::connect( twitchChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), twitchChat_, SLOT( reconnect() ) );
+    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), streamcubeChat_, SLOT( reconnect() ) );  
 
     QObject::connect( vidiChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( vidiChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
@@ -748,8 +744,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( igdcChannelChanged() ), igdcChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( livecodingChannelChanged() ), livecodingChat_, SLOT( reconnect() ) );        
     QObject::connect( settingsDialog, SIGNAL( peka2ChannelChanged() ), peka2Chat_, SLOT( reconnect() ) );
-    QObject::connect( settingsDialog, SIGNAL( streamcubeChannelChanged() ), streamcubeChat_, SLOT( reconnect() ) );
-    QObject::connect( settingsDialog, SIGNAL( twitchChannelChanged() ), twitchChat_, SLOT( reconnect() ) );
+    QObject::connect( settingsDialog, SIGNAL( streamcubeChannelChanged() ), streamcubeChat_, SLOT( reconnect() ) );   
     QObject::connect( settingsDialog, SIGNAL( vidiChannelChanged() ), vidiChat_, SLOT( reconnect() ) );    
 
 
@@ -764,7 +759,6 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( livecodingAliasesChanged( QString ) ), livecodingChat_, SLOT( setAliasesList( QString ) ) );    
     QObject::connect( settingsDialog, SIGNAL( peka2AliasesChanged( QString ) ), peka2Chat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( streamcubeAliasesChanged( QString ) ), streamcubeChat_, SLOT( setAliasesList( QString ) ) );
-    QObject::connect( settingsDialog, SIGNAL( twitchAliasesChanged( QString ) ), twitchChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( vidiAliasesChanged( QString ) ), vidiChat_, SLOT( setAliasesList( QString ) ) );    
 
     QObject::connect( settingsDialog, SIGNAL( acesSupportersListChanged( QString ) ), acesChat_, SLOT( setSupportersList( QString ) ) );
@@ -777,8 +771,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( igdcSupportersListChanged(QString) ), igdcChat_, SLOT( setSupportersList(QString) ) );
     QObject::connect( settingsDialog, SIGNAL( livecodingSupportersListChanged( QString ) ), livecodingChat_, SLOT( setSupportersList( QString ) ) );        
     QObject::connect( settingsDialog, SIGNAL( peka2SupportersListChanged( QString ) ), peka2Chat_, SLOT( setSupportersList( QString ) ) );
-    QObject::connect( settingsDialog, SIGNAL( streamcubeSupportersListChanged( QString ) ), streamcubeChat_, SLOT( setSupportersList( QString ) ) );
-    QObject::connect( settingsDialog, SIGNAL( twitchSupportersListChanged( QString ) ), twitchChat_, SLOT( setSupportersList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( streamcubeSupportersListChanged( QString ) ), streamcubeChat_, SLOT( setSupportersList( QString ) ) );    
     QObject::connect( settingsDialog, SIGNAL( vidiSupportersListChanged( QString ) ), vidiChat_, SLOT( setSupportersList( QString ) ) );
 
 
@@ -792,8 +785,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( igdcBlackListChanged(QString) ), igdcChat_, SLOT( setBlackList(QString) ) );
     QObject::connect( settingsDialog, SIGNAL( livecodingBlackListChanged( QString ) ), livecodingChat_, SLOT( setBlackList( QString ) ) );        
     QObject::connect( settingsDialog, SIGNAL( peka2BlackListChanged( QString ) ), peka2Chat_, SLOT( setBlackList( QString ) ) );
-    QObject::connect( settingsDialog, SIGNAL( streamcubeBlackListChanged( QString ) ), streamcubeChat_, SLOT( setBlackList( QString ) ) );
-    QObject::connect( settingsDialog, SIGNAL( twitchBlackListChanged( QString ) ), twitchChat_, SLOT( setBlackList( QString ) ) );
+    QObject::connect( settingsDialog, SIGNAL( streamcubeBlackListChanged( QString ) ), streamcubeChat_, SLOT( setBlackList( QString ) ) );    
     QObject::connect( settingsDialog, SIGNAL( vidiBlackListChanged( QString ) ), vidiChat_, SLOT( setBlackList( QString ) ) );
 
 
@@ -807,22 +799,19 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( igdcRemoveBlackListUsersChanged(bool) ), igdcChat_, SLOT( setRemoveBlackListUsers(bool) ) );
     QObject::connect( settingsDialog, SIGNAL( livecodingRemoveBlackListUsersChanged( bool ) ), livecodingChat_, SLOT( setRemoveBlackListUsers(bool ) ) );        
     QObject::connect( settingsDialog, SIGNAL( peka2RemoveBlackListUsersChanged( bool ) ), peka2Chat_, SLOT( setRemoveBlackListUsers(bool ) ) );
-    QObject::connect( settingsDialog, SIGNAL( streamcubeRemoveBlackListUsersChanged( bool ) ), streamcubeChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
-    QObject::connect( settingsDialog, SIGNAL( twitchRemoveBlackListUsersChanged( bool ) ), twitchChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
+    QObject::connect( settingsDialog, SIGNAL( streamcubeRemoveBlackListUsersChanged( bool ) ), streamcubeChat_, SLOT( setRemoveBlackListUsers(bool ) ) );    
     QObject::connect( settingsDialog, SIGNAL( vidiRemoveBlackListUsersChanged( bool ) ), vidiChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
 
 
     //QObject::connect( settingsDialog, SIGNAL( acesOriginalColorsChanged( bool ) ), acesChat_, SLOT( changeOriginalColors( bool ) ) );    
     QObject::connect( settingsDialog, SIGNAL( hitboxOriginalColorsChanged( bool ) ), hitboxChat_, SLOT( changeOriginalColors( bool ) ) );    
-    QObject::connect( settingsDialog, SIGNAL( peka2OriginalColorsChanged( bool ) ), peka2Chat_, SLOT( changeOriginalColors( bool ) ) );
-    QObject::connect( settingsDialog, SIGNAL( twitchOriginalColorsChanged( bool ) ), twitchChat_, SLOT( changeOriginalColors( bool ) ) );
+    QObject::connect( settingsDialog, SIGNAL( peka2OriginalColorsChanged( bool ) ), peka2Chat_, SLOT( changeOriginalColors( bool ) ) );    
 
     //badges    
     QObject::connect( settingsDialog, SIGNAL( gamerstvBadgesChanged(bool) ), gamerstvChat_, SLOT( changeBadges(bool) ) );    
     QObject::connect( settingsDialog, SIGNAL( igdcBadgesChanged(bool) ), igdcChat_, SLOT( changeBadges(bool) ) );
     QObject::connect( settingsDialog, SIGNAL( livecodingBadgesChanged(bool) ), livecodingChat_, SLOT( changeBadges(bool) ) );    
-    QObject::connect( settingsDialog, SIGNAL( peka2BadgesChanged(bool) ), peka2Chat_, SLOT( changeBadges(bool) ) );
-    QObject::connect( settingsDialog, SIGNAL( twitchBadgesChanged(bool) ), twitchChat_, SLOT( changeBadges(bool) ) );
+    QObject::connect( settingsDialog, SIGNAL( peka2BadgesChanged(bool) ), peka2Chat_, SLOT( changeBadges(bool) ) );    
 
 
     QObject::connect( settingsDialog, SIGNAL( styleChanged() ), this, SLOT( changeStyle() ) );

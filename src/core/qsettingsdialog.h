@@ -49,7 +49,6 @@ private:
     void                setupLivecodingTab();    
     void                setupPeka2Tab();
     void                setupStreamcubeTab();
-    void                setupTwitchTab();
     void                setupVidiTab();    
 
     void                setColorButtonStyle( QPushButton * button, QRgb color, int fontSize = 16 );
@@ -210,16 +209,6 @@ signals:
     void                streamcubeSupportersListChanged( const QString & );
     void                streamcubeBlackListChanged( const QString & );
     void                streamcubeRemoveBlackListUsersChanged( bool );
-
-
-    void                twitchChannelChanged();
-    void                twitchChannelDisabled();
-    void                twitchAliasesChanged( const QString & );
-    void                twitchSupportersListChanged( const QString & );
-    void                twitchBlackListChanged( const QString & );
-    void                twitchRemoveBlackListUsersChanged( bool );
-    void                twitchOriginalColorsChanged( bool );
-    void                twitchBadgesChanged( bool );
 
 
     void                vidiChannelChanged();
@@ -441,17 +430,7 @@ private:
     QLineEdit *         streamcubeAliasesEdit;
     QTextEdit *         streamcubeSupportersListEdit;
     QTextEdit *         streamcubeBlackListEdit;
-    QCheckBox *         streamcubeRemoveBlackListUsersCheckBox;
-
-
-    QCheckBox *         twitchChannelCheckBox;
-    QLineEdit *         twitchChannelEdit;    
-    QCheckBox *         twitchOriginalColorsCheckBox;
-    QCheckBox *         twitchBadgesCheckBox;
-    QLineEdit *         twitchAliasesEdit;
-    QTextEdit *         twitchSupportersListEdit;
-    QTextEdit *         twitchBlackListEdit;
-    QCheckBox *         twitchRemoveBlackListUsersCheckBox;
+    QCheckBox *         streamcubeRemoveBlackListUsersCheckBox;  
 
 
     QCheckBox *         vidiChannelCheckBox;

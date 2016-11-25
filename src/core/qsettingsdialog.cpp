@@ -31,6 +31,7 @@
 #include "qsettingsdialog.h"
 #include "../youtube/qyoutubesettingsdialog.h"
 #include "../goodgame/qgoodgamesettingsdialog.h"
+#include "../twitch/qtwitchsettingsdialog.h"
 
 
 QSettingsDialog::QSettingsDialog( QWidget *parent )
@@ -237,16 +238,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , streamcubeBlackListEdit( new QTextEdit( this ) )
 , streamcubeRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-, twitchChannelCheckBox( new QCheckBox( this ) )
-, twitchChannelEdit( new QLineEdit( this ) )
-, twitchOriginalColorsCheckBox( new QCheckBox( this ) )
-, twitchBadgesCheckBox( new QCheckBox( this ) )
-, twitchAliasesEdit( new QLineEdit( this ) )
-, twitchSupportersListEdit( new QTextEdit( this ) )
-, twitchBlackListEdit( new QTextEdit( this ) )
-, twitchRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
-
 , vidiChannelCheckBox( new QCheckBox( this ) )
 , vidiChannelEdit( new QLineEdit( this ) )
 , vidiAliasesEdit( new QLineEdit( this ) )
@@ -323,7 +314,6 @@ void QSettingsDialog::setupWidgets()
     setupLivecodingTab();        
     setupPeka2Tab();
     setupStreamcubeTab();
-    setupTwitchTab();
     setupVidiTab();
 
 
@@ -346,8 +336,12 @@ void QSettingsDialog::populateTabs(QTabWidget* tabHost,QSettings& settings)
     tabHost->addTab( youtTubeTab->createLayout(tabHost,settings),youtTubeTab->getIcon(),
                      youtTubeTab->getName() );
 
-    connect(youtTubeTab,SIGNAL(loginClicked()),this,SLOT(youtubeLoginClicked()));
-    connect(youtTubeTab,SIGNAL(deloginClicked()),this,SLOT(youtubeDeloginClicked()));
+    auto twitchTab = new QTwitchSettingsDialog(this);
+    tabs_[ChatTypeEnum::Twitch] = twitchTab;
+    tabHost->addTab( twitchTab->createLayout(tabHost,settings),twitchTab->getIcon(),
+                     twitchTab->getName() );
+
+
 }
 
 void QSettingsDialog::youtubeLoginClicked()
@@ -1340,52 +1334,6 @@ void QSettingsDialog::setupStreamcubeTab()
     tabSettings->addTab( streamcubeGroup, QIcon( ":/resources/streamcubelogo.png" ), tr( "Streamcube" ) );
 }
 
-void QSettingsDialog::setupTwitchTab()
-{
-    QSettings settings;
-
-    QVBoxLayout * twitchLayout = new QVBoxLayout();
-
-    twitchChannelCheckBox->setText( CHANNEL_TEXT );
-    twitchChannelCheckBox->setChecked( settings.value( TWITCH_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    twitchChannelEdit->setText( settings.value( TWITCH_CHANNEL_SETTING_PATH, DEFAULT_TWITCH_CHANNEL_NAME ).toString() );
-    twitchChannelEdit->setEnabled( twitchChannelCheckBox->isChecked() );
-
-    QObject::connect( twitchChannelCheckBox, SIGNAL( clicked( bool ) ), twitchChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    twitchOriginalColorsCheckBox->setText( tr( "Original Colors" ) );
-    twitchOriginalColorsCheckBox->setChecked( settings.value( TWITCH_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
-
-    twitchBadgesCheckBox->setText( tr( "Badges" ) );
-    twitchBadgesCheckBox->setChecked( settings.value( TWITCH_BADGES_SETTING_PATH, false ).toBool() );
-
-    addWidgets( twitchLayout, { twitchChannelCheckBox, twitchChannelEdit, twitchOriginalColorsCheckBox, twitchBadgesCheckBox } );
-
-    twitchAliasesEdit->setText( settings.value( TWITCH_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( twitchLayout, { new QLabel( ALIASES_TEXT, this ), twitchAliasesEdit } );
-
-    twitchSupportersListEdit->setText( settings.value( TWITCH_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( twitchLayout, { new QLabel( SUPPORTERS_TEXT, this ), twitchSupportersListEdit } );
-
-    twitchBlackListEdit->setText( settings.value( TWITCH_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( twitchLayout, { new QLabel( BLACKLIST_TEXT, this ), twitchBlackListEdit } );
-
-    twitchRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    twitchRemoveBlackListUsersCheckBox->setChecked( settings.value( TWITCH_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    twitchLayout->addWidget( twitchRemoveBlackListUsersCheckBox );
-
-    twitchLayout->addStretch( 1 );
-
-    QGroupBox * twitchGroup = new QGroupBox( tabSettings );
-    twitchGroup->setLayout( twitchLayout );
-
-    tabSettings->addTab( twitchGroup, QIcon( ":/resources/twitchlogo.png" ), tr( "Twitch" ) );
-}
 
 
 void QSettingsDialog::setupVidiTab()
@@ -2207,61 +2155,6 @@ void QSettingsDialog::saveSettings()
     {
         settings.setValue( STREAMCUBE_REMOVE_BLACK_LIST_USERS_SETTING_PATH, streamcubeRemoveBlackListUsersCheckBox->isChecked() );
         emit streamcubeRemoveBlackListUsersChanged( streamcubeRemoveBlackListUsersCheckBox->isChecked() );
-    }
-
-    //настройки twitch
-
-    oldBoolValue = settings.value( TWITCH_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( TWITCH_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != twitchChannelCheckBox->isChecked() || oldStringValue != twitchChannelEdit->text() )
-    {
-        settings.setValue( TWITCH_CHANNEL_ENABLE_SETTING_PATH, twitchChannelCheckBox->isChecked() );
-        settings.setValue( TWITCH_CHANNEL_SETTING_PATH, twitchChannelEdit->text() );
-
-        emit twitchChannelChanged();
-    }
-
-
-    oldBoolValue = settings.value( TWITCH_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != twitchOriginalColorsCheckBox->isChecked() )
-    {
-        settings.setValue( TWITCH_ORIGINAL_COLORS_SETTING_PATH, twitchOriginalColorsCheckBox->isChecked() );
-        emit twitchOriginalColorsChanged( twitchOriginalColorsCheckBox->isChecked() );
-    }
-
-    oldBoolValue = settings.value( TWITCH_BADGES_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != twitchBadgesCheckBox->isChecked() )
-    {
-        settings.setValue( TWITCH_BADGES_SETTING_PATH, twitchBadgesCheckBox->isChecked() );
-        emit twitchBadgesChanged( twitchBadgesCheckBox->isChecked() );
-    }
-
-    oldStringValue = settings.value( TWITCH_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != twitchAliasesEdit->text() )
-    {
-        settings.setValue( TWITCH_ALIASES_SETTING_PATH, twitchAliasesEdit->text() );
-        emit twitchAliasesChanged( twitchAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( TWITCH_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != twitchSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( TWITCH_SUPPORTERS_LIST_SETTING_PATH, twitchSupportersListEdit->toPlainText() );
-        emit twitchSupportersListChanged( twitchSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( TWITCH_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != twitchBlackListEdit->toPlainText() )
-    {
-        settings.setValue( TWITCH_BLACK_LIST_SETTING_PATH, twitchBlackListEdit->toPlainText() );
-        emit twitchBlackListChanged( twitchBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( TWITCH_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != twitchRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( TWITCH_REMOVE_BLACK_LIST_USERS_SETTING_PATH, twitchRemoveBlackListUsersCheckBox->isChecked() );
-        emit twitchRemoveBlackListUsersChanged( twitchRemoveBlackListUsersCheckBox->isChecked() );
     }
 
 
