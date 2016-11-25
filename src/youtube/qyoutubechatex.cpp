@@ -55,7 +55,7 @@ void QYoutubeChatEx::reconnect()
 {
    if(!youtubeChatProviderEnabled())
      return;
-   youtubeController_->delogin();
+   //youtubeController_->delogin();
    youtubeController_->doAuth();
 }
 
