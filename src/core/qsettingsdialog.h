@@ -47,7 +47,6 @@ private:
     void                setupHitboxTab();
     void                setupIgdcTab();
     void                setupLivecodingTab();    
-    void                setupPeka2Tab();
     void                setupStreamcubeTab();  
 
     void                setColorButtonStyle( QPushButton * button, QRgb color, int fontSize = 16 );
@@ -190,16 +189,6 @@ signals:
     void                livecodingBlackListChanged( const QString & );
     void                livecodingRemoveBlackListUsersChanged( bool );
     void                livecodingBadgesChanged( bool );
-
-
-    void                peka2ChannelChanged();
-    void                peka2ChannelDisabled();
-    void                peka2AliasesChanged( const QString & );
-    void                peka2SupportersListChanged( const QString & );
-    void                peka2BlackListChanged( const QString & );
-    void                peka2RemoveBlackListUsersChanged( bool );
-    void                peka2OriginalColorsChanged( bool );
-    void                peka2BadgesChanged( bool );
 
 
     void                streamcubeChannelChanged();
@@ -397,16 +386,6 @@ private:
     QTextEdit *         livecodingSupportersListEdit;
     QTextEdit *         livecodingBlackListEdit;
     QCheckBox *         livecodingRemoveBlackListUsersCheckBox;
-
-
-    QCheckBox *         peka2ChannelCheckBox;
-    QLineEdit *         peka2ChannelEdit;
-    QCheckBox *         peka2OriginalColorsCheckBox;
-    QCheckBox *         peka2BadgesCheckBox;
-    QLineEdit *         peka2AliasesEdit;
-    QTextEdit *         peka2SupportersListEdit;
-    QTextEdit *         peka2BlackListEdit;
-    QCheckBox *         peka2RemoveBlackListUsersCheckBox;
 
 
     QCheckBox *         streamcubeChannelCheckBox;
