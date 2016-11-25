@@ -176,7 +176,7 @@ void QGoodGameChat::parseSmiles(const QVariantList& smiles)
         auto smile = smileVariant.toMap();
         QString name = smile["name"].toString();
         QString image_url = smile["img"].toString();
-        QString big_image_url = smile["img"].toString();
+        QString big_image_url = smile["img_big"].toString();
         if (big_image_url.size()>0)
             smiles_.insert( name, big_image_url );
         else
