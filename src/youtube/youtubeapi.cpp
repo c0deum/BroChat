@@ -95,7 +95,7 @@ void YoutubeApi::broadcastRequestFinished(int id, QNetworkReply::NetworkError er
     (void)(id);
     if (error != QNetworkReply::NetworkError::NoError)
     {
-        emit requestFailed(error);
+        emit requestFailed(error,data);
         broadcastModel_->clearBroadcasts();
         emit broadcastModelChanged();
         return;
@@ -157,7 +157,7 @@ void YoutubeApi::commentRequestFinished(int id, QNetworkReply::NetworkError erro
     (void)(id);
     if (error != QNetworkReply::NetworkError::NoError)
     {
-        emit requestFailed(error);
+        emit requestFailed(error,data);
         commentModel_->clearComments();
         emit commentModelChanged();
         return;
@@ -198,8 +198,7 @@ void YoutubeApi::commentRequestFinished(int id, QNetworkReply::NetworkError erro
 }
 
 //obsolete in O2Requestor?
-void YoutubeApi::requestFailed(QNetworkReply::NetworkError error) {
-    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
-    qWarning() << "YoutubeApi::requestFailed:" << (int)error << reply->errorString() << reply->readAll();
+void YoutubeApi::requestFailed(QNetworkReply::NetworkError error,QByteArray data) {
+    qWarning() << "YoutubeApi::requestFailed: " << error << data;
 }
 }

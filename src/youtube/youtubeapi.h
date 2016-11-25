@@ -64,7 +64,7 @@ signals:
 
 protected slots:
     //obsolete in O2Requestor?
-    void requestFailed(QNetworkReply::NetworkError error);
+    void requestFailed(QNetworkReply::NetworkError error,QByteArray data);
     Q_INVOKABLE virtual void broadcastRequestFinished(int id, QNetworkReply::NetworkError error, QByteArray data);
     Q_INVOKABLE virtual void commentRequestFinished(int id, QNetworkReply::NetworkError error, QByteArray data);
 

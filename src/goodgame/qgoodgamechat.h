@@ -21,12 +21,22 @@ protected:
 
 private:
     void                        loadSettings();
+void                            loadSmiles();
 
-    void                        loadSmiles();
     void                        loadChannelInfo();
     void                        connectToWebClient();
 
     void                        loadStatistic();
+
+
+    //new parsing functions
+
+    void                        parseSmiles(const QVariantList& smiles);
+
+    QStringList                 parseTokensKeepWhitespaces(QString string) const;
+    QString                     replaceSmiles(const QString& token) const;
+    QString                     replaceSmile(const QString& token) const;
+
 
     QString                     insertSmiles( const QString & message ) const;
 

@@ -29,6 +29,7 @@ const QString DEFAULT_GOODGAME_WEBSOCKET_LINK = "ws://chat.goodgame.ru:8081/chat
 const QString DEFAULT_GOODGAME_COMMON_SMILES_INFO_LINK = "http://goodgame.ru/css/compiled/common_smiles.css";
 const QString DEFAULT_GOODGAME_CHANNELS_SMILES_INFO_LINK = "http://goodgame.ru/css/compiled/channels_smiles.css";
 const QString DEFAULT_GOODGAME_ANIMATED_SMILES_PATH = "http://goodgame.ru/images/anismiles/";
+const QString DEFAULT_GOODGAME_ALL_SMILES_PATH = "https://goodgame.ru/js/minified/global.js";
 const QString DEFAULT_GOODGAME_CHANNEL_STATUS_PREFIX = "http://goodgame.ru/api/getchannelstatus?id=";
 const QString DEFAULT_GOODGAME_CHANNEL_STATUS_POSTFIX = "&fmt=json";
 const QString DEFAULT_GOOD_GAME_STATISTIC_PREFIX = "http://goodgame.ru/api/getggchannelstatus?id=";
@@ -101,90 +102,281 @@ void QGoodGameChat::reconnect()
     connect();
 }
 
+
+//#region new smiles
+
 void QGoodGameChat::loadSmiles()
 {
-    QNetworkRequest commonSmilesRequest( QUrl( DEFAULT_GOODGAME_COMMON_SMILES_INFO_LINK + "" ) );
-    QNetworkReply *reply = nam_->get( commonSmilesRequest );
-    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSmilesLoaded() ) );
-    QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onSmilesLoadError() ) );
-
-    QNetworkRequest channelsSmilesRequest( QUrl( DEFAULT_GOODGAME_CHANNELS_SMILES_INFO_LINK + "" ) );
-    reply = nam_->get( channelsSmilesRequest );
+    QNetworkRequest smilesRequest( QUrl(DEFAULT_GOODGAME_ALL_SMILES_PATH +"") );
+    QNetworkReply *reply = nam_->get( smilesRequest );
     QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSmilesLoaded() ) );
     QObject::connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ), this, SLOT( onSmilesLoadError() ) );
 }
+
 
 void QGoodGameChat::onSmilesLoaded()
 {
-    QChatService::loadSmiles();
+    QNetworkReply *reply = qobject_cast< QNetworkReply * >( sender() );
 
-    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+    QString smilesData = reply->readAll();
+    smilesData.remove(0,smilesData.indexOf("{"));
 
-    QString smilesInfo = reply->readAll();
+    //validator cant eat keys without quotes so lets add them
+    smilesData.replace("Smiles : [","\"Smiles\" : [");
+    smilesData.replace("Channel_Smiles : {","\"Channel_Smiles\" : {");
+    smilesData.replace("timezone_offset : ","\"timezone_offset\" : ");
+    smilesData.replace("icons : [","\"icons\" : [");
+    smilesData.replace("Content_Width:","\"Content_Width\":");
+    smilesData.replace("};","}");
 
-    smilesInfo.replace( "\n", "" );
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(smilesData.toUtf8());
+    QVariantMap variantData = jsonResponse.toVariant().toMap();
+    QVariantList smiles = variantData["Smiles"].toList();
+    parseSmiles(smiles);
 
-    const QString SMILE_INFO_PREFIX = ".big-smiles .smile";
-    const int SMILE_INFO_PREFIX_LENGTH = SMILE_INFO_PREFIX.length();
-
-    int smileInfoStartPos = smilesInfo.indexOf( SMILE_INFO_PREFIX );
-
-    while( smileInfoStartPos >= 0 )
+    QVariantMap channelItems = variantData["Channel_Smiles"].toMap();
+    for(const auto& channelName:channelItems.keys())
     {
-        int smileNameStartPos = smilesInfo.indexOf( ".", smileInfoStartPos + SMILE_INFO_PREFIX_LENGTH ) + 1;
-        int smileNameEndPos = smilesInfo.indexOf( ",", smileNameStartPos ) - 1;
-
-        if( smileNameEndPos - smileNameStartPos + 1 > 0  )
-        {
-            QString smileName = ':' + smilesInfo.mid( smileNameStartPos, smileNameEndPos - smileNameStartPos + 1 ) + ':';
-
-            smileName.replace( " ", "" );
-
-            int imageLinkStartPos = smilesInfo.indexOf( "\'", smileNameEndPos ) + 1;
-            int imageLinkEndPos = smilesInfo.indexOf( "?", imageLinkStartPos ) - 1;
-
-            QString imageLink = DEFAULT_GOODGAME_LINK + smilesInfo.mid( imageLinkStartPos, imageLinkEndPos - imageLinkStartPos + 1 );
-
-            smiles_.insert( smileName, imageLink );
-        }
-
-        smileInfoStartPos = smilesInfo.indexOf( SMILE_INFO_PREFIX, smileNameEndPos );
+        parseSmiles(channelItems[channelName].toList());
     }
 
-    const QString ANIMATED_SMILE_INFO_PREFIX = ".animated-smiles .smile";
-    const int ANIMATED_SMILE_INFO_PREFIX_LENGTH = ANIMATED_SMILE_INFO_PREFIX.length();
 
-    smileInfoStartPos = smilesInfo.indexOf( ANIMATED_SMILE_INFO_PREFIX );
-
-    while( smileInfoStartPos >= 0 )
-    {
-        int smileNameStartPos = smilesInfo.indexOf( ".", smileInfoStartPos + ANIMATED_SMILE_INFO_PREFIX_LENGTH ) + 1;
-        int smileNameEndPos = smilesInfo.indexOf( ".", smileNameStartPos ) - 1;
-
-        if( smileNameEndPos - smileNameStartPos + 1 > 0  )
-        {
-            QString smileName = ":" + smilesInfo.mid( smileNameStartPos, smileNameEndPos - smileNameStartPos + 1 ) + ":";
-
-            smileName.replace( " ", "" );
-
-            int imageLinkStartPos = smilesInfo.indexOf( "\'", smileNameEndPos ) + 1;
-            int imageLinkEndPos = smilesInfo.indexOf( "?", imageLinkStartPos ) - 1;
-
-            QString imageLink = DEFAULT_GOODGAME_LINK + smilesInfo.mid( imageLinkStartPos, imageLinkEndPos - imageLinkStartPos + 1 );
-
-            animatedSmiles_.insert( smileName, imageLink );
-        }
-
-        smileInfoStartPos = smilesInfo.indexOf( ANIMATED_SMILE_INFO_PREFIX, smileNameEndPos );
-    }
-
+    qWarning() << smiles_["brownuke3"];
+    qWarning() << "Smiles count " << smiles_.count();
     if( isShowSystemMessages() )
-    {
-        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ), QString(), this ) );
-        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ) );
+    {  emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ), QString(), this ) );
+       emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Smiles loaded..." ) );
     }
+
     reply->deleteLater();
+
 }
+
+
+/*
+ * Typical smile info format
+ * "id": "1720",
+        "bind": "0",
+        "name": "ghost",
+        "donat": 0,
+        "premium": 0,
+        "paid": 0,
+        "animated": true,
+        "tag": "?s4c7rc",
+        "img": "https:\/\/goodgame.ru\/images\/smiles\/ghost.png",
+        "img_big": "https:\/\/goodgame.ru\/images\/smiles\/ghost-big.png",
+        "img_gif": "https:\/\/goodgame.ru\/images\/anismiles\/ghost-gif.gif",
+        "channel": "",
+        "channel_id": 0
+*/
+void QGoodGameChat::parseSmiles(const QVariantList& smiles)
+{
+    for(auto& smileVariant:smiles)
+    {
+        auto smile = smileVariant.toMap();
+        QString name = smile["name"].toString();
+        QString image_url = smile["img"].toString();
+        QString big_image_url = smile["img"].toString();
+        if (big_image_url.size()>0)
+            smiles_.insert( name, big_image_url );
+        else
+            smiles_.insert( name, image_url );
+
+        QString ani_image_url;
+        bool animated = smile["animated"].toBool();
+        if (animated)
+        {
+            ani_image_url = smile["img_gif"].toString();
+            animatedSmiles_.insert(name,ani_image_url);
+        }
+    }
+
+}
+
+//this function parses input string to QStrilList that contain every
+//char from input so destination string can be concatenated.
+//Separator char is whitespace
+QStringList QGoodGameChat::parseTokensKeepWhitespaces(QString string) const
+{
+  //makes our finite automat' states
+  enum class ParseState
+  {
+      Begin,Whitespace,NonWhitespace
+  };
+
+  QStringList tokens;
+
+  QString currentToken;
+  ParseState state = ParseState::Begin;
+  currentToken.reserve(string.size());
+
+  for(int k = 0; k< string.size(); ++k)
+  {
+    QChar currentSymbol = string.at(k);
+    if (currentSymbol == ' ')
+    {
+        switch(state)
+        {
+        case ParseState::Begin:
+            currentToken+=currentSymbol;
+            state = ParseState::Whitespace;
+            break;
+        case ParseState::Whitespace:
+            currentToken+=currentSymbol;
+            break;
+        case ParseState::NonWhitespace:
+            tokens.append(currentToken);
+            currentToken = currentSymbol;
+            state = ParseState::Whitespace;
+            break;
+        }
+    }
+    //non-whitespace char
+    else
+    {
+        switch(state)
+        {
+        case ParseState::Begin:
+            currentToken+=currentSymbol;
+            state = ParseState::NonWhitespace;
+            break;
+        case ParseState::Whitespace:
+            tokens.append(currentToken);
+            currentToken = currentSymbol;
+            state = ParseState::NonWhitespace;
+            break;
+        case ParseState::NonWhitespace:
+            currentToken+=currentSymbol;
+            break;
+        }
+    }
+  }
+
+  //after  cycle we should add token if it isnt empty
+  if (!currentToken.isEmpty())
+      tokens.append(currentToken);
+return tokens;
+}
+
+QString QGoodGameChat::replaceSmiles(const QString& token) const
+{
+
+    //make finite automat
+    enum class SmileState
+    {
+        OutsideSmile,Colon,InsideSmile
+    };
+
+
+    SmileState state = SmileState::OutsideSmile;
+    QStringList tokens;
+    QString currentToken="";
+    QString currentTokenWithoutColons = "";
+    QChar currentSymbol;
+    for(int k = 0; k< token.size();++k)
+    {
+        currentSymbol = token.at(k);
+        if (currentSymbol == ':')
+        {
+            switch(state)
+            {
+            case SmileState::OutsideSmile:
+                tokens.append(currentToken);
+                currentToken=currentSymbol;
+                currentTokenWithoutColons = "";
+                state = SmileState::Colon;
+                break;
+            case SmileState::Colon:
+                //colon after colon? ignore previous
+                tokens.append(currentToken);
+                currentToken=currentSymbol;
+                currentTokenWithoutColons = "";
+                break;
+            case SmileState::InsideSmile:
+                //we found possible smile's suffix colon
+                auto replacedToken = replaceSmile(currentTokenWithoutColons);
+                qWarning()<< "possible smile token: " <<currentTokenWithoutColons;
+                //no smile found
+                if (replacedToken == currentTokenWithoutColons)
+                {
+                    tokens.append(currentToken);
+
+                    currentTokenWithoutColons = "";
+                    currentToken+=currentSymbol;
+                    state = SmileState::Colon;
+                }
+                else
+                //smile found
+                {
+                    tokens.append(replacedToken);
+                    currentTokenWithoutColons = "";
+                    currentToken="";
+                    state=SmileState::OutsideSmile;
+                }
+                break;
+            }
+        }
+        else
+        {
+            switch(state)
+            {
+            case SmileState::OutsideSmile:
+                currentToken+=currentSymbol;
+                currentTokenWithoutColons+=currentSymbol;
+                break;
+            case SmileState::Colon:
+                state=SmileState::InsideSmile;
+                currentToken+=currentSymbol;
+                currentTokenWithoutColons+=currentSymbol;
+                break;
+            case SmileState::InsideSmile:
+                currentToken+=currentSymbol;
+                currentTokenWithoutColons+=currentSymbol;
+                break;
+            }
+        }
+
+    }
+
+    tokens.append(currentToken);
+
+    QString result = "";
+    for(auto& token:tokens)
+    {
+        result+=token;
+    }
+    return result;
+
+}
+
+QString QGoodGameChat::replaceSmile(const QString &token) const
+{
+    bool isReplaced = false;
+    if( useAnimatedSmiles_ )
+    {
+        //заменено, если присутствует в мапе
+        isReplaced = animatedSmiles_.contains( token );
+        if( isReplaced )
+        {
+            qWarning()<< "found token as animated smile" <<token;
+            return "<img class = \"smile\" src=\"" + animatedSmiles_[ token ] + "\"></img>";
+        }
+    }
+    if( !isReplaced )
+    {
+        if( smiles_.contains( token ) )
+        {
+             qWarning()<< "found token as smile" <<token;
+            return  "<img class = \"smile\" src=\"" + smiles_[ token ] + "\"></img>";
+        }
+    }
+    //no changes, return original token
+    return token;
+}
+
+
+
+//#endregion new smiles
 
 
 void QGoodGameChat::onSmilesLoadError()
@@ -417,43 +609,25 @@ void QGoodGameChat::onStatisticLoadError()
 
 QString QGoodGameChat::insertSmiles( const QString & message ) const
 {
-    QString convertedMessage = message;
+    QString convertedMessage;
 
-    QStringList tokens = convertedMessage.split( QRegExp( "\\s" ) );
+    QStringList whiteSpacetokens = parseTokensKeepWhitespaces(message);
 
-    QStringList convertedTokens = tokens;
-
-    for( int i = 0; i < tokens.size(); ++i )
+    for( const auto& whiteSpaceToken: whiteSpacetokens)
     {
-        if ( !ChatMessage::isLink( tokens.at( i ) ) )//не ссылка
+        if ( !ChatMessage::isLink( whiteSpaceToken ) )//не ссылка
         {
-            bool isReplaced = false;
-
-            if( useAnimatedSmiles_ )
-            {
-                //заменено, если присутствует в мапе
-                isReplaced = animatedSmiles_.contains( tokens.at( i ) );
-                if( isReplaced )
-                {
-                    convertedTokens[ i ] = "<img class = \"smile\" src=\"" + animatedSmiles_[ tokens.at( i ) ] + "\"></img>";
-                }
-            }
-            if( !isReplaced )
-            {
-                if( smiles_.contains( tokens.at( i ) ) )
-                {
-                    convertedTokens[ i ] = "<img class = \"smile\" src=\"" + smiles_[ tokens.at( i ) ] + "\"></img>";
-                }
-            }
+            convertedMessage+=replaceSmiles(whiteSpaceToken);
+        }
+        else
+        {
+            convertedMessage+=whiteSpaceToken;
         }
     }
 
-    for( int i = 0; i < tokens.size(); ++i )
-    {
-        convertedMessage.replace( tokens.at( i ), convertedTokens.at( i ) );
-    }
 
     return convertedMessage;
+
 }
 
 void QGoodGameChat::timerEvent( QTimerEvent * event )
