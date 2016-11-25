@@ -56,7 +56,8 @@ HEADERS += \
     src/gipsyteam/qgipsyteamsettingsdialog.h \
     src/gamerstv/qgamerstvsettingsdialog.h \
     src/cybergame/qcybergamesettingsdialog.h \
-    src/beampro/qbeamprosettingsdialog.h
+    src/beampro/qbeamprosettingsdialog.h \
+    src/azubu/qazubusettingsdialog.h
 
 
 SOURCES += \
@@ -104,7 +105,8 @@ SOURCES += \
     src/gipsyteam/qgipsyteamsettingsdialog.cpp \
     src/gamerstv/qgamerstvsettingsdialog.cpp \
     src/cybergame/qcybergamesettingsdialog.cpp \
-    src/beampro/qbeamprosettingsdialog.cpp
+    src/beampro/qbeamprosettingsdialog.cpp \
+    src/azubu/qazubusettingsdialog.cpp
 
 
 RESOURCES += \

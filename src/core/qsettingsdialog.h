@@ -39,10 +39,6 @@ private:
     void                setupGeneralTab();
     void                setupDefaultStyleTab();
     void                setupAcesTab();
-    void                setupAzubuTab();
-    void                setupBeamproTab();
-    void                setupCybergameTab();    
-    void                setupGamerstvTab();
 
     void                setColorButtonStyle( QPushButton * button, QRgb color, int fontSize = 16 );
     void                buttonColorSelection( QPushButton * button, QRgb & color );
@@ -121,14 +117,6 @@ signals:
     void                acesBlackListChanged( const QString & );
     //void              acesOriginalColorsChanged( bool originalColors );
     void                acesRemoveBlackListUsersChanged( bool );
-
-
-    void                azubuChannelChanged();
-    void                azubuChannelDisabled();
-    void                azubuAliasesChanged( const QString & );
-    void                azubuSupportersListChanged( const QString & );
-    void                azubuBlackListChanged( const QString & );
-    void                azubuRemoveBlackListUsersChanged( bool );
 
 private:
     QMap<ChatTypeEnum,VirtualSettingsTab*> tabs_;
@@ -254,13 +242,6 @@ private:
     QTextEdit *         acesBlackListEdit;
     QCheckBox *         acesRemoveBlackListUsersCheckBox;
 
-
-    QCheckBox *         azubuChannelCheckBox;
-    QLineEdit *         azubuChannelEdit;
-    QLineEdit *         azubuAliasesEdit;
-    QTextEdit *         azubuSupportersListEdit;
-    QTextEdit *         azubuBlackListEdit;
-    QCheckBox *         azubuRemoveBlackListUsersCheckBox;
 
 
 
