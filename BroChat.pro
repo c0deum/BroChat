@@ -48,7 +48,8 @@ HEADERS += \
     src/core/chattypeenum.h \
     src/twitch/qtwitchsettingsdialog.h \
     src/vidi/qvidisettingsdialog.h \
-    src/peka2tv/qpeka2settingsdialog.h
+    src/peka2tv/qpeka2settingsdialog.h \
+    src/streamcube/qstreamcubesettingsdialog.h
 
 
 SOURCES += \
@@ -88,7 +89,8 @@ SOURCES += \
     src/youtube/qyoutubechatex.cpp \
     src/twitch/qtwitchsettingsdialog.cpp \
     src/vidi/qvidisettingsdialog.cpp \
-    src/peka2tv/qpeka2settingsdialog.cpp
+    src/peka2tv/qpeka2settingsdialog.cpp \
+    src/streamcube/qstreamcubesettingsdialog.cpp
 
 
 RESOURCES += \

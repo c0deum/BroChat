@@ -47,7 +47,6 @@ private:
     void                setupHitboxTab();
     void                setupIgdcTab();
     void                setupLivecodingTab();    
-    void                setupStreamcubeTab();  
 
     void                setColorButtonStyle( QPushButton * button, QRgb color, int fontSize = 16 );
     void                buttonColorSelection( QPushButton * button, QRgb & color );
@@ -191,12 +190,6 @@ signals:
     void                livecodingBadgesChanged( bool );
 
 
-    void                streamcubeChannelChanged();
-    void                streamcubeChannelDisabled();
-    void                streamcubeAliasesChanged( const QString & );
-    void                streamcubeSupportersListChanged( const QString & );
-    void                streamcubeBlackListChanged( const QString & );
-    void                streamcubeRemoveBlackListUsersChanged( bool );
 
 private:
     QMap<ChatTypeEnum,VirtualSettingsTab*> tabs_;
@@ -385,15 +378,7 @@ private:
     QLineEdit *         livecodingAliasesEdit;
     QTextEdit *         livecodingSupportersListEdit;
     QTextEdit *         livecodingBlackListEdit;
-    QCheckBox *         livecodingRemoveBlackListUsersCheckBox;
-
-
-    QCheckBox *         streamcubeChannelCheckBox;
-    QLineEdit *         streamcubeChannelEdit;
-    QLineEdit *         streamcubeAliasesEdit;
-    QTextEdit *         streamcubeSupportersListEdit;
-    QTextEdit *         streamcubeBlackListEdit;
-    QCheckBox *         streamcubeRemoveBlackListUsersCheckBox;   
+    QCheckBox *         livecodingRemoveBlackListUsersCheckBox; 
 
 
 };

@@ -140,6 +140,7 @@ void QPeka2SettingsDialog::connectDialogToChat(QObject *chat)
     QObject::connect( this, SIGNAL( peka2BlackListChanged( QString ) ), chat, SLOT( setBlackList( QString ) ) );
     QObject::connect( this, SIGNAL( peka2RemoveBlackListUsersChanged( bool ) ), chat, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( this, SIGNAL( peka2BadgesChanged(bool) ), chat, SLOT( changeBadges(bool) ) );
+    QObject::connect( this, SIGNAL( peka2OriginalColorsChanged( bool ) ), chat, SLOT( changeOriginalColors( bool ) ) );
 
 }
 
