@@ -122,22 +122,12 @@ void QYoutubeSettingsDialog::saveSettings(QSettings &settings)
 
 void QYoutubeSettingsDialog::connectDialogToChat(QObject* chat)
 {
-    QObject::connect( this, SIGNAL( youtubeLoginClickedSignal() ), chat, SLOT( doFreshLogin() ) );
-    QObject::connect( this, SIGNAL( youtubeDeloginClickedSignal() ), chat, SLOT( doDelogin() ) );
+
+    QObject::connect( youtubeLoginWebsitePushButton, SIGNAL( clicked( bool ) ), chat, SLOT( doFreshLogin() ) );
+    QObject::connect( youtubeDeloginWebsitePushButton, SIGNAL( clicked( bool ) ), chat, SLOT( doDelogin() ) );
 
 }
 
-void QYoutubeSettingsDialog::loginWebsiteButtonClicked()
-{
-
-    emit loginClicked();
-}
-
-void QYoutubeSettingsDialog::deloginWebsiteButtonClicked()
-{
-    //youtubeController_->delogin();
-    emit deloginClicked();
-}
 
 void QYoutubeSettingsDialog::changeChannelAvailability(bool )
 {

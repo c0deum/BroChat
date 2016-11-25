@@ -50,8 +50,6 @@ private:
     QCheckBox *removeBlackListUsersCheckBox;
     QGroupBox *groupBox;   
 private slots:
-    void loginWebsiteButtonClicked();
-    void deloginWebsiteButtonClicked();    
     void changeChannelAvailability(bool);
 
 
