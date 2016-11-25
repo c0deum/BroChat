@@ -91,8 +91,8 @@ void ChatMessage::setService( QChatService * service )
 
 QString ChatMessage::insertLinks( const QString & message, bool convertImageLinks )
 {
-    //TODO: only for webengine now
-    return message;
+    ////TODO: only for webengine now
+    //return message;
 
     QString convertedMessage = message;
 
