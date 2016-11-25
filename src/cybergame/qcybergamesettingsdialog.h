@@ -1,0 +1,51 @@
+#ifndef QCYBERGAMESETTINGSDIALOG_H
+#define QCYBERGAMESETTINGSDIALOG_H
+#include "../core/virtualsettingstab.h"
+
+class QIcon;
+class QString;
+class QVBoxLayout;
+class QCheckBox;
+class QPushButton;
+class QLineEdit;
+class QTextEdit;
+class QGroupBox;
+class QWidget;
+
+class QCybergameSettingsDialog : public QWidget,public VirtualSettingsTab
+{
+    Q_OBJECT
+public:
+    explicit QCybergameSettingsDialog(QWidget *parent = 0);
+
+signals:
+    void                cyberGameChannelChanged();
+    void                cyberGameChannelDisabled();
+    void                cyberGameAliasesChanged( const QString & );
+    void                cyberGameSupportersListChanged( const QString & );
+    void                cyberGameBlackListChanged( const QString & );
+    void                cyberGameRemoveBlackListUsersChanged( bool );
+
+public slots:
+
+    // VirtualSettingsTab interface
+public:
+    virtual QWidget *createLayout(QWidget *parent, QSettings &settings);
+    virtual void saveSettings(QSettings &settings);
+    virtual void loadSettings(QSettings &settings);
+    virtual void connectDialogToChat(QObject *chat);
+    virtual QIcon getIcon();
+    virtual QString getName();
+    virtual QObject *getAdditionalInfo();
+
+private:
+    QCheckBox *         cyberGameChannelCheckBox;
+    QLineEdit *         cyberGameChannelEdit;
+    QLineEdit *         cyberGameAliasesEdit;
+    QTextEdit *         cyberGameSupportersListEdit;
+    QTextEdit *         cyberGameBlackListEdit;
+    QCheckBox *         cyberGameRemoveBlackListUsersCheckBox;
+
+};
+
+#endif // QCYBERGAMESETTINGSDIALOG_H

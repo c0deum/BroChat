@@ -39,6 +39,8 @@
 #include "../hitbox/qhitboxsettingsdialog.h"
 #include "../gipsyteam/qgipsyteamsettingsdialog.h"
 #include "../gamerstv/qgamerstvsettingsdialog.h"
+#include "../cybergame/qcybergamesettingsdialog.h"
+#include "../igdc/qigdcsettingsdialog.h"
 
 
 QSettingsDialog::QSettingsDialog( QWidget *parent )
@@ -181,18 +183,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , beamproRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
 
-, cyberGameChannelCheckBox( new QCheckBox( this ) )
-, cyberGameChannelEdit( new QLineEdit( this ) )
-, cyberGameAliasesEdit( new QLineEdit( this ) )
-, cyberGameSupportersListEdit( new QTextEdit( this ) )
-, cyberGameBlackListEdit( new QTextEdit( this ) )
-, cyberGameRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
-
-
-
-
-
 {
     setWindowTitle( tr( "BroChat Settings" ) );
     setModal( true );
@@ -253,7 +243,6 @@ void QSettingsDialog::setupWidgets()
     setupAcesTab();
     setupAzubuTab();
     setupBeamproTab();
-    setupCybergameTab();
 
 
 
@@ -273,8 +262,10 @@ void QSettingsDialog::populateTabs(QTabWidget* tabHost,QSettings& settings)
     tabs_[ChatTypeEnum::Streamcube] = new QStreamCubeSettingsDialog(this);
     tabs_[ChatTypeEnum::Livecoding] = new QLivecodingSettingsDialog(this);
     tabs_[ChatTypeEnum::Hitbox] = new QHitboxSettingsDialog(this);
+    tabs_[ChatTypeEnum::Igdc] = new QIgdcSettingsDialog(this);
     tabs_[ChatTypeEnum::Gipsyteam] = new QGipsyteamSettingsDialog(this);
     tabs_[ChatTypeEnum::Gamerstv] = new QGamerstvSettingsDialog(this);
+    tabs_[ChatTypeEnum::Cybergame] = new QCybergameSettingsDialog(this);
 
 
     for (const auto& tab:tabs_.values())
@@ -911,50 +902,6 @@ void QSettingsDialog::setupBeamproTab()
 }
 
 
-
-void QSettingsDialog::setupCybergameTab()
-{
-    QSettings settings;
-
-    QVBoxLayout * cyberGameLayout = new QVBoxLayout;
-
-    cyberGameChannelCheckBox->setText( CHANNEL_TEXT );
-    cyberGameChannelCheckBox->setChecked( settings.value( CYBERGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    cyberGameChannelEdit->setText( settings.value( CYBERGAME_CHANNEL_SETTING_PATH, DEFAULT_CYBERGAME_CHANNEL_NAME ).toString() );
-    cyberGameChannelEdit->setEnabled( cyberGameChannelCheckBox->isChecked() );
-
-    QObject::connect( cyberGameChannelCheckBox, SIGNAL( clicked(bool) ), cyberGameChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    addWidgets( cyberGameLayout, { cyberGameChannelCheckBox, cyberGameChannelEdit } );
-
-    cyberGameAliasesEdit->setText( settings.value( CYBERGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( cyberGameLayout, { new QLabel( ALIASES_TEXT, this ), cyberGameAliasesEdit } );
-
-    cyberGameSupportersListEdit->setText( settings.value( CYBERGAME_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( cyberGameLayout, { new QLabel( SUPPORTERS_TEXT, this ), cyberGameSupportersListEdit } );
-
-    cyberGameBlackListEdit->setText( settings.value( CYBERGAME_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( cyberGameLayout, { new QLabel( BLACKLIST_TEXT, this ), cyberGameBlackListEdit } );
-
-    cyberGameRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    cyberGameRemoveBlackListUsersCheckBox->setChecked( settings.value( CYBERGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    cyberGameLayout->addWidget( cyberGameRemoveBlackListUsersCheckBox );
-
-    cyberGameLayout->addStretch( 1 );
-
-    QGroupBox * cyberGameGroup = new QGroupBox( tabSettings );
-    cyberGameGroup->setLayout( cyberGameLayout );
-
-    tabSettings->addTab( cyberGameGroup, QIcon( ":/resources/cybergamelogo.png" ), tr( "Cybergame" ) );
-}
-
-
-
 void QSettingsDialog::saveSettings()
 {
     QSettings settings;
@@ -1350,45 +1297,7 @@ void QSettingsDialog::saveSettings()
     }
 
 
-    //настройки cybergame
 
-    oldBoolValue = settings.value( CYBERGAME_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( CYBERGAME_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != cyberGameChannelCheckBox->isChecked() || oldStringValue != cyberGameChannelEdit->text() )
-    {
-        settings.setValue( CYBERGAME_CHANNEL_ENABLE_SETTING_PATH, cyberGameChannelCheckBox->isChecked() );
-        settings.setValue( CYBERGAME_CHANNEL_SETTING_PATH, cyberGameChannelEdit->text() );
-
-        emit cyberGameChannelChanged();
-    }
-
-    oldStringValue = settings.value( CYBERGAME_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != cyberGameAliasesEdit->text() )
-    {
-        settings.setValue( CYBERGAME_ALIASES_SETTING_PATH, cyberGameAliasesEdit->text() );
-        emit cyberGameAliasesChanged( cyberGameAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( CYBERGAME_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != cyberGameSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( CYBERGAME_SUPPORTERS_LIST_SETTING_PATH, cyberGameSupportersListEdit->toPlainText() );
-        emit cyberGameSupportersListChanged( cyberGameSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( CYBERGAME_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != cyberGameBlackListEdit->toPlainText() )
-    {
-        settings.setValue( CYBERGAME_BLACK_LIST_SETTING_PATH, cyberGameBlackListEdit->toPlainText() );
-        emit cyberGameBlackListChanged( cyberGameBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( CYBERGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != cyberGameRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( CYBERGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH, cyberGameRemoveBlackListUsersCheckBox->isChecked() );
-        emit cyberGameRemoveBlackListUsersChanged( cyberGameRemoveBlackListUsersCheckBox->isChecked() );
-    }
 
 
     saveTabsSettings(settings);

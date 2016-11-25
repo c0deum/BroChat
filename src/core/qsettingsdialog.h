@@ -138,19 +138,6 @@ signals:
     void                beamproBlackListChanged( const QString & );
     void                beamproRemoveBlackListUsersChanged( bool );
 
-
-    void                cyberGameChannelChanged();
-    void                cyberGameChannelDisabled();
-    void                cyberGameAliasesChanged( const QString & );
-    void                cyberGameSupportersListChanged( const QString & );
-    void                cyberGameBlackListChanged( const QString & );
-    void                cyberGameRemoveBlackListUsersChanged( bool );
-
-
-
-
-
-
 private:
     QMap<ChatTypeEnum,VirtualSettingsTab*> tabs_;
 
@@ -289,19 +276,6 @@ private:
     QTextEdit *         beamproSupportersListEdit;
     QTextEdit *         beamproBlackListEdit;
     QCheckBox *         beamproRemoveBlackListUsersCheckBox;
-
-
-    QCheckBox *         cyberGameChannelCheckBox;
-    QLineEdit *         cyberGameChannelEdit;
-    QLineEdit *         cyberGameAliasesEdit;
-    QTextEdit *         cyberGameSupportersListEdit;
-    QTextEdit *         cyberGameBlackListEdit;
-    QCheckBox *         cyberGameRemoveBlackListUsersCheckBox;
-
-
-
-
-
 
 
 };
