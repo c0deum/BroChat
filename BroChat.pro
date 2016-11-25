@@ -55,7 +55,8 @@ HEADERS += \
     src/hitbox/qhitboxsettingsdialog.h \
     src/gipsyteam/qgipsyteamsettingsdialog.h \
     src/gamerstv/qgamerstvsettingsdialog.h \
-    src/cybergame/qcybergamesettingsdialog.h
+    src/cybergame/qcybergamesettingsdialog.h \
+    src/beampro/qbeamprosettingsdialog.h
 
 
 SOURCES += \
@@ -102,7 +103,8 @@ SOURCES += \
     src/hitbox/qhitboxsettingsdialog.cpp \
     src/gipsyteam/qgipsyteamsettingsdialog.cpp \
     src/gamerstv/qgamerstvsettingsdialog.cpp \
-    src/cybergame/qcybergamesettingsdialog.cpp
+    src/cybergame/qcybergamesettingsdialog.cpp \
+    src/beampro/qbeamprosettingsdialog.cpp
 
 
 RESOURCES += \

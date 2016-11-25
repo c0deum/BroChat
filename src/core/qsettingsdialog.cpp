@@ -41,6 +41,7 @@
 #include "../gamerstv/qgamerstvsettingsdialog.h"
 #include "../cybergame/qcybergamesettingsdialog.h"
 #include "../igdc/qigdcsettingsdialog.h"
+#include "../beampro/qbeamprosettingsdialog.h"
 
 
 QSettingsDialog::QSettingsDialog( QWidget *parent )
@@ -175,14 +176,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , azubuRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
 
-, beamproChannelCheckBox( new QCheckBox( this ) )
-, beamproChannelEdit( new QLineEdit( this ) )
-, beamproAliasesEdit( new QLineEdit( this ) )
-, beamproSupportersListEdit( new QTextEdit( this ) )
-, beamproBlackListEdit( new QTextEdit( this ) )
-, beamproRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
-
 {
     setWindowTitle( tr( "BroChat Settings" ) );
     setModal( true );
@@ -242,9 +235,6 @@ void QSettingsDialog::setupWidgets()
     setupDefaultStyleTab();
     setupAcesTab();
     setupAzubuTab();
-    setupBeamproTab();
-
-
 
     QSettings settings;
     populateTabs(tabSettings,settings);
@@ -266,6 +256,7 @@ void QSettingsDialog::populateTabs(QTabWidget* tabHost,QSettings& settings)
     tabs_[ChatTypeEnum::Gipsyteam] = new QGipsyteamSettingsDialog(this);
     tabs_[ChatTypeEnum::Gamerstv] = new QGamerstvSettingsDialog(this);
     tabs_[ChatTypeEnum::Cybergame] = new QCybergameSettingsDialog(this);
+    tabs_[ChatTypeEnum::Beampro] = new QBeamproSettingsDialog(this);
 
 
     for (const auto& tab:tabs_.values())
@@ -859,49 +850,6 @@ void QSettingsDialog::setupAzubuTab()
 
 
 
-
-void QSettingsDialog::setupBeamproTab()
-{
-    QSettings settings;
-
-    QVBoxLayout * beamproLayout = new QVBoxLayout;
-
-    beamproChannelCheckBox->setText( CHANNEL_TEXT );
-    beamproChannelCheckBox->setChecked( settings.value( BEAMPRO_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    beamproChannelEdit->setText( settings.value( BEAMPRO_CHANNEL_SETTING_PATH, DEFAULT_BEAMPRO_CHANNEL_NAME ).toString() );
-    beamproChannelEdit->setEnabled( beamproChannelCheckBox->isChecked() );
-
-    QObject::connect( beamproChannelCheckBox, SIGNAL( clicked( bool ) ), beamproChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    addWidgets( beamproLayout, { beamproChannelCheckBox, beamproChannelEdit } );
-
-    beamproAliasesEdit->setText( settings.value( BEAMPRO_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( beamproLayout, { new QLabel( ALIASES_TEXT, this ), beamproAliasesEdit } );
-
-    beamproSupportersListEdit->setText( settings.value( BEAMPRO_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( beamproLayout, { new QLabel( SUPPORTERS_TEXT, this ), beamproSupportersListEdit } );
-
-    beamproBlackListEdit->setText( settings.value( BEAMPRO_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( beamproLayout, { new QLabel( BLACKLIST_TEXT, this ), beamproBlackListEdit } );
-
-    beamproRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    beamproRemoveBlackListUsersCheckBox->setChecked( settings.value( BEAMPRO_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    beamproLayout->addWidget( beamproRemoveBlackListUsersCheckBox );
-
-    beamproLayout->addStretch( 1 );
-
-    QGroupBox * beamproGroup = new QGroupBox( tabSettings );
-    beamproGroup->setLayout( beamproLayout );
-
-    tabSettings->addTab( beamproGroup, QIcon( ":/resources/beamprologo.png" ), tr( "Beampro" ) );
-}
-
-
 void QSettingsDialog::saveSettings()
 {
     QSettings settings;
@@ -1255,50 +1203,6 @@ void QSettingsDialog::saveSettings()
         settings.setValue( AZUBU_REMOVE_BLACK_LIST_USERS_SETTING_PATH, azubuRemoveBlackListUsersCheckBox->isChecked() );
         emit azubuRemoveBlackListUsersChanged( azubuRemoveBlackListUsersCheckBox->isChecked() );
     }
-
-
-    //настройки beampro
-    oldBoolValue = settings.value( BEAMPRO_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( BEAMPRO_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != beamproChannelCheckBox->isChecked() || oldStringValue != beamproChannelEdit->text() )
-    {
-        settings.setValue( BEAMPRO_CHANNEL_ENABLE_SETTING_PATH, beamproChannelCheckBox->isChecked() );
-        settings.setValue( BEAMPRO_CHANNEL_SETTING_PATH, beamproChannelEdit->text() );
-
-        emit beamproChannelChanged();
-    }
-
-    oldStringValue = settings.value( BEAMPRO_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != beamproAliasesEdit->text() )
-    {
-        settings.setValue( BEAMPRO_ALIASES_SETTING_PATH, beamproAliasesEdit->text() );
-        emit beamproAliasesChanged( beamproAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( BEAMPRO_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != beamproSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( BEAMPRO_SUPPORTERS_LIST_SETTING_PATH, beamproSupportersListEdit->toPlainText() );
-        emit beamproSupportersListChanged( beamproSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( BEAMPRO_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != beamproBlackListEdit->toPlainText() )
-    {
-        settings.setValue( BEAMPRO_BLACK_LIST_SETTING_PATH, beamproBlackListEdit->toPlainText() );
-        emit beamproBlackListChanged( beamproBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( BEAMPRO_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != beamproRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( BEAMPRO_REMOVE_BLACK_LIST_USERS_SETTING_PATH, beamproRemoveBlackListUsersCheckBox->isChecked() );
-        emit beamproRemoveBlackListUsersChanged( beamproRemoveBlackListUsersCheckBox->isChecked() );
-    }
-
-
-
-
 
     saveTabsSettings(settings);
 
