@@ -44,7 +44,6 @@ private:
     void                setupCybergameTab();    
     void                setupGamerstvTab();
     void                setupGipsyteamTab();
-    void                setupHitboxTab();
 
     void                setColorButtonStyle( QPushButton * button, QRgb color, int fontSize = 16 );
     void                buttonColorSelection( QPushButton * button, QRgb & color );
@@ -162,14 +161,6 @@ signals:
     void                gipsyteamSupportersListChanged( const QString & );
     void                gipsyteamBlackListChanged( const QString & );
     void                gipsyteamRemoveBlackListUsersChanged( bool );
-
-    void                hitboxChannelChanged();
-    void                hitboxChannelDisabled();
-    void                hitboxAliasesChanged( const QString & );
-    void                hitboxSupportersListChanged( const QString & );
-    void                hitboxBlackListChanged( const QString & );
-    void                hitboxRemoveBlackListUsersChanged( bool );
-    void                hitboxOriginalColorsChanged( bool );
 
 
 private:
@@ -334,14 +325,6 @@ private:
     QTextEdit *         gipsyteamSupportersListEdit;
     QTextEdit *         gipsyteamBlackListEdit;
     QCheckBox *         gipsyteamRemoveBlackListUsersCheckBox;
-
-    QCheckBox *         hitboxChannelCheckBox;
-    QLineEdit *         hitboxChannelEdit;
-    QCheckBox *         hitboxOriginalColorsCheckBox;
-    QLineEdit *         hitboxAliasesEdit;
-    QTextEdit *         hitboxSupportersListEdit;
-    QTextEdit *         hitboxBlackListEdit;
-    QCheckBox *         hitboxRemoveBlackListUsersCheckBox;
 
 
 };

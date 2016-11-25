@@ -2,7 +2,6 @@
 #define QGOODGAMESETTINGSDIALOG_H
 #include "../core/virtualsettingstab.h"
 
-
 class QIcon;
 class QString;
 class QVBoxLayout;

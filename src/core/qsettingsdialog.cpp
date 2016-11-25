@@ -36,6 +36,7 @@
 #include "../peka2tv/qpeka2settingsdialog.h"
 #include "../streamcube/qstreamcubesettingsdialog.h"
 #include "../livecoding/qlivecodingsettingsdialog.h"
+#include "../hitbox/qhitboxsettingsdialog.h"
 
 
 QSettingsDialog::QSettingsDialog( QWidget *parent )
@@ -200,13 +201,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , gipsyteamBlackListEdit( new QTextEdit( this ) )
 , gipsyteamRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-, hitboxChannelCheckBox( new QCheckBox( this ) )
-, hitboxChannelEdit( new QLineEdit( this ) )
-, hitboxOriginalColorsCheckBox( new QCheckBox( this ) )
-, hitboxAliasesEdit( new QLineEdit( this ) )
-, hitboxSupportersListEdit( new QTextEdit( this ) )
-, hitboxBlackListEdit( new QTextEdit( this ) )
-, hitboxRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
 {
     setWindowTitle( tr( "BroChat Settings" ) );
@@ -271,7 +265,6 @@ void QSettingsDialog::setupWidgets()
     setupCybergameTab();    
     setupGamerstvTab();
     setupGipsyteamTab();
-    setupHitboxTab();
 
 
 
@@ -283,42 +276,20 @@ void QSettingsDialog::setupWidgets()
 //generate tabs and add them into the TabWidget
 void QSettingsDialog::populateTabs(QTabWidget* tabHost,QSettings& settings)
 {
-    auto goodgameTab = new QGoodGameSettingsDialog(this);
-    tabs_[ChatTypeEnum::Goodgame] = goodgameTab;
-    tabHost->addTab( goodgameTab->createLayout(tabHost,settings),goodgameTab->getIcon(),
-                     goodgameTab->getName() );
+    tabs_[ChatTypeEnum::Goodgame] = new QGoodGameSettingsDialog(this);
+    tabs_[ChatTypeEnum::Youtube] = new QYoutubeSettingsDialog(this);
+    tabs_[ChatTypeEnum::Twitch] = new QTwitchSettingsDialog(this);
+    tabs_[ChatTypeEnum::Vidi] =  new QVidiSettingsDialog(this);
+    tabs_[ChatTypeEnum::Peka2tv] = new QPeka2SettingsDialog(this);
+    tabs_[ChatTypeEnum::Streamcube] = new QStreamCubeSettingsDialog(this);
+    tabs_[ChatTypeEnum::Livecoding] = new QLivecodingSettingsDialog(this);
+    tabs_[ChatTypeEnum::Hitbox] = new QHitboxSettingsDialog(this);
 
-
-    auto youtTubeTab = new QYoutubeSettingsDialog(this);
-    tabs_[ChatTypeEnum::Youtube] = youtTubeTab;
-    tabHost->addTab( youtTubeTab->createLayout(tabHost,settings),youtTubeTab->getIcon(),
-                     youtTubeTab->getName() );
-
-    auto twitchTab = new QTwitchSettingsDialog(this);
-    tabs_[ChatTypeEnum::Twitch] = twitchTab;
-    tabHost->addTab( twitchTab->createLayout(tabHost,settings),twitchTab->getIcon(),
-                     twitchTab->getName() );
-
-    auto vidiTab = new QVidiSettingsDialog(this);
-    tabs_[ChatTypeEnum::Vidi] = vidiTab;
-    tabHost->addTab( vidiTab->createLayout(tabHost,settings),vidiTab->getIcon(),
-                     vidiTab->getName() );
-
-    auto peka2Tab = new QPeka2SettingsDialog(this);
-    tabs_[ChatTypeEnum::Peka2tv] = peka2Tab;
-    tabHost->addTab( peka2Tab->createLayout(tabHost,settings),peka2Tab->getIcon(),
-                     peka2Tab->getName() );
-
-    auto streamCubeTab = new QStreamCubeSettingsDialog(this);
-    tabs_[ChatTypeEnum::Streamcube] = streamCubeTab;
-    tabHost->addTab( streamCubeTab->createLayout(tabHost,settings),streamCubeTab->getIcon(),
-                     streamCubeTab->getName() );
-
-    auto livecodingTab = new QLivecodingSettingsDialog(this);
-    tabs_[ChatTypeEnum::Livecoding] = livecodingTab;
-    tabHost->addTab( livecodingTab->createLayout(tabHost,settings),livecodingTab->getIcon(),
-                     livecodingTab->getName() );
-
+    for (const auto& tab:tabs_.values())
+    {
+         tabHost->addTab( tab->createLayout(tabHost,settings),tab->getIcon(),
+                     tab->getName() );
+    }
 
 }
 
@@ -1075,52 +1046,6 @@ void QSettingsDialog::setupGipsyteamTab()
     tabSettings->addTab( gipsyteamGroup, QIcon( ":/resources/gipsyteamlogo.png" ), tr( "Gipsyteam" ) );
 }
 
-void QSettingsDialog::setupHitboxTab()
-{
-    QSettings settings;
-
-    QVBoxLayout * hitboxLayout = new QVBoxLayout();
-
-    hitboxChannelCheckBox->setText( CHANNEL_TEXT );
-    hitboxChannelCheckBox->setChecked( settings.value( HITBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    hitboxChannelEdit->setText( settings.value( HITBOX_CHANNEL_SETTING_PATH, DEFAULT_HITBOX_CHANNEL_NAME ).toString() );
-    hitboxChannelEdit->setEnabled( hitboxChannelCheckBox->isChecked() );
-
-    QObject::connect( hitboxChannelCheckBox, SIGNAL( clicked( bool ) ), hitboxChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    hitboxOriginalColorsCheckBox->setText( tr( "Original Colors" ) );
-    hitboxOriginalColorsCheckBox->setChecked( settings.value( HITBOX_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
-
-    addWidgets( hitboxLayout, { hitboxChannelCheckBox, hitboxChannelEdit, hitboxOriginalColorsCheckBox  } );
-
-    hitboxAliasesEdit->setText( settings.value( HITBOX_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( hitboxLayout, { new QLabel( ALIASES_TEXT, this ), hitboxAliasesEdit } );
-
-    hitboxSupportersListEdit->setText( settings.value( HITBOX_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( hitboxLayout, { new QLabel( SUPPORTERS_TEXT, this ), hitboxSupportersListEdit } );
-
-    hitboxBlackListEdit->setText( settings.value( HITBOX_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( hitboxLayout, { new QLabel( BLACKLIST_TEXT, this ), hitboxBlackListEdit } );
-
-    hitboxRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    hitboxRemoveBlackListUsersCheckBox->setChecked( settings.value( HITBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    hitboxLayout->addWidget( hitboxRemoveBlackListUsersCheckBox );
-
-    hitboxLayout->addStretch( 1 );
-
-    QGroupBox * hitboxGroup = new QGroupBox( tabSettings );
-    hitboxGroup->setLayout( hitboxLayout );
-
-    tabSettings->addTab( hitboxGroup, QIcon( ":/resources/hitboxlogo.png" ), tr( "Hitbox" ) );
-}
-
-
-
 void QSettingsDialog::saveSettings()
 {
     QSettings settings;
@@ -1642,57 +1567,6 @@ void QSettingsDialog::saveSettings()
         settings.setValue( GIPSYTEAM_REMOVE_BLACK_LIST_USERS_SETTING_PATH, gipsyteamRemoveBlackListUsersCheckBox->isChecked() );
         emit gipsyteamRemoveBlackListUsersChanged( gipsyteamRemoveBlackListUsersCheckBox->isChecked() );
     }
-
-
-    //настройки hitbox
-
-    oldBoolValue = settings.value( HITBOX_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( HITBOX_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != hitboxChannelCheckBox->isChecked() || oldStringValue != hitboxChannelEdit->text() )
-    {
-        settings.setValue( HITBOX_CHANNEL_ENABLE_SETTING_PATH, hitboxChannelCheckBox->isChecked() );
-        settings.setValue( HITBOX_CHANNEL_SETTING_PATH, hitboxChannelEdit->text() );
-
-        emit hitboxChannelChanged();
-    }
-
-    oldBoolValue = settings.value( HITBOX_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != hitboxOriginalColorsCheckBox->isChecked() )
-    {
-        settings.setValue( HITBOX_ORIGINAL_COLORS_SETTING_PATH, hitboxOriginalColorsCheckBox->isChecked() );
-        emit hitboxOriginalColorsChanged( hitboxOriginalColorsCheckBox->isChecked() );
-    }
-
-    oldStringValue = settings.value( HITBOX_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != hitboxAliasesEdit->text() )
-    {
-        settings.setValue( HITBOX_ALIASES_SETTING_PATH, hitboxAliasesEdit->text() );
-        emit hitboxAliasesChanged( hitboxAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( HITBOX_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != hitboxSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( HITBOX_SUPPORTERS_LIST_SETTING_PATH, hitboxSupportersListEdit->toPlainText() );
-        emit hitboxSupportersListChanged( hitboxSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( HITBOX_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != hitboxBlackListEdit->toPlainText() )
-    {
-        settings.setValue( HITBOX_BLACK_LIST_SETTING_PATH, hitboxBlackListEdit->toPlainText() );
-        emit hitboxBlackListChanged( hitboxBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( HITBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != hitboxRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( HITBOX_REMOVE_BLACK_LIST_USERS_SETTING_PATH, hitboxRemoveBlackListUsersCheckBox->isChecked() );
-        emit hitboxRemoveBlackListUsersChanged( hitboxRemoveBlackListUsersCheckBox->isChecked() );
-    }
-
-
-
 
     saveTabsSettings(settings);
 

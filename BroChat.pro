@@ -51,7 +51,8 @@ HEADERS += \
     src/peka2tv/qpeka2settingsdialog.h \
     src/streamcube/qstreamcubesettingsdialog.h \
     src/livecoding/qlivecodingsettingsdialog.h \
-    src/igdc/qigdcsettingsdialog.h
+    src/igdc/qigdcsettingsdialog.h \
+    src/hitbox/qhitboxsettingsdialog.h
 
 
 SOURCES += \
@@ -94,7 +95,8 @@ SOURCES += \
     src/peka2tv/qpeka2settingsdialog.cpp \
     src/streamcube/qstreamcubesettingsdialog.cpp \
     src/livecoding/qlivecodingsettingsdialog.cpp \
-    src/igdc/qigdcsettingsdialog.cpp
+    src/igdc/qigdcsettingsdialog.cpp \
+    src/hitbox/qhitboxsettingsdialog.cpp
 
 
 RESOURCES += \
