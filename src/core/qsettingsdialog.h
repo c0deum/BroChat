@@ -43,7 +43,6 @@ private:
     void                setupBeamproTab();
     void                setupCybergameTab();    
     void                setupGamerstvTab();
-    void                setupGipsyteamTab();
 
     void                setColorButtonStyle( QPushButton * button, QRgb color, int fontSize = 16 );
     void                buttonColorSelection( QPushButton * button, QRgb & color );
@@ -155,12 +154,7 @@ signals:
     void                gamerstvRemoveBlackListUsersChanged( bool );
     void                gamerstvBadgesChanged( bool );
 
-    void                gipsyteamChannelChanged();
-    void                gipsyteamChannelDisabled();
-    void                gipsyteamAliasesChanged( const QString & );
-    void                gipsyteamSupportersListChanged( const QString & );
-    void                gipsyteamBlackListChanged( const QString & );
-    void                gipsyteamRemoveBlackListUsersChanged( bool );
+
 
 
 private:
@@ -319,12 +313,7 @@ private:
     QTextEdit *         gamerstvBlackListEdit;
     QCheckBox *         gamerstvRemoveBlackListUsersCheckBox;
 
-    QCheckBox *         gipsyteamChannelCheckBox;
-    QLineEdit *         gipsyteamChannelEdit;
-    QLineEdit *         gipsyteamAliasesEdit;
-    QTextEdit *         gipsyteamSupportersListEdit;
-    QTextEdit *         gipsyteamBlackListEdit;
-    QCheckBox *         gipsyteamRemoveBlackListUsersCheckBox;
+
 
 
 };

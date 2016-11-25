@@ -37,6 +37,7 @@
 #include "../streamcube/qstreamcubesettingsdialog.h"
 #include "../livecoding/qlivecodingsettingsdialog.h"
 #include "../hitbox/qhitboxsettingsdialog.h"
+#include "../gipsyteam/qgipsyteamsettingsdialog.h"
 
 
 QSettingsDialog::QSettingsDialog( QWidget *parent )
@@ -194,12 +195,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , gamerstvBlackListEdit( new QTextEdit( this ) )
 , gamerstvRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-, gipsyteamChannelCheckBox( new QCheckBox( this ) )
-, gipsyteamChannelEdit( new QLineEdit( this ) )
-, gipsyteamAliasesEdit( new QLineEdit( this ) )
-, gipsyteamSupportersListEdit( new QTextEdit( this ) )
-, gipsyteamBlackListEdit( new QTextEdit( this ) )
-, gipsyteamRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
+
 
 
 {
@@ -264,7 +260,6 @@ void QSettingsDialog::setupWidgets()
     setupBeamproTab();
     setupCybergameTab();    
     setupGamerstvTab();
-    setupGipsyteamTab();
 
 
 
@@ -284,6 +279,7 @@ void QSettingsDialog::populateTabs(QTabWidget* tabHost,QSettings& settings)
     tabs_[ChatTypeEnum::Streamcube] = new QStreamCubeSettingsDialog(this);
     tabs_[ChatTypeEnum::Livecoding] = new QLivecodingSettingsDialog(this);
     tabs_[ChatTypeEnum::Hitbox] = new QHitboxSettingsDialog(this);
+    tabs_[ChatTypeEnum::Gipsyteam] = new QGipsyteamSettingsDialog(this);
 
     for (const auto& tab:tabs_.values())
     {
@@ -1005,46 +1001,6 @@ void QSettingsDialog::setupGamerstvTab()
     tabSettings->addTab( gamerstvGroup, QIcon( ":/resources/gamerstvlogo.png" ), tr( "Gamerstv" ) );
 }
 
-void QSettingsDialog::setupGipsyteamTab()
-{
-    QSettings settings;
-
-    QVBoxLayout * gipsyteamLayout = new QVBoxLayout();
-
-    gipsyteamChannelCheckBox->setText( CHANNEL_TEXT );
-    gipsyteamChannelCheckBox->setChecked( settings.value( GIPSYTEAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    gipsyteamChannelEdit->setText( settings.value( GIPSYTEAM_CHANNEL_SETTING_PATH, DEFAULT_GIPSYTEAM_CHANNEL_NAME ).toString() );
-    gipsyteamChannelEdit->setEnabled( gipsyteamChannelCheckBox->isChecked() );
-
-    QObject::connect( gipsyteamChannelCheckBox, SIGNAL( clicked( bool ) ), gipsyteamChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    addWidgets( gipsyteamLayout, { gipsyteamChannelCheckBox, gipsyteamChannelEdit } );
-
-    gipsyteamAliasesEdit->setText( settings.value( GIPSYTEAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( gipsyteamLayout, { new QLabel( ALIASES_TEXT, this ), gipsyteamAliasesEdit } );
-
-    gipsyteamSupportersListEdit->setText( settings.value( GIPSYTEAM_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( gipsyteamLayout, { new QLabel( SUPPORTERS_TEXT, this ), gipsyteamSupportersListEdit } );
-
-    gipsyteamBlackListEdit->setText( settings.value( GIPSYTEAM_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( gipsyteamLayout, { new QLabel( BLACKLIST_TEXT, this ), gipsyteamBlackListEdit } );
-
-    gipsyteamRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    gipsyteamRemoveBlackListUsersCheckBox->setChecked( settings.value( GIPSYTEAM_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    gipsyteamLayout->addWidget( gipsyteamRemoveBlackListUsersCheckBox );
-
-    gipsyteamLayout->addStretch( 1 );
-
-    QGroupBox * gipsyteamGroup = new QGroupBox( tabSettings );
-    gipsyteamGroup->setLayout( gipsyteamLayout );
-
-    tabSettings->addTab( gipsyteamGroup, QIcon( ":/resources/gipsyteamlogo.png" ), tr( "Gipsyteam" ) );
-}
 
 void QSettingsDialog::saveSettings()
 {
@@ -1528,45 +1484,7 @@ void QSettingsDialog::saveSettings()
         settings.setValue( GAMERSTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, gamerstvRemoveBlackListUsersCheckBox->isChecked() );
         emit gamerstvRemoveBlackListUsersChanged( gamerstvRemoveBlackListUsersCheckBox->isChecked() );
     }
-    //настройки gipsyteam
 
-    oldBoolValue = settings.value( GIPSYTEAM_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( GIPSYTEAM_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != gipsyteamChannelCheckBox->isChecked() || oldStringValue != gipsyteamChannelEdit->text() )
-    {
-        settings.setValue( GIPSYTEAM_CHANNEL_ENABLE_SETTING_PATH, gipsyteamChannelCheckBox->isChecked() );
-        settings.setValue( GIPSYTEAM_CHANNEL_SETTING_PATH, gipsyteamChannelEdit->text() );
-
-        emit gipsyteamChannelChanged();
-    }
-
-    oldStringValue = settings.value( GIPSYTEAM_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != gipsyteamAliasesEdit->text() )
-    {
-        settings.setValue( GIPSYTEAM_ALIASES_SETTING_PATH, gipsyteamAliasesEdit->text() );
-        emit gipsyteamAliasesChanged( gipsyteamAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( GIPSYTEAM_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != gipsyteamSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( GIPSYTEAM_SUPPORTERS_LIST_SETTING_PATH, gipsyteamSupportersListEdit->toPlainText() );
-        emit gipsyteamSupportersListChanged( gipsyteamSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( GIPSYTEAM_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != gipsyteamBlackListEdit->toPlainText() )
-    {
-        settings.setValue( GIPSYTEAM_BLACK_LIST_SETTING_PATH, gipsyteamBlackListEdit->toPlainText() );
-        emit gipsyteamBlackListChanged( gipsyteamBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( GIPSYTEAM_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != gipsyteamRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( GIPSYTEAM_REMOVE_BLACK_LIST_USERS_SETTING_PATH, gipsyteamRemoveBlackListUsersCheckBox->isChecked() );
-        emit gipsyteamRemoveBlackListUsersChanged( gipsyteamRemoveBlackListUsersCheckBox->isChecked() );
-    }
 
     saveTabsSettings(settings);
 

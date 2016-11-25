@@ -52,7 +52,8 @@ HEADERS += \
     src/streamcube/qstreamcubesettingsdialog.h \
     src/livecoding/qlivecodingsettingsdialog.h \
     src/igdc/qigdcsettingsdialog.h \
-    src/hitbox/qhitboxsettingsdialog.h
+    src/hitbox/qhitboxsettingsdialog.h \
+    src/gipsyteam/qgipsyteamsettingsdialog.h
 
 
 SOURCES += \
@@ -96,7 +97,8 @@ SOURCES += \
     src/streamcube/qstreamcubesettingsdialog.cpp \
     src/livecoding/qlivecodingsettingsdialog.cpp \
     src/igdc/qigdcsettingsdialog.cpp \
-    src/hitbox/qhitboxsettingsdialog.cpp
+    src/hitbox/qhitboxsettingsdialog.cpp \
+    src/gipsyteam/qgipsyteamsettingsdialog.cpp
 
 
 RESOURCES += \
