@@ -46,7 +46,6 @@ private:
     void                setupGipsyteamTab();
     void                setupHitboxTab();
     void                setupIgdcTab();
-    void                setupLivecodingTab();    
 
     void                setColorButtonStyle( QPushButton * button, QRgb color, int fontSize = 16 );
     void                buttonColorSelection( QPushButton * button, QRgb & color );
@@ -180,14 +179,6 @@ signals:
     void                igdcBlackListChanged( const QString & );
     void                igdcRemoveBlackListUsersChanged( bool );
     void                igdcBadgesChanged( bool );
-
-    void                livecodingChannelChanged();
-    void                livecodingChannelDisabled();
-    void                livecodingAliasesChanged( const QString & );
-    void                livecodingSupportersListChanged( const QString & );
-    void                livecodingBlackListChanged( const QString & );
-    void                livecodingRemoveBlackListUsersChanged( bool );
-    void                livecodingBadgesChanged( bool );
 
 
 
@@ -370,15 +361,7 @@ private:
     QTextEdit *         igdcBlackListEdit;
     QCheckBox *         igdcRemoveBlackListUsersCheckBox;
 
-    QCheckBox *         livecodingChannelCheckBox;
-    QLineEdit *         livecodingChannelEdit;
-    QCheckBox *         livecodingBadgesCheckBox;
-    QLineEdit *         livecodingLoginEdit;
-    QLineEdit *         livecodingPasswordEdit;
-    QLineEdit *         livecodingAliasesEdit;
-    QTextEdit *         livecodingSupportersListEdit;
-    QTextEdit *         livecodingBlackListEdit;
-    QCheckBox *         livecodingRemoveBlackListUsersCheckBox; 
+
 
 
 };

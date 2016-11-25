@@ -112,6 +112,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     chats_[ChatTypeEnum::Vidi] = vidiChat_;
     chats_[ChatTypeEnum::Peka2tv] = peka2Chat_;
     chats_[ChatTypeEnum::Streamcube] = streamcubeChat_;
+    chats_[ChatTypeEnum::Livecoding] = livecodingChat_;
 
 
 
@@ -199,8 +200,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), gamerstvChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), gipsyteamChat_, SLOT( reconnect() ) );    
     QObject::connect( reconnectAllAction, SIGNAL( triggered() ), hitboxChat_, SLOT( reconnect() ) );
-    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), igdcChat_, SLOT( reconnect() ) );
-    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), livecodingChat_, SLOT( reconnect() ) );        
+    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), igdcChat_, SLOT( reconnect() ) );      
 
 
     QObject::connect( reconnectAcesAction, SIGNAL( triggered() ), acesChat_, SLOT( reconnect() ) );
@@ -276,10 +276,6 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( igdcChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
     QObject::connect( igdcChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
     loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), igdcChat_, SLOT( reconnect() ) );
-
-    QObject::connect( livecodingChat_, SIGNAL( newMessage( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );
-    QObject::connect( livecodingChat_, SIGNAL( newStatistic( QChatStatistic* ) ), this, SLOT( onNewStatistic( QChatStatistic* ) ) );
-    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), livecodingChat_, SLOT( reconnect() ) );
 
     connectChatsToLocalSlots();
 
@@ -581,8 +577,7 @@ void QBroChatView::changeShowSystemMessagesState()
     gamerstvChat_->setShowSystemMessages( showSystemMessages_ );
     gipsyteamChat_->setShowSystemMessages( showSystemMessages_ );
     hitboxChat_->setShowSystemMessages( showSystemMessages_ );
-    igdcChat_->setShowSystemMessages( showSystemMessages_ );
-    livecodingChat_->setShowSystemMessages( showSystemMessages_ );        
+    igdcChat_->setShowSystemMessages( showSystemMessages_ ); 
 
     for(auto& chat:chats_)
     {
@@ -730,7 +725,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( gipsyteamChannelChanged() ), gipsyteamChat_, SLOT( reconnect() ) );    
     QObject::connect( settingsDialog, SIGNAL( hitboxChannelChanged() ), hitboxChat_, SLOT( reconnect() ) );
     QObject::connect( settingsDialog, SIGNAL( igdcChannelChanged() ), igdcChat_, SLOT( reconnect() ) );
-    QObject::connect( settingsDialog, SIGNAL( livecodingChannelChanged() ), livecodingChat_, SLOT( reconnect() ) );            
+
 
 
 
@@ -742,7 +737,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( gipsyteamAliasesChanged(QString) ), gipsyteamChat_, SLOT( setAliasesList(QString) ) );    
     QObject::connect( settingsDialog, SIGNAL( hitboxAliasesChanged( QString ) ), hitboxChat_, SLOT( setAliasesList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( igdcAliasesChanged(QString) ), igdcChat_, SLOT( setAliasesList(QString) ) );
-    QObject::connect( settingsDialog, SIGNAL( livecodingAliasesChanged( QString ) ), livecodingChat_, SLOT( setAliasesList( QString ) ) );        
+
 
 
     QObject::connect( settingsDialog, SIGNAL( acesSupportersListChanged( QString ) ), acesChat_, SLOT( setSupportersList( QString ) ) );
@@ -753,7 +748,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( gipsyteamSupportersListChanged(QString) ), gipsyteamChat_, SLOT( setSupportersList(QString) ) );   
     QObject::connect( settingsDialog, SIGNAL( hitboxSupportersListChanged( QString ) ), hitboxChat_, SLOT( setSupportersList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( igdcSupportersListChanged(QString) ), igdcChat_, SLOT( setSupportersList(QString) ) );
-    QObject::connect( settingsDialog, SIGNAL( livecodingSupportersListChanged( QString ) ), livecodingChat_, SLOT( setSupportersList( QString ) ) );            
+
 
 
 
@@ -765,7 +760,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( gipsyteamBlackListChanged(QString) ), gipsyteamChat_, SLOT( setBlackList(QString) ) );
     QObject::connect( settingsDialog, SIGNAL( hitboxBlackListChanged( QString ) ), hitboxChat_, SLOT( setBlackList( QString ) ) );
     QObject::connect( settingsDialog, SIGNAL( igdcBlackListChanged(QString) ), igdcChat_, SLOT( setBlackList(QString) ) );
-    QObject::connect( settingsDialog, SIGNAL( livecodingBlackListChanged( QString ) ), livecodingChat_, SLOT( setBlackList( QString ) ) );            
+
 
 
 
@@ -777,7 +772,7 @@ void QBroChatView::showSettings()
     QObject::connect( settingsDialog, SIGNAL( gipsyteamRemoveBlackListUsersChanged(bool) ), gipsyteamChat_, SLOT( setRemoveBlackListUsers(bool) ) );
     QObject::connect( settingsDialog, SIGNAL( hitboxRemoveBlackListUsersChanged( bool ) ), hitboxChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
     QObject::connect( settingsDialog, SIGNAL( igdcRemoveBlackListUsersChanged(bool) ), igdcChat_, SLOT( setRemoveBlackListUsers(bool) ) );
-    QObject::connect( settingsDialog, SIGNAL( livecodingRemoveBlackListUsersChanged( bool ) ), livecodingChat_, SLOT( setRemoveBlackListUsers(bool ) ) );            
+
 
 
 
@@ -788,7 +783,7 @@ void QBroChatView::showSettings()
     //badges    
     QObject::connect( settingsDialog, SIGNAL( gamerstvBadgesChanged(bool) ), gamerstvChat_, SLOT( changeBadges(bool) ) );    
     QObject::connect( settingsDialog, SIGNAL( igdcBadgesChanged(bool) ), igdcChat_, SLOT( changeBadges(bool) ) );
-    QObject::connect( settingsDialog, SIGNAL( livecodingBadgesChanged(bool) ), livecodingChat_, SLOT( changeBadges(bool) ) );        
+
 
 //---------------
 

@@ -49,7 +49,8 @@ HEADERS += \
     src/twitch/qtwitchsettingsdialog.h \
     src/vidi/qvidisettingsdialog.h \
     src/peka2tv/qpeka2settingsdialog.h \
-    src/streamcube/qstreamcubesettingsdialog.h
+    src/streamcube/qstreamcubesettingsdialog.h \
+    src/livecoding/qlivecodingsettingsdialog.h
 
 
 SOURCES += \
@@ -90,7 +91,8 @@ SOURCES += \
     src/twitch/qtwitchsettingsdialog.cpp \
     src/vidi/qvidisettingsdialog.cpp \
     src/peka2tv/qpeka2settingsdialog.cpp \
-    src/streamcube/qstreamcubesettingsdialog.cpp
+    src/streamcube/qstreamcubesettingsdialog.cpp \
+    src/livecoding/qlivecodingsettingsdialog.cpp
 
 
 RESOURCES += \
