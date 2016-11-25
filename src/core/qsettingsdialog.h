@@ -45,7 +45,6 @@ private:
     void                setupGamerstvTab();
     void                setupGipsyteamTab();
     void                setupHitboxTab();
-    void                setupIgdcTab();
 
     void                setColorButtonStyle( QPushButton * button, QRgb color, int fontSize = 16 );
     void                buttonColorSelection( QPushButton * button, QRgb & color );
@@ -171,15 +170,6 @@ signals:
     void                hitboxBlackListChanged( const QString & );
     void                hitboxRemoveBlackListUsersChanged( bool );
     void                hitboxOriginalColorsChanged( bool );
-
-    void                igdcChannelChanged();
-    void                igdcChannelDisabled();
-    void                igdcAliasesChanged( const QString & );
-    void                igdcSupportersListChanged( const QString & );
-    void                igdcBlackListChanged( const QString & );
-    void                igdcRemoveBlackListUsersChanged( bool );
-    void                igdcBadgesChanged( bool );
-
 
 
 private:
@@ -352,16 +342,6 @@ private:
     QTextEdit *         hitboxSupportersListEdit;
     QTextEdit *         hitboxBlackListEdit;
     QCheckBox *         hitboxRemoveBlackListUsersCheckBox;
-
-    QCheckBox *         igdcChannelCheckBox;
-    QLineEdit *         igdcChannelEdit;
-    QCheckBox *         igdcBadgesCheckBox;
-    QLineEdit *         igdcAliasesEdit;
-    QTextEdit *         igdcSupportersListEdit;
-    QTextEdit *         igdcBlackListEdit;
-    QCheckBox *         igdcRemoveBlackListUsersCheckBox;
-
-
 
 
 };

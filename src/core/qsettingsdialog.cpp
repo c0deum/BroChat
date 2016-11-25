@@ -208,19 +208,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , hitboxBlackListEdit( new QTextEdit( this ) )
 , hitboxRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-, igdcChannelCheckBox( new QCheckBox( this ) )
-, igdcChannelEdit( new QLineEdit( this ) )
-, igdcBadgesCheckBox( new QCheckBox( this ) )
-, igdcAliasesEdit( new QLineEdit( this ) )
-, igdcSupportersListEdit( new QTextEdit( this ) )
-, igdcBlackListEdit( new QTextEdit( this ) )
-, igdcRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
-
-
-
-
-
 {
     setWindowTitle( tr( "BroChat Settings" ) );
     setModal( true );
@@ -285,7 +272,7 @@ void QSettingsDialog::setupWidgets()
     setupGamerstvTab();
     setupGipsyteamTab();
     setupHitboxTab();
-    setupIgdcTab();     
+
 
 
     QSettings settings;
@@ -1132,51 +1119,6 @@ void QSettingsDialog::setupHitboxTab()
     tabSettings->addTab( hitboxGroup, QIcon( ":/resources/hitboxlogo.png" ), tr( "Hitbox" ) );
 }
 
-void QSettingsDialog::setupIgdcTab()
-{
-    QSettings settings;
-
-    QVBoxLayout * igdcLayout = new QVBoxLayout();
-
-    igdcChannelCheckBox->setText( CHANNEL_TEXT );
-    igdcChannelCheckBox->setChecked( settings.value( IGDC_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    igdcChannelEdit->setText( settings.value( IGDC_CHANNEL_SETTING_PATH, DEFAULT_IGDC_CHANNEL_NAME ).toString() );
-    igdcChannelEdit->setEnabled( igdcChannelCheckBox->isChecked() );
-
-    QObject::connect( igdcChannelCheckBox, SIGNAL( clicked( bool ) ), igdcChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    igdcBadgesCheckBox->setText( tr( "Badges" ) );
-    igdcBadgesCheckBox->setChecked( settings.value( IGDC_BADGES_SETTING_PATH, false ).toBool() );
-
-    addWidgets( igdcLayout, { igdcChannelCheckBox, igdcChannelEdit, igdcBadgesCheckBox } );
-
-    igdcAliasesEdit->setText( settings.value( IGDC_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( igdcLayout, { new QLabel( ALIASES_TEXT, this ), igdcAliasesEdit } );
-
-    igdcSupportersListEdit->setText( settings.value( IGDC_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( igdcLayout, { new QLabel( SUPPORTERS_TEXT, this ), igdcSupportersListEdit } );
-
-    igdcBlackListEdit->setText( settings.value( IGDC_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( igdcLayout, { new QLabel( BLACKLIST_TEXT, this ), igdcBlackListEdit } );
-
-    igdcRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    igdcRemoveBlackListUsersCheckBox->setChecked( settings.value( IGDC_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    igdcLayout->addWidget( igdcRemoveBlackListUsersCheckBox );
-
-    igdcLayout->addStretch( 1 );
-
-    QGroupBox * igdcGroup = new QGroupBox( tabSettings );
-    igdcGroup->setLayout( igdcLayout );
-
-    tabSettings->addTab( igdcGroup, QIcon( ":/resources/igdclogo.png" ), tr( "Igdc" ) );
-}
-
-
 
 
 void QSettingsDialog::saveSettings()
@@ -1749,52 +1691,6 @@ void QSettingsDialog::saveSettings()
         emit hitboxRemoveBlackListUsersChanged( hitboxRemoveBlackListUsersCheckBox->isChecked() );
     }
 
-    //настройки igdc
-
-    oldBoolValue = settings.value( IGDC_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( IGDC_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != igdcChannelCheckBox->isChecked() || oldStringValue != igdcChannelEdit->text() )
-    {
-        settings.setValue( IGDC_CHANNEL_ENABLE_SETTING_PATH, igdcChannelCheckBox->isChecked() );
-        settings.setValue( IGDC_CHANNEL_SETTING_PATH, igdcChannelEdit->text() );
-
-        emit igdcChannelChanged();
-    }
-
-    oldBoolValue = settings.value( IGDC_BADGES_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != igdcBadgesCheckBox->isChecked() )
-    {
-        settings.setValue( IGDC_BADGES_SETTING_PATH, igdcBadgesCheckBox->isChecked() );
-        emit igdcBadgesChanged( igdcBadgesCheckBox->isChecked() );
-    }
-
-    oldStringValue = settings.value( IGDC_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != igdcAliasesEdit->text() )
-    {
-        settings.setValue( IGDC_ALIASES_SETTING_PATH, igdcAliasesEdit->text() );
-        emit igdcAliasesChanged( igdcAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( IGDC_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != igdcSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( IGDC_SUPPORTERS_LIST_SETTING_PATH, igdcSupportersListEdit->toPlainText() );
-        emit igdcSupportersListChanged( igdcSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( IGDC_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != igdcBlackListEdit->toPlainText() )
-    {
-        settings.setValue( IGDC_BLACK_LIST_SETTING_PATH, igdcBlackListEdit->toPlainText() );
-        emit igdcBlackListChanged( igdcBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( IGDC_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != igdcRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( IGDC_REMOVE_BLACK_LIST_USERS_SETTING_PATH, igdcRemoveBlackListUsersCheckBox->isChecked() );
-        emit igdcRemoveBlackListUsersChanged( igdcRemoveBlackListUsersCheckBox->isChecked() );
-    }
 
 
 
