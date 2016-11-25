@@ -38,6 +38,7 @@
 #include "../livecoding/qlivecodingsettingsdialog.h"
 #include "../hitbox/qhitboxsettingsdialog.h"
 #include "../gipsyteam/qgipsyteamsettingsdialog.h"
+#include "../gamerstv/qgamerstvsettingsdialog.h"
 
 
 QSettingsDialog::QSettingsDialog( QWidget *parent )
@@ -187,13 +188,7 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , cyberGameBlackListEdit( new QTextEdit( this ) )
 , cyberGameRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-, gamerstvChannelCheckBox( new QCheckBox( this ) )
-, gamerstvChannelEdit( new QLineEdit( this ) )
-, gamerstvBadgesCheckBox( new QCheckBox( this ) )
-, gamerstvAliasesEdit( new QLineEdit( this ) )
-, gamerstvSupportersListEdit( new QTextEdit( this ) )
-, gamerstvBlackListEdit( new QTextEdit( this ) )
-, gamerstvRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
+
 
 
 
@@ -258,8 +253,7 @@ void QSettingsDialog::setupWidgets()
     setupAcesTab();
     setupAzubuTab();
     setupBeamproTab();
-    setupCybergameTab();    
-    setupGamerstvTab();
+    setupCybergameTab();
 
 
 
@@ -280,6 +274,8 @@ void QSettingsDialog::populateTabs(QTabWidget* tabHost,QSettings& settings)
     tabs_[ChatTypeEnum::Livecoding] = new QLivecodingSettingsDialog(this);
     tabs_[ChatTypeEnum::Hitbox] = new QHitboxSettingsDialog(this);
     tabs_[ChatTypeEnum::Gipsyteam] = new QGipsyteamSettingsDialog(this);
+    tabs_[ChatTypeEnum::Gamerstv] = new QGamerstvSettingsDialog(this);
+
 
     for (const auto& tab:tabs_.values())
     {
@@ -957,49 +953,6 @@ void QSettingsDialog::setupCybergameTab()
     tabSettings->addTab( cyberGameGroup, QIcon( ":/resources/cybergamelogo.png" ), tr( "Cybergame" ) );
 }
 
-void QSettingsDialog::setupGamerstvTab()
-{
-    QSettings settings;
-
-    QVBoxLayout * gamerstvLayout = new QVBoxLayout();
-
-    gamerstvChannelCheckBox->setText( CHANNEL_TEXT );
-    gamerstvChannelCheckBox->setChecked( settings.value( GAMERSTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    gamerstvChannelEdit->setText( settings.value( GAMERSTV_CHANNEL_SETTING_PATH, DEFAULT_GAMERSTV_CHANNEL_NAME ).toString() );
-    gamerstvChannelEdit->setEnabled( gamerstvChannelCheckBox->isChecked() );       
-
-    QObject::connect( gamerstvChannelCheckBox, SIGNAL( clicked( bool ) ), gamerstvChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    gamerstvBadgesCheckBox->setText( tr( "Badges" ) );
-    gamerstvBadgesCheckBox->setChecked( settings.value( GAMERSTV_BADGES_SETTING_PATH, false ).toBool() );
-
-    addWidgets( gamerstvLayout, { gamerstvChannelCheckBox, gamerstvChannelEdit, gamerstvBadgesCheckBox } );
-
-    gamerstvAliasesEdit->setText( settings.value( GAMERSTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( gamerstvLayout, { new QLabel( ALIASES_TEXT, this ), gamerstvAliasesEdit } );
-
-    gamerstvSupportersListEdit->setText( settings.value( GAMERSTV_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( gamerstvLayout, { new QLabel( SUPPORTERS_TEXT, this ), gamerstvSupportersListEdit } );
-
-    gamerstvBlackListEdit->setText( settings.value( GAMERSTV_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( gamerstvLayout, { new QLabel( BLACKLIST_TEXT, this ), gamerstvBlackListEdit } );
-
-    gamerstvRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    gamerstvRemoveBlackListUsersCheckBox->setChecked( settings.value( GAMERSTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    gamerstvLayout->addWidget( gamerstvRemoveBlackListUsersCheckBox );
-
-    gamerstvLayout->addStretch( 1 );
-
-    QGroupBox * gamerstvGroup = new QGroupBox( tabSettings );
-    gamerstvGroup->setLayout( gamerstvLayout );
-
-    tabSettings->addTab( gamerstvGroup, QIcon( ":/resources/gamerstvlogo.png" ), tr( "Gamerstv" ) );
-}
 
 
 void QSettingsDialog::saveSettings()
@@ -1435,54 +1388,6 @@ void QSettingsDialog::saveSettings()
     {
         settings.setValue( CYBERGAME_REMOVE_BLACK_LIST_USERS_SETTING_PATH, cyberGameRemoveBlackListUsersCheckBox->isChecked() );
         emit cyberGameRemoveBlackListUsersChanged( cyberGameRemoveBlackListUsersCheckBox->isChecked() );
-    }
-
-    //настройки gamerstv
-
-    oldBoolValue = settings.value( GAMERSTV_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( GAMERSTV_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != gamerstvChannelCheckBox->isChecked() || oldStringValue != gamerstvChannelEdit->text() )
-    {
-        settings.setValue( GAMERSTV_CHANNEL_ENABLE_SETTING_PATH, gamerstvChannelCheckBox->isChecked() );
-        settings.setValue( GAMERSTV_CHANNEL_SETTING_PATH, gamerstvChannelEdit->text() );
-
-        emit gamerstvChannelChanged();
-    }
-
-    oldBoolValue = settings.value( GAMERSTV_BADGES_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != gamerstvBadgesCheckBox->isChecked() )
-    {
-        settings.setValue( GAMERSTV_BADGES_SETTING_PATH, gamerstvBadgesCheckBox->isChecked() );
-        emit gamerstvBadgesChanged( gamerstvBadgesCheckBox->isChecked() );
-    }
-
-
-    oldStringValue = settings.value( GAMERSTV_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != gamerstvAliasesEdit->text() )
-    {
-        settings.setValue( GAMERSTV_ALIASES_SETTING_PATH, gamerstvAliasesEdit->text() );
-        emit gamerstvAliasesChanged( gamerstvAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( GAMERSTV_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != gamerstvSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( GAMERSTV_SUPPORTERS_LIST_SETTING_PATH, gamerstvSupportersListEdit->toPlainText() );
-        emit gamerstvSupportersListChanged( gamerstvSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( GAMERSTV_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != gamerstvBlackListEdit->toPlainText() )
-    {
-        settings.setValue( GAMERSTV_BLACK_LIST_SETTING_PATH, gamerstvBlackListEdit->toPlainText() );
-        emit gamerstvBlackListChanged( gamerstvBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( GAMERSTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != gamerstvRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( GAMERSTV_REMOVE_BLACK_LIST_USERS_SETTING_PATH, gamerstvRemoveBlackListUsersCheckBox->isChecked() );
-        emit gamerstvRemoveBlackListUsersChanged( gamerstvRemoveBlackListUsersCheckBox->isChecked() );
     }
 
 

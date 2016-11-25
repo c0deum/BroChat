@@ -53,7 +53,8 @@ HEADERS += \
     src/livecoding/qlivecodingsettingsdialog.h \
     src/igdc/qigdcsettingsdialog.h \
     src/hitbox/qhitboxsettingsdialog.h \
-    src/gipsyteam/qgipsyteamsettingsdialog.h
+    src/gipsyteam/qgipsyteamsettingsdialog.h \
+    src/gamerstv/qgamerstvsettingsdialog.h
 
 
 SOURCES += \
@@ -98,7 +99,8 @@ SOURCES += \
     src/livecoding/qlivecodingsettingsdialog.cpp \
     src/igdc/qigdcsettingsdialog.cpp \
     src/hitbox/qhitboxsettingsdialog.cpp \
-    src/gipsyteam/qgipsyteamsettingsdialog.cpp
+    src/gipsyteam/qgipsyteamsettingsdialog.cpp \
+    src/gamerstv/qgamerstvsettingsdialog.cpp
 
 
 RESOURCES += \

@@ -146,13 +146,7 @@ signals:
     void                cyberGameBlackListChanged( const QString & );
     void                cyberGameRemoveBlackListUsersChanged( bool );
 
-    void                gamerstvChannelChanged();
-    void                gamerstvChannelDisabled();
-    void                gamerstvAliasesChanged( const QString & );
-    void                gamerstvSupportersListChanged( const QString & );
-    void                gamerstvBlackListChanged( const QString & );
-    void                gamerstvRemoveBlackListUsersChanged( bool );
-    void                gamerstvBadgesChanged( bool );
+
 
 
 
@@ -305,13 +299,7 @@ private:
     QCheckBox *         cyberGameRemoveBlackListUsersCheckBox;
 
 
-    QCheckBox *         gamerstvChannelCheckBox;
-    QLineEdit *         gamerstvChannelEdit;
-    QCheckBox *         gamerstvBadgesCheckBox;
-    QLineEdit *         gamerstvAliasesEdit;
-    QTextEdit *         gamerstvSupportersListEdit;
-    QTextEdit *         gamerstvBlackListEdit;
-    QCheckBox *         gamerstvRemoveBlackListUsersCheckBox;
+
 
 
 
