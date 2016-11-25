@@ -7,8 +7,9 @@
 #include <QSettings>
 #include <QLabel>
 #include <QApplication>
-#include "qgoodgamesettingsdialog.h"
 #include "../core/settingsconsts.h"
+#include "qgoodgamesettingsdialog.h"
+
 
 QGoodGameSettingsDialog::QGoodGameSettingsDialog(QWidget *parent):QWidget(parent)
   , goodGameChannelCheckBox( new QCheckBox( this ) )

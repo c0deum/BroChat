@@ -2,7 +2,7 @@
 #define QTWITCHSETTINGSDIALOG_H
 
 
-#include "../core/qvirtualsettingstab.h"
+#include "../core/virtualsettingstab.h"
 
 class QIcon;
 class QString;

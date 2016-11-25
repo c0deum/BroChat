@@ -48,8 +48,7 @@ private:
     void                setupIgdcTab();
     void                setupLivecodingTab();    
     void                setupPeka2Tab();
-    void                setupStreamcubeTab();
-    void                setupVidiTab();    
+    void                setupStreamcubeTab();  
 
     void                setColorButtonStyle( QPushButton * button, QRgb color, int fontSize = 16 );
     void                buttonColorSelection( QPushButton * button, QRgb & color );
@@ -210,21 +209,6 @@ signals:
     void                streamcubeBlackListChanged( const QString & );
     void                streamcubeRemoveBlackListUsersChanged( bool );
 
-
-    void                vidiChannelChanged();
-    void                vidiChannelDisabled();
-    void                vidiAliasesChanged( const QString & );
-    void                vidiSupportersListChanged( const QString & );
-    void                vidiBlackListChanged( const QString & );
-    void                vidiRemoveBlackListUsersChanged( bool );
-
-    void                youtubeLoginClickedSignal();
-    void                youtubeDeloginClickedSignal();
-
-
-private slots:
-    void youtubeLoginClicked();
-    void youtubeDeloginClicked();
 private:
     QMap<ChatTypeEnum,VirtualSettingsTab*> tabs_;
 
@@ -430,15 +414,7 @@ private:
     QLineEdit *         streamcubeAliasesEdit;
     QTextEdit *         streamcubeSupportersListEdit;
     QTextEdit *         streamcubeBlackListEdit;
-    QCheckBox *         streamcubeRemoveBlackListUsersCheckBox;  
-
-
-    QCheckBox *         vidiChannelCheckBox;
-    QLineEdit *         vidiChannelEdit;
-    QLineEdit *         vidiAliasesEdit;
-    QTextEdit *         vidiSupportersListEdit;
-    QTextEdit *         vidiBlackListEdit;
-    QCheckBox *         vidiRemoveBlackListUsersCheckBox;
+    QCheckBox *         streamcubeRemoveBlackListUsersCheckBox;   
 
 
 };

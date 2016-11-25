@@ -32,6 +32,7 @@
 #include "../youtube/qyoutubesettingsdialog.h"
 #include "../goodgame/qgoodgamesettingsdialog.h"
 #include "../twitch/qtwitchsettingsdialog.h"
+#include "../vidi/qvidisettingsdialog.h"
 
 
 QSettingsDialog::QSettingsDialog( QWidget *parent )
@@ -238,12 +239,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 , streamcubeBlackListEdit( new QTextEdit( this ) )
 , streamcubeRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
-, vidiChannelCheckBox( new QCheckBox( this ) )
-, vidiChannelEdit( new QLineEdit( this ) )
-, vidiAliasesEdit( new QLineEdit( this ) )
-, vidiSupportersListEdit( new QTextEdit( this ) )
-, vidiBlackListEdit( new QTextEdit( this ) )
-, vidiRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
 
 
 {
@@ -314,7 +309,6 @@ void QSettingsDialog::setupWidgets()
     setupLivecodingTab();        
     setupPeka2Tab();
     setupStreamcubeTab();
-    setupVidiTab();
 
 
     QSettings settings;
@@ -341,17 +335,12 @@ void QSettingsDialog::populateTabs(QTabWidget* tabHost,QSettings& settings)
     tabHost->addTab( twitchTab->createLayout(tabHost,settings),twitchTab->getIcon(),
                      twitchTab->getName() );
 
+    auto vidiTab = new QVidiSettingsDialog(this);
+    tabs_[ChatTypeEnum::Vidi] = vidiTab;
+    tabHost->addTab( vidiTab->createLayout(tabHost,settings),vidiTab->getIcon(),
+                     vidiTab->getName() );
 
-}
 
-void QSettingsDialog::youtubeLoginClicked()
-{
-    emit youtubeLoginClickedSignal();
-}
-
-void QSettingsDialog::youtubeDeloginClicked()
-{
-    emit youtubeDeloginClickedSignal();
 }
 
 //save setting from every tab
@@ -1336,48 +1325,6 @@ void QSettingsDialog::setupStreamcubeTab()
 
 
 
-void QSettingsDialog::setupVidiTab()
-{
-    QSettings settings;
-
-    QVBoxLayout * vidiLayout = new QVBoxLayout();
-
-    vidiChannelCheckBox->setText( CHANNEL_TEXT );
-    vidiChannelCheckBox->setChecked( settings.value( VIDI_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    vidiChannelEdit->setText( settings.value( VIDI_CHANNEL_SETTING_PATH, DEFAULT_VIDI_CHANNEL_NAME ).toString() );
-    vidiChannelEdit->setEnabled( vidiChannelCheckBox->isChecked() );
-
-    QObject::connect( vidiChannelCheckBox, SIGNAL( clicked( bool ) ), vidiChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    addWidgets( vidiLayout, { vidiChannelCheckBox, vidiChannelEdit } );
-
-    vidiAliasesEdit->setText( settings.value( VIDI_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( vidiLayout, { new QLabel( ALIASES_TEXT, this ), vidiAliasesEdit } );
-
-    vidiSupportersListEdit->setText( settings.value( VIDI_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( vidiLayout, { new QLabel( SUPPORTERS_TEXT, this ), vidiSupportersListEdit } );
-
-    vidiBlackListEdit->setText( settings.value( VIDI_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( vidiLayout, { new QLabel( BLACKLIST_TEXT, this ), vidiBlackListEdit } );
-
-    vidiRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    vidiRemoveBlackListUsersCheckBox->setChecked( settings.value( VIDI_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    vidiLayout->addWidget( vidiRemoveBlackListUsersCheckBox );
-
-    vidiLayout->addStretch( 1 );
-
-    QGroupBox * vidiGroup = new QGroupBox( tabSettings );
-    vidiGroup->setLayout( vidiLayout );
-
-    tabSettings->addTab( vidiGroup, QIcon( ":/resources/vidilogo.png" ), tr( "Vidi" ) );
-}
-
-
 void QSettingsDialog::saveSettings()
 {
     QSettings settings;
@@ -2157,46 +2104,6 @@ void QSettingsDialog::saveSettings()
         emit streamcubeRemoveBlackListUsersChanged( streamcubeRemoveBlackListUsersCheckBox->isChecked() );
     }
 
-
-    //настройки vidi
-
-    oldBoolValue = settings.value( VIDI_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( VIDI_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != vidiChannelCheckBox->isChecked() || oldStringValue != vidiChannelEdit->text() )
-    {
-        settings.setValue( VIDI_CHANNEL_ENABLE_SETTING_PATH, vidiChannelCheckBox->isChecked() );
-        settings.setValue( VIDI_CHANNEL_SETTING_PATH, vidiChannelEdit->text() );
-
-        emit vidiChannelChanged();
-    }
-
-    oldStringValue = settings.value( VIDI_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != vidiAliasesEdit->text() )
-    {
-        settings.setValue( VIDI_ALIASES_SETTING_PATH, vidiAliasesEdit->text() );
-        emit vidiAliasesChanged( vidiAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( VIDI_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != vidiSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( VIDI_SUPPORTERS_LIST_SETTING_PATH, vidiSupportersListEdit->toPlainText() );
-        emit vidiSupportersListChanged( vidiSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( VIDI_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != vidiBlackListEdit->toPlainText() )
-    {
-        settings.setValue( VIDI_BLACK_LIST_SETTING_PATH, vidiBlackListEdit->toPlainText() );
-        emit vidiBlackListChanged( vidiBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( VIDI_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != vidiRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( VIDI_REMOVE_BLACK_LIST_USERS_SETTING_PATH, vidiRemoveBlackListUsersCheckBox->isChecked() );
-        emit vidiRemoveBlackListUsersChanged( vidiRemoveBlackListUsersCheckBox->isChecked() );
-    }
 
     saveTabsSettings(settings);
 

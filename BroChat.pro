@@ -17,6 +17,7 @@ HEADERS += \
     src/goodgame/qgoodgamechat.h \
     src/goodgame/qgoodgamesettingsdialog.h \
     src/cybergame/qcybergamechat.h \
+    src/core/virtualsettingstab.h \
     src/aces/qaceschat.h \
     src/gamerstv/qgamerstvchat.h \
     src/core/qbrochatview.h \
@@ -45,7 +46,8 @@ HEADERS += \
     src/youtube/youtubecontroller.h \
     src/youtube/qyoutubechatex.h \
     src/core/chattypeenum.h \
-    src/twitch/qtwitchsettingsdialog.h
+    src/twitch/qtwitchsettingsdialog.h \
+    src/vidi/qvidisettingsdialog.h
 
 
 SOURCES += \
@@ -83,7 +85,8 @@ SOURCES += \
     src/youtube/qyoutubesettingsdialog.cpp \
     src/youtube/youtubecontroller.cpp \
     src/youtube/qyoutubechatex.cpp \
-    src/twitch/qtwitchsettingsdialog.cpp
+    src/twitch/qtwitchsettingsdialog.cpp \
+    src/vidi/qvidisettingsdialog.cpp
 
 
 RESOURCES += \
