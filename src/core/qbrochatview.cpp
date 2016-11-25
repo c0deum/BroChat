@@ -120,6 +120,7 @@ QBroChatView::QBroChatView( QWidget *parent )
     chats_[ChatTypeEnum::Cybergame] = cybergameChat_;
     chats_[ChatTypeEnum::Beampro] = beamproChat_;
     chats_[ChatTypeEnum::Azubu] = azubuChat_;
+    chats_[ChatTypeEnum::Aces] = acesChat_;
 
 
 
@@ -201,7 +202,6 @@ QBroChatView::QBroChatView( QWidget *parent )
     QObject::connect( exitAction, SIGNAL( triggered() ), this, SIGNAL( closeWindow() ) );
 
     QObject::connect( pollSettingsAction, SIGNAL( triggered() ), this, SLOT( showPollSettings() ) );
-    QObject::connect( reconnectAllAction, SIGNAL( triggered() ), acesChat_, SLOT( reconnect() ) );
 
     connectChatsToReconnectAllSignal(reconnectAllAction);
 
@@ -247,9 +247,6 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     addAction( exitAction );       
 
-    QObject::connect( acesChat_, SIGNAL( message( QJsonObject, const QChatService* ) ), this, SLOT( onNewMessage( QJsonObject, const QChatService * ) ) );
-    QObject::connect( acesChat_, SIGNAL( newMessage ( ChatMessage ) ), this, SLOT( slotNewMessage( ChatMessage ) ) );            
-    loadFinishedConnections_ << QObject::connect( this, SIGNAL( loadFinished( bool ) ), acesChat_, SLOT( reconnect() ) );
 
     connectChatsToLocalSlots();
 
@@ -544,9 +541,7 @@ void QBroChatView::changeShowSystemMessagesState()
 {
     showSystemMessages_ = settings_.value( SHOW_SYSTEM_MESSAGES_SETTING_PATH, DEFAULT_SHOW_SYSTEM_MESSAGES ).toBool();
 
-    acesChat_->setShowSystemMessages( showSystemMessages_ );
-
-    for(auto& chat:chats_)
+    for(auto& chat:chats_.values())
     {
         chat->setShowSystemMessages(showSystemMessages_);
     }
@@ -682,15 +677,6 @@ void QBroChatView::showSettings()
     QSettingsDialog *settingsDialog = new QSettingsDialog( this );
 
     connectDialogsToChats(settingsDialog);
-
-
-    QObject::connect( settingsDialog, SIGNAL( acesChannelChanged() ), acesChat_, SLOT( reconnect() ) );
-    QObject::connect( settingsDialog, SIGNAL( acesAliasesChanged( QString ) ), acesChat_, SLOT( setAliasesList( QString ) ) );
-    QObject::connect( settingsDialog, SIGNAL( acesSupportersListChanged( QString ) ), acesChat_, SLOT( setSupportersList( QString ) ) );
-    QObject::connect( settingsDialog, SIGNAL( acesBlackListChanged( QString ) ), acesChat_, SLOT( setBlackList( QString ) ) );
-    QObject::connect( settingsDialog, SIGNAL( acesRemoveBlackListUsersChanged( bool ) ), acesChat_, SLOT( setRemoveBlackListUsers(bool ) ) );
-
-//-----
 
     QObject::connect( settingsDialog, SIGNAL( styleChanged() ), this, SLOT( changeStyle() ) );
     QObject::connect( settingsDialog, SIGNAL( opacityChanged() ), this, SLOT( changeOpacity() ) );

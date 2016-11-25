@@ -38,7 +38,6 @@ private:
     void                setupWidgets();
     void                setupGeneralTab();
     void                setupDefaultStyleTab();
-    void                setupAcesTab();
 
     void                setColorButtonStyle( QPushButton * button, QRgb color, int fontSize = 16 );
     void                buttonColorSelection( QPushButton * button, QRgb & color );
@@ -54,7 +53,7 @@ private:
     //generate tabs and attach them to tab host
     void                populateTabs(QTabWidget* tabHost, QSettings &settings);
     //save each tab's settings
-    void                saveTabsSettings(QSettings &settings);
+    void                saveChatTabsSettings(QSettings &settings);
 
 
 
@@ -109,14 +108,6 @@ signals:
     void                useServerStateChanged();
     void                saveToFileStateChanged();
     void                saveMessagesToLogChanged();
-
-    void                acesChannelChanged();
-    void                acesChannelDisabled();
-    void                acesAliasesChanged( const QString & );
-    void                acesSupportersListChanged( const QString & );
-    void                acesBlackListChanged( const QString & );
-    //void              acesOriginalColorsChanged( bool originalColors );
-    void                acesRemoveBlackListUsersChanged( bool );
 
 private:
     QMap<ChatTypeEnum,VirtualSettingsTab*> tabs_;
@@ -233,16 +224,6 @@ private:
     QDoubleSpinBox *    animationDurationSpinBox;
 
     QPushButton *       exportDefaultTheme;
-
-    QCheckBox *         acesChannelCheckBox;
-    QLineEdit *         acesChannelEdit;
-    //QCheckBox *       acesOriginalColorsCheckBox;
-    QLineEdit *         acesAliasesEdit;
-    QTextEdit *         acesSupportersListEdit;
-    QTextEdit *         acesBlackListEdit;
-    QCheckBox *         acesRemoveBlackListUsersCheckBox;
-
-
 
 
 };

@@ -43,6 +43,7 @@
 #include "../igdc/qigdcsettingsdialog.h"
 #include "../beampro/qbeamprosettingsdialog.h"
 #include "../azubu/qazubusettingsdialog.h"
+#include "../aces/qacessettingsdialog.h"
 
 
 QSettingsDialog::QSettingsDialog( QWidget *parent )
@@ -160,14 +161,6 @@ QSettingsDialog::QSettingsDialog( QWidget *parent )
 
 , exportDefaultTheme( new QPushButton( tr( "Export..." ), this ) )
 
-, acesChannelCheckBox( new QCheckBox( this ) )
-, acesChannelEdit( new QLineEdit( this ) )
-//, acesOriginalColorsCheckBox( new QCheckBox( this ) )
-, acesAliasesEdit( new QLineEdit( this ) )
-, acesSupportersListEdit( new QTextEdit( this ) )
-, acesBlackListEdit( new QTextEdit( this ) )
-, acesRemoveBlackListUsersCheckBox( new QCheckBox( this ) )
-
 
 {
     setWindowTitle( tr( "BroChat Settings" ) );
@@ -226,7 +219,6 @@ void QSettingsDialog::setupWidgets()
 
     setupGeneralTab();
     setupDefaultStyleTab();
-    setupAcesTab();
 
     QSettings settings;
     populateTabs(tabSettings,settings);
@@ -250,6 +242,8 @@ void QSettingsDialog::populateTabs(QTabWidget* tabHost,QSettings& settings)
     tabs_[ChatTypeEnum::Cybergame] = new QCybergameSettingsDialog(this);
     tabs_[ChatTypeEnum::Beampro] = new QBeamproSettingsDialog(this);
     tabs_[ChatTypeEnum::Azubu] = new QAzubuSettingsDialog(this);
+    tabs_[ChatTypeEnum::Aces] = new QAcesSettingsDialog(this);
+
 
 
     for (const auto& tab:tabs_.values())
@@ -261,7 +255,7 @@ void QSettingsDialog::populateTabs(QTabWidget* tabHost,QSettings& settings)
 }
 
 //save setting from every tab
-void QSettingsDialog::saveTabsSettings(QSettings &settings)
+void QSettingsDialog::saveChatTabsSettings(QSettings &settings)
 {
     for(auto& tab:tabs_) {
         tab->saveSettings(settings);
@@ -753,53 +747,6 @@ void QSettingsDialog::setupDefaultStyleTab()
 
 }
 
-void QSettingsDialog::setupAcesTab()
-{
-    QSettings settings;
-
-    QVBoxLayout * acesLayout = new QVBoxLayout;
-
-    acesChannelCheckBox->setText( CHANNEL_TEXT );
-    acesChannelCheckBox->setChecked( settings.value( ACES_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool() );
-
-    acesChannelEdit->setText( settings.value( ACES_CHANNEL_SETTING_PATH, DEFAULT_ACES_CHANNEL_NAME ).toString() );
-    acesChannelEdit->setEnabled( acesChannelCheckBox->isChecked() );
-
-    QObject::connect( acesChannelCheckBox, SIGNAL( clicked( bool ) ), acesChannelEdit, SLOT( setEnabled( bool ) ) );
-
-    addWidgets( acesLayout, { acesChannelCheckBox, acesChannelEdit } );
-
-    //acesOriginalColorsCheckBox->setText( tr( "Original Colors" ) );
-    //acesOriginalColorsCheckBox->setChecked( settings.value( ACES_ORIGINAL_COLORS_SETTING_PATH, false ).toBool() );
-
-    //acesLayout->addWidget( acesOriginalColorsCheckBox );
-
-    acesAliasesEdit->setText( settings.value( ACES_ALIASES_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( acesLayout, { new QLabel( ALIASES_TEXT, this ), acesAliasesEdit } );
-
-    acesSupportersListEdit->setText( settings.value( ACES_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( acesLayout, { new QLabel( SUPPORTERS_TEXT, this ), acesSupportersListEdit } );
-
-    acesBlackListEdit->setText( settings.value( ACES_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString() );
-
-    addWidgets( acesLayout, { new QLabel( BLACKLIST_TEXT, this ), acesBlackListEdit } );
-
-    acesRemoveBlackListUsersCheckBox->setText( REMOVE_BLACKLIST_USERS_MESSAGES );
-    acesRemoveBlackListUsersCheckBox->setChecked( settings.value( ACES_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
-
-    acesLayout->addWidget( acesRemoveBlackListUsersCheckBox );
-
-    acesLayout->addStretch( 1 );
-
-    QGroupBox * acesGroup = new QGroupBox( tabSettings );
-    acesGroup->setLayout( acesLayout );
-
-    tabSettings->addTab( acesGroup, QIcon( ":/resources/aceslogo.png" ), tr( "Aces" ) );
-}
-
-
 void QSettingsDialog::saveSettings()
 {
     QSettings settings;
@@ -1065,59 +1012,8 @@ void QSettingsDialog::saveSettings()
         emit saveToFileStateChanged();
     }
 
-    //настройки aces
-    oldBoolValue = settings.value( ACES_CHANNEL_ENABLE_SETTING_PATH, DEFAULT_CHANNEL_ENABLE ).toBool();
-    oldStringValue = settings.value( ACES_CHANNEL_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldBoolValue != acesChannelCheckBox->isChecked() || oldStringValue != acesChannelEdit->text() )
-    {
-        settings.setValue( ACES_CHANNEL_ENABLE_SETTING_PATH, acesChannelCheckBox->isChecked() );
-        settings.setValue( ACES_CHANNEL_SETTING_PATH, acesChannelEdit->text() );
 
-        emit acesChannelChanged();
-    }
-    //emit acesChannelChanged();
-
-    /*
-     * oldBoolValue = settings.value( ACES_ORIGINAL_COLORS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != acesOriginalColorsCheckBox->isChecked() )
-    {
-        settings.setValue( ACES_ORIGINAL_COLORS_SETTING_PATH, acesOriginalColorsCheckBox->isChecked() );
-        emit acesOriginalColorsChanged( acesOriginalColorsCheckBox->isChecked() );
-    }
-    */
-
-    oldStringValue = settings.value( ACES_ALIASES_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != acesAliasesEdit->text() )
-    {
-        settings.setValue( ACES_ALIASES_SETTING_PATH, acesAliasesEdit->text() );
-        emit acesAliasesChanged( acesAliasesEdit->text() );
-    }
-
-    oldStringValue = settings.value( ACES_SUPPORTERS_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != acesSupportersListEdit->toPlainText() )
-    {
-        settings.setValue( ACES_SUPPORTERS_LIST_SETTING_PATH, acesSupportersListEdit->toPlainText() );
-        emit acesSupportersListChanged( acesSupportersListEdit->toPlainText() );
-    }
-
-    oldStringValue = settings.value( ACES_BLACK_LIST_SETTING_PATH, BLANK_STRING ).toString();
-    if( oldStringValue != acesBlackListEdit->toPlainText() )
-    {
-        settings.setValue( ACES_BLACK_LIST_SETTING_PATH, acesBlackListEdit->toPlainText() );
-        emit acesBlackListChanged( acesBlackListEdit->toPlainText() );
-    }
-
-    oldBoolValue = settings.value( ACES_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool();
-    if( oldBoolValue != acesRemoveBlackListUsersCheckBox->isChecked() )
-    {
-        settings.setValue( ACES_REMOVE_BLACK_LIST_USERS_SETTING_PATH, acesRemoveBlackListUsersCheckBox->isChecked() );
-        emit acesRemoveBlackListUsersChanged( acesRemoveBlackListUsersCheckBox->isChecked() );
-    }
-
-
-
-
-    saveTabsSettings(settings);
+    saveChatTabsSettings(settings);
 
 }
 

@@ -57,7 +57,8 @@ HEADERS += \
     src/gamerstv/qgamerstvsettingsdialog.h \
     src/cybergame/qcybergamesettingsdialog.h \
     src/beampro/qbeamprosettingsdialog.h \
-    src/azubu/qazubusettingsdialog.h
+    src/azubu/qazubusettingsdialog.h \
+    src/aces/qacessettingsdialog.h
 
 
 SOURCES += \
@@ -106,7 +107,8 @@ SOURCES += \
     src/gamerstv/qgamerstvsettingsdialog.cpp \
     src/cybergame/qcybergamesettingsdialog.cpp \
     src/beampro/qbeamprosettingsdialog.cpp \
-    src/azubu/qazubusettingsdialog.cpp
+    src/azubu/qazubusettingsdialog.cpp \
+    src/aces/qacessettingsdialog.cpp
 
 
 RESOURCES += \
