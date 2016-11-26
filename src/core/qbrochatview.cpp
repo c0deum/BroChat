@@ -156,6 +156,8 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     setContextMenuPolicy( Qt::ActionsContextMenu );
 
+    setWindowIcon( QIcon( "qrc:/resources/broico.ico" ) );
+
     setStyleSheet("QWebView { background: transparent }");
 
     //TODO: туду
