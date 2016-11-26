@@ -460,6 +460,12 @@
                 content: url(vidilogo.png);
                 height:%SERVICE_ICONS_SIZE%;
             }
+            
+            .youtube
+            {
+                content: url(youtubelogo.png);
+                height:%SERVICE_ICONS_SIZE%;
+            }            
 
             .viewersInfoShow
             {        
@@ -567,7 +573,7 @@
         {
             event = event || window.event;
 
-            var delta = -( event.deltaY || event.detail || event.wheelDelta );
+            var delta = event.deltaY || event.detail || event.wheelDelta;
             
             userScroll = document.body.scrollTop + window.innerHeight + delta < document.body.scrollHeight;			
             

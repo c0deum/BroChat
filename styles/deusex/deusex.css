@@ -157,3 +157,9 @@ body
 	height: 16px;
 }
 
+.youtube
+{
+	content: url(../resources/youtubelogo.png);
+	height: 16px;
+}
+

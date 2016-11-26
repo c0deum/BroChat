@@ -10,7 +10,7 @@
 #include "o2youtube.h"
 
 const QString YOUTUBE_SERVICE = "youtube";
-const QString YOUTUBE_USER = "youtube";
+const QString YOUTUBE_USER = "YOUTUBE";
 
 QYoutubeChatEx::QYoutubeChatEx( QObject * parent )
     : QChatService( parent )

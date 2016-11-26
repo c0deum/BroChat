@@ -120,6 +120,7 @@ win32:CONFIG(release, debug|release): LIBS += -L$$PWD/external/qxmpp-master/src/
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/external/qxmpp-master/src/ -lqxmppd
 
 unix:!macx: LIBS += -L$$PWD/external/qxmpp-master/src/ -lqxmpp
+unix:macx: LIBS += -L$$PWD/external/qxmpp-master/src/ -lqxmpp
 
 INCLUDEPATH += \
     $$PWD/external/qxmpp-master/src/base \
@@ -136,6 +137,7 @@ else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/ex
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/external/qxmpp-master/src/qxmppd.lib
 
 unix:!macx: PRE_TARGETDEPS += $$PWD/external/qxmpp-master/src/libqxmpp.a
+unix:macx: PRE_TARGETDEPS += $$PWD/external/qxmpp-master/src/libqxmpp.a
 
 
 

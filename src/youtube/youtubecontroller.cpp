@@ -60,6 +60,7 @@ void YoutubeController::onLinkingSucceeded()
     if (!o2youtube_->linked())
         return;
 
+    //emit message(QApplication::tr("Connecting to youtube channel..."),"YOUTUBE","");
     emit message(QApplication::tr("Connecting to youtube channel..."),"","");
     api_->setAuthenticator(o2youtube_);
     api_->requestOwnLiveBroadcasts();

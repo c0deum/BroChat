@@ -21,7 +21,7 @@
 		function onWheel(event) 
 		{
 			event = event || window.event;
-			var delta = -( event.deltaY || event.detail || event.wheelDelta );			
+			var delta = event.deltaY || event.detail || event.wheelDelta;			
 			userScroll = document.body.scrollTop + window.innerHeight + delta < document.body.scrollHeight;
 			document.body.scrollTop = document.body.scrollTop + delta;
 			event.preventDefault ? event.preventDefault() : (event.returnValue = false);
