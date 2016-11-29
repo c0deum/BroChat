@@ -22,7 +22,11 @@
 
 #include "../core/qchatmessage.h"
 
+#include "../core/qcoremediator.h"
+
 #include "qgoodgamechat.h"
+
+ChatServiceRegistrator< QGoodGameChat > goodgameChatRegistrator;
 
 const QString DEFAULT_GOODGAME_LINK = "http://goodgame.ru";
 const QString DEFAULT_GOODGAME_WEBSOCKET_LINK = "ws://chat.goodgame.ru:8081/chat/websocket";

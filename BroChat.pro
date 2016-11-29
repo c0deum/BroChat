@@ -1,4 +1,4 @@
-QT += core network widgets webenginewidgets websockets svg
+QT += quickcontrols2 widgets network websockets
 
 CONFIG += c++14
 
@@ -20,7 +20,6 @@ HEADERS += \
     src/core/virtualsettingstab.h \
     src/aces/qaceschat.h \
     src/gamerstv/qgamerstvchat.h \
-    src/core/qbrochatview.h \
     src/core/qchatupdateserver.h \
     src/core/qchatstatistic.h \
     src/hitbox/qhitboxchat.h \
@@ -29,14 +28,12 @@ HEADERS += \
     src/igdc/qigdcchat.h \
     src/peka2tv/qpeka2chat.h \
     src/core/qpoll.h \
-    src/core/qpollview.h \
     src/core/qmessagesmanager.h \
     src/core/qpollsettingsdialog.h \
     src/vidi/qvidichat.h \
     src/azubu/qazubuchat.h \
     src/streamcube/qstreamcubechat.h \
     src/beampro/qbeamprochat.h \
-    src/core/qbrochatwebpage.h \
     src/core/notimplementedexception.h \
     src/youtube/o2youtube.h \
     src/youtube/commentmodel.h \
@@ -58,7 +55,9 @@ HEADERS += \
     src/cybergame/qcybergamesettingsdialog.h \
     src/beampro/qbeamprosettingsdialog.h \
     src/azubu/qazubusettingsdialog.h \
-    src/aces/qacessettingsdialog.h
+    src/aces/qacessettingsdialog.h \
+    src/core/qmessagesmodel.h \
+    src/core/qcoremediator.h
 
 
 SOURCES += \
@@ -72,7 +71,6 @@ SOURCES += \
     src/cybergame/qcybergamechat.cpp \
     src/aces/qaceschat.cpp \
     src/gamerstv/qgamerstvchat.cpp \
-    src/core/qbrochatview.cpp \
     src/core/qchatupdateserver.cpp \
     src/core/qchatstatistic.cpp \
     src/hitbox/qhitboxchat.cpp \
@@ -83,12 +81,10 @@ SOURCES += \
     src/peka2tv/qpeka2chat.cpp \
     src/core/qpoll.cpp \
     src/core/qpollsettingsdialog.cpp \
-    src/core/qpollview.cpp \
     src/vidi/qvidichat.cpp \
     src/azubu/qazubuchat.cpp \
     src/streamcube/qstreamcubechat.cpp \
     src/beampro/qbeamprochat.cpp \
-    src/core/qbrochatwebpage.cpp \
     src/youtube/o2youtube.cpp \
     src/youtube/commentmodel.cpp \
     src/youtube/youtubeapi.cpp \
@@ -108,11 +104,14 @@ SOURCES += \
     src/cybergame/qcybergamesettingsdialog.cpp \
     src/beampro/qbeamprosettingsdialog.cpp \
     src/azubu/qazubusettingsdialog.cpp \
-    src/aces/qacessettingsdialog.cpp
+    src/aces/qacessettingsdialog.cpp \
+    src/core/qmessagesmodel.cpp \
+    src/core/qcoremediator.cpp
 
 
 RESOURCES += \
-    resources.qrc
+    resources.qrc \
+    qml.qrc
 
 win32:RC_FILE = ico.rc
 

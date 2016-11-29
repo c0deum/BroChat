@@ -17,7 +17,11 @@
 
 #include "../core/settingsconsts.h"
 
+#include "../core/qcoremediator.h"
+
 #include "qigdcchat.h"
+
+ChatServiceRegistrator< QIgdcChat > igdcChatRegistrator;
 
 const QString DEFAULT_IGDC_CHANNEl_INFO_LINK_PREFIX = "http://igdc.ru/streams/?channel=";
 const QString DEFAULT_IGDC_MESSAGES_INFO_LINK_PREFIX = "http://igdc.ru/streams/chat.php?";

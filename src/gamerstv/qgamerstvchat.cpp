@@ -20,7 +20,11 @@
 
 #include "../core/settingsconsts.h"
 
+#include "../core/qcoremediator.h"
+
 #include "qgamerstvchat.h"
+
+ChatServiceRegistrator< QGamersTvChat > gamerstvChatRegistrator;
 
 const QString DEFAULT_GAMERSTV_SMILES_DIR = "http://gamerstv.ru/smiles/";
 const QString DEFAULT_GAMERSTV_MESSAGES_PREFIX = "http://gamerstv.ru/modules/ajax/chat_cache/room_";

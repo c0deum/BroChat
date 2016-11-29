@@ -13,10 +13,13 @@
 
 #include <QUuid>
 
+#include "../core/qcoremediator.h"
 
 #include "../core/settingsconsts.h"
 
 #include "qazubuchat.h"
+
+ChatServiceRegistrator< QAzubuChat > azubuChatRegistrator;
 
 const QString DEFAULT_AZUBU_SMILES_REQUEST_LINK = "http://www.azubu.tv/api/emoticon/list";
 const QString DEFAULT_AZUBU_CHANNEL_INFO_LINK_PREFIX = "http://www.azubu.tv/api/user/chat/channels/";

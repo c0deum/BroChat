@@ -14,7 +14,11 @@
 
 #include "../core/settingsconsts.h"
 
+#include "../core/qcoremediator.h"
+
 #include "qbeamprochat.h"
+
+ChatServiceRegistrator< QBeamProChat > beamproChatRegistrator;
 
 const QString QBeamProChat::SERVICE_NAME = "beampro";
 const QString QBeamProChat::SERVICE_USER_NAME = "BEAMPRO";

@@ -2,6 +2,7 @@
 #define ChatMessage_H
 
 #include <QString>
+#include <QSharedPointer>
 
 class QChatService;
 
@@ -42,5 +43,8 @@ private:
     QString                 type_;
     QChatService *          service_;
 };
+
+using QSharedChatMessage = QSharedPointer< ChatMessage >;
+
 
 #endif // ChatMessage_H

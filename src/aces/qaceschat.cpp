@@ -20,7 +20,11 @@
 
 #include "../core/settingsconsts.h"
 
+#include "../core/qcoremediator.h"
+
 #include "qaceschat.h"
+
+ChatServiceRegistrator< QAcesChat > acesChatRegistrator;
 
 const QString DEFAULT_ACES_CHANNEL_INFO_PREFIX = "http://aces.gg/streams/stream/";
 

@@ -14,7 +14,12 @@
 #include "../core/qchatmessage.h"
 
 #include "../core/settingsconsts.h"
+
+#include "../core/qcoremediator.h"
+
 #include "qgipsyteamchat.h"
+
+ChatServiceRegistrator< QGipsyTeamChat > gipsyreamChatRegistrator;
 
 const QString DEFAULT_GIPSYTEAM_CHANNEL_INFO_PREFIX = "http://www.gipsyteam.ru/live/stream?streamer=";
 const QString DEFAULT_GIPSYTEAM_CHANNEL_MESSAGES_PREFIX = "http://www.gipsyteam.ru/chat/streams/messages/";

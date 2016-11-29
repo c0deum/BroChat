@@ -22,7 +22,11 @@
 
 #include "../core/qchatmessage.h"
 
+#include "../core/qcoremediator.h"
+
 #include "qtwitchchat.h"
+
+ChatServiceRegistrator< QTwitchChat > twitchChatRegistrator;
 
 const QString DEFAULT_TWITCH_CHAT_HOST_NAME = "irc.twitch.tv";
 const int DEFAULT_TWITCH_CHAT_PORT_NUMBER = 6667;

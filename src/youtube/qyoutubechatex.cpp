@@ -9,6 +9,10 @@
 #include "youtubeapi.h"
 #include "o2youtube.h"
 
+#include "../core/qcoremediator.h"
+
+ChatServiceRegistrator< QYoutubeChatEx > youtubeChatRegistrator;
+
 const QString YOUTUBE_SERVICE = "youtube";
 const QString YOUTUBE_USER = "YOUTUBE";
 

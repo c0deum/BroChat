@@ -28,7 +28,11 @@
 
 #include "../core/settingsconsts.h"
 
+#include "../core/qcoremediator.h"
+
 #include "qlivecodingchat.h"
+
+ChatServiceRegistrator< QLivecodingChat > livecodingChatRegistrator;
 
 
 const QString DEFAULT_LIVECODING_LOGIN = "broadcasterchat";

@@ -23,7 +23,11 @@
 
 #include "../core/settingsconsts.h"
 
+#include "../core/qcoremediator.h"
+
 #include "qpeka2chat.h"
+
+ChatServiceRegistrator< QPeka2Chat > peka2ChatRegistrator;
 
 const QString DEFAULT_PEKA2_WEBSOCKET_LINK = "ws://chat.funstream.tv/?EIO=3&transport=websocket";
 
