@@ -25,7 +25,7 @@
 
 #include "qcybergamechat.h"
 
-ChatServiceRegistrator< QCyberGameChat > cybergameChatRegistrator;
+//ChatServiceRegistrator< QCyberGameChat > cybergameChatRegistrator;
 
 const QString DEFAULT_CYBERGAME_CHANNEL_INFO_LINK = "http://cybergame.tv/";
 const QString DEFAULT_CYBERGAME_SMILES_INFO_LINK = "http://cybergame.tv/chats/emotes/emotes.json";

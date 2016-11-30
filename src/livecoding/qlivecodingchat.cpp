@@ -32,7 +32,7 @@
 
 #include "qlivecodingchat.h"
 
-ChatServiceRegistrator< QLivecodingChat > livecodingChatRegistrator;
+//ChatServiceRegistrator< QLivecodingChat > livecodingChatRegistrator;
 
 
 const QString DEFAULT_LIVECODING_LOGIN = "broadcasterchat";

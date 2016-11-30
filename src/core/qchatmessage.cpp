@@ -181,7 +181,7 @@ QString ChatMessage::replaceEscapeCharecters( const QString &message )
     QString convertedMessage = message;
 
     convertedMessage.replace( '<', "&lt;" );
-    convertedMessage.replace( '<', "&gt;" );
+    convertedMessage.replace( '>', "&gt;" );
     //convertedMessage.replace( '\'', "&#39;" );
     //convertedMessage.replace( '\\', "&#92;" );
     //convertedMessage.replace( '\\', "\\\\" );

@@ -19,7 +19,7 @@
 
 #include "qvidichat.h"
 
-ChatServiceRegistrator< QVidiChat > vidiChatRegistrator;
+//ChatServiceRegistrator< QVidiChat > vidiChatRegistrator;
 
 const QString DEFAULT_VIDI_CHANNEL_INFO_PREFIX = "http://api.vidi.tv/channels/";
 

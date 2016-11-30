@@ -18,7 +18,7 @@
 
 #include "qbeamprochat.h"
 
-ChatServiceRegistrator< QBeamProChat > beamproChatRegistrator;
+//ChatServiceRegistrator< QBeamProChat > beamproChatRegistrator;
 
 const QString QBeamProChat::SERVICE_NAME = "beampro";
 const QString QBeamProChat::SERVICE_USER_NAME = "BEAMPRO";

@@ -19,7 +19,7 @@
 
 #include "qstreamcubechat.h"
 
-ChatServiceRegistrator< QStreamCubeChat > streamcubeChatRegistrator;
+//ChatServiceRegistrator< QStreamCubeChat > streamcubeChatRegistrator;
 
 const QString QStreamCubeChat::SERVICE_NAME = "streamcube";
 const QString QStreamCubeChat::SERVICE_USER_NAME = "STREAMCUBE";

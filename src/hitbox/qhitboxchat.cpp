@@ -26,7 +26,7 @@
 
 #include "qhitboxchat.h"
 
-ChatServiceRegistrator< QHitBoxChat > hitboxChatRegistrator;
+//ChatServiceRegistrator< QHitBoxChat > hitboxChatRegistrator;
 
 const QString DEFAULT_HITBOX_SERVERS_LIST_LINK = "https://api.hitbox.tv/chat/servers";
 const QString DEFAULT_HITBOX_SMILES_INFO_PEFIX = "https://api.hitbox.tv/chat/emotes/";

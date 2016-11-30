@@ -11,7 +11,7 @@
 
 #include "../core/qcoremediator.h"
 
-ChatServiceRegistrator< QYoutubeChatEx > youtubeChatRegistrator;
+//ChatServiceRegistrator< QYoutubeChatEx > youtubeChatRegistrator;
 
 const QString YOUTUBE_SERVICE = "youtube";
 const QString YOUTUBE_USER = "YOUTUBE";
@@ -83,6 +83,9 @@ void QYoutubeChatEx::error(const QString errorMessage)
 
 void QYoutubeChatEx::message(const QString message, const QString authorName, const QString authorImageLogo, bool isChatModerator, bool isChatOwner, bool isChatSponsor)
 {
+    Q_UNUSED( authorImageLogo );
+    Q_UNUSED( isChatModerator );
+    Q_UNUSED( isChatOwner );
     bool blackListUser = blackList().contains( authorName );
     bool supportersListUser = supportersList().contains( authorName );
 
@@ -99,12 +102,18 @@ void QYoutubeChatEx::message(const QString message, const QString authorName, co
 
 void QYoutubeChatEx::fundraising(const QString userComment, const QString authorName, const QString authorImageLogo, ulong amountMicros, QString currency, QString amountDisplayString)
 {
+    Q_UNUSED( userComment );
+    Q_UNUSED( authorName );
+    Q_UNUSED( authorImageLogo );
+    Q_UNUSED( amountMicros );
+    Q_UNUSED( currency );
+    Q_UNUSED( amountDisplayString );
 
 }
 
 void QYoutubeChatEx::newSponsor(const QString authorName)
 {
-
+    Q_UNUSED( authorName );
 }
 
 void QYoutubeChatEx::doLogin()
