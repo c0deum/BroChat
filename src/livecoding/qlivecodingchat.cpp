@@ -460,6 +460,7 @@ void QLivecodingChat::onSmilesLoaded()
 
             smilesInfo.replace( "plain", "\"plain\"" );
             smilesInfo.replace( "regex:", "\"regex\":\"" );
+            smilesInfo.replace( "regex2:", "\"regex2\":\"" );
             smilesInfo.replace( "/gim", "/gim\"" );
             smilesInfo.replace( "/gm", "/gm\"" );
             smilesInfo.replace( "image", "\"image\"" );

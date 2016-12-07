@@ -24,10 +24,10 @@ const int QStreamCubeChat::UPDATE_INTERVAL = 3000;
 const int QStreamCubeChat::RECONNECT_INTERVAL = 10000;
 
 
-const QString DEFAULT_STREAM_CUBE_REQUEST_LINK = "http://build.strimim.ru/chat/upd";
-const QString DEFAULT_STREAM_CUBE_SMILES_INFO_LINK = "http://build.strimim.ru/chat/api/smile";
-const QString DEFAULT_STREAM_CUBE_CHANNEL_INFO_LINK_PREFIX = "http://build.strimim.ru/chat/api/?url=";
-const QString DEFAULT_STREAM_CUBE_SMILE_PREFIX = "http://build.strimim.ru";
+const QString DEFAULT_STREAM_CUBE_REQUEST_LINK = "https://streamcube.tv/chat/upd";
+const QString DEFAULT_STREAM_CUBE_SMILES_INFO_LINK = "https://streamcube.tv/chat/api/smile";
+const QString DEFAULT_STREAM_CUBE_CHANNEL_INFO_LINK_PREFIX = "https://streamcube.tv/chat/api/?url=";
+const QString DEFAULT_STREAM_CUBE_SMILE_PREFIX = "https://streamcube.tv";
 
 QStreamCubeChat::QStreamCubeChat( QObject * parent )
 : QChatService( parent )

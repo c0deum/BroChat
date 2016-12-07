@@ -34,12 +34,13 @@ private:
     QVBoxLayout* goodgameLayout;
     QCheckBox *goodGameChannelCheckBox;
     QLineEdit *goodGameChannelEdit;
+    QCheckBox *goodGameBadgesCheckBox;
     QCheckBox *goodGameUseAnimatedSmilesCheckBox;
     QLineEdit *goodGameAliasesEdit;
     QTextEdit *goodGameSupportersListEdit;
     QTextEdit *goodGameBlackListEdit;
     QCheckBox *goodGameRemoveBlackListUsersCheckBox;
-    QCheckBox *goodGameBadgesCheckBox;
+
 
 
 signals:

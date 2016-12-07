@@ -209,7 +209,7 @@ QBroChatView::QBroChatView( QWidget *parent )
 
     QObject::connect( reconnectAcesAction, SIGNAL( triggered() ), acesChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectAzubuAction, SIGNAL( triggered() ), azubuChat_, SLOT( reconnect() ) );
-    QObject::connect( reconnectAzubuAction, SIGNAL( triggered() ), beamproChat_, SLOT( reconnect() ) );
+    QObject::connect( reconnectBeamproAction, SIGNAL( triggered() ), beamproChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectCybergameAction, SIGNAL( triggered() ), cybergameChat_, SLOT( reconnect() ) );    
     QObject::connect( reconnectGamersTvAction, SIGNAL( triggered() ), gamerstvChat_, SLOT( reconnect() ) );
     QObject::connect( reconnectGipsyTeamAction, SIGNAL( triggered() ), gipsyteamChat_, SLOT( reconnect() ) );
@@ -294,7 +294,8 @@ void QBroChatView::signalLoadFinishedCatched()
 
 void QBroChatView::mousePressEvent( QMouseEvent *event )
 {
-    if( ( event->modifiers() & Qt::ControlModifier ) && ( event->buttons() & Qt::LeftButton ) )
+    //if( ( event->modifiers() & Qt::ControlModifier ) && ( event->buttons() & Qt::LeftButton ) )
+    if( ( event->modifiers() & Qt::AltModifier ) && ( event->buttons() & Qt::LeftButton ) )
     {
         moveState_ = true;
         mouseStartPos_ = event->globalPos();
@@ -308,7 +309,8 @@ void QBroChatView::mousePressEvent( QMouseEvent *event )
 
 void QBroChatView::mouseMoveEvent( QMouseEvent *event )
 {
-    if( moveState_ && ( event->modifiers() & Qt::ControlModifier ) && ( event->buttons() & Qt::LeftButton ) )
+    //if( moveState_ && ( event->modifiers() & Qt::ControlModifier ) && ( event->buttons() & Qt::LeftButton ) )
+    if( moveState_ && ( event->modifiers() & Qt::AltModifier ) && ( event->buttons() & Qt::LeftButton ) )
     {
         move( pos() + ( event->globalPos() - mouseStartPos_ ) );
         mouseStartPos_ = event->globalPos();
@@ -322,7 +324,8 @@ void QBroChatView::mouseMoveEvent( QMouseEvent *event )
 
 void QBroChatView::mouseReleaseEvent( QMouseEvent *event )
 {
-    if( moveState_ && ( event->modifiers() & Qt::ControlModifier ) && ( event->buttons() & Qt::LeftButton ) )
+    //if( moveState_ && ( event->modifiers() & Qt::ControlModifier ) && ( event->buttons() & Qt::LeftButton ) )
+    if( moveState_ && ( event->modifiers() & Qt::AltModifier ) && ( event->buttons() & Qt::LeftButton ) )
         moveState_ = false;
     else
     {
@@ -392,6 +395,9 @@ void QBroChatView::addMessage( const QString & service, const QString & nickName
     formattedMessage.replace( 1, "" );
     formattedMessage.replace( "\\", "\\\\" );
     formattedMessage.replace( "\"", "\\\"" );
+
+    formattedMessage.replace( "\r\n", "<br>" );
+    formattedMessage.replace( "\n", "<br>" );
 
     QString js = "onNewMessage( \"" + service + "\", \"" + formattedNickName + "\", \"" + formattedMessage + "\", \"" + type +"\");";
     //page()->mainFrame()->evaluateJavaScript( js );

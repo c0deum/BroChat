@@ -209,7 +209,7 @@ void QChatService::emitJsonMessage( std::initializer_list<QPair<QString, QString
 
 void QChatService::emitSystemMessage( const QString & service, const QString & nickname, const QString & message )
 {
-    emitJsonMessage( { qMakePair( TYPE_FIELD, MESSAGE_TYPE ),\
+    //emitJsonMessage( { qMakePair( TYPE_FIELD, MESSAGE_TYPE ),\
                    qMakePair( SERVICE_NAME_FIELD, service ),\
                    qMakePair( NICKNAME_FIELD, nickname ),\
                    qMakePair( MESSAGE_TEXT_FIELD, message ),\

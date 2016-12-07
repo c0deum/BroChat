@@ -1,4 +1,6 @@
 #include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 #include <QWebSocket>
 
@@ -21,15 +23,20 @@ const QString QBeamProChat::SERVICE_USER_NAME = "BEAMPRO";
 
 const int QBeamProChat::RECONNECT_INTERVAL = 10000;
 const int QBeamProChat::RECONNECT_CHAT_INTERVAL = 5000;
-const int QBeamProChat::SAVE_CONNECTION_INTERVAL = 25000;
+const int QBeamProChat::SAVE_CONNECTION_INTERVAL = 15000;
 
 
-const QString DEFAULT_BEAMPRO_SOCKETIO_LINK = "wss://realtime.beam.pro/socket.io/?EIO=3&transport=websocket";
+//const QString DEFAULT_BEAMPRO_SOCKETIO_LINK = "wss://realtime.beam.pro/socket.io/?EIO=3&transport=websocket";
+
+const QString DEFAULT_BEAMPRO_CHANNEL_INFO_PREFIX = "https://beam.pro/api/v1/channels/";
+const QString DEFAULT_BEAMPRO_CHATS_INFO_PREFIX = "https://beam.pro/api/v1/chats/";
+const QString DEFAULT_BEAMPRO_SMILES_INFO_LINK = "https://beam.pro/_latest/emoticons/manifest.json";
 
 
 
 QBeamProChat::QBeamProChat( QObject * parent )
 : QChatService( parent )
+, nam_( new QNetworkAccessManager( this ) )
 {
 }
 
@@ -49,7 +56,10 @@ void QBeamProChat::connect()
         emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connecting to " ) + channelName_ + tr( "..." ) );
     }
 
-    connectToSocketIO();
+    //connectToSocketIO();
+    //connectToChatWebSocket();
+
+    loadChannelInfo();
 }
 
 void QBeamProChat::disconnect()
@@ -58,12 +68,15 @@ void QBeamProChat::disconnect()
     resetTimer( reconnectChatTimerId_ );
     resetTimer( saveConnectionTimerId_ );
 
+    /*
     if( socketIO_ )
     {
         socketIO_->abort();
         socketIO_->deleteLater();
     }
+
     socketIO_ = nullptr;
+    */
 
     if( chatSocket_ )
     {
@@ -101,10 +114,20 @@ void QBeamProChat::timerEvent( QTimerEvent * event )
 {
     if( saveConnectionTimerId_ == event->timerId() )
     {
+        /*
         if( socketIO_ && QAbstractSocket::ConnectedState == socketIO_->state() )
         {
             socketIO_->ping( "2" );
         }
+        */
+
+        //{"type":"method","method":"ping","arguments":[],"id":6}
+
+        if( chatSocket_ && QAbstractSocket::ConnectedState == chatSocket_->state() )
+        {
+            chatSocket_->ping();
+        }
+
     }
     else if( reconnectChatTimerId_ == event->timerId() )
     {
@@ -119,6 +142,14 @@ void QBeamProChat::timerEvent( QTimerEvent * event )
 void QBeamProChat::loadSmiles()
 {
     QChatService::loadSmiles();
+
+    QNetworkRequest request( QUrl( DEFAULT_BEAMPRO_SMILES_INFO_LINK + "" ) );
+
+    QNetworkReply * reply = nam_->get( request );
+
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onSmilesLoaded() ) );
+    QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onSmilesLoadError() ) );
+
 }
 
 void QBeamProChat::loadSettings()
@@ -138,6 +169,7 @@ void QBeamProChat::loadSettings()
     setRemoveBlackListUsers( settings.value( BEAMPRO_REMOVE_BLACK_LIST_USERS_SETTING_PATH, false ).toBool() );
 }
 
+/*
 void QBeamProChat::connectToSocketIO()
 {
     socketIO_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
@@ -160,7 +192,8 @@ void QBeamProChat::onWebSocketConnectError()
     }
     startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
 }
-
+*/
+/*
 void QBeamProChat::onTextMessageReceived( const QString & message )
 {   
     if( "42[\"channel:" + channelId_ + ":update" == message.left( 19 + channelId_.length() ) )
@@ -275,7 +308,7 @@ void QBeamProChat::onTextMessageReceived( const QString & message )
         socketIO_->sendTextMessage( request );
     }
 }
-
+*/
 void QBeamProChat::connectToChatWebSocket()
 {
     if( chatSocket_ )
@@ -304,7 +337,7 @@ void QBeamProChat::onChatWebSocketConnected()
         emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ), QString(), this ) );
         emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Connected to " ) + channelName_ + tr( "..." ) );
     }
-    chatSocket_->sendTextMessage( "{\"type\":\"method\",\"method\":\"auth\",\"arguments\":[" + channelId_ +",null,null],\"id\":0}" );
+    //chatSocket_->sendTextMessage( "{\"type\":\"method\",\"method\":\"auth\",\"arguments\":[" + channelId_ +",null,null],\"id\":0}" );
 }
 
 void QBeamProChat::onChatWebSocketConnectError()
@@ -363,13 +396,142 @@ void QBeamProChat::onChatTextMessageReceived( const QString & message )
                     else if( "emoticon" == type )
                     {
                         //css sprites must die
-                        message += "<img class = \"smile\" src=\"https://funstream.tv/build/images/smiles/anifk.png\"></img>" ;
+                        //message += "<img class = \"smile\" src=\"https://funstream.tv/build/images/smiles/anifk.png\"></img>" ;
+                        message += jsonMessageInfoObj[ "text" ].toString();
                     }
                 }
                 emit newMessage( ChatMessage( SERVICE_NAME, nickName, message, QString(), this ) );
             }
+            else if( "WelcomeEvent" == event )
+            {
+                startUniqueTimer( saveConnectionTimerId_, SAVE_CONNECTION_INTERVAL );
+                chatSocket_->sendTextMessage( "{\"type\":\"method\",\"method\":\"auth\",\"arguments\":[" + channelId_ +",null,null],\"id\":0}" );
+            }
         }
+
     }
 }
 
+void QBeamProChat::loadChannelInfo()
+{
+    QNetworkRequest request( QUrl( DEFAULT_BEAMPRO_CHANNEL_INFO_PREFIX + channelName_ + "?" ) );
+    QNetworkReply* reply = nam_->get( request );
 
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChannelInfoLoaded() ) );
+    QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onChannelInfoLoadError() ) );
+}
+
+void QBeamProChat::onChannelInfoLoaded()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    QJsonParseError parseError;
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
+
+    if( QJsonParseError::NoError == parseError.error && jsonDoc.isObject() )
+    {
+        QJsonObject jsonObj = jsonDoc.object();
+        channelId_ = QString::number( jsonObj[ "id" ].toInt() );
+
+        loadChatsInfo();
+        loadSmiles();
+
+
+    }
+
+    reply->deleteLater();
+}
+
+void QBeamProChat::onChannelInfoLoadError()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    if( isShowSystemMessages() )
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load channel info... " ) + reply->errorString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load channel info..." ) + reply->errorString() );
+    }
+
+    startUniqueTimer( reconnectChatTimerId_, RECONNECT_CHAT_INTERVAL );
+
+    reply->deleteLater();
+}
+
+void QBeamProChat::loadChatsInfo()
+{
+    QNetworkRequest request( QUrl( DEFAULT_BEAMPRO_CHATS_INFO_PREFIX + channelId_ + "?" ) );
+
+    QNetworkReply * reply = nam_->get( request );
+
+    QObject::connect( reply, SIGNAL( finished() ), this, SLOT( onChatsInfoLoaded() ) );
+    QObject::connect( reply, SIGNAL( error(QNetworkReply::NetworkError) ), this, SLOT( onChatsInfoLoadError() ) );
+
+}
+
+void QBeamProChat::onChatsInfoLoaded()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    QJsonParseError parseError;
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( reply->readAll(), &parseError );
+
+    if( QJsonParseError::NoError == parseError.error && jsonDoc.isObject() )
+    {
+        QJsonObject jsonObj = jsonDoc.object();
+
+        QJsonArray chatsEndPointsArr = jsonObj[ "endpoints" ].toArray();
+
+        chatWebSocketAddrList_.clear();
+
+        for( const QJsonValue chatEndPoint : chatsEndPointsArr )
+        {
+            chatWebSocketAddrList_.append( chatEndPoint.toString() );
+        }
+
+        connectToChatWebSocket();
+    }
+    reply->deleteLater();
+}
+
+void QBeamProChat::onChatsInfoLoadError()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    if( isShowSystemMessages() )
+    {
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load chats info... " ) + reply->errorString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Can not load chats info..." ) + reply->errorString() );
+    }
+
+    startUniqueTimer( reconnectChatTimerId_, RECONNECT_CHAT_INTERVAL );
+
+    reply->deleteLater();
+}
+
+void QBeamProChat::onSmilesLoaded()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+
+    QByteArray data = reply->readAll();
+
+    QJsonParseError parseError;
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson( data, &parseError );
+
+    if( QJsonParseError::NoError == parseError.error && jsonDoc.isObject() )
+    {
+        QJsonObject jsonObj = jsonDoc.object();
+
+        //TODO: fucking css sprites
+    }
+
+    reply->deleteLater();
+}
+
+void QBeamProChat::onSmilesLoadError()
+{
+    QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
+    reply->deleteLater();
+}

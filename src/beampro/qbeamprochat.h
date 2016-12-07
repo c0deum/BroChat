@@ -18,26 +18,42 @@ private:
     void loadSettings();
     virtual void loadSmiles();
 
-    void connectToSocketIO();
+    void loadChannelInfo();
+
+    void loadChatsInfo();
+
+    //void connectToSocketIO();
     void connectToChatWebSocket();
+
+
 
 public slots:
     virtual void connect();
     virtual void disconnect();
     virtual void reconnect();
 private slots:
-    void onWebSocketConnected();
-    void onWebSocketConnectError();
+
+    void onChannelInfoLoaded();
+    void onChannelInfoLoadError();
+
+    void onChatsInfoLoaded();
+    void onChatsInfoLoadError();
+
+    void onSmilesLoaded();
+    void onSmilesLoadError();
+
+    //void onWebSocketConnected();
+    //void onWebSocketConnectError();
 
     void onChatWebSocketConnected();
     void onChatWebSocketConnectError();
 
-    void onTextMessageReceived( const QString & message );
+    //void onTextMessageReceived( const QString & message );
     void onChatTextMessageReceived( const QString & message );
 
 private:
     QNetworkAccessManager * nam_ = {nullptr};
-    QWebSocket * socketIO_ = {nullptr};
+    //QWebSocket * socketIO_ = {nullptr};
     QWebSocket * chatSocket_ = {nullptr};
     QString channelName_;
     QString channelId_;
