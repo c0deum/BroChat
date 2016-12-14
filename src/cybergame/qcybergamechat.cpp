@@ -24,13 +24,14 @@
 
 #include "qcybergamechat.h"
 
-const QString DEFAULT_CYBERGAME_CHANNEL_INFO_LINK = "http://cybergame.tv/";
-const QString DEFAULT_CYBERGAME_SMILES_INFO_LINK = "http://cybergame.tv/chats/emotes/emotes.json";
-const QString DEFAULT_CYBERGAME_SMILES_PREFIX = "http://cybergame.tv/chats/emotes/";
+const QString DEFAULT_CYBERGAME_CHANNEL_INFO_LINK = "https://cybergame.tv/";
+const QString DEFAULT_CYBERGAME_SMILES_INFO_LINK = "https://cybergame.tv/chats/emotes/emotes.json";
+const QString DEFAULT_CYBERGAME_SMILES_PREFIX = "https://cybergame.tv/chats/emotes/";
 
-const QString DEFAULT_CYBERGAME_STATICTIC_LINK_PREFIX = "http://api.cybergame.tv/w/streams2.php?channel=";
+const QString DEFAULT_CYBERGAME_STATICTIC_LINK_PREFIX = "https://api.cybergame.tv/w/streams2.php?channel=";
 
-const QString DEFAULT_CYBERGAME_WEBSOCKET_LINK = "ws://newchat.cybergame.tv:9002/";
+//const QString DEFAULT_CYBERGAME_WEBSOCKET_LINK = "ws://newchat.cybergame.tv:9002/";
+const QString DEFAULT_CYBERGAME_WEBSOCKET_LINK = "wss://chat.cybergame.tv:9002/";
 
 const QString QCyberGameChat::SERVICE_NAME = "cybergame";
 const QString QCyberGameChat::SERVICE_USER_NAME = "CYBERGAME";
@@ -97,6 +98,7 @@ void QCyberGameChat::connectToWebSocket()
 {
     socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
     socket_->open( QUrl( DEFAULT_CYBERGAME_WEBSOCKET_LINK ) );
+    QObject::connect( socket_, SIGNAL( sslErrors( QList<QSslError> ) ), socket_, SLOT( ignoreSslErrors() ) );
 
     QObject::connect( socket_, SIGNAL( textMessageReceived( const QString & ) ), this, SLOT( onTextMessageReceived( const QString & ) ) );
     QObject::connect( socket_, SIGNAL( connected() ), this, SLOT( onWebSocketConnected() ) );
@@ -114,8 +116,8 @@ void QCyberGameChat::onWebSocketError()
 {
     if( isShowSystemMessages() )
     {
-        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Unknown Error ..." ), QString(), this ) );
-        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Unknown Error ..." ) );
+        emit newMessage( ChatMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Unknown Error ..." ) + socket_->errorString(), QString(), this ) );
+        emitSystemMessage( SERVICE_NAME, SERVICE_USER_NAME, tr( "Unknown Error ..." ) + socket_->errorString() );
     }
 
     startUniqueTimer( reconnectTimerId_, RECONNECT_INTERVAL );
