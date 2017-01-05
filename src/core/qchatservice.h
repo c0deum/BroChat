@@ -16,7 +16,7 @@ class QChatService: public QObject
     Q_OBJECT
 public:
     explicit                    QChatService( QObject * parent = nullptr );
-    virtual                     ~QChatService();
+                                ~QChatService() override;
 
     bool                        isEnabled() const;
 

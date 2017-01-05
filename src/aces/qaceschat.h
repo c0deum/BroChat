@@ -11,10 +11,10 @@ class QAcesChat: public QChatService
     Q_OBJECT
 public:
     explicit                QAcesChat( QObject * parent = nullptr );
-    virtual                 ~QAcesChat();
+                            ~QAcesChat() override;
 
 protected:
-    virtual void            timerEvent( QTimerEvent * );
+    void                    timerEvent( QTimerEvent * ) override;
 
 private:
     void                    loadSettings();
@@ -24,9 +24,9 @@ private:
     void                    connectToWebSocket();
 
 public slots:
-    virtual void            connect();
-    virtual void            disconnect();
-    virtual void            reconnect();
+    void                    connect() override;
+    void                    disconnect() override;
+    void                    reconnect() override;
 
 private slots:
     void                    onChannelInfoLoaded();

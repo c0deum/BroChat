@@ -33,7 +33,7 @@ public:
     void setAuthenticator(O2Youtube *v) ;
 
     explicit YoutubeApi(QObject *parent = 0);
-    virtual ~YoutubeApi();
+    ~YoutubeApi() override;
 
     //empty broadcast/comments models,
     //wipe page token.

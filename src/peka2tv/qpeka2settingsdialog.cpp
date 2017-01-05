@@ -26,6 +26,8 @@ QPeka2SettingsDialog::QPeka2SettingsDialog(QWidget *parent):QWidget(parent)
 
 QWidget *QPeka2SettingsDialog::createLayout(QWidget *parent, QSettings &settings)
 {
+    Q_UNUSED( parent );
+
     QVBoxLayout * peka2Layout = new QVBoxLayout;
 
     peka2ChannelCheckBox->setText( CHANNEL_TEXT );

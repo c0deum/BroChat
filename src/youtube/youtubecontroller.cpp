@@ -108,13 +108,14 @@ void YoutubeController::broadcastModelChanged()
 
 void YoutubeController::timerEvent( QTimerEvent * event )
 {
+    Q_UNUSED( event );
     api_->requestComments(liveChatId_);
 }
 
 void YoutubeController::commentModelChanged()
 {
     const auto& commentModel = api_->commentModel();
-    int commentsCount = commentModel->rowCount();
+    //int commentsCount = commentModel->rowCount();
     for(int k = 0; k!=commentModel->rowCount();k++)
     {
         const auto& rawMessage =  commentModel->data(commentModel->index(k,0),CommentModel::Roles::RoleCommentMessage).toMap();

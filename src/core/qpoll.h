@@ -23,7 +23,7 @@ public:
     };
 public:
     explicit                            QPoll( QObject * parent = nullptr );
-    virtual                             ~QPoll();
+                                        ~QPoll() override;
 public:
     const QString &                     question() const;
     void                                question( const QString & newQuestion );
@@ -38,7 +38,7 @@ public:
     void                                multiChoice( bool flag );
 
 protected:
-    virtual void                        timerEvent( QTimerEvent * event );
+    void                                timerEvent( QTimerEvent * event ) override;
 
 private:
     void                                init();

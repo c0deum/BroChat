@@ -12,10 +12,10 @@
 namespace youtube
 {
 static const char * YOUTUBE_LIVE_PART = "part";
-static const char * YOUTUBE_LIVE_FILTER_BROADCAST_STATUS = "broadcastStatus";
+//static const char * YOUTUBE_LIVE_FILTER_BROADCAST_STATUS = "broadcastStatus";
 static const char * YOUTUBE_LIVE_BROADCAST_TYPE = "broadcastType";
 static const char * YOUTUBE_LIVE_FILTER_MINE = "mine";
-static const char * YOUTUBE_LIVE_FILTER_ID = "id";
+//static const char * YOUTUBE_LIVE_FILTER_ID = "id";
 static const char * YOUTUBE_LIVE_OPTIONAL_MAXRESULTS = "maxResults";
 
 static const char * YOUTUBE_LIVE_COMMENTS_PAGETOKEN = "pageToken";

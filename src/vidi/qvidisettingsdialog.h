@@ -32,13 +32,13 @@ public slots:
 
     // VirtualSettingsTab interface
 public:
-    virtual QWidget *createLayout(QWidget *parent, QSettings &settings);
-    virtual void saveSettings(QSettings &settings);
-    virtual void loadSettings(QSettings &settings);
-    virtual void connectDialogToChat(QObject *chat);
-    virtual QIcon getIcon();
-    virtual QString getName();
-    virtual QObject *getAdditionalInfo();
+    QWidget *createLayout(QWidget *parent, QSettings &settings) override;
+    void saveSettings(QSettings &settings) override;
+    void loadSettings(QSettings &settings) override;
+    void connectDialogToChat(QObject *chat) override;
+    QIcon getIcon() override;
+    QString getName() override;
+    QObject *getAdditionalInfo() override;
 private:
     QCheckBox *         vidiChannelCheckBox;
     QLineEdit *         vidiChannelEdit;

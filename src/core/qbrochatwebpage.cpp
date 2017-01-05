@@ -10,6 +10,7 @@ QBroChatWebPage::QBroChatWebPage( QObject * parent )
 
 bool QBroChatWebPage::acceptNavigationRequest( const QUrl &url, NavigationType type, bool isMainFrame )
 {
+    Q_UNUSED( isMainFrame );
     if (type == QWebEnginePage::NavigationTypeLinkClicked)
     {
         QDesktopServices::openUrl(url);

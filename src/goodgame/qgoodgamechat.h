@@ -14,10 +14,10 @@ class QGoodGameChat: public QChatService
     Q_OBJECT
 public:
     explicit                    QGoodGameChat( QObject * parent = nullptr );
-    virtual                     ~QGoodGameChat();
+                                ~QGoodGameChat() override;
 
 protected:
-    virtual void                timerEvent( QTimerEvent * );
+    void                        timerEvent( QTimerEvent * ) override;
 
 private:
     void                        loadSettings();
@@ -41,9 +41,9 @@ void                            loadSmiles();
     QString                     insertSmiles( const QString & message ) const;
 
 public slots:
-    virtual void                connect();
-    virtual void                disconnect();
-    virtual void                reconnect();
+    void                        connect() override;
+    void                        disconnect() override;
+    void                        reconnect() override;
 
     void                        changeUseAnimatedSmiles( bool use );
 

@@ -24,6 +24,8 @@ QBeamproSettingsDialog::QBeamproSettingsDialog(QWidget *parent) : QWidget(parent
 
 QWidget *QBeamproSettingsDialog::createLayout(QWidget *parent, QSettings &settings)
 {
+    Q_UNUSED( parent );
+
     QVBoxLayout * beamproLayout = new QVBoxLayout;
 
     beamproChannelCheckBox->setText( CHANNEL_TEXT );

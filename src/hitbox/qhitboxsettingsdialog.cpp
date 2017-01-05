@@ -25,6 +25,7 @@ QHitboxSettingsDialog::QHitboxSettingsDialog(QWidget *parent) : QWidget(parent)
 
 QWidget *QHitboxSettingsDialog::createLayout(QWidget *parent, QSettings &settings)
 {
+    Q_UNUSED( parent );
 
     QVBoxLayout * hitboxLayout = new QVBoxLayout();
 

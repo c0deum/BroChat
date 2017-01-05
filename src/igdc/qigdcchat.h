@@ -10,10 +10,10 @@ class QIgdcChat: public QChatService
     Q_OBJECT
 public:
     explicit                QIgdcChat( QObject * parent = nullptr );
-    virtual                 ~QIgdcChat();
+                            ~QIgdcChat() override;
 
 protected:
-    virtual void            timerEvent( QTimerEvent * event );
+    void                    timerEvent( QTimerEvent * event ) override;
 private:
     void                    loadSettings();
 
@@ -24,9 +24,9 @@ private:
     void                    loadMessages();
 
 public slots:
-    virtual void            connect();
-    virtual void            disconnect();
-    virtual void            reconnect();
+    void                    connect() override;
+    void                    disconnect() override;
+    void                    reconnect() override;
 
 private slots:
     void                    onChannelInfoLoaded();

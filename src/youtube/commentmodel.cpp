@@ -30,6 +30,7 @@ void CommentModel::addComment(QVariantMap comment)
 
 int CommentModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED( parent );
     return comments.count();
 }
 

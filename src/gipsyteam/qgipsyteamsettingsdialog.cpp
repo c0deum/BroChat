@@ -24,6 +24,7 @@ QGipsyteamSettingsDialog::QGipsyteamSettingsDialog(QWidget *parent) : QWidget(pa
 
 QWidget *QGipsyteamSettingsDialog::createLayout(QWidget *parent, QSettings &settings)
 {
+    Q_UNUSED( parent );
 
     QVBoxLayout * gipsyteamLayout = new QVBoxLayout();
 

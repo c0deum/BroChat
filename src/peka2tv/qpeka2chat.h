@@ -13,9 +13,9 @@ class QPeka2Chat: public QChatService
     Q_OBJECT
 public:
     explicit                QPeka2Chat( QObject * parent = nullptr );
-    virtual                 ~QPeka2Chat();
+                            ~QPeka2Chat() override;
 protected:
-    virtual void            timerEvent( QTimerEvent * );
+    void                    timerEvent( QTimerEvent * ) override;
 private:
     void                    loadSettings();
 
@@ -23,7 +23,7 @@ private:
     void                    connectToWebClient();
     void                    loadStatistic();
     void                    loadHistory();    
-    virtual void            loadSmiles();
+    void                    loadSmiles() override;
 
     void                    loadTwitchSmiles();
 
@@ -34,9 +34,9 @@ private:
     void                    parseMessage( const QJsonObject & jsonObj );
 
 public slots:
-    virtual void            connect();
-    virtual void            disconnect();
-    virtual void            reconnect();
+    void                    connect() override;
+    void                    disconnect() override;
+    void                    reconnect() override;
 
     void                    changeOriginalColors( bool originalColors );
     void                    changeBadges( bool badges );

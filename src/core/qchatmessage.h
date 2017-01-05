@@ -10,7 +10,6 @@ class ChatMessage
 public:
                             ChatMessage( const QString & serviceName, const QString & nickName, const QString & message, const QString & type, QChatService * service = nullptr );
                             ChatMessage( const ChatMessage & chatMessage );
-    virtual                 ~ChatMessage();
 public:
     const ChatMessage &     operator=( const ChatMessage & chatMessage );
 public:

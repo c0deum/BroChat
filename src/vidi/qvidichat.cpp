@@ -241,7 +241,7 @@ void QVidiChat::onJoinSocketConnectError()
 
 void QVidiChat::onJoinSocketMessageReceived( const QString & message )
 {
-    /*
+
     if( "0" == message.left( 1 ) )
     {
         const QString SID_PREFIX = "\"sid\":\"";
@@ -258,9 +258,9 @@ void QVidiChat::onJoinSocketMessageReceived( const QString & message )
             }
         }
     }
-    */
 
-/*
+
+
     if( "3probe" == message )
     {
         joinSocket_->sendTextMessage( "5" );

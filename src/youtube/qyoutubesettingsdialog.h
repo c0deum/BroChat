@@ -21,20 +21,20 @@ class QYoutubeSettingsDialog:public QObject,public VirtualSettingsTab
     Q_OBJECT
 public:
     QYoutubeSettingsDialog(QObject *parent = nullptr);
-    virtual ~QYoutubeSettingsDialog(){}
+    ~QYoutubeSettingsDialog() override{}
 
     // QVirtualSettingsTab interface
 public:
-    virtual QWidget *createLayout(QWidget *parent,QSettings& settings);
-    virtual void saveSettings(QSettings&settings);
-    virtual void loadSettings(QSettings&settings);
+    QWidget *createLayout(QWidget *parent,QSettings& settings) override;
+    void saveSettings(QSettings&settings) override;
+    void loadSettings(QSettings&settings) override;
 
     //connect signals from chat' dialog to chat class' slots
-    virtual void connectDialogToChat(QObject* chat);
+    void connectDialogToChat(QObject* chat) override;
 
-    virtual QIcon getIcon();
-    virtual QString getName();
-    virtual QObject *getAdditionalInfo();
+    QIcon getIcon() override;
+    QString getName() override;
+    QObject *getAdditionalInfo() override;
 
 private:
     //tab control

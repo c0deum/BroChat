@@ -14,24 +14,24 @@ class QHitBoxChat: public QChatService
     Q_OBJECT
 public:
     explicit                QHitBoxChat( QObject * parent = nullptr );
-    virtual                 ~QHitBoxChat();
+                            ~QHitBoxChat() override;
 
 protected:
-    virtual void            timerEvent( QTimerEvent *event );
+    void                    timerEvent( QTimerEvent *event ) override;
 private:
     void                    loadSettings();
 
     void                    loadServersList();
     void                    loadSocketHash();
 
-    virtual void            loadSmiles();
+    void                    loadSmiles() override;
 
     void                    loadStatistic();
 
 public slots:
-    virtual void            connect();
-    virtual void            disconnect();
-    virtual void            reconnect();
+    void                    connect() override;
+    void                    disconnect() override;
+    void                    reconnect() override;
 
     void                    changeOriginalColors( bool originalColors );
 

@@ -12,21 +12,21 @@ class QGamersTvChat: public QChatService
     Q_OBJECT
 public:
     explicit                QGamersTvChat( QObject * parent = nullptr );
-    virtual                 ~QGamersTvChat();
+                            ~QGamersTvChat() override;
 protected:
     void                    timerEvent( QTimerEvent * );
 
 private:
     void                    loadSettings();
-    virtual void            loadSmiles();
+    void                    loadSmiles() override;
     void                    loadMessages();
 
     void                    loadStatistic();
 
 public slots:
-    virtual void            connect();
-    virtual void            disconnect();
-    virtual void            reconnect();
+    void                    connect() override;
+    void                    disconnect() override;
+    void                    reconnect() override;
 
 private slots:
 

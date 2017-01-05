@@ -24,6 +24,8 @@ QAzubuSettingsDialog::QAzubuSettingsDialog(QWidget *parent) : QWidget(parent)
 
 QWidget *QAzubuSettingsDialog::createLayout(QWidget *parent, QSettings &settings)
 {
+    Q_UNUSED( parent );
+
     QVBoxLayout * azubuLayout = new QVBoxLayout;
 
     azubuChannelCheckBox->setText( CHANNEL_TEXT );

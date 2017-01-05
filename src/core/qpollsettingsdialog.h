@@ -14,7 +14,7 @@ class QPollSettingsDialog: public QDialog
     Q_OBJECT
 public:
     explicit        QPollSettingsDialog( QWidget * parent = nullptr );
-    virtual         ~QPollSettingsDialog();
+                    ~QPollSettingsDialog() override;
 private:
     void            createWidgets();
 

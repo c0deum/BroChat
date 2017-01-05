@@ -12,13 +12,13 @@ class QCyberGameChat: public QChatService
     Q_OBJECT
 public:
     explicit                    QCyberGameChat( QObject * parent = nullptr );
-    virtual                     ~QCyberGameChat();
+                                ~QCyberGameChat() override;
 private:
     void                        loadSettings();
 
 
     void                        loadChannelInfo();
-    virtual void                loadSmiles();
+    void                        loadSmiles() override;
     void                        loadStatistic();
 
     void                        connectToWebSocket();
@@ -28,9 +28,9 @@ private:
 protected:
     void                        timerEvent( QTimerEvent * event );
 public slots:
-    virtual void                connect();
-    virtual void                disconnect();
-    virtual void                reconnect();
+    void                        connect() override;
+    void                        disconnect() override;
+    void                        reconnect() override;
 private slots:
     void                        onWebSocketConnected();
     void                        onWebSocketError();

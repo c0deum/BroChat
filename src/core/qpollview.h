@@ -8,7 +8,7 @@ class QPollView: public QWebEngineView
     Q_OBJECT
 public:
     explicit    QPollView( QWidget * parent = nullptr );
-    virtual     ~QPollView();
+                ~QPollView() override;
 protected:
     //virtual void timerEvent( QTimerEvent * event );
 private:

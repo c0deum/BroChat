@@ -19,7 +19,7 @@ class QLivecodingChat: public QChatService
     Q_OBJECT
 public:
     explicit                    QLivecodingChat( QObject * parent = nullptr );
-    virtual                     ~QLivecodingChat();
+                                ~QLivecodingChat() override;
 private:
     void                        loadSettings();
 
@@ -29,7 +29,7 @@ private:
     //join afte 3probe received from livecoding
     //void                        joinToChannel();
 
-    virtual void                loadSmiles();
+    void                        loadSmiles() override;
 
 //    void                        loadStatistic();
 
@@ -38,11 +38,11 @@ private:
     void                        reconnectToWebSocket();
 
 protected:
-    virtual void                timerEvent( QTimerEvent * event );
+    void                        timerEvent( QTimerEvent * event ) override;
 public slots:
-    virtual void                connect();
-    virtual void                disconnect();
-    virtual void                reconnect();
+    void                        connect() override;
+    void                        disconnect() override;
+    void                        reconnect() override;
 private slots:
     void                        onConnected();
     void                        onError( QXmppClient::Error );

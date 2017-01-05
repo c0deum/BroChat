@@ -37,22 +37,22 @@ class QBroChatView: public QWebEngineView
     Q_OBJECT
 public:
     explicit            QBroChatView( QWidget * parent = nullptr );
-    virtual             ~QBroChatView();
+                        ~QBroChatView() override;
 
     void                addMessage( const QString & service, const QString & nickName, const QString & message, const QString & type );
 protected:
-    virtual void        mousePressEvent( QMouseEvent * event );
-    virtual void        mouseMoveEvent( QMouseEvent * event );
-    virtual void        mouseReleaseEvent( QMouseEvent * event );
+    void                mousePressEvent( QMouseEvent * event ) override;
+    void                mouseMoveEvent( QMouseEvent * event ) override;
+    void                mouseReleaseEvent( QMouseEvent * event ) override;
 
     /*
     virtual void        keyPressEvent( QKeyEvent *event );
     virtual void        keyReleaseEvent( QKeyEvent * event );
     */
 
-    virtual void        closeEvent( QCloseEvent * event );
+    void                closeEvent( QCloseEvent * event ) override;
 
-    virtual void        timerEvent( QTimerEvent * event );
+    void                timerEvent( QTimerEvent * event ) override;
 
 private:
     void                loadSettings();

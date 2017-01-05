@@ -9,7 +9,7 @@ class QChatStatistic: public QObject
     Q_OBJECT
 public:
             QChatStatistic( const QString & service, const QString & statistic, QObject * parent = nullptr );
-    virtual ~QChatStatistic();
+            ~QChatStatistic() override;
 public:
     QString service() const;
     void    setService( const QString & service );

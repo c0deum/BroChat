@@ -15,14 +15,14 @@ class QTwitchChat: public QChatService
     Q_OBJECT
 public:
     explicit                    QTwitchChat( QObject * parent = nullptr );
-    virtual                     ~QTwitchChat();
+                                ~QTwitchChat() override;
 
     void                        loadSettings();
     QString                     emotIcon( const QString & smileName );
 
 private:
     void                        loadSelf();
-    virtual void                loadSmiles();
+    void                        loadSmiles() override;
     void                        loadBadges();
 
     void                        loadStatistic();
@@ -30,12 +30,12 @@ private:
     void                        safeDeleteSocket();
 
 protected:
-    virtual void                timerEvent( QTimerEvent * );
+    void                        timerEvent( QTimerEvent * ) override;
 
 public slots:
-    virtual void                connect();
-    virtual void                disconnect();
-    virtual void                reconnect();
+    void                        connect() override;
+    void                        disconnect() override;
+    void                        reconnect() override;
 
     void                        changeOriginalColors( bool originalColors );
 

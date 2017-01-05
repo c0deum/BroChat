@@ -25,6 +25,8 @@ QCybergameSettingsDialog::QCybergameSettingsDialog(QWidget *parent) : QWidget(pa
 
 QWidget *QCybergameSettingsDialog::createLayout(QWidget *parent, QSettings &settings)
 {
+    Q_UNUSED( parent );
+
     QVBoxLayout * cyberGameLayout = new QVBoxLayout;
 
     cyberGameChannelCheckBox->setText( CHANNEL_TEXT );

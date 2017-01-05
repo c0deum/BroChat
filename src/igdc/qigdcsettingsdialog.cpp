@@ -25,6 +25,7 @@ QIgdcSettingsDialog::QIgdcSettingsDialog(QWidget *parent):QWidget(parent)
 
 QWidget *QIgdcSettingsDialog::createLayout(QWidget *parent, QSettings &settings)
 {
+    Q_UNUSED( parent );
 
     QVBoxLayout * igdcLayout = new QVBoxLayout();
 

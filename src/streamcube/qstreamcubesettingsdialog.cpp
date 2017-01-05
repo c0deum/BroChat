@@ -24,6 +24,7 @@ QStreamCubeSettingsDialog::QStreamCubeSettingsDialog(QWidget *parent) : QWidget(
 
 QWidget *QStreamCubeSettingsDialog::createLayout(QWidget *parent, QSettings &settings)
 {
+    Q_UNUSED( parent );
 
     QVBoxLayout * streamcubeLayout = new QVBoxLayout();
 

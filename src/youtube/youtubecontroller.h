@@ -24,7 +24,7 @@ signals:
     void newSponsor(const QString authorName);
 
 protected:
-    virtual void timerEvent( QTimerEvent * event );
+    void timerEvent( QTimerEvent * event ) override;
 private slots:
     void onLinkedChanged();
     void onLinkingSucceeded();
@@ -46,12 +46,14 @@ private:
     O2Youtube* o2youtube_;
     YoutubeApi * api_;
 
-    QString liveChatId_;
+
 
     //timer id for comments polling loop
     int commentsTimerId_;
 
     int updateMessagesIntervalMs_;
+
+    QString liveChatId_;
 
 
 };

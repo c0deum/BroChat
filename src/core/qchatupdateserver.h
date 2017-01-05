@@ -12,7 +12,7 @@ class QChatUpdateServer: public QObject
 Q_OBJECT
 public:
     explicit                 QChatUpdateServer( unsigned short port, QObject * parent = nullptr );
-    virtual                 ~QChatUpdateServer();
+                            ~QChatUpdateServer() override;
 
 public slots:
     void                    sendMessage( const QString & message );

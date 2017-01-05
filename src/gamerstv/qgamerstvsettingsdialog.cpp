@@ -25,6 +25,8 @@ QGamerstvSettingsDialog::QGamerstvSettingsDialog(QWidget *parent) : QWidget(pare
 
 QWidget *QGamerstvSettingsDialog::createLayout(QWidget *parent, QSettings &settings)
 {
+    Q_UNUSED( parent );
+
     QVBoxLayout * gamerstvLayout = new QVBoxLayout();
 
     gamerstvChannelCheckBox->setText( CHANNEL_TEXT );

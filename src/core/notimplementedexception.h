@@ -7,7 +7,7 @@ class NotImplementedException : public std::logic_error
 {
 public:
     NotImplementedException():std::logic_error(what()){}
-    virtual char const * what() const noexcept{ return "Function not yet implemented."; }
+    char const * what() const noexcept override{ return "Function not yet implemented."; }
 };
 
 

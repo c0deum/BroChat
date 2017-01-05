@@ -10,13 +10,13 @@ class QYoutubeChatEx : public QChatService
     Q_OBJECT
 public:
     explicit QYoutubeChatEx( QObject * parent = nullptr );
-    virtual ~QYoutubeChatEx();
+    ~QYoutubeChatEx() override;
 
     // QChatService interface
 public slots:
-    virtual void connect();
-    virtual void disconnect();
-    virtual void reconnect();
+    void connect() override;
+    void disconnect() override;
+    void reconnect() override;
 private:
     //check user enabled youtube chat provider or not
     bool youtubeChatProviderEnabled();

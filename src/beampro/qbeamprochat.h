@@ -11,12 +11,12 @@ class QBeamProChat: public QChatService
     Q_OBJECT
 public:
     QBeamProChat( QObject * parent = nullptr );
-    virtual ~QBeamProChat();
+    ~QBeamProChat() override;
 protected:
-    virtual void timerEvent( QTimerEvent * event );
+    void timerEvent( QTimerEvent * event ) override;
 private:
     void loadSettings();
-    virtual void loadSmiles();
+    void loadSmiles() override;
 
     void loadChannelInfo();
 
@@ -28,9 +28,9 @@ private:
 
 
 public slots:
-    virtual void connect();
-    virtual void disconnect();
-    virtual void reconnect();
+    void connect() override;
+    void disconnect() override;
+    void reconnect() override;
 private slots:
 
     void onChannelInfoLoaded();

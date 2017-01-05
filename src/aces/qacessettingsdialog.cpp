@@ -25,6 +25,8 @@ QAcesSettingsDialog::QAcesSettingsDialog(QWidget *parent) : QWidget(parent)
 
 QWidget *QAcesSettingsDialog::createLayout(QWidget *parent, QSettings &settings)
 {
+    Q_UNUSED( parent );
+
     QVBoxLayout * acesLayout = new QVBoxLayout;
 
     acesChannelCheckBox->setText( CHANNEL_TEXT );

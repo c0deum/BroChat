@@ -9,7 +9,7 @@ class QBroChatWebPage: public QWebEnginePage
 public:
     QBroChatWebPage( QObject * parent = nullptr );
 protected:
-    virtual bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame);
+    bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame) override;
 };
 
 #endif // QBROCHATWEBPAGE_H

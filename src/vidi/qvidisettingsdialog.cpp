@@ -24,6 +24,7 @@ QVidiSettingsDialog::QVidiSettingsDialog(QWidget *parent) : QWidget(parent)
 
 QWidget *QVidiSettingsDialog::createLayout(QWidget *parent, QSettings &settings)
 {
+    Q_UNUSED( parent );
 
     QVBoxLayout * vidiLayout = new QVBoxLayout();
 

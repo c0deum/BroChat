@@ -27,6 +27,7 @@ QLivecodingSettingsDialog::QLivecodingSettingsDialog(QWidget *parent) : QWidget(
 
 QWidget *QLivecodingSettingsDialog::createLayout(QWidget *parent, QSettings &settings)
 {
+    Q_UNUSED( parent );
 
     QVBoxLayout * livecodingLayout = new QVBoxLayout();
 

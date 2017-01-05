@@ -23,10 +23,6 @@ ChatMessage::ChatMessage( const ChatMessage & chatMessage )
 {
 }
 
-ChatMessage::~ChatMessage()
-{
-}
-
 const ChatMessage & ChatMessage::operator=( const ChatMessage & chatMessage  )
 {
     serviceName_ = chatMessage.serviceName_;
