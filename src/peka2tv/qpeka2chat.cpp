@@ -463,7 +463,7 @@ void QPeka2Chat::onTextMessageRecieved( const QString &message )
         if( requestId == QString( "43" + QString::number( statisticRequestId_ ) ) )
         {
             const QString RESULT_PREFIX = "\"result\":";
-            const QString RESULT_POSTFIX = "}";
+            const QString RESULT_POSTFIX = "}}";
             int startResultPos = message.indexOf( RESULT_PREFIX ) + RESULT_PREFIX.length();
             int endResultPos = message.indexOf( RESULT_POSTFIX, startResultPos );
 
