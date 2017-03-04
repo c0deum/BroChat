@@ -25,7 +25,7 @@
 #include "qgoodgamechat.h"
 
 const QString DEFAULT_GOODGAME_LINK = "http://goodgame.ru";
-const QString DEFAULT_GOODGAME_WEBSOCKET_LINK = "ws://chat.goodgame.ru:8081/chat/websocket";
+const QString DEFAULT_GOODGAME_WEBSOCKET_LINK = "wss://chat.goodgame.ru/chat/websocket";
 const QString DEFAULT_GOODGAME_COMMON_SMILES_INFO_LINK = "http://goodgame.ru/css/compiled/common_smiles.css";
 const QString DEFAULT_GOODGAME_CHANNELS_SMILES_INFO_LINK = "http://goodgame.ru/css/compiled/channels_smiles.css";
 const QString DEFAULT_GOODGAME_ANIMATED_SMILES_PATH = "http://goodgame.ru/images/anismiles/";
