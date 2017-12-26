@@ -12,6 +12,7 @@ namespace youtube
 const int DEFAULT_YOUTUBE_UPDATE_MESSAGES_INTERVAL_MS = 3000;
 YoutubeController::YoutubeController(QObject *parent): QObject(parent),
     commentsTimerId_(0),
+    youtubeRefreshTimerId_(0),
     updateMessagesIntervalMs_(DEFAULT_YOUTUBE_UPDATE_MESSAGES_INTERVAL_MS),
     liveChatId_("")
 {
@@ -36,15 +37,19 @@ void YoutubeController::doAuth()
 {
     //o2youtube_->unlink();
     o2youtube_->link();
+
 }
 void YoutubeController::delogin()
 {
     //o2youtube_->unlink();
     stopPolling();
+    stopRefreshAuthTokenTimer();
     o2youtube_->unlink();
 }
 void YoutubeController::onLinkedChanged()
 {  
+    //if (!o2youtube_->linked())
+    //    o2youtube_->refresh();
 }
 
 void YoutubeController::onLinkingFailed()
@@ -64,7 +69,32 @@ void YoutubeController::onLinkingSucceeded()
     emit message(QApplication::tr("Connecting to youtube channel..."),"","");
     api_->setAuthenticator(o2youtube_);
     api_->requestOwnLiveBroadcasts();
+    startRefreshAuthTokenTimer();
+
 }
+
+
+void YoutubeController::startRefreshAuthTokenTimer()
+{
+    int expire_interval_sec = o2youtube_->expires() - (QDateTime::currentMSecsSinceEpoch() / 1000);
+    qDebug() << "Expire_interval_sec : " << expire_interval_sec;
+
+    //ring our timer when 4/5 of expire interval will be passed.
+    youtubeRefreshTimerId_ = startTimer(expire_interval_sec*1000*4/5);
+
+    //youtubeRefreshTimerId_ = startTimer(10*1000); //for debug purposes only
+}
+
+void YoutubeController::stopRefreshAuthTokenTimer()
+{
+    if (youtubeRefreshTimerId_==0)
+        return;
+
+    killTimer(youtubeRefreshTimerId_);
+    youtubeRefreshTimerId_ = 0;
+
+}
+
 
 void YoutubeController::onOpenBrowser(const QUrl &url)
 {
@@ -108,8 +138,15 @@ void YoutubeController::broadcastModelChanged()
 
 void YoutubeController::timerEvent( QTimerEvent * event )
 {
-    Q_UNUSED( event );
-    api_->requestComments(liveChatId_);
+    if (event->timerId() ==commentsTimerId_)
+    {
+        api_->requestComments(liveChatId_);
+    }
+    else if (event->timerId() == youtubeRefreshTimerId_)
+    {
+        stopRefreshAuthTokenTimer();
+        o2youtube_->refresh();
+    }
 }
 
 void YoutubeController::commentModelChanged()

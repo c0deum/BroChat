@@ -29,7 +29,7 @@ const QString DEFAULT_GOODGAME_WEBSOCKET_LINK = "wss://chat.goodgame.ru/chat/web
 const QString DEFAULT_GOODGAME_COMMON_SMILES_INFO_LINK = "http://goodgame.ru/css/compiled/common_smiles.css";
 const QString DEFAULT_GOODGAME_CHANNELS_SMILES_INFO_LINK = "http://goodgame.ru/css/compiled/channels_smiles.css";
 const QString DEFAULT_GOODGAME_ANIMATED_SMILES_PATH = "http://goodgame.ru/images/anismiles/";
-const QString DEFAULT_GOODGAME_ALL_SMILES_PATH = "https://goodgame.ru/js/minified/global.js";
+const QString DEFAULT_GOODGAME_ALL_SMILES_PATH = "https://static.goodgame.ru/js/minified/global.js";//"https://goodgame.ru/js/minified/global.js";
 const QString DEFAULT_GOODGAME_CHANNEL_STATUS_PREFIX = "http://goodgame.ru/api/getchannelstatus?id=";
 const QString DEFAULT_GOODGAME_CHANNEL_STATUS_POSTFIX = "&fmt=json";
 const QString DEFAULT_GOOD_GAME_STATISTIC_PREFIX = "http://goodgame.ru/api/getggchannelstatus?id=";
@@ -56,6 +56,9 @@ QGoodGameChat::~QGoodGameChat()
 
 void QGoodGameChat::connect()
 {
+    qDebug() << "Ssl supported: " << QSslSocket::supportsSsl();
+    qDebug() << "ssl version: " << QSslSocket::sslLibraryBuildVersionString();
+
     if( !isEnabled() || channelName_.isEmpty() )
         return;
 
@@ -401,6 +404,7 @@ void QGoodGameChat::loadChannelInfo()
 
 void QGoodGameChat::onChannelInfoLoaded()
 {
+
     QNetworkReply * reply = qobject_cast< QNetworkReply * >( sender() );
 
     QJsonParseError parseError;
@@ -438,10 +442,11 @@ void QGoodGameChat::onChannelInfoLoadError()
 void QGoodGameChat::connectToWebClient()
 {
     socket_ = new QWebSocket( QString(), QWebSocketProtocol::VersionLatest, this );
-    socket_->open( QUrl( DEFAULT_GOODGAME_WEBSOCKET_LINK ) );
-
     QObject::connect( socket_, SIGNAL( textMessageReceived( const QString & ) ), this, SLOT( onTextMessageRecieved( const QString & ) ) );
     QObject::connect( socket_, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( onWebSocketError() ) );
+    socket_->open( QUrl( DEFAULT_GOODGAME_WEBSOCKET_LINK ) );
+
+
 }
 
 void QGoodGameChat::onWebSocketError()

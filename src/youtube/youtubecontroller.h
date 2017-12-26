@@ -43,6 +43,10 @@ private:
     void startPolling();
     void stopPolling();
 
+    //set youtube refresh token timer
+    void startRefreshAuthTokenTimer();
+    void stopRefreshAuthTokenTimer();
+
     O2Youtube* o2youtube_;
     YoutubeApi * api_;
 
@@ -50,6 +54,8 @@ private:
 
     //timer id for comments polling loop
     int commentsTimerId_;
+    //time id for refreshing youtube auth tokens
+    int youtubeRefreshTimerId_;
 
     int updateMessagesIntervalMs_;
 

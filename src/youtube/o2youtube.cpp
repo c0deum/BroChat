@@ -19,8 +19,7 @@ O2Youtube::O2Youtube(QObject *parent): O2(parent)
 
 
 quint16 O2Youtube::getRandomUnusedPort()
-{
-    //listen()
+{    
     return 0;
 }
 }
