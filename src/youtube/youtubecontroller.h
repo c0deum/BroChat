@@ -47,6 +47,10 @@ private:
     void startRefreshAuthTokenTimer();
     void stopRefreshAuthTokenTimer();
 
+    //return true if we started o2->refresh()
+    //else return false
+    bool isRefreshInProcess();
+
     O2Youtube* o2youtube_;
     YoutubeApi * api_;
 
@@ -60,6 +64,10 @@ private:
     int updateMessagesIntervalMs_;
 
     QString liveChatId_;
+
+    //true when first api_->linked event happens.
+    //false otherwise
+    bool coldStart_;
 
 
 };

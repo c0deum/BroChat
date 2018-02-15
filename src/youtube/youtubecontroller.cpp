@@ -14,7 +14,8 @@ YoutubeController::YoutubeController(QObject *parent): QObject(parent),
     commentsTimerId_(0),
     youtubeRefreshTimerId_(0),
     updateMessagesIntervalMs_(DEFAULT_YOUTUBE_UPDATE_MESSAGES_INTERVAL_MS),
-    liveChatId_("")
+    liveChatId_(""),
+    coldStart_(true)
 {
     o2youtube_ = new O2Youtube(this);
 
@@ -66,18 +67,17 @@ void YoutubeController::onLinkingSucceeded()
         return;
 
     //emit message(QApplication::tr("Connecting to youtube channel..."),"YOUTUBE","");
-    emit message(QApplication::tr("Connecting to youtube channel..."),"","");
+    if (!isRefreshInProcess())
+        emit message(QApplication::tr("Connecting to youtube channel..."),"","");
     api_->setAuthenticator(o2youtube_);
-    api_->requestOwnLiveBroadcasts();
-    startRefreshAuthTokenTimer();
+    api_->requestOwnLiveBroadcasts();    
 
 }
 
 
 void YoutubeController::startRefreshAuthTokenTimer()
 {
-    int expire_interval_sec = o2youtube_->expires() - (QDateTime::currentMSecsSinceEpoch() / 1000);
-    qDebug() << "Expire_interval_sec : " << expire_interval_sec;
+    int expire_interval_sec = o2youtube_->expires() - (QDateTime::currentMSecsSinceEpoch() / 1000);   
 
     //ring our timer when 4/5 of expire interval will be passed.
     youtubeRefreshTimerId_ = startTimer(expire_interval_sec*1000*4/5);
@@ -93,6 +93,12 @@ void YoutubeController::stopRefreshAuthTokenTimer()
     killTimer(youtubeRefreshTimerId_);
     youtubeRefreshTimerId_ = 0;
 
+}
+
+bool YoutubeController::isRefreshInProcess()
+{
+    //return true if it isnt cold start and refresherTimer not yet created
+    return ((youtubeRefreshTimerId_ == 0)&&(!coldStart_));
 }
 
 
@@ -130,9 +136,14 @@ void YoutubeController::broadcastModelChanged()
         return;
     }
 
-    emit message(QApplication::tr("Connected to youtube channel."),"","");
+    if (!isRefreshInProcess())
+        emit message(QApplication::tr("Connected to youtube channel."),"","");
+
     liveChatId_ = liveChatId;
+
+    startRefreshAuthTokenTimer();
     startPolling();
+
 
 }
 
@@ -244,6 +255,7 @@ CommentFundraisingDetails YoutubeController::getCommentFundraisingDetailsFromRaw
 
 void YoutubeController::startPolling()
 {
+    coldStart_ = false;
     commentsTimerId_ = startTimer(updateMessagesIntervalMs_);
 }
 
